@@ -1,3 +1,9 @@
+export enum EntrezFilters {
+  plastid = 'plastid',
+  chloroplast = 'chloroplast',
+  mitochondrion = 'mitochondrion'
+}
+
 export enum NCBIDatabase {
   // ToDo: incomplete
   nuccore = 'nuccore',

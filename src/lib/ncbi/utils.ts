@@ -13,6 +13,32 @@ export async function getTaxIDs(term: string): Promise<number[]> {
   }
 }
 
+export function makeESearchTerm(
+  taxids: number[],
+  filters: string[],
+  only_ref_seq: boolean = false,
+  len_min: number = 1e4,
+  len_max: number = 1e7
+): string {
+  len_min = Math.max(len_min, 0)
+  len_max = Math.min(len_max, 1e10)
+
+  const taxn_term: string =
+    '(txid' + taxids.join('[PORGN] OR txid') + '[PORGN])'
+  const filter_term: string = '(' + filters.join('[filter] OR ') + '[filter])'
+  const slen_term: string = `${len_min}[SLEN] : ${len_max}[SLEN]`
+  const bmol_term = 'biomol_genomic[PROP]'
+  const refs_term = 'refseq[filter]'
+
+  const terms: string[] = [taxn_term, filter_term, slen_term, bmol_term]
+
+  if (only_ref_seq) {
+    terms.push(refs_term)
+  }
+
+  return terms.join(' AND ')
+}
+
 export async function getSeqRecords(
   db: keyof typeof NCBIDatabase,
   accs: string[]
