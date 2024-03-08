@@ -1,5 +1,4 @@
-import { fetch, ResponseType } from '@tauri-apps/api/http'
-
+import { cache_get_dtd_txt, download_dtd_txt } from '$lib/app/stores/cache-dtd'
 // --------------------------------------------------------------------------
 
 function get_xml_doctype_tags(txt: string): string[] {
@@ -47,20 +46,38 @@ function get_dtd_tags(txt: string, re: RegExp): string[] {
 
 function parse_dtd_entity_txt(txt: string): DTDEntityRaw {
   const re =
-    /(%)?(\s+)?(?<entity_name>[\w_]+)(\s+)((?<entity_pubsys>(PUBLIC|SYSTEM))(\s+))?(['"](?<entity_description>[-,/\s\w]+)['"](\s+))?((['"](?<entity_value>[\w#]+)['"])|(['"](?<entity_url>[-:./\s\w]+)['"]))/
+    /(%)?(\s+)?(?<entity_name>[\w_]+)(\s+)((?<entity_pubsys>(PUBLIC|SYSTEM))(\s+))?(['"](?<entity_description>[-,./\s\w]+)['"](\s+))?((['"](?<entity_value>[()\s|\w#]+)['"])|(['"](?<entity_url>[-:./\s\w]+)['"]))/
   // <!ENTITY entity-name "entity-value">
   const m = txt.match(re)
   let g: DTDEntityRaw = {} as DTDEntityRaw
   if (m && m.groups) {
     g = m.groups as DTDEntityRaw
+    if (g.entity_value) {
+      g.entity_value = g.entity_value.replaceAll(/\s+/g, '')
+    }
   }
   return g
 }
 
 function parse_dtd_attlist_txt(txt: string): DTDAttributeRaw {
   const re =
-    /(?<element_name>[-_\w]+)\s+(?<attribute_name>[\w]+)\s+\((?<attribute_type>[-_\w\s|:]+)\)\s+"?(?<attribute_value>[-#_\w\s]+)"?/
+    /(?<element_name>[-_\w]+)\s+(?<attribute_name>[\w]+)\s+\(?(?<attribute_type>[-_\w\s|:]+)\)?\s+"?(?<attribute_value>[-.#_\d\w\s]+)"?/
   // <!ATTLIST element-name attribute-name attribute-type attribute-value>
+
+  // ToDo: Handle multiple attributes:
+
+  // <!ATTLIST element-name
+  //     attribute-name attribute-type attribute-value
+  //     attribute-name attribute-type attribute-value
+  //     attribute-name attribute-type attribute-value
+  //     ...
+  // >
+
+  // <!ATTLIST Item
+  //     Name CDATA #REQUIRED
+  //     Type (Integer|Date|String|Structure|List|Flags|Qualifier|Enumerator|Unknown) #REQUIRED
+  // >
+
   const m = txt.match(re)
   let g: DTDAttributeRaw = {} as DTDAttributeRaw
   if (m && m.groups) {
@@ -90,65 +107,6 @@ function parse_dtd_element_txt(txt: string): DTDElementRaw {
 
 // --------------------------------------------------------------------------
 
-function dtd_url(url: string, ref_url?: string) {
-  const base_url = ref_url ? ref_url : 'https://www.ncbi.nlm.nih.gov/dtd/'
-  return new URL(url, base_url)
-}
-
-function dtd_txt_download(
-  url: string,
-  ref_url?: string
-): Promise<{ url: string; dtd_txt: string }> {
-  url = dtd_url(url, ref_url).toString()
-  const dtd_txt_promise = fetch<ResponseType.Text>(url, {
-    method: 'GET',
-    responseType: ResponseType.Text
-  }).then((res) => {
-    if (res.ok) {
-      return { url: url, dtd_txt: res.data.toString() }
-    } else {
-      // return null
-      throw new Error(`fetch(): ${url} (${res.status})`)
-    }
-  })
-
-  dtd_txt_promise.then((rslt) => {
-    if (rslt) {
-      const { url, dtd_txt } = rslt
-      // const cache_key = 'cache-dtds'
-      // const cache = localStorage.getItem(cache_key)
-      // const dtds: { [url: string]: string } = cache ? JSON.parse(cache) : {}
-      // dtds[url] = dtd_txt
-      // localStorage.setItem(cache_key, JSON.stringify(dtds))
-      // console.log('DTD added to cache:', url)
-    }
-  })
-
-  return dtd_txt_promise
-}
-
-function dtd_txt_from_cache(url: string, ref_url?: string): string | null {
-  url = dtd_url(url, ref_url).toString()
-
-  // const cache_key = 'cache-dtds'
-  // const cache = localStorage.getItem(cache_key)
-  // const dtds: { [url: string]: string } = cache ? JSON.parse(cache) : {}
-  // const dtd_urls = dtds ? Object.getOwnPropertyNames(dtds).sort() : []
-
-  let dtd_txt: string | null = null
-
-  // if (dtd_urls.includes(url)) {
-  //   console.log(`DTD cache hit: ${url}`)
-  //   dtd_txt = dtds[url]
-  // } else {
-  //   console.log(`DTD cache miss: ${url}`)
-  // }
-
-  return dtd_txt
-}
-
-// --------------------------------------------------------------------------
-
 async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
   // console.log(`>>> _parse_dtd BEGIN${ref_url ? ': ' + ref_url : ''}`)
 
@@ -156,6 +114,11 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
   const ents = get_dtd_entity_tags(txt)
   const atts = get_dtd_attlist_tags(txt)
   const eles = get_dtd_element_tags(txt)
+
+  // console.log(dcts)
+  // console.log(ents)
+  // console.log(atts)
+  // console.log(eles)
 
   const dcts_ents = [...dcts, ...ents]
 
@@ -174,11 +137,11 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
     const value = item['entity_value']
     const url = item['entity_url']
     if (!value && name && url) {
-      const dtd_txt: string | null = dtd_txt_from_cache(url, ref_url)
+      const dtd_txt: string | null = cache_get_dtd_txt(url, ref_url)
       if (dtd_txt) {
         dtd_txts_ready.push({ url: url, dtd_txt: dtd_txt })
       } else {
-        const dtd_txt_prom = dtd_txt_download(url, ref_url)
+        const dtd_txt_prom = download_dtd_txt(url, ref_url)
         dtd_txts_prom.push(dtd_txt_prom)
         dtd_txts.push(await dtd_txt_prom)
       }
@@ -249,13 +212,8 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
 }
 
 export async function parse_dtd_url(url: string) {
-  url = dtd_url(url).toString()
-  const txt = await fetch<ResponseType.Text>(url, {
-    method: 'GET',
-    responseType: ResponseType.Text
-  }).then((r) => r.data.toString())
-
-  return await parse_dtd_txt(txt, url)
+  const _ = await download_dtd_txt(url)
+  return await parse_dtd_txt(_.dtd_txt, _.url)
 }
 
 export async function parse_dtd_txt(txt: string, ref_url?: string) {
@@ -279,21 +237,8 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
     attributes[at.element_name] = at
   })
 
-  const attributes_parsed: { [element_name: string]: _dtd_attribute[] } = {}
-  raw_dtd.attributes.forEach((at) => {
-    const _ = parse_dtd_attlist_raw(at)
-    attributes_parsed[at.element_name] = _
-  })
-
   raw_dtd.elements.forEach((el) => {
     elements[el.element_name] = el
-  })
-
-  const element_names = new Set(Object.getOwnPropertyNames(elements))
-  const elements_parsed: { [element_name: string]: _dtd_element } = {}
-  raw_dtd.elements.forEach((el) => {
-    const _ = parse_dtd_element_raw(el, element_names, attributes_parsed)
-    elements_parsed[el.element_name] = _
   })
 
   // console.log('Doctypes', raw_dtd.doctypes.length)
@@ -304,6 +249,21 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
   // console.log(attributes)
   // console.log('Elements', raw_dtd.elements.length)
   // console.log(elements)
+
+  const attributes_parsed: { [element_name: string]: _dtd_attribute[] } = {}
+  raw_dtd.attributes.forEach((at) => {
+    const _ = parse_dtd_attlist_raw(at)
+    attributes_parsed[at.element_name] = _
+  })
+
+  // console.log(attributes_parsed)
+
+  const element_names = new Set(Object.getOwnPropertyNames(elements))
+  const elements_parsed: { [element_name: string]: _dtd_element } = {}
+  raw_dtd.elements.forEach((el) => {
+    const _ = parse_dtd_element_raw(el, element_names, attributes_parsed)
+    elements_parsed[el.element_name] = _
+  })
 
   // console.log(elements_parsed)
 
@@ -342,6 +302,10 @@ function parse_dtd_element_raw(
   element_names: Set<string>,
   attributes: { [element_name: string]: _dtd_attribute[] }
 ): _dtd_element {
+  // ToDo: replace "%plistObject;" in ELEMENT with ENTITY
+  // <!ENTITY % plistObject "(array | data | date | dict | real | integer | string | true | false )" >
+  // <!ELEMENT plist %plistObject;>
+  // <!ATTLIST plist version CDATA "1.0" >
   const rv: _dtd_element = {
     children: null,
     value: null,

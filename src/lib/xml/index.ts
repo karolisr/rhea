@@ -1,6 +1,6 @@
 import { parse_dtd_txt, parse_dtd_url, element_value_type } from './dtd'
 
-// ToDo: Typing in commented blocks.
+// ToDo: create_parent_object_for_arrays type problems.
 function _parse_xml(
   ele: Document | Element,
   dtd: { [element_name: string]: _dtd_element },
@@ -17,16 +17,16 @@ function _parse_xml(
     obj_local = obj_local[doc_element_name] as { [key: string]: unknown }
 
     if (create_parent_object_for_arrays) {
-      // if (
-      //   parent_element_name &&
-      //   obj[parent_element_name] &&
-      //   obj[parent_element_name][doc_element_name] &&
-      //   obj[parent_element_name][doc_element_name] instanceof Array
-      // ) {
-      //   obj[parent_element_name][doc_element_name].push(obj_local)
-      // } else {
-      //   obj_local = obj
-      // }
+      if (
+        parent_element_name &&
+        obj[parent_element_name] &&
+        obj[parent_element_name][doc_element_name] &&
+        obj[parent_element_name][doc_element_name] instanceof Array
+      ) {
+        obj[parent_element_name][doc_element_name].push(obj_local)
+      } else {
+        obj_local = obj
+      }
     } else {
       if (
         parent_element_name &&
@@ -48,8 +48,8 @@ function _parse_xml(
           const c = element_spec.children[child_element_spec_name]
           if (c.required === 'ARRAY') {
             if (create_parent_object_for_arrays) {
-              // obj_local[doc_element_name] = {}
-              // obj_local[doc_element_name][child_element_spec_name] = []
+              obj_local[doc_element_name] = {}
+              obj_local[doc_element_name][child_element_spec_name] = []
             } else {
               obj_local[doc_element_name] = []
             }
@@ -85,13 +85,13 @@ function _parse_xml(
           }
           if (att.name === 'value') {
             obj_local[doc_element_name] = att_value
+          } else {
+            if (!obj_local[doc_element_name]) {
+              obj_local[doc_element_name] = {}
+              obj_local[doc_element_name]['attributes'] = {}
+            }
+            obj_local[doc_element_name]['attributes'][att.name] = att_value
           }
-          // else {
-          //   if (obj_local[doc_element_name]['attributes']) {
-          //     obj_local[doc_element_name]['attributes'] = {}
-          //   }
-          //   obj_local[doc_element_name]['attributes'][att.name] = att_value
-          // }
         }
       }
     }
@@ -107,7 +107,7 @@ const DTD_MAP: { [element_name: string]: string } = {
 
 export async function parse_xml_txt(
   txt: string,
-  create_parent_object_for_arrays: boolean = false
+  create_parent_object_for_arrays: boolean = true
 ) {
   let dtd = await parse_dtd_txt(txt)
   const dp = new DOMParser()
@@ -134,7 +134,7 @@ export async function parse_xml_txt(
     undefined,
     create_parent_object_for_arrays
   )
-  console.log(ret_val)
+  // console.log(ret_val)
   // console.log(`>>> parse_xml DONE -----------------------------------------`)
   return ret_val
 }
