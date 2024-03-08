@@ -1,0 +1,160 @@
+import settings from '$lib/app/stores/settings'
+import { EutilParams } from './eutils-params'
+import {
+  Eutil,
+  RetMode,
+  RetContentType,
+  RetTypeESearch,
+  IdType,
+  NCBIDatabase,
+  type ESummaryJSON,
+  type ESummary,
+  type History
+} from '.'
+
+function findApiKey(): string {
+  let ncbi_api_key = ''
+  const unsubscribe = settings.subscribe((stng) => {
+    ncbi_api_key = stng.ncbi_api_key
+  })
+  unsubscribe()
+  return ncbi_api_key
+}
+
+function findEmail(): string {
+  let email = ''
+  const unsubscribe = settings.subscribe((stng) => {
+    email = stng.email
+  })
+  unsubscribe()
+  return email
+}
+
+const EutilsBaseURL = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
+const EutilsRetMax = 500
+
+async function eutil(util: Eutil, params: EutilParams): Promise<Response> {
+  params.tool = 'is.karol.cdsdb'
+  params.api_key = findApiKey()
+  params.email = findEmail()
+  const url: string = EutilsBaseURL + util
+  const request: Request = new Request(url, {
+    method: 'POST',
+    body: new URLSearchParams(params.toObject())
+  })
+  return await fetch(request)
+}
+
+function _batch(params: EutilParams): void {
+  params.last = false
+  if (!params.retmax) {
+    params.retmax = EutilsRetMax
+  }
+  if (!params.retstart) {
+    params.retstart = 0
+  } else {
+    params.retstart += params.retmax
+  }
+  const remaining = (params.count as number) - params.retstart
+  params.retmax = Math.min(remaining, EutilsRetMax)
+  if (params.retstart + params.retmax == params.count) {
+    params.last = true
+  }
+}
+
+async function _batched(
+  f: (params: EutilParams) => Promise<object>,
+  params: EutilParams
+): Promise<object[]> {
+  const return_value: object[] = []
+  while (!params.last) {
+    _batch(params)
+    return_value.push(await f(params))
+  }
+  return return_value
+}
+
+async function processResponse(response: Response): Promise<object> {
+  let data = {}
+  let xmlText = ''
+  const ct: string = response.headers.get('Content-Type') as string
+  switch (ct) {
+    case RetContentType.xml:
+      xmlText = await response.text()
+      data = xmlText
+      break
+    case RetContentType.json:
+      data = await response.json()
+      break
+    default:
+      break
+  }
+  return data
+}
+
+async function _esummary(params: EutilParams): Promise<ESummaryJSON> {
+  params.retmode = RetMode.json
+  // params.version = '2.0'
+  const result = await eutil(Eutil.esummary, params).then((r) =>
+    processResponse(r)
+  )
+  return result as ESummaryJSON
+}
+
+export async function esummary(params: EutilParams): Promise<ESummary[]> {
+  const results = (await _batched(_esummary, params)) as ESummaryJSON[]
+  const results_combined: object[] = []
+  results.forEach((esr) => {
+    esr.result.uids.forEach((uid) => {
+      const esrRecord = esr.result[uid]
+      results_combined.push(esrRecord)
+    })
+  })
+  return results_combined as ESummary[]
+}
+
+async function _efetch(params: EutilParams): Promise<object> {
+  const result = await eutil(Eutil.efetch, params).then((r) =>
+    processResponse(r)
+  )
+  return result
+}
+
+export async function efetch(params: EutilParams): Promise<object | string> {
+  if (
+    params.usehistory === 'y' &&
+    params.query_key &&
+    params.WebEnv &&
+    params.count &&
+    params.count > EutilsRetMax
+  ) {
+    return await _batched(_efetch, params) // ToDo: Untested.
+  } else {
+    return await _efetch(params)
+  }
+}
+
+export async function esearch(
+  db: keyof typeof NCBIDatabase,
+  term: string,
+  usehistory: boolean
+): Promise<{ data: object; params: EutilParams }> {
+  const p = new EutilParams()
+  p.db = db
+  p.term = term
+  p.rettype = RetTypeESearch.uilist
+  p.retmode = RetMode.json
+  p.usehistory = usehistory ? 'y' : undefined
+  p.idtype = IdType.acc
+  const response = await eutil(Eutil.esearch, p)
+  const data = (await processResponse(response)) as { esearchresult: History }
+  p.count = Number(data.esearchresult.count)
+  p.retmax = undefined
+  p.retstart = undefined
+  p.query_key = data.esearchresult.querykey
+  p.WebEnv = data.esearchresult.webenv
+  p.term = undefined
+  p.rettype = undefined
+  p.retmode = undefined
+  return { data: data, params: p }
+}

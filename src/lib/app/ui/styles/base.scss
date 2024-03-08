@@ -1,0 +1,16 @@
+*,
+::before,
+::after {
+  // font-size: x-small;
+  // font-size: 0.85rem;
+  // font-size: small;
+  font-size: 0.995rem;
+  // font-size: medium;
+  // font-size: large;
+
+  cursor: default;
+  margin: 0;
+  user-select: none;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+}

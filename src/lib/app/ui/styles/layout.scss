@@ -1,0 +1,25 @@
+@import 'defs';
+
+.#{$prefix}-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.#{$prefix}-head {
+}
+
+.#{$prefix}-foot {
+}
+
+.#{$prefix}-headfoot {
+}
+
+.#{$prefix}-main {
+  flex-grow: 1;
+  overflow: auto;
+  box-shadow: 0.05rem -0.34rem 0.65rem -0.75rem $A800;
+  z-index: 10;
+}
