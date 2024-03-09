@@ -1,4 +1,4 @@
-import { parse_dtd_txt, parse_dtd_url, element_value_type } from './dtd'
+import { parse_dtd_txt, parse_dtd_at_url, element_value_type } from './dtd'
 
 // ToDo: create_parent_object_for_arrays type problems.
 function _parse_xml(
@@ -118,7 +118,7 @@ export async function parse_xml_txt(
     const doc_element_name = doc_element.nodeName
 
     if (doc_element_name in DTD_MAP) {
-      dtd = await parse_dtd_url(DTD_MAP[doc_element_name])
+      dtd = await parse_dtd_at_url(DTD_MAP[doc_element_name])
     }
 
     if (Object.getOwnPropertyNames(dtd).length === 0) {
@@ -126,7 +126,6 @@ export async function parse_xml_txt(
     }
   }
 
-  // console.log(`>>> parse_xml BEGIN ----------------------------------------`)
   const ret_val = _parse_xml(
     doc,
     dtd,
@@ -134,7 +133,5 @@ export async function parse_xml_txt(
     undefined,
     create_parent_object_for_arrays
   )
-  // console.log(ret_val)
-  // console.log(`>>> parse_xml DONE -----------------------------------------`)
   return ret_val
 }

@@ -6,7 +6,6 @@ import { saveSettings } from '$lib/app/stores/settings'
 
 function save(): void {
   saveSettings()
-  // console.table($settings)
 }
 </script>
 

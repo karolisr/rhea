@@ -1,7 +1,7 @@
 import { writable, type Writable } from 'svelte/store'
-import { fetch, ResponseType } from '@tauri-apps/api/http'
+import { dnld_txt } from '../api/download'
 
-export interface _cache_dtd {
+interface _cache_dtd {
   [url: string]: string
 }
 
@@ -27,16 +27,29 @@ function dtd_url(url: string, ref_url?: string) {
   return new URL(url, base_url)
 }
 
+export interface DTDTXT {
+  url: string
+  data: string
+}
+
+function cache_add_dtd_txt(url: string, txt: string): void {
+  store.update((_dtds) => {
+    _dtds[url] = txt
+    localStorage.setItem(key, JSON.stringify(_dtds))
+    return _dtds
+  })
+}
+
 export function cache_get_dtd_txt(
   url: string,
   ref_url?: string
-): string | null {
+): DTDTXT | null {
   url = dtd_url(url, ref_url).toString()
-  let dtd_txt: string | null = null
+  let dtd_txt: DTDTXT | null = null
   const unsubscribe = store.subscribe((_dtds) => {
     if (url in _dtds) {
       // console.log(`DTD cache hit: ${url}`)
-      dtd_txt = _dtds[url]
+      dtd_txt = { url: url, data: _dtds[url] }
     } else {
       // console.log(`DTD cache miss: ${url}`)
     }
@@ -44,40 +57,13 @@ export function cache_get_dtd_txt(
   unsubscribe()
   return dtd_txt
 }
-2
 
-function cache_add_dtd_txt(url: string, dtd_txt: string): void {
-  store.update((_dtds) => {
-    _dtds[url] = dtd_txt
-    localStorage.setItem(key, JSON.stringify(_dtds))
-    return _dtds
-  })
-}
-
-export function download_dtd_txt(
-  url: string,
-  ref_url?: string
-): Promise<{ url: string; dtd_txt: string }> {
+export function dnld_dtd_txt(url: string, ref_url?: string): Promise<DTDTXT> {
   url = dtd_url(url, ref_url).toString()
-  const dtd_txt_promise = fetch<ResponseType.Text>(url, {
-    method: 'GET',
-    responseType: ResponseType.Text
-  }).then((res) => {
-    if (res.ok) {
-      return { url: url, dtd_txt: res.data.toString() }
-    } else {
-      // return null
-      throw new Error(`fetch(): ${url} (${res.status})`)
-    }
-  })
-
+  const dtd_txt_promise = dnld_txt(url)
   dtd_txt_promise.then((rslt) => {
-    if (rslt) {
-      const { url, dtd_txt } = rslt
-      cache_add_dtd_txt(url, dtd_txt)
-      // console.log('DTD added to cache:', url)
-    }
+    cache_add_dtd_txt(rslt.url, rslt.data)
+    // console.log('DTD added to cache:', rslt.url)
   })
-
   return dtd_txt_promise
 }

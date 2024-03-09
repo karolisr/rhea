@@ -1,4 +1,9 @@
-import { cache_get_dtd_txt, download_dtd_txt } from '$lib/app/stores/cache-dtd'
+import {
+  cache_get_dtd_txt,
+  dnld_dtd_txt,
+  type DTDTXT
+} from '$lib/app/stores/cache-dtd'
+
 // --------------------------------------------------------------------------
 
 function get_xml_doctype_tags(txt: string): string[] {
@@ -108,54 +113,15 @@ function parse_dtd_element_txt(txt: string): DTDElementRaw {
 // --------------------------------------------------------------------------
 
 async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
-  // console.log(`>>> _parse_dtd BEGIN${ref_url ? ': ' + ref_url : ''}`)
-
   const dcts = get_xml_doctype_tags(txt)
   const ents = get_dtd_entity_tags(txt)
   const atts = get_dtd_attlist_tags(txt)
   const eles = get_dtd_element_tags(txt)
 
-  // console.log(dcts)
-  // console.log(ents)
-  // console.log(atts)
-  // console.log(eles)
-
-  const dcts_ents = [...dcts, ...ents]
-
   let doctypes_merged: DTDEntityRaw[] = []
   let entities_merged: DTDEntityRaw[] = []
   let attributes_merged: DTDAttributeRaw[] = []
   let elements_merged: DTDElementRaw[] = []
-
-  const dtd_txts_ready: { url: string; dtd_txt: string }[] = []
-  const dtd_txts_prom: Promise<{ url: string; dtd_txt: string } | null>[] = []
-  const dtd_txts: ({ url: string; dtd_txt: string } | null)[] = []
-
-  dcts_ents.forEach(async (e) => {
-    const item = parse_dtd_entity_txt(e)
-    const name = item['entity_name']
-    const value = item['entity_value']
-    const url = item['entity_url']
-    if (!value && name && url) {
-      const dtd_txt: string | null = cache_get_dtd_txt(url, ref_url)
-      if (dtd_txt) {
-        dtd_txts_ready.push({ url: url, dtd_txt: dtd_txt })
-      } else {
-        const dtd_txt_prom = download_dtd_txt(url, ref_url)
-        dtd_txts_prom.push(dtd_txt_prom)
-        dtd_txts.push(await dtd_txt_prom)
-      }
-    }
-  })
-
-  await Promise.allSettled(dtd_txts_prom)
-
-  dtd_txts.forEach((val) => {
-    if (val) {
-      const { url, dtd_txt } = val
-      dtd_txts_ready.push({ url: url, dtd_txt: dtd_txt })
-    }
-  })
 
   dcts.forEach((d) => {
     doctypes_merged.push(parse_dtd_entity_txt(d))
@@ -178,30 +144,45 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
     elements_merged.push(parse_dtd_element_txt(e))
   })
 
-  const prom_raw_dtds: DTDRawPromise[] = []
+  const dtd_txts_prom: Promise<DTDTXT>[] = []
+  const dtd_txts: DTDTXT[] = []
+
+  const dcts_ents = [...dcts, ...ents]
+
+  dcts_ents.forEach(async (e) => {
+    const item = parse_dtd_entity_txt(e)
+    const name = item['entity_name']
+    const value = item['entity_value']
+    const url = item['entity_url']
+    if (!value && name && url) {
+      const dtd_txt: DTDTXT | null = cache_get_dtd_txt(url, ref_url)
+      if (dtd_txt) {
+        dtd_txts.push(dtd_txt)
+      } else {
+        const dtd_txt_prom = dnld_dtd_txt(url, ref_url)
+        dtd_txts_prom.push(dtd_txt_prom)
+        dtd_txts.push(await dtd_txt_prom)
+      }
+    }
+  })
+
+  const raw_dtds_prom: DTDRawPromise[] = []
   const raw_dtds: DTDRaw[] = []
 
-  dtd_txts_ready.forEach(async ({ url, dtd_txt }) => {
-    const parsed_dtd_prom = _parse_dtd_txt(dtd_txt, url)
-    prom_raw_dtds.push(parsed_dtd_prom)
-    raw_dtds.push(await parsed_dtd_prom)
+  await Promise.allSettled(dtd_txts_prom)
+  dtd_txts.forEach(async (_) => {
+    const raw_dtd_prom = _parse_dtd_txt(_.data, _.url)
+    raw_dtds_prom.push(raw_dtd_prom)
+    raw_dtds.push(await raw_dtd_prom)
   })
 
-  await Promise.allSettled(prom_raw_dtds)
-
-  raw_dtds.forEach((dtd) => {
-    doctypes_merged = [...doctypes_merged, ...dtd.doctypes]
-    entities_merged = [...entities_merged, ...dtd.entities]
-    attributes_merged = [...attributes_merged, ...dtd.attributes]
-    elements_merged = [...elements_merged, ...dtd.elements]
+  await Promise.allSettled(raw_dtds_prom)
+  raw_dtds.forEach((raw_dtd) => {
+    doctypes_merged = [...doctypes_merged, ...raw_dtd.doctypes]
+    entities_merged = [...entities_merged, ...raw_dtd.entities]
+    attributes_merged = [...attributes_merged, ...raw_dtd.attributes]
+    elements_merged = [...elements_merged, ...raw_dtd.elements]
   })
-
-  // console.log('Doctypes', doctypes_merged.length)
-  // console.log('Entities', entities_merged.length)
-  // console.log('Attributes', attributes_merged.length)
-  // console.log('Elements', elements_merged.length)
-
-  // console.log(`>>> _parse_dtd DONE${ref_url ? ': ' + ref_url : ''}`)
 
   return {
     doctypes: doctypes_merged,
@@ -211,13 +192,15 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
   }
 }
 
-export async function parse_dtd_url(url: string) {
-  const _ = await download_dtd_txt(url)
-  return await parse_dtd_txt(_.dtd_txt, _.url)
+export async function parse_dtd_at_url(url: string) {
+  let dtd_txt: DTDTXT | null = cache_get_dtd_txt(url)
+  if (!dtd_txt) {
+    dtd_txt = await dnld_dtd_txt(url)
+  }
+  return await parse_dtd_txt(dtd_txt.data, dtd_txt.url)
 }
 
 export async function parse_dtd_txt(txt: string, ref_url?: string) {
-  // console.log(`>>> parse_dtd BEGIN ----------------------------------------`)
   const raw_dtd = await _parse_dtd_txt(txt, ref_url)
 
   const doctypes: { [entity_name: string]: DTDEntityRaw } = {}
@@ -241,22 +224,11 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
     elements[el.element_name] = el
   })
 
-  // console.log('Doctypes', raw_dtd.doctypes.length)
-  // console.log(doctypes)
-  // console.log('Entities', raw_dtd.entities.length)
-  // console.log(entities)
-  // console.log('Attributes', raw_dtd.attributes.length)
-  // console.log(attributes)
-  // console.log('Elements', raw_dtd.elements.length)
-  // console.log(elements)
-
   const attributes_parsed: { [element_name: string]: _dtd_attribute[] } = {}
   raw_dtd.attributes.forEach((at) => {
     const _ = parse_dtd_attlist_raw(at)
     attributes_parsed[at.element_name] = _
   })
-
-  // console.log(attributes_parsed)
 
   const element_names = new Set(Object.getOwnPropertyNames(elements))
   const elements_parsed: { [element_name: string]: _dtd_element } = {}
@@ -265,21 +237,12 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
     elements_parsed[el.element_name] = _
   })
 
-  // console.log(elements_parsed)
-
-  // console.log(`>>> parse_dtd DONE -----------------------------------------`)
   return elements_parsed
 }
 
 interface Required {
   [key: string]: string
 }
-
-// const required: Required = {
-//   '?': 'ZERO_OR_ONE',
-//   '*': 'ZERO_OR_MANY',
-//   '+': 'ONE_OR_MANY'
-// }
 
 const required: Required = {
   '?': 'OPTIONAL',
