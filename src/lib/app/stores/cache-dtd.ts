@@ -1,15 +1,15 @@
-import { writable, type Writable } from 'svelte/store'
+import { writable, derived, type Writable } from 'svelte/store'
 import { dnld_txt } from '../api/download'
 
-interface _cache_dtd {
+interface _CACHE_DTD {
   [url: string]: string
 }
 
 const key = 'cache-dtd'
 
-function init(): Writable<_cache_dtd> {
+function init(): Writable<_CACHE_DTD> {
   const _ = localStorage.getItem(key)
-  let _dtds: _cache_dtd = {}
+  let _dtds: _CACHE_DTD = {}
   if (_) {
     _dtds = JSON.parse(_)
   }
@@ -17,8 +17,10 @@ function init(): Writable<_cache_dtd> {
   return { subscribe, set, update }
 }
 
-const store = init()
-export default store
+export const dtds = init()
+export const dtd_urls = derived(dtds, ($dtds) =>
+  $dtds ? Object.getOwnPropertyNames($dtds).sort() : []
+)
 
 // --------------------------------------------------------------------------
 
@@ -27,13 +29,13 @@ function dtd_url(url: string, ref_url?: string) {
   return new URL(url, base_url)
 }
 
-export interface DTDTXT {
+export interface _DTD_TXT {
   url: string
   data: string
 }
 
 function cache_add_dtd_txt(url: string, txt: string): void {
-  store.update((_dtds) => {
+  dtds.update((_dtds) => {
     _dtds[url] = txt
     localStorage.setItem(key, JSON.stringify(_dtds))
     return _dtds
@@ -43,12 +45,12 @@ function cache_add_dtd_txt(url: string, txt: string): void {
 export function cache_get_dtd_txt(
   url: string,
   ref_url?: string
-): DTDTXT | null {
+): _DTD_TXT | null {
   url = dtd_url(url, ref_url).toString()
-  let dtd_txt: DTDTXT | null = null
-  const unsubscribe = store.subscribe((_dtds) => {
+  let dtd_txt: _DTD_TXT | null = null
+  const unsubscribe = dtds.subscribe((_dtds) => {
     if (url in _dtds) {
-      // console.log(`DTD cache hit: ${url}`)
+      console.log(`DTD cache hit: ${url}`)
       dtd_txt = { url: url, data: _dtds[url] }
     } else {
       // console.log(`DTD cache miss: ${url}`)
@@ -58,12 +60,12 @@ export function cache_get_dtd_txt(
   return dtd_txt
 }
 
-export function dnld_dtd_txt(url: string, ref_url?: string): Promise<DTDTXT> {
+export function dnld_dtd_txt(url: string, ref_url?: string): Promise<_DTD_TXT> {
   url = dtd_url(url, ref_url).toString()
   const dtd_txt_promise = dnld_txt(url)
   dtd_txt_promise.then((rslt) => {
     cache_add_dtd_txt(rslt.url, rslt.data)
-    // console.log('DTD added to cache:', rslt.url)
+    console.log(`DTD added to cache: ${rslt.url}`)
   })
   return dtd_txt_promise
 }

@@ -1,7 +1,7 @@
 import {
   cache_get_dtd_txt,
   dnld_dtd_txt,
-  type DTDTXT
+  type _DTD_TXT
 } from '$lib/app/stores/cache-dtd'
 
 // --------------------------------------------------------------------------
@@ -144,8 +144,8 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
     elements_merged.push(parse_dtd_element_txt(e))
   })
 
-  const dtd_txts_prom: Promise<DTDTXT>[] = []
-  const dtd_txts: DTDTXT[] = []
+  const dtd_txts_prom: Promise<_DTD_TXT>[] = []
+  const dtd_txts: _DTD_TXT[] = []
 
   const dcts_ents = [...dcts, ...ents]
 
@@ -155,7 +155,7 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
     const value = item['entity_value']
     const url = item['entity_url']
     if (!value && name && url) {
-      const dtd_txt: DTDTXT | null = cache_get_dtd_txt(url, ref_url)
+      const dtd_txt: _DTD_TXT | null = cache_get_dtd_txt(url, ref_url)
       if (dtd_txt) {
         dtd_txts.push(dtd_txt)
       } else {
@@ -193,7 +193,7 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
 }
 
 export async function parse_dtd_at_url(url: string) {
-  let dtd_txt: DTDTXT | null = cache_get_dtd_txt(url)
+  let dtd_txt: _DTD_TXT | null = cache_get_dtd_txt(url)
   if (!dtd_txt) {
     dtd_txt = await dnld_dtd_txt(url)
   }
