@@ -17,6 +17,7 @@ onDestroy(() => {
 </script>
 
 {#each dtdks as k}
-  <pre class="m-2 select-all border bg-lime-50 p-2">{k}</pre>
-  <!-- <pre class="m-2 select-text border bg-green-50 p-2">{$cache_dtd[k]}</pre> -->
+  <pre
+    class="m-2 select-all rounded-md border border-neutral-300 bg-lime-50 p-2">{k}</pre>
+  <!-- <pre class="m-2 select-text rounded-md border border-neutral-300 bg-green-50 p-2">{$cache_dtd[k]}</pre> -->
 {/each}

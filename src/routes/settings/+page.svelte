@@ -11,7 +11,7 @@ function save(): void {
 
 <div class="grid gap-6 p-5 md:grid-cols-1">
   <div class="">
-    <Label for="email" class="mb-2 text-base">Email address</Label>
+    <Label for="email" class="mb-2">Email address</Label>
     <Input
       type="email"
       id="email"
@@ -19,14 +19,13 @@ function save(): void {
       spellcheck="false"
       autocomplete="off"
       required
-      size="lg"
       class="cursor-text select-text"
       bind:value="{$settings.email}"
       on:change="{save}" />
   </div>
 
   <div>
-    <Label for="ncbiapikey" class="mb-2 text-base">NCBI API Key</Label>
+    <Label for="ncbiapikey" class="mb-2">NCBI API Key</Label>
     <Input
       type="text"
       id="ncbiapikey"
@@ -34,7 +33,6 @@ function save(): void {
       spellcheck="false"
       autocomplete="off"
       required
-      size="lg"
       class="cursor-text select-text"
       bind:value="{$settings.ncbi_api_key}"
       on:change="{save}" />

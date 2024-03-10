@@ -1,9 +1,13 @@
 <script lang="ts">
 import { onMount } from 'svelte'
-import { Input, Button, ButtonGroup } from 'flowbite-svelte'
+import { Input, Button, ButtonGroup, Alert, Spinner } from 'flowbite-svelte'
+import { fade } from 'svelte/transition'
+import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary } from '$lib/ncbi/eutils'
+import Footer from '$lib/app/ui/layout/Footer.svelte'
+import Header from '$lib/app/ui/layout/Header.svelte'
 
 let searchTerm: string = ''
 $: searchTermProcessed = searchTerm.trim()
@@ -11,6 +15,8 @@ let refSeqOnly = true
 let searchButtonDisabled = true
 let searching = false
 let esummaryResult: ESummaryNuccore[] = []
+let errorMsg: string = ''
+$: error = errorMsg ? true : false
 
 async function validateSearchTerm(): Promise<void> {
   if (searchTermProcessed.length > 2) {
@@ -23,7 +29,11 @@ async function validateSearchTerm(): Promise<void> {
 async function search(): Promise<void> {
   searching = true
   searchTerm = searchTermProcessed
-  const taxids: number[] = await getTaxIDs(searchTerm)
+  const taxids: number[] = await getTaxIDs(searchTerm).catch((message) => {
+    console.log(message)
+    errorMsg = message
+    return []
+  })
   if (taxids.length > 0) {
     const term = makeESearchTerm(
       taxids,
@@ -53,25 +63,47 @@ onMount(() => {
         spellcheck="false"
         autocomplete="off"
         required
-        size="lg"
         bind:value="{searchTerm}"
         on:input="{validateSearchTerm}"
         disabled="{searching}" />
-      <!-- {#if searching} -->
-      <!-- {:else} -->
       <Button
         type="submit"
         color="primary"
-        size="lg"
-        disabled="{searchButtonDisabled || searching}">Search</Button>
-      <!-- {/if} -->
+        disabled="{searchButtonDisabled || searching}">
+        {#if searching}
+          <Spinner color="white" size="4" class="mr-1" />Searching
+        {:else}
+          Search
+        {/if}
+      </Button>
     </ButtonGroup>
   </form>
+  {#if error}
+    <div
+      in:fade
+      out:fade
+      class="absolute bottom-auto left-32 right-32 top-20 z-10 w-auto cursor-default">
+      <Alert
+        class="cursor-default shadow"
+        border
+        color="red"
+        dismissable
+        on:close="{() => {
+          errorMsg = ''
+        }}">
+        <IconError slot="icon" class="h-4 w-4" />
+        {errorMsg}
+      </Alert>
+    </div>
+  {/if}
 </div>
 
-{#each esummaryResult as summ}
-  <pre
-    class="m-2 select-all border bg-lime-50 p-2">{summ.accessionversion} {summ.title}</pre>
-{:else}
-  <pre class="m-2 select-all border bg-red-50 p-2">No results yet</pre>
-{/each}
+<div class="px-4">
+  {#each esummaryResult as summ}
+    <pre
+      class="m-2 select-all rounded-md border border-neutral-300 bg-lime-50 p-2">{summ.accessionversion}</pre>
+  {:else}
+    <pre
+      class="p-2 m-2 rounded-md border border-neutral-300 select-all bg-red-50">No results yet</pre>
+  {/each}
+</div>

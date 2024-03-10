@@ -12,19 +12,19 @@ import {
   type History
 } from '.'
 
-function findApiKey(): string {
-  let ncbi_api_key = ''
+function findApiKey(): string | undefined {
+  let ncbi_api_key: string | undefined
   const unsubscribe = settings.subscribe((stng) => {
-    ncbi_api_key = stng.ncbi_api_key
+    ncbi_api_key = stng.ncbi_api_key ? stng.ncbi_api_key : undefined
   })
   unsubscribe()
   return ncbi_api_key
 }
 
-function findEmail(): string {
-  let email = ''
+function findEmail(): string | undefined {
+  let email: string | undefined
   const unsubscribe = settings.subscribe((stng) => {
-    email = stng.email
+    email = stng.email ? stng.email : undefined
   })
   unsubscribe()
   return email
@@ -37,6 +37,11 @@ async function eutil(util: Eutil, params: EutilParams): Promise<Response> {
   params.tool = 'is.karol.cdsdb'
   params.api_key = findApiKey()
   params.email = findEmail()
+
+  if (!params.api_key) {
+    throw new Error('NCBI API Key is not defined.')
+  }
+
   const url: string = EutilsBaseURL + util
   const request: Request = new Request(url, {
     method: 'POST',
