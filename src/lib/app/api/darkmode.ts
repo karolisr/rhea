@@ -30,13 +30,11 @@ async function setTheme(): Promise<void> {
   }
 }
 
-export function themeChangeListener(): () => void {
-  let retFun: () => void = () => {}
-  listen<string>(TauriEvent.WINDOW_THEME_CHANGED, (_) => {
+export async function themeChangeListener(): Promise<() => void> {
+  return listen<string>(TauriEvent.WINDOW_THEME_CHANGED, (_) => {
     setTheme()
   }).then((unlistenFn) => {
     setTheme()
-    retFun = unlistenFn
+    return unlistenFn
   })
-  return retFun
 }
