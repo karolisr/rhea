@@ -6,9 +6,11 @@ import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary } from '$lib/ncbi/eutils'
-import Footer from '$lib/app/ui/layout/Footer.svelte'
-import Header from '$lib/app/ui/layout/Header.svelte'
+import { db_init } from '$lib/app/db'
+import { type CDSDB } from '$lib/app/db/types'
+import { type IDBPDatabase } from 'idb'
 
+let db: IDBPDatabase<CDSDB>
 let searchTerm: string = ''
 $: searchTermProcessed = searchTerm.trim()
 let refSeqOnly = true
@@ -24,6 +26,16 @@ async function validateSearchTerm(): Promise<void> {
   } else {
     searchButtonDisabled = true
   }
+}
+
+async function add_to_db(summs: ESummaryNuccore[]) {
+  const tx = db.transaction('nt', 'readwrite')
+  await Promise.all([
+    ...summs.map((s) => {
+      tx.store.put(s)
+    }),
+    tx.done
+  ])
 }
 
 async function search(): Promise<void> {
@@ -42,14 +54,16 @@ async function search(): Promise<void> {
     )
     const esearchResult = await esearch(NCBIDatabase.nuccore, term, true)
     esummaryResult = (await esummary(esearchResult.params)) as ESummaryNuccore[]
+    add_to_db(esummaryResult)
     searching = false
   } else {
     searching = false
   }
 }
 
-onMount(() => {
+onMount(async () => {
   validateSearchTerm()
+  db = await db_init()
 })
 </script>
 
@@ -101,9 +115,24 @@ onMount(() => {
 <div class="px-4">
   {#each esummaryResult as summ}
     <pre
-      class="m-2 select-all rounded-md border border-neutral-300 bg-lime-50 p-2">{summ.accessionversion}</pre>
+      class="
+            m-2
+            select-all
+            rounded-md
+            border
+            border-neutral-300
+            bg-lime-50 p-2
+            ">{summ.accessionversion} {summ.organism}</pre>
   {:else}
     <pre
-      class="p-2 m-2 rounded-md border border-neutral-300 select-all bg-red-50">No results yet</pre>
+      class="
+            p-2
+            m-2
+            rounded-md
+            border
+            border-neutral-300
+            select-all
+            bg-red-50
+            ">No results yet</pre>
   {/each}
 </div>

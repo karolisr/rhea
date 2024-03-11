@@ -1,7 +1,8 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { fileDropListener } from '$lib/app/api/filedrop'
-import { dtds, dtd_urls } from '$lib/app/stores/cache-dtd'
+import SeqSummTable from '$lib/app/ui/tables/SeqSummTable.svelte'
+// import { dtds, dtd_urls } from '$lib/app/stores/cache-dtd'
 
 let fileDropUnListener: () => void
 
@@ -14,7 +15,9 @@ onDestroy(() => {
 })
 </script>
 
-{#each $dtd_urls as dtd_url}
+<SeqSummTable />
+
+<!-- {#each $dtd_urls as dtd_url}
   <pre
     class="
           m-2
@@ -34,4 +37,4 @@ onDestroy(() => {
            bg-green-50
            p-2
           ">{$dtds[dtd_url]}</pre>
-{/each}
+{/each} -->
