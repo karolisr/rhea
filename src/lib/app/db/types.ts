@@ -1,16 +1,27 @@
 import type { DBSchema } from 'idb'
-import type { ESummaryNuccore } from '$lib/ncbi'
+import type { ESummaryNuccore, ESummaryTaxonomy } from '$lib/ncbi'
+import type { GBSeq } from '$lib/ncbi/types/gbseq'
 
-export interface CDSDB extends DBSchema {
-  nt: {
+export interface DBMain extends DBSchema {
+  seq_nt_summ: {
     key: string
     value: ESummaryNuccore
   }
-  xml: {
+
+  tax_summ: {
     key: string
-    value: {
-      accver: string
-      text: string
-    }
+    value: ESummaryTaxonomy
+  }
+
+  gbseq: {
+    key: string
+    value: GBSeq
+  }
+}
+
+export interface DBRaw extends DBSchema {
+  gbseq_xml: {
+    key: string
+    value: string
   }
 }

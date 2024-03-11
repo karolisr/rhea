@@ -8,32 +8,25 @@ function _parse_xml(
   parent_element_name?: string,
   create_parent_object_for_arrays: boolean = false
 ) {
+  const pen = parent_element_name?.replaceAll('-', '_')
   for (let i = 0; i < ele.children.length; i++) {
     const doc_element = ele.children[i]
     const doc_element_name = doc_element.tagName
+    const den = doc_element_name.replaceAll('-', '_')
 
     let obj_local = {} as { [key: string]: unknown }
-    obj_local[doc_element_name] = {}
-    obj_local = obj_local[doc_element_name] as { [key: string]: unknown }
+    obj_local[den] = {}
+    obj_local = obj_local[den] as { [key: string]: unknown }
 
     if (create_parent_object_for_arrays) {
-      if (
-        parent_element_name &&
-        obj[parent_element_name] &&
-        obj[parent_element_name][doc_element_name] &&
-        obj[parent_element_name][doc_element_name] instanceof Array
-      ) {
-        obj[parent_element_name][doc_element_name].push(obj_local)
+      if (pen && obj[pen] && obj[pen][den] && obj[pen][den] instanceof Array) {
+        obj[pen][den].push(obj_local)
       } else {
         obj_local = obj
       }
     } else {
-      if (
-        parent_element_name &&
-        obj[parent_element_name] &&
-        obj[parent_element_name] instanceof Array
-      ) {
-        ;(obj[parent_element_name] as object[]).push(obj_local)
+      if (pen && obj[pen] && obj[pen] instanceof Array) {
+        ;(obj[pen] as object[]).push(obj_local)
       } else {
         obj_local = obj
       }
@@ -48,10 +41,10 @@ function _parse_xml(
           const c = element_spec.children[child_element_spec_name]
           if (c.required === 'ARRAY') {
             if (create_parent_object_for_arrays) {
-              obj_local[doc_element_name] = {}
-              obj_local[doc_element_name][child_element_spec_name] = []
+              obj_local[den] = {}
+              obj_local[den][child_element_spec_name.replaceAll('-', '_')] = []
             } else {
-              obj_local[doc_element_name] = []
+              obj_local[den] = []
             }
           }
         }
@@ -70,7 +63,7 @@ function _parse_xml(
             value = Number(value)
           }
         }
-        obj_local[doc_element_name] = value
+        obj_local[den] = value
       }
 
       if (element_spec.attributes) {
@@ -84,13 +77,13 @@ function _parse_xml(
             }
           }
           if (att.name === 'value') {
-            obj_local[doc_element_name] = att_value
+            obj_local[den] = att_value
           } else {
-            if (!obj_local[doc_element_name]) {
-              obj_local[doc_element_name] = {}
-              obj_local[doc_element_name]['attributes'] = {}
+            if (!obj_local[den]) {
+              obj_local[den] = {}
+              obj_local[den]['attributes'] = {}
             }
-            obj_local[doc_element_name]['attributes'][att.name] = att_value
+            obj_local[den]['attributes'][att.name] = att_value
           }
         }
       }

@@ -6,11 +6,11 @@ import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary } from '$lib/ncbi/eutils'
-import { db_init } from '$lib/app/db'
-import { type CDSDB } from '$lib/app/db/types'
+import { db_init, db_delete } from '$lib/app/db'
+import { type DBMain } from '$lib/app/db/types'
 import { type IDBPDatabase } from 'idb'
 
-let db: IDBPDatabase<CDSDB>
+let db: IDBPDatabase<DBMain>
 let searchTerm: string = ''
 $: searchTermProcessed = searchTerm.trim()
 let refSeqOnly = true
@@ -28,15 +28,15 @@ async function validateSearchTerm(): Promise<void> {
   }
 }
 
-async function add_to_db(summs: ESummaryNuccore[]) {
-  const tx = db.transaction('nt', 'readwrite')
-  await Promise.all([
-    ...summs.map((s) => {
-      tx.store.put(s)
-    }),
-    tx.done
-  ])
-}
+// async function add_to_db(summs: ESummaryNuccore[]) {
+//   const tx = db.transaction('nt', 'readwrite')
+//   await Promise.all([
+//     ...summs.map((s) => {
+//       tx.store.put(s)
+//     }),
+//     tx.done
+//   ])
+// }
 
 async function search(): Promise<void> {
   searching = true
@@ -54,7 +54,7 @@ async function search(): Promise<void> {
     )
     const esearchResult = await esearch(NCBIDatabase.nuccore, term, true)
     esummaryResult = (await esummary(esearchResult.params)) as ESummaryNuccore[]
-    add_to_db(esummaryResult)
+    // add_to_db(esummaryResult)
     searching = false
   } else {
     searching = false
@@ -63,6 +63,7 @@ async function search(): Promise<void> {
 
 onMount(async () => {
   validateSearchTerm()
+  // db_delete()
   db = await db_init()
 })
 </script>
