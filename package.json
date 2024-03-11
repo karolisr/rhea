@@ -45,6 +45,7 @@
   "dependencies": {
     "@mitre/jsonix": "^3.0.7",
     "@tauri-apps/api": "^1.5.3",
-    "file-type-checker": "^1.0.8"
+    "file-type-checker": "^1.0.8",
+    "idb": "^8.0.0"
   }
 }

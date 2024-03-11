@@ -65,7 +65,11 @@ export interface ESummaryJSON {
   }
 }
 
-export interface ESummary {
+export interface Indexed {
+  [index: string]: string | number | object
+}
+
+export interface ESummary extends Indexed {
   uid: string
 }
 
