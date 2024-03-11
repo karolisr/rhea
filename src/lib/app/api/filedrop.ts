@@ -8,7 +8,7 @@ import type { FileSignature } from 'file-type-checker/dist/core'
 
 export async function get_file_type(path: string) {
   const fbin = await readBinaryFile(path).catch((error) => {
-    console.log(error)
+    console.warn(error)
   })
 
   interface FileInfo {
@@ -54,7 +54,7 @@ export async function get_file_type(path: string) {
 export async function get_file_parser(path: string) {
   const other_parser = () => {
     return async (path: string) => {
-      console.log(`Default parser. Doing nothing with: ${path}`)
+      console.info(`Default parser. Doing nothing with: ${path}`)
     }
   }
 
@@ -83,9 +83,9 @@ export async function get_file_parser(path: string) {
 export async function fileDropListener(): Promise<() => void> {
   const retFun = await appWindow.onFileDropEvent((event) => {
     if (event.payload.type === 'hover') {
-      // console.log('Hovering:', event.payload.paths)
+      console.info('Hovering:', event.payload.paths)
     } else if (event.payload.type === 'drop') {
-      console.log('Dropped:', event.payload.paths)
+      console.info('Dropped:', event.payload.paths)
       event.payload.paths.forEach(async (p) => {
         const parser = await get_file_parser(p)
         await parser(p).catch((reason) => {
@@ -93,7 +93,7 @@ export async function fileDropListener(): Promise<() => void> {
         })
       })
     } else {
-      // console.log('Drop Cancelled.')
+      console.info('Drop Cancelled.')
     }
   })
   return retFun

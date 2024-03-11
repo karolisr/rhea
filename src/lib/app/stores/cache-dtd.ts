@@ -50,10 +50,10 @@ export function cache_get_dtd_txt(
   let dtd_txt: _DTD_TXT | null = null
   const unsubscribe = dtds.subscribe((_dtds) => {
     if (url in _dtds) {
-      console.log(`DTD cache hit: ${url}`)
+      console.info(`DTD cache hit: ${url}`)
       dtd_txt = { url: url, data: _dtds[url] }
     } else {
-      // console.log(`DTD cache miss: ${url}`)
+      // console.info(`DTD cache miss: ${url}`)
     }
   })
   unsubscribe()
@@ -65,7 +65,7 @@ export function dnld_dtd_txt(url: string, ref_url?: string): Promise<_DTD_TXT> {
   const dtd_txt_promise = dnld_txt(url)
   dtd_txt_promise.then((rslt) => {
     cache_add_dtd_txt(rslt.url, rslt.data)
-    console.log(`DTD added to cache: ${rslt.url}`)
+    console.info(`DTD added to cache: ${rslt.url}`)
   })
   return dtd_txt_promise
 }
