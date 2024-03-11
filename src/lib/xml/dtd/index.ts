@@ -51,54 +51,82 @@ function get_dtd_tags(txt: string, re: RegExp): string[] {
 
 function parse_dtd_entity_txt(txt: string): DTDEntityRaw {
   const re =
-    /(%)?(\s+)?(?<entity_name>[\w_]+)(\s+)((?<entity_pubsys>(PUBLIC|SYSTEM))(\s+))?(['"](?<entity_description>[-,./\s\w]+)['"](\s+))?((['"](?<entity_value>[()\s|\w#]+)['"])|(['"](?<entity_url>[-:./\s\w]+)['"]))/
+    /(%?\s+?)(?<entity_name>[\w_]+)(\s+)((?<entity_pubsys>(PUBLIC|SYSTEM))(\s+))?(['"](?<entity_description>[-,./\s\w]+)['"](\s+))?((['"](?<entity_value>[()\s|\w#]+)['"])|(['"](?<entity_url>[-:./\s\w]+)['"]))/
   // <!ENTITY entity-name "entity-value">
   const m = txt.match(re)
   let g: DTDEntityRaw = {} as DTDEntityRaw
   if (m && m.groups) {
     g = m.groups as DTDEntityRaw
     if (g.entity_value) {
-      g.entity_value = g.entity_value.replaceAll(/\s+/g, '')
+      g.entity_value = g.entity_value.replaceAll(/\s/g, '')
     }
   }
   return g
 }
 
-function parse_dtd_attlist_txt(txt: string): DTDAttributeRaw {
-  const re =
-    /(?<element_name>[-_\w]+)\s+(?<attribute_name>[\w]+)\s+\(?(?<attribute_type>[-_\w\s|:]+)\)?\s+"?(?<attribute_value>[-.#_\d\w\s]+)"?/
+function parse_dtd_attlist_txt(txt: string) {
   // <!ATTLIST element-name attribute-name attribute-type attribute-value>
-
-  // ToDo: Handle multiple attributes:
-
   // <!ATTLIST element-name
   //     attribute-name attribute-type attribute-value
-  //     attribute-name attribute-type attribute-value
-  //     attribute-name attribute-type attribute-value
-  //     ...
+  //     attribute-name attribute-type #FIXED "abcdef"
+  //     attribute-name attribute-type #REQUIRED
   // >
-
   // <!ATTLIST Item
   //     Name CDATA #REQUIRED
-  //     Type (Integer|Date|String|Structure|List|Flags|Qualifier|Enumerator|Unknown) #REQUIRED
+  //     Type (Integer|Date|Flags|Qualifier|Enumerator|Unknown) #REQUIRED
   // >
+  const en = /[^\s]+/.source
+  const _ = txt.match(en)
+  const element_name = _?.length === 1 ? _[0] : null
+  if (element_name === null) throw new Error('No element name.')
 
-  const m = txt.match(re)
-  let g: DTDAttributeRaw = {} as DTDAttributeRaw
-  if (m && m.groups) {
-    g = m.groups as DTDAttributeRaw
-    if (g.attribute_type) {
-      g.attribute_type = g.attribute_type.replaceAll(/\s+/g, '')
+  const an = /(?<attribute_name>[^\s()]+)\s+/.source
+  const at = /(?<attribute_type>\(.+?\)|[^\s()]+)\s+/.source
+  const av = /(?<attribute_value>(#FIXED\s+[^\s()]+)|((?=[#'"])[^\s()]+))/
+    .source
+
+  const ntv = an + at + av
+  const re = RegExp(`(?:${en}\\s)?(?:${ntv})`, 'g')
+  const match_groups = [...txt.matchAll(re)].map((i) => i.groups)
+
+  let attrs: _dtd_attribute[] = []
+  match_groups.forEach((mg) => {
+    if (mg) {
+      const attr = mg as DTDAttributeRaw
+      if (attr.attribute_type) {
+        attr.element_name = element_name
+        attr.attribute_type = attr.attribute_type.replaceAll(/[\s()]/g, '')
+      }
+      attrs.push(parse_dtd_att_raw(attr))
     }
+  })
+
+  return attrs
+}
+
+function parse_dtd_att_raw(a: DTDAttributeRaw): _dtd_attribute {
+  const possible_values = a.attribute_type.split('|')
+  const _ = new Set(possible_values)
+  let type = 'string'
+  if (_.has('true') && _.has('false')) {
+    type = 'boolean'
   }
-  return g
+
+  return {
+    element_name: a.element_name,
+    name: a.attribute_name,
+    type: type,
+    value: a.attribute_value,
+    possible_values: possible_values
+  }
 }
 
 function parse_dtd_element_txt(txt: string): DTDElementRaw {
-  const re =
-    /(?<element_name>[\w_-]+)\s+((?<category>[\w#%;]+)|\((?<element_content>[-|\s\w#%;,?*+()]+)\))/
   // <!ELEMENT element-name category>
   // <!ELEMENT element-name (element-content)>
+  // But see PLIST spec too, not quite the same.
+  const re =
+    /(?<element_name>[\w_-]+)\s+((?<category>[\w#%;]+)|\((?<element_content>[-|\s\w#%;,?*+()]+)\))/
   const m = txt.match(re)
   let g: DTDElementRaw = {} as DTDElementRaw
   if (m && m.groups) {
@@ -120,7 +148,7 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
 
   let doctypes_merged: DTDEntityRaw[] = []
   let entities_merged: DTDEntityRaw[] = []
-  let attributes_merged: DTDAttributeRaw[] = []
+  let attributes_merged: _dtd_attribute[] = []
   let elements_merged: DTDElementRaw[] = []
 
   dcts.forEach((d) => {
@@ -137,7 +165,7 @@ async function _parse_dtd_txt(txt: string, ref_url?: string): DTDRawPromise {
   })
 
   atts.forEach((a) => {
-    attributes_merged.push(parse_dtd_attlist_txt(a))
+    attributes_merged = [...attributes_merged, ...parse_dtd_attlist_txt(a)]
   })
 
   eles.forEach((e) => {
@@ -205,8 +233,8 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
 
   const doctypes: { [entity_name: string]: DTDEntityRaw } = {}
   const entities: { [entity_name: string]: DTDEntityRaw } = {}
-  const attributes: { [element_name: string]: DTDAttributeRaw } = {}
-  const elements: { [element_name: string]: DTDElementRaw } = {}
+  const attributes: { [element_name: string]: _dtd_attribute[] } = {}
+  const elements: { [element_name: string]: _dtd_element } = {}
 
   raw_dtd.doctypes.forEach((dt) => {
     doctypes[dt.entity_name] = dt
@@ -217,27 +245,21 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
   })
 
   raw_dtd.attributes.forEach((at) => {
-    attributes[at.element_name] = at
+    if (!attributes[at.element_name]) attributes[at.element_name] = []
+    attributes[at.element_name].push(at)
+  })
+
+  const element_names = new Set<string>()
+  raw_dtd.elements.forEach((el) => {
+    element_names.add(el.element_name)
   })
 
   raw_dtd.elements.forEach((el) => {
-    elements[el.element_name] = el
+    const _ = parse_dtd_element_raw(el, element_names, attributes)
+    elements[el.element_name] = _
   })
 
-  const attributes_parsed: { [element_name: string]: _dtd_attribute[] } = {}
-  raw_dtd.attributes.forEach((at) => {
-    const _ = parse_dtd_attlist_raw(at)
-    attributes_parsed[at.element_name] = _
-  })
-
-  const element_names = new Set(Object.getOwnPropertyNames(elements))
-  const elements_parsed: { [element_name: string]: _dtd_element } = {}
-  raw_dtd.elements.forEach((el) => {
-    const _ = parse_dtd_element_raw(el, element_names, attributes_parsed)
-    elements_parsed[el.element_name] = _
-  })
-
-  return elements_parsed
+  return elements
 }
 
 interface Required {
@@ -247,7 +269,7 @@ interface Required {
 const required: Required = {
   '?': 'OPTIONAL',
   '*': 'ARRAY',
-  '+': 'ONE_OR_MANY'
+  '+': 'ARRAY'
 }
 
 interface ElementValueType {
@@ -257,6 +279,7 @@ interface ElementValueType {
 export const element_value_type: ElementValueType = {
   '%INTEGER;': 'number',
   '%REAL;': 'number',
+  '%OCTETS;': 'string',
   '#PCDATA': 'string'
 }
 
@@ -265,10 +288,6 @@ function parse_dtd_element_raw(
   element_names: Set<string>,
   attributes: { [element_name: string]: _dtd_attribute[] }
 ): _dtd_element {
-  // ToDo: replace "%plistObject;" in ELEMENT with ENTITY
-  // <!ENTITY % plistObject "(array | data | date | dict | real | integer | string | true | false )" >
-  // <!ELEMENT plist %plistObject;>
-  // <!ATTLIST plist version CDATA "1.0" >
   const rv: _dtd_element = {
     children: null,
     value: null,
@@ -291,15 +310,29 @@ function parse_dtd_element_raw(
   }
 
   if (e.element_content) {
-    const content = e.element_content
+    // This is a dirty shortcut, since we are not verifying that the XML
+    // meets the spec, we simply want to know all possible elements that
+    // may be found. Should, technically, be parsing recursively within
+    // each part enclosed in parentheses.
+    const content = e.element_content.replaceAll(/[()]/g, '')
+    // const content = e.element_content
+
     const content_parts = content.split(',')
 
     let content_options: string[] = []
     content_parts.forEach((content_part) => {
+      // ----------------------------------------------------------------------
+      // const re_entity = /(?<=%).+(?=;)/
+      // const m = content_part.match(re_entity)
+      // if (m && m.length === 1) {
+      //   content_part = entities[m[0]].entity_value.replaceAll(/[()]/g, '')
+      // }
+      // ----------------------------------------------------------------------
       content_options = [...content_options, ...content_part.split('|')]
     })
 
-    const content_parts_options = [...content_parts, ...content_options]
+    // const content_parts_options = [...content_parts, ...content_options]
+    const content_parts_options = [...content_options]
 
     content_parts_options.forEach((content_part) => {
       let content_part_required: string = 'REQUIRED'
@@ -322,29 +355,13 @@ function parse_dtd_element_raw(
           type: content_part,
           required: content_part_required
         }
+      } else {
+        console.warn(
+          `ENTITY or ELEMENT referenced in "${e.element_name}" was not found:`,
+          content_part
+        )
       }
     })
   }
   return rv
-}
-
-function parse_dtd_attlist_raw(a: DTDAttributeRaw): _dtd_attribute[] {
-  // ToDo: Incomplete; each entry can contain multiple attributes.
-  // https://www.w3schools.com/xml/xml_dtd_examples.asp
-  const possible_values = a.attribute_type.split('|')
-  const _ = new Set(possible_values)
-  let type = 'string'
-  if (_.has('true') && _.has('false')) {
-    type = 'boolean'
-  }
-
-  return [
-    {
-      element_name: a.element_name,
-      name: a.attribute_name,
-      type: type,
-      value: a.attribute_value,
-      possible_values: possible_values
-    }
-  ]
 }

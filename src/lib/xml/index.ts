@@ -80,7 +80,7 @@ function _parse_xml(
           if (att.name in element_spec.attributes) {
             const att_type = element_spec.attributes[att.name].type
             if (att_type === 'boolean') {
-              att_value = att_value === 'true' ? true : false
+              att_value = att_value.toLowerCase() === 'true' ? true : false
             }
           }
           if (att.name === 'value') {
@@ -99,6 +99,7 @@ function _parse_xml(
   return obj
 }
 
+// These are only necessary when the XML file does not reference a DTD.
 const DTD_MAP: { [element_name: string]: string } = {
   'Bioseq-set': 'NCBI_Seqset.dtd',
   'INSDSet': 'INSD_INSDSeq.dtd',

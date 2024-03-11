@@ -26,7 +26,7 @@ interface DTDElementRaw extends DTDItemRaw {
 interface DTDRaw {
   doctypes: DTDEntityRaw[]
   entities: DTDEntityRaw[]
-  attributes: DTDAttributeRaw[]
+  attributes: _dtd_attribute[]
   elements: DTDElementRaw[]
 }
 
