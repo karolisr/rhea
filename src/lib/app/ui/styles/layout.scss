@@ -1,27 +1,29 @@
 @import 'defs';
 
 .#{$prefix}-container {
+  overflow-x: hidden;
+  overflow-y: hidden;
   display: flex;
   flex-direction: column;
   height: 100vh;
   min-height: 100vh;
-  overflow: hidden;
-  font-size: small;
 }
 
 .#{$prefix}-head {
 }
 
 .#{$prefix}-foot {
+  font-size: small;
 }
 
 .#{$prefix}-headfoot {
 }
 
 .#{$prefix}-main {
-  flex-grow: 1;
-  overflow: auto;
-  box-shadow: 0.05rem -0.34rem 0.65rem -0.75rem $A800;
-  z-index: 10;
   font-size: small;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-grow: 1;
+  // box-shadow: 0.05rem -0.34rem 0.25rem -0.75rem $A800;
+  z-index: 10;
 }

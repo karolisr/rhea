@@ -2,11 +2,10 @@
 
 $tab-padding: 0.25rem;
 $tab-spacing: calc($tab-padding * 1);
-$tab-font-size: 1rem;
+// $tab-font-size: 1rem;
 $border-color: $titlebar-bg-mac-fade-2;
 
 .#{$prefix}-tabnav {
-  // box-sizing: content-box;
   display: flex;
   flex-direction: row;
   padding-top: calc($tab-spacing * 1.1);
@@ -17,7 +16,6 @@ $border-color: $titlebar-bg-mac-fade-2;
 }
 
 .#{$prefix}-tabnav a {
-  // box-sizing: content-box;
   background-color: $titlebar-bg-mac-fade-1;
   cursor: default;
   text-decoration: none;
@@ -47,11 +45,11 @@ $border-color: $titlebar-bg-mac-fade-2;
 }
 
 .#{$prefix}-tabnav a div svg {
-  font-size: $tab-font-size;
+  // font-size: $tab-font-size;
 }
 
 .#{$prefix}-tabnav a div span {
-  font-size: $tab-font-size;
+  // font-size: $tab-font-size;
   margin-left: 0.25rem;
 }
 
@@ -63,7 +61,6 @@ $border-color: $titlebar-bg-mac-fade-2;
 }
 
 .#{$prefix}-tabnav a[aria-current='true'] {
-  // box-sizing: content-box;
   cursor: default;
   pointer-events: none;
   color: $A600;
@@ -71,7 +68,7 @@ $border-color: $titlebar-bg-mac-fade-2;
   border-color: $border-color;
   border-bottom-color: transparent;
   box-shadow: 0rem -0.14rem 0.45rem -0.4rem $A800;
-  z-index: 11;
+  z-index: 20;
 }
 
 .#{$prefix}-tabspacer {

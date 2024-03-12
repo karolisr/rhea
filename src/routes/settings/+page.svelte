@@ -19,7 +19,7 @@ function save(): void {
       spellcheck="false"
       autocomplete="off"
       required
-      class="cursor-text select-text"
+      class="block w-full cursor-text select-text disabled:opacity-50 rtl:text-right"
       bind:value="{$settings.email}"
       on:change="{save}" />
   </div>
@@ -33,7 +33,7 @@ function save(): void {
       spellcheck="false"
       autocomplete="off"
       required
-      class="cursor-text select-text"
+      class="block w-full cursor-text select-text disabled:opacity-50 rtl:text-right"
       bind:value="{$settings.ncbi_api_key}"
       on:change="{save}" />
   </div>

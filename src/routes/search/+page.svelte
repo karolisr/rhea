@@ -80,11 +80,13 @@ onMount(async () => {
         required
         bind:value="{searchTerm}"
         on:input="{validateSearchTerm}"
-        disabled="{searching}" />
+        disabled="{searching}"
+        class="block w-full disabled:bg-opacity-75 rtl:text-right" />
       <Button
         type="submit"
         color="primary"
-        disabled="{searchButtonDisabled || searching}">
+        disabled="{searchButtonDisabled || searching}"
+        class="disabled:cursor-default disabled:hover:bg-primary-700">
         {#if searching}
           <Spinner color="white" size="4" class="mr-1" />Searching
         {:else}
