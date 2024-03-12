@@ -2,7 +2,7 @@
 import { onMount } from 'svelte'
 import { db_init } from '$lib/app/db'
 import { type ESummaryNuccore } from '$lib/ncbi'
-import { type CDSDB } from '$lib/app/db/types'
+import { type DBMain } from '$lib/app/db/types'
 import { type IDBPDatabase } from 'idb'
 import { writable } from 'svelte/store'
 import {
@@ -25,10 +25,10 @@ const toggleRow = (i: number) => {
   openRow = openRow === i ? null : i
 }
 
-let db: IDBPDatabase<CDSDB>
+let db: IDBPDatabase<DBMain>
 let summs: ESummaryNuccore[] = []
 async function get_from_db() {
-  const tx = db.transaction('nt', 'readonly')
+  const tx = db.transaction('seq_nt_summ', 'readonly')
   summs = (await Promise.all([tx.store.getAll(), tx.done]))[0]
 }
 
