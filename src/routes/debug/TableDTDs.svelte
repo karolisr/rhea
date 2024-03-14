@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
 import { slide } from 'svelte/transition'
-import { dtds, dtd_urls } from '$lib/app/stores/cache-dtd'
+import { dtds, dtd_urls } from '$lib/app/svelte-stores/cache-dtd'
 
 let openRow: number | null
 let details
