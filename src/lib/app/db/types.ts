@@ -4,17 +4,18 @@ import type { GBSeq } from '$lib/ncbi/types/gbseq'
 
 export interface DBMain extends DBSchema {
   seq_nt_summ: {
-    key: string
+    key: ESummaryNuccore['accessionversion']
     value: ESummaryNuccore
+    indexes: { taxid: ESummaryNuccore['taxid'] }
   }
 
   tax_summ: {
-    key: string
+    key: ESummaryTaxonomy['taxid']
     value: ESummaryTaxonomy
   }
 
   gbseq: {
-    key: string
+    key: GBSeq['GBSeq_accession_version']
     value: GBSeq
   }
 }
