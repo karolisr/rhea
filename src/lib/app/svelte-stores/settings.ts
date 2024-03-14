@@ -10,29 +10,27 @@ export interface Settings {
 const key = 'settings'
 
 function init(): Writable<Settings> {
-  const _ = localStorage.getItem(key)
+  const stng_stored = localStorage.getItem(key)
   let stng: Settings = {
     email: '',
     ncbi_api_key: '',
     locale: ''
   }
-  if (_) {
-    stng = JSON.parse(_)
+  if (stng_stored) {
+    stng = JSON.parse(stng_stored)
   }
   getLocale().then((locale) => {
     stng.locale = locale
   })
-  const { subscribe, set, update } = writable(stng)
-  return { subscribe, set, update }
+  return writable(stng)
 }
 
 const settings = init()
 export default settings
 
 export function saveSettings(): void {
-  const unsubscribe = settings.subscribe((stng) => {
+  settings.update((stng) => {
     localStorage.setItem(key, JSON.stringify(stng))
-    stng = stng
+    return stng
   })
-  unsubscribe()
 }
