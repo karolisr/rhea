@@ -88,9 +88,10 @@ export async function fileDropListener(): Promise<() => void> {
       console.info('Dropped:', event.payload.paths)
       event.payload.paths.forEach(async (p) => {
         const parser = await get_file_parser(p)
-        await parser(p).catch((reason) => {
+        const parsed = await parser(p).catch((reason) => {
           console.error(reason)
         })
+        console.log(parsed)
       })
     } else {
       console.info('Drop Cancelled.')

@@ -3,15 +3,23 @@ import { onMount } from 'svelte'
 import { Input, Button, ButtonGroup, Alert, Spinner } from 'flowbite-svelte'
 import { fade } from 'svelte/transition'
 import IconError from '~icons/fa6-solid/circle-exclamation'
-import { getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
-import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
-import { esearch, esummary } from '$lib/ncbi/eutils'
-import { db_init, db_delete } from '$lib/app/db'
-import { type DBMain } from '$lib/app/db/types'
-import { type IDBPDatabase } from 'idb'
+import { getSeqRecords, getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
+import {
+  EntrezFilters,
+  NCBIDatabase,
+  type ESummaryNuccore,
+  type ESummaryTaxonomy
+} from '$lib/ncbi'
+import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
+import { EutilParams } from '$lib/ncbi/eutils-params'
 
-let db: IDBPDatabase<DBMain>
+import { type Readable } from 'svelte/store'
+import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
+import db_main from '$lib/app/svelte-stores/db-main'
+let _db_main: Readable<DBMainSvelteStore>
+
 let searchTerm: string = ''
+let searchStatusMessage: string = ''
 $: searchTermProcessed = searchTerm.trim()
 let refSeqOnly = true
 let searchButtonDisabled = true
@@ -20,7 +28,7 @@ let esummaryResult: ESummaryNuccore[] = []
 let errorMsg: string = ''
 $: error = errorMsg ? true : false
 
-async function validateSearchTerm(): Promise<void> {
+function validateSearchTerm() {
   if (searchTermProcessed.length > 2) {
     searchButtonDisabled = false
   } else {
@@ -28,21 +36,11 @@ async function validateSearchTerm(): Promise<void> {
   }
 }
 
-// async function add_to_db(summs: ESummaryNuccore[]) {
-//   const tx = db.transaction('nt', 'readwrite')
-//   await Promise.all([
-//     ...summs.map((s) => {
-//       tx.store.put(s)
-//     }),
-//     tx.done
-//   ])
-// }
-
 async function search(): Promise<void> {
   searching = true
   searchTerm = searchTermProcessed
   const taxids: number[] = await getTaxIDs(searchTerm).catch((message) => {
-    console.log(message)
+    console.warn(message)
     errorMsg = message
     return []
   })
@@ -54,17 +52,42 @@ async function search(): Promise<void> {
     )
     const esearchResult = await esearch(NCBIDatabase.nuccore, term, true)
     esummaryResult = (await esummary(esearchResult.params)) as ESummaryNuccore[]
-    // add_to_db(esummaryResult)
+    if (esummaryResult.length === 0) {
+      searchStatusMessage = `No results for ${searchTerm}. TaxIDs: ${taxids.join(', ')}`
+    } else {
+      searchStatusMessage = ''
+      // ---------------------
+      const accs: string[] = []
+      esummaryResult.forEach((x) => {
+        accs.push(x.accessionversion)
+      })
+      const gbseqs = await getSeqRecords('nuccore', accs)
+      $_db_main.put(gbseqs, 'gbseq')
+      // ---------------------
+      const p = new EutilParams()
+      p.db = 'taxonomy'
+      p.ids = taxids
+      const tax_summs = (await esummary(p)) as ESummaryTaxonomy[]
+      $_db_main.put(tax_summs, 'tax_summ')
+      // ---------------------
+      // const p = new EutilParams()
+      // p.db = 'taxonomy'
+      // p.ids = taxids
+      // p.retmode = 'xml'
+      // const tax_summs = (await efetch(p)) as { Taxon: ESummaryTaxonomy[] }
+      // ---------------------
+    }
+    $_db_main.put(esummaryResult, 'seq_nt_summ')
     searching = false
   } else {
+    searchStatusMessage = `No TaxID hits for ${searchTerm}`
     searching = false
   }
 }
 
 onMount(async () => {
+  _db_main = await db_main
   validateSearchTerm()
-  // db_delete()
-  db = await db_init()
 })
 </script>
 
@@ -136,6 +159,8 @@ onMount(async () => {
             border-neutral-300
             select-all
             bg-red-50
-            ">No results yet</pre>
+            ">{searchStatusMessage
+        ? searchStatusMessage
+        : 'No results yet'}</pre>
   {/each}
 </div>

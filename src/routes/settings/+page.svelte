@@ -1,8 +1,8 @@
 <script lang="ts">
 import { Input, Label } from 'flowbite-svelte'
 
-import settings from '$lib/app/stores/settings'
-import { saveSettings } from '$lib/app/stores/settings'
+import settings from '$lib/app/svelte-stores/settings'
+import { saveSettings } from '$lib/app/svelte-stores/settings'
 
 function save(): void {
   saveSettings()

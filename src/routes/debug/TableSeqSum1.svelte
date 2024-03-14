@@ -1,22 +1,25 @@
 <script lang="ts">
-import { onMount } from 'svelte'
-import { db_init } from '$lib/app/db'
-import { type ESummaryNuccore } from '$lib/ncbi'
-import { type DBMain } from '$lib/app/db/types'
-import { type IDBPDatabase } from 'idb'
+import { onMount, onDestroy } from 'svelte'
 import { writable } from 'svelte/store'
 import {
-  Table,
   TableBody,
   TableBodyCell,
   TableBodyRow,
   TableHead,
   TableHeadCell,
-  ImagePlaceholder,
   TableSearch,
   Modal
 } from 'flowbite-svelte'
 import { slide } from 'svelte/transition'
+
+import { type ESummaryNuccore } from '$lib/ncbi'
+import type { Writable } from 'svelte/store'
+import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
+import db_main from '$lib/app/svelte-stores/db-main'
+
+let _db_main: Writable<DBMainSvelteStore>
+let esummaries: ESummaryNuccore[]
+$: esummaries = _db_main ? $_db_main.seq_nt_summ : []
 
 let openRow: number | null
 let details: ESummaryNuccore
@@ -25,15 +28,8 @@ const toggleRow = (i: number) => {
   openRow = openRow === i ? null : i
 }
 
-let db: IDBPDatabase<DBMain>
-let summs: ESummaryNuccore[] = []
-async function get_from_db() {
-  const tx = db.transaction('seq_nt_summ', 'readonly')
-  summs = (await Promise.all([tx.store.getAll(), tx.done]))[0]
-}
-
 let searchTerm = ''
-$: summs_filtered = summs.filter(
+$: summs_filtered = esummaries.filter(
   (s) => s.organism.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1
 )
 
@@ -69,18 +65,20 @@ $: {
 }
 
 onMount(async () => {
-  db = await db_init()
-  await get_from_db()
+  _db_main = await db_main
+  const x = document.getElementById('table-search')
+  x?.setAttribute('spellcheck', 'false')
+  x?.setAttribute('autocomplete', 'false')
+  console.log()
 })
+onDestroy(() => {})
 </script>
 
 <TableSearch
   striped="{true}"
-  hoverable="{true}"
+  hoverable="{false}"
   bind:inputValue="{searchTerm}"
-  placeholder="Filter by organism"
-  spellcheck="false"
-  autocomplete="off">
+  placeholder="Filter by organism">
   <TableHead>
     <TableHeadCell on:click="{() => sortTable('accessionversion')}"
       >Accession</TableHeadCell>
@@ -103,7 +101,10 @@ onMount(async () => {
             <div
               class="px-2 py-3"
               transition:slide="{{ duration: 300, axis: 'y' }}">
-              <ImagePlaceholder />
+              <p>{s.accessionversion}</p>
+              <p>{s.title}</p>
+              <p>{s.organism}</p>
+              <!-- <ImagePlaceholder /> -->
             </div>
           </TableBodyCell>
         </TableBodyRow>
@@ -116,5 +117,8 @@ onMount(async () => {
   open="{!!details}"
   autoclose
   outsideclose>
-  <ImagePlaceholder />
+  <p>{details.accessionversion}</p>
+  <p>{details.title}</p>
+  <p>{details.organism}</p>
+  <!-- <ImagePlaceholder /> -->
 </Modal>
