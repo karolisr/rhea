@@ -9,8 +9,8 @@ import StatusBar from '$lib/app/ui/status/StatusBar.svelte'
 let themeChangeUnListener: () => void
 
 onMount(async () => {
-  disableDefault('contextmenu')
   themeChangeUnListener = await themeChangeListener()
+  disableDefault('contextmenu')
 })
 
 onDestroy(() => {

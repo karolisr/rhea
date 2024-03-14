@@ -6,21 +6,16 @@ enum themeDarkLight {
   dark = 'dark'
 }
 
-type ThemeDarkLight = keyof typeof themeDarkLight
-
-async function getCurentTheme(): Promise<ThemeDarkLight> {
-  return await getCurrent()
-    .theme()
-    .then((_theme) => {
-      if (_theme === themeDarkLight.dark) {
-        return themeDarkLight.dark
-      } else {
-        return themeDarkLight.light
-      }
-    })
+async function getCurentTheme() {
+  const _theme = (await getCurrent().theme()) || 'light'
+  if (_theme === themeDarkLight.dark) {
+    return themeDarkLight.dark
+  } else {
+    return themeDarkLight.light
+  }
 }
 
-async function setTheme(): Promise<void> {
+async function setTheme() {
   const _tdl = await getCurentTheme()
   localStorage.setItem('color-theme', _tdl)
   if (_tdl === themeDarkLight.dark) {
@@ -30,11 +25,11 @@ async function setTheme(): Promise<void> {
   }
 }
 
-export async function themeChangeListener(): Promise<() => void> {
-  return listen<string>(TauriEvent.WINDOW_THEME_CHANGED, (_) => {
-    setTheme()
-  }).then((unlistenFn) => {
-    setTheme()
-    return unlistenFn
-  })
+export async function themeChangeListener() {
+  const unlisten_fn = await listen<string>(
+    TauriEvent.WINDOW_THEME_CHANGED,
+    (_) => setTheme()
+  )
+  setTheme()
+  return unlisten_fn
 }
