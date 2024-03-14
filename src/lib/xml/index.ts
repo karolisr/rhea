@@ -1,3 +1,4 @@
+import type { Indexed } from '$lib/ncbi'
 import { parse_dtd_txt, parse_dtd_at_url, element_value_type } from './dtd'
 
 // ToDo: create_parent_object_for_arrays type problems.
@@ -107,10 +108,10 @@ export async function parse_xml_txt(
   const dp = new DOMParser()
   const doc: Document = dp.parseFromString(txt, 'text/xml')
 
-  if (Object.getOwnPropertyNames(dtd).length === 0) {
-    const doc_element = doc.children[0]
-    const doc_element_name = doc_element.nodeName
+  const doc_element = doc.children[0]
+  const doc_element_name = doc_element.nodeName
 
+  if (Object.getOwnPropertyNames(dtd).length === 0) {
     if (doc_element_name in DTD_MAP) {
       dtd = await parse_dtd_at_url(DTD_MAP[doc_element_name])
     }
@@ -120,12 +121,21 @@ export async function parse_xml_txt(
     }
   }
 
-  const ret_val = _parse_xml(
+  let ret_val = _parse_xml(
     doc,
     dtd,
     {},
     undefined,
     create_parent_object_for_arrays
-  )
-  return ret_val
+  ) as Indexed
+
+  const root_element_name = doc_element_name.replaceAll('-', '_')
+
+  if (!(root_element_name in ret_val)) {
+    let _ = {} as { [key: string]: unknown }
+    _[root_element_name] = ret_val
+    ret_val = _ as Indexed
+  }
+
+  return ret_val[root_element_name]
 }

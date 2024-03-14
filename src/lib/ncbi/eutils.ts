@@ -1,4 +1,4 @@
-import settings from '$lib/app/stores/settings'
+import settings from '$lib/app/svelte-stores/settings'
 import { EutilParams } from './eutils-params'
 import {
   Eutil,
@@ -11,6 +11,8 @@ import {
   type ESummary,
   type History
 } from '.'
+
+import { parse_xml_txt } from '$lib/xml'
 
 function findApiKey(): string | undefined {
   let ncbi_api_key: string | undefined
@@ -51,8 +53,12 @@ async function eutil(util: Eutil, params: EutilParams): Promise<Response> {
 }
 
 function _batch(params: EutilParams): void {
-  params.last = false
-  if (!params.retmax) {
+  if (!params.usehistory) {
+    params.last = true
+  } else {
+    params.last = false
+  }
+  if (!params.retmax || Number.isNaN(params.retmax)) {
     params.retmax = EutilsRetMax
   }
   if (!params.retstart) {
@@ -79,14 +85,30 @@ async function _batched(
   return return_value
 }
 
+function retContentType(ct: string): RetContentType {
+  const re_xml = /(xml)/
+  const re_json = /(json)/
+
+  const xml = ct.match(re_xml)
+  const json = ct.match(re_json)
+
+  if (xml) return RetContentType.xml
+  if (json) return RetContentType.json
+
+  return RetContentType.text
+}
+
 async function processResponse(response: Response): Promise<object> {
   let data = {}
   let xmlText = ''
   const ct: string = response.headers.get('Content-Type') as string
-  switch (ct) {
+  switch (retContentType(ct)) {
+    case RetContentType.text:
+      data = await response.text()
+      break
     case RetContentType.xml:
       xmlText = await response.text()
-      data = xmlText
+      data = await parse_xml_txt(xmlText)
       break
     case RetContentType.json:
       data = await response.json()
@@ -99,21 +121,26 @@ async function processResponse(response: Response): Promise<object> {
 
 async function _esummary(params: EutilParams): Promise<ESummaryJSON> {
   params.retmode = RetMode.json
-  // params.version = '2.0'
+  params.version = '2.0'
   const result = await eutil(Eutil.esummary, params).then((r) =>
     processResponse(r)
   )
-  return result as ESummaryJSON
+  const rv = result as ESummaryJSON
+  if (rv.esummaryresult && rv.esummaryresult[0].startsWith('Empty')) {
+    rv.result = { uids: [] }
+  }
+  return rv
 }
 
 export async function esummary(params: EutilParams): Promise<ESummary[]> {
   const results = (await _batched(_esummary, params)) as ESummaryJSON[]
   const results_combined: object[] = []
   results.forEach((esr) => {
-    esr.result.uids.forEach((uid) => {
-      const esrRecord = esr.result[uid]
-      results_combined.push(esrRecord)
-    })
+    if (esr.result.uids)
+      esr.result.uids.forEach((uid) => {
+        const esrRecord = esr.result[uid]
+        results_combined.push(esrRecord)
+      })
   })
   return results_combined as ESummary[]
 }
@@ -125,7 +152,7 @@ async function _efetch(params: EutilParams): Promise<object> {
   return result
 }
 
-export async function efetch(params: EutilParams): Promise<object | string> {
+export async function efetch(params: EutilParams): Promise<object> {
   if (
     params.usehistory === 'y' &&
     params.query_key &&
@@ -135,7 +162,7 @@ export async function efetch(params: EutilParams): Promise<object | string> {
   ) {
     return await _batched(_efetch, params) // ToDo: Untested.
   } else {
-    return await _efetch(params)
+    return [await _efetch(params)]
   }
 }
 

@@ -46,11 +46,11 @@ export class EutilParams {
   last: boolean | undefined
   // --------------------------------------------------------------------------
 
-  set ids(ids: string[]) {
-    this._ids = ids
+  set ids(ids: string[] | number[]) {
+    this._ids = ids.map((id) => id.toString())
   }
 
-  get ids(): string[] {
+  get ids(): string[] | number[] {
     if (this._ids !== undefined) {
       return this._ids
     } else {

@@ -50,8 +50,9 @@ export enum RetTypeESearch {
 
 export enum RetContentType {
   // ToDo: incomplete
-  json = 'application/json; charset=UTF-8',
-  xml = 'text/xml'
+  json,
+  xml,
+  text
 }
 
 export interface ESummaryJSON {
@@ -59,6 +60,7 @@ export interface ESummaryJSON {
     type: string
     version: string
   }
+  esummaryresult?: string[]
   result: {
     [uid: string]: object
     uids: string[]
@@ -80,7 +82,7 @@ export interface ESummaryTaxonomy extends ESummary {
   scientificname: string
   commonname: string
   taxid: number
-  akataxid: number
+  akataxid: number | string
   genus: string
   species: string
   subsp: string
