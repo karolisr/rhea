@@ -1,57 +1,60 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
-  import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
-  import { slide } from 'svelte/transition'
+import { onMount, onDestroy } from 'svelte'
+import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
+import { slide } from 'svelte/transition'
 
-  import { type ESummaryTaxonomy } from '$lib/ncbi'
-  import type { Writable } from 'svelte/store'
-  import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
-  import db_main from '$lib/app/svelte-stores/db-main'
+import { type ESummaryTaxonomy } from '$lib/ncbi'
+import type { Writable } from 'svelte/store'
+import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
+import db_main from '$lib/app/svelte-stores/db-main'
 
-  let _db_main: Writable<DBMainSvelteStore>
-  let esummaries: ESummaryTaxonomy[]
-  $: esummaries = _db_main ? $_db_main.tax_summ : []
+let _db_main: Writable<DBMainSvelteStore>
+let esummaries: ESummaryTaxonomy[]
+$: esummaries = _db_main ? $_db_main.tax_summ : []
 
-  let openRow: number | null
+let openRow: number | null
 
-  const toggleRow = (i: number) => {
-    openRow = openRow === i ? null : i
-  }
+const toggleRow = (i: number) => {
+  openRow = openRow === i ? null : i
+}
 
-  onMount(async () => {
-    _db_main = await db_main
-  })
-  onDestroy(() => {})
-  </script>
+onMount(async () => {
+  _db_main = await db_main
+})
+onDestroy(() => {})
+</script>
 
-  <Table
-    striped="{false}"
-    shadow="{false}"
-    hoverable="{true}"
-    class="border border-solid border-neutral-200"
-    divClass="overflow-hidden shadow">
-    <TableBody>
-      {#each esummaries as summ, i}
-        <TableBodyRow on:click="{() => toggleRow(i)}" class="border-neutral-200">
-          {#if openRow === i}
-            <TableBodyCell class="whitespace-nowrap bg-neutral-50 p-1"
-              >{summ.scientificname} {summ.taxid} {summ.commonname}</TableBodyCell>
-          {:else}
-            <TableBodyCell class="whitespace-nowrap p-1"
-              >{summ.scientificname} {summ.taxid} {summ.commonname}</TableBodyCell>
-          {/if}
-        </TableBodyRow>
+<Table
+  striped="{false}"
+  shadow="{false}"
+  hoverable="{true}"
+  divClass="overflow-hidden shadow rounded-md">
+  <TableBody>
+    {#each esummaries as summ, i}
+      <TableBodyRow on:click="{() => toggleRow(i)}">
         {#if openRow === i}
-          <TableBodyRow>
-            <TableBodyCell class="m-0 bg-white p-0 text-xs"
-              ><pre
-                class="p-1"
-                transition:slide="{{
-                  duration: 250,
-                  axis: 'y'
-                }}">{summ.scientificname} {summ.commonname}</pre></TableBodyCell>
-          </TableBodyRow>
+          <TableBodyCell class="whitespace-nowrap p-1"
+            >{summ.scientificname}
+            {summ.taxid}
+            {summ.commonname}</TableBodyCell>
+        {:else}
+          <TableBodyCell class="whitespace-nowrap p-1"
+            >{summ.scientificname}
+            {summ.taxid}
+            {summ.commonname}</TableBodyCell>
         {/if}
-      {/each}
-    </TableBody>
-  </Table>
+      </TableBodyRow>
+      {#if openRow === i}
+        <TableBodyRow>
+          <TableBodyCell class="m-0 p-0 text-xs"
+            ><pre
+              class="p-1"
+              transition:slide="{{
+                duration: 250,
+                axis: 'y'
+              }}">{summ.scientificname} {summ.commonname}</pre></TableBodyCell>
+        </TableBodyRow>
+      {/if}
+    {/each}
+  </TableBody>
+</Table>

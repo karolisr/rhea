@@ -28,13 +28,12 @@ onDestroy(() => {})
   striped="{false}"
   shadow="{false}"
   hoverable="{true}"
-  class="border border-solid border-neutral-200"
-  divClass="overflow-hidden shadow">
+  divClass="overflow-hidden shadow rounded-md">
   <TableBody>
     {#each esummaries as summ, i}
-      <TableBodyRow on:click="{() => toggleRow(i)}" class="border-neutral-200">
+      <TableBodyRow on:click="{() => toggleRow(i)}" >
         {#if openRow === i}
-          <TableBodyCell class="whitespace-nowrap bg-neutral-50 p-1"
+          <TableBodyCell class="whitespace-nowrap p-1"
             >{summ.accessionversion}</TableBodyCell>
         {:else}
           <TableBodyCell class="whitespace-nowrap p-1"
@@ -43,7 +42,7 @@ onDestroy(() => {})
       </TableBodyRow>
       {#if openRow === i}
         <TableBodyRow>
-          <TableBodyCell class="m-0 bg-white p-0 text-xs"
+          <TableBodyCell class="m-0 p-0 text-xs"
             ><pre
               class="p-1"
               transition:slide="{{
