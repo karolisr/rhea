@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store'
+import { writable } from 'svelte/store'
 import { db_main_init, db_get_all, db_put } from '$lib/app/db'
 import type { DBMain } from '$lib/app/db/types'
 import type { IDBPDatabase, StoreNames, StoreValue } from 'idb'

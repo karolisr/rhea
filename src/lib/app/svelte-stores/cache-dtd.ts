@@ -13,8 +13,7 @@ function init(): Writable<_CACHE_DTD> {
   if (_) {
     _dtds = JSON.parse(_)
   }
-  const { subscribe, set, update } = writable(_dtds)
-  return { subscribe, set, update }
+  return writable(_dtds)
 }
 
 export const dtds = init()
@@ -50,7 +49,7 @@ export function cache_get_dtd_txt(
   let dtd_txt: _DTD_TXT | null = null
   const unsubscribe = dtds.subscribe((_dtds) => {
     if (url in _dtds) {
-      console.info(`DTD cache hit: ${url}`)
+      // console.info(`DTD cache hit: ${url}`)
       dtd_txt = { url: url, data: _dtds[url] }
     } else {
       // console.info(`DTD cache miss: ${url}`)
