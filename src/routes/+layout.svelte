@@ -19,13 +19,13 @@ onDestroy(() => {
 })
 </script>
 
-<Layout hd mn ft>
-  <div slot="hd"><NavMain /></div>
-  <div slot="subhd">
+<Layout hd subhd mn ft>
+  <svelte:fragment slot="hd"><NavMain /></svelte:fragment>
+  <svelte:fragment slot="subhd">
     {#if subheader}
       <svelte:component this="{$subheader}" />
     {/if}
-  </div>
-  <div slot="mn"><slot /></div>
-  <div slot="ft"><StatusBar /></div>
+  </svelte:fragment>
+  <svelte:fragment slot="mn"><slot /></svelte:fragment>
+  <svelte:fragment slot="ft"><StatusBar /></svelte:fragment>
 </Layout>

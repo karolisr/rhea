@@ -20,6 +20,8 @@
 }
 
 .#{$prefix}-main {
+  display: flex;
+  flex-direction: column;
   font-size: small;
   overflow-x: hidden;
   overflow-y: auto;

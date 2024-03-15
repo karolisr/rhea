@@ -4,6 +4,7 @@ import Main from './Main.svelte'
 import Footer from './Footer.svelte'
 
 export let hd = false
+export let subhd = false
 export let mn = false
 export let ft = false
 </script>
@@ -12,7 +13,9 @@ export let ft = false
   {#if hd}
     <Header>
       <slot name="hd">HEADER PLACEHOLDER: element Header</slot>
-      <slot name="subhd">SUBHEADER PLACEHOLDER: element Header</slot>
+      {#if subhd}
+        <slot name="subhd">SUBHEADER PLACEHOLDER: element Header</slot>
+      {/if}
     </Header>
   {/if}
 
