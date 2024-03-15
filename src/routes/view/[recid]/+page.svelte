@@ -6,6 +6,7 @@ import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import type { GBSeq } from '$lib/ncbi/types/gbseq'
 import db_main from '$lib/app/svelte-stores/db-main'
 import status from '$lib/app/svelte-stores/status'
+import SeqView from './SeqView.svelte'
 
 export let data: PageData
 
@@ -25,11 +26,24 @@ onDestroy(() => {
 })
 </script>
 
-{#if rec}
-  <pre>{data.recid}
-{rec.GBSeq_organism}
-{rec.GBSeq_feature_table.GBFeature.length}
-{rec.GBSeq_feature_table.GBFeature[0].GBFeature_quals.GBQualifier[1]
-      .GBQualifier_value}
-</pre>
-{/if}
+<div class="pt-5">
+  {#if rec}
+    <span class="pb-5 text-center text-base">
+      {data.recid}
+      |
+      {rec.GBSeq_organism}
+      |
+      {rec.GBSeq_feature_table.GBFeature[0].GBFeature_quals.GBQualifier[1]
+        .GBQualifier_value}
+    </span>
+    <SeqView />
+  {/if}
+</div>
+
+<style>
+div {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 0;
+}
+</style>
