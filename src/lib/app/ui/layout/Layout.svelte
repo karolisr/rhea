@@ -11,19 +11,20 @@ export let ft = false
 <div class="kr-container">
   {#if hd}
     <Header>
-      <slot name="hd">HEADER PLACEHOLDER</slot>
+      <slot name="hd">HEADER PLACEHOLDER: element Header</slot>
+      <slot name="subhd">SUBHEADER PLACEHOLDER: element Header</slot>
     </Header>
   {/if}
 
   {#if mn}
     <Main>
-      <slot name="mn">MAIN PLACEHOLDER</slot>
+      <slot name="mn">MAIN PLACEHOLDER: element Header</slot>
     </Main>
   {/if}
 
   {#if ft}
     <Footer>
-      <slot name="ft">FOOTER PLACEHOLDER</slot>
+      <slot name="ft">FOOTER PLACEHOLDER: element Header</slot>
     </Footer>
   {/if}
 </div>
