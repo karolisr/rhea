@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount } from 'svelte'
+import { onMount, onDestroy } from 'svelte'
 import { Input, Button, ButtonGroup, Alert, Spinner } from 'flowbite-svelte'
 import { fade } from 'svelte/transition'
 import IconError from '~icons/fa6-solid/circle-exclamation'
@@ -24,7 +24,11 @@ $: searchTermProcessed = searchTerm.trim()
 let refSeqOnly = true
 let searchButtonDisabled = true
 let searching = false
+
 let esummaryResult: ESummaryNuccore[] = []
+import status from '$lib/app/svelte-stores/status'
+$: $status.main = `${esummaryResult.length.toLocaleString()} results`
+
 let errorMsg: string = ''
 $: error = errorMsg ? true : false
 
@@ -88,6 +92,10 @@ async function search(): Promise<void> {
 onMount(async () => {
   _db_main = await db_main
   validateSearchTerm()
+})
+
+onDestroy(() => {
+  $status.main = ''
 })
 </script>
 

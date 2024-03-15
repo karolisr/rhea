@@ -11,8 +11,8 @@ import iconSettings from '~icons/fa6-solid/gear'
 
 <TabNav>
   <Tab link="/" icon="{iconHome}" />
-  <Tab link="/search" icon="{iconSearch}" />
+  <Tab link="/search/" icon="{iconSearch}" />
   <TabSpacer />
-  <Tab link="/debug" icon="{iconDebug}" />
-  <Tab link="/settings" icon="{iconSettings}" />
+  <Tab link="/debug/" icon="{iconDebug}" />
+  <Tab link="/settings/" icon="{iconSettings}" />
 </TabNav>

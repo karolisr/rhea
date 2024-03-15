@@ -1,10 +1,10 @@
 <script lang="ts">
 import { page } from '$app/stores'
-$: path = $page.url.pathname.replace('/', '')
+import status from '$lib/app/svelte-stores/status'
 </script>
 
 <div class="kr-statusbar">
-  <div class="bg-teal-200">column 1</div>
-  <div class="bg-red-200">{path}</div>
-  <div class="bg-teal-200">column 3</div>
+  <div class="bg-teal-200">{$page.url.origin}</div>
+  <div class="bg-red-200">{$status.main}</div>
+  <div class="bg-teal-200">{$page.url.pathname}</div>
 </div>
