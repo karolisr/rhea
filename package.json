@@ -18,6 +18,8 @@
     "@sveltejs/kit": "^2.5.4",
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@tauri-apps/cli": "^1.5.11",
+    "@types/d3": "^7.4.3",
+    "@types/d3-scale": "^4.0.8",
     "@types/eslint": "8.56.5",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
@@ -45,6 +47,8 @@
   "dependencies": {
     "@mitre/jsonix": "^3.0.7",
     "@tauri-apps/api": "^1.5.3",
+    "d3": "^7.9.0",
+    "d3-scale": "^4.0.2",
     "file-type-checker": "^1.0.9",
     "idb": "^8.0.0"
   }
