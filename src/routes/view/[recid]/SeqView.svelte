@@ -10,41 +10,77 @@ let height: number = 0
 let s: ScaleLinear<number, number, number>
 let canvas: HTMLCanvasElement
 let ctx: CanvasRenderingContext2D
+let hRow = 40
+
+function drawTicks(every: number, length: number) {
+  every = s(every)
+  length = s(length)
+  const y = 0
+  ctx.strokeStyle = '#DFDFDF'
+  ctx.beginPath()
+  for (let i = every; i < length; i += every) {
+    ctx.moveTo(i, y)
+    ctx.lineTo(i, y + hRow)
+    ctx.stroke()
+  }
+  ctx.closePath()
+}
 
 function drawAnnot(from: number, to: number) {
-  const y = 2
-  const w = Math.max(from, to) - Math.min(from, to)
-  ctx.strokeRect(Math.min(from, to), y, w, 5)
+  from = s(from)
+  to = s(to)
+  const wArrow = hRow / 4
+  const y = hRow
+
+  const b = from
+  const e = to
+  let rev = 1
+
+  if (b < e) {
+    ctx.strokeStyle = 'black'
+    ctx.fillStyle = 'rgba(0,240,0,0.55)'
+  } else {
+    ctx.strokeStyle = 'black'
+    ctx.fillStyle = 'rgba(240,0,0,0.55)'
+    rev = -1
+  }
+
+  const w = to - from
+  ctx.fillRect(from, 0, w - Math.sign(from) * wArrow * rev, y)
+  // ctx.strokeRect(from, 0, w, y)
+
+  ctx.beginPath()
+  ctx.moveTo(to - Math.sign(from) * wArrow * rev, 0)
+  ctx.lineTo(to, y / 2)
+  ctx.lineTo(to - Math.sign(from) * wArrow * rev, y)
+  ctx.closePath()
+  ctx.fill()
 }
 
 function draw() {
   ctx.clearRect(0, 0, width, height)
-  // console.log(s(0), s(rec.GBSeq_length), rec.GBSeq_length)
-  // console.log(height, width)
-  // console.log('---')
-
+  ctx.strokeStyle = 'black'
+  ctx.lineWidth = 1
+  drawTicks(Math.round(rec.GBSeq_length / 50), rec.GBSeq_length)
+  ctx.lineWidth = 1
   rec.GBSeq_feature_table.GBFeature.forEach((f) => {
     if (f.GBFeature_key === 'CDS') {
       f.GBFeature_intervals.GBInterval.forEach((i) => {
-        // console.log(s(i.GBInterval_from), s(i.GBInterval_to))
-        drawAnnot(s(i.GBInterval_from), s(i.GBInterval_to))
+        drawAnnot(i.GBInterval_from, i.GBInterval_to)
       })
     }
   })
-
-  // ctx.strokeRect(10, 10, width - 20, height - 20)
 }
 
 function scale() {
-  // console.log(canvas.clientWidth, canvas.clientHeight)
-  // console.log(canvas.width, canvas.height)
-  // canvas.width = canvas.clientWidth
-  // canvas.height = canvas.clientHeight
-  // width = canvas.clientWidth
-  // height = canvas.clientHeight
-  // canvas.width = window.innerWidth
-  width = canvas.width
-  height = canvas.height
+  // width = rec.GBSeq_length * 2
+  width = window.innerWidth * 2
+  height = hRow
+  canvas.width = width
+  canvas.height = height
+  canvas.style.width = `${width / 2}px`
+  canvas.style.height = `${height / 2}px`
+
   s = scaleLinear([0, rec.GBSeq_length], [0, width])
 }
 
@@ -55,18 +91,9 @@ function onResize(ev: UIEvent) {
 
 onMount(() => {
   ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-  ctx.strokeStyle = 'red'
   window.addEventListener('resize', onResize)
   scale()
   draw()
-  // rec.GBSeq_feature_table.GBFeature.forEach((f) => {
-  //   if (f.GBFeature_key === 'CDS') {
-  //     f.GBFeature_intervals.GBInterval.forEach((i) => {
-  //       console.log(s(i.GBInterval_from), s(i.GBInterval_to))
-  //       // drawAnnot(s(i.GBInterval_from), s(i.GBInterval_to))
-  //     })
-  //   }
-  // })
 })
 
 onDestroy(() => {
@@ -74,12 +101,18 @@ onDestroy(() => {
 })
 </script>
 
-<!-- <canvas bind:this="{canvas}" bind:clientWidth="{width}" bind:clientHeight="{height}"></canvas> -->
-<canvas bind:this="{canvas}"></canvas>
+<div>
+  <canvas bind:this="{canvas}"></canvas>
+</div>
 
 <style>
-canvas {
+div {
   flex-grow: 1;
-  background-color: aliceblue;
+  background-color: seashell;
+  overflow-x: scroll;
+}
+
+canvas {
+  background-color: snow;
 }
 </style>
