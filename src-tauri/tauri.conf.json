@@ -80,7 +80,7 @@
         "sidecar": false
       },
       "window": {
-        "all": false,
+        "all": true,
         "center": false,
         "close": false,
         "create": false,

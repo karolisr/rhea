@@ -36,7 +36,7 @@ onDestroy(() => {
       {rec.GBSeq_feature_table.GBFeature[0].GBFeature_quals.GBQualifier[1]
         .GBQualifier_value}
     </span>
-    <SeqView />
+    <SeqView {rec} />
   {/if}
 </div>
 
@@ -44,6 +44,6 @@ onDestroy(() => {
 div {
   display: flex;
   flex-direction: column;
-  flex-grow: 0;
+  flex-grow: 1;
 }
 </style>
