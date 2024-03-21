@@ -6,7 +6,11 @@ const db_main_name = 'DBMain'
 // const db_raw_name = 'DBRaw'
 
 export async function db_main_delete() {
-  await deleteDB(db_main_name)
+  await deleteDB(db_main_name, {
+    blocked(currentVersion: number, event: IDBVersionChangeEvent) {
+      console.log('db_main_delete blocked ::', event, currentVersion)
+    }
+  })
 }
 
 export async function db_main_init(version: number = 1) {

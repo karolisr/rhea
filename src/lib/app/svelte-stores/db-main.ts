@@ -1,5 +1,11 @@
 import { writable } from 'svelte/store'
-import { db_main_init, db_get, db_get_all, db_put } from '$lib/app/db'
+import {
+  db_main_init,
+  db_main_delete,
+  db_get,
+  db_get_all,
+  db_put
+} from '$lib/app/db'
 import type { DBMain } from '$lib/app/db/types'
 import type { IDBPDatabase, StoreNames, StoreValue, StoreKey } from 'idb'
 import type { ESummaryNuccore, ESummaryTaxonomy } from '$lib/ncbi'
@@ -8,6 +14,7 @@ import { type GBSeq } from '$lib/ncbi/types/gbseq'
 let db: IDBPDatabase<DBMain>
 
 export interface DBMainSvelteStore {
+  delete: typeof db_main_delete
   get: typeof db_main_get
   get_all: typeof db_main_get_all
   put: typeof db_main_put
@@ -20,12 +27,24 @@ export interface DBMainSvelteStore {
 async function prep_db_main() {
   db = await db_main_init()
   const _db_main_svelte_store: DBMainSvelteStore = {
+    delete: async () => {
+      db.close()
+      await db_main_delete()
+      db = await db_main_init()
+      ;(await db_main).update((_) => {
+        _.gbseq = []
+        _.seq_nt_summ = []
+        _.tax_summ = []
+        _.db = db
+        return _
+      })
+    },
     get: db_main_get,
     get_all: db_main_get_all,
     put: db_main_put,
-    gbseq: await db_main_get_all('gbseq'),
-    seq_nt_summ: await db_main_get_all('seq_nt_summ'),
-    tax_summ: await db_main_get_all('tax_summ'),
+    gbseq: (await db_main_get_all('gbseq')) ?? [],
+    seq_nt_summ: (await db_main_get_all('seq_nt_summ')) ?? [],
+    tax_summ: (await db_main_get_all('tax_summ')) ?? [],
     db
   }
   return writable(_db_main_svelte_store)
