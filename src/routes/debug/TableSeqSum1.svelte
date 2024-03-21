@@ -21,13 +21,15 @@ import db_main from '$lib/app/svelte-stores/db-main'
 
 import status from '$lib/app/svelte-stores/status'
 
+import ObjectTree from '$lib/app/ui/views/ObjectTree'
+
 let _db_main: Writable<DBMainSvelteStore>
 let esummaries: ESummaryNuccore[]
 $: esummaries = _db_main ? $_db_main.seq_nt_summ : []
 $: $status.main = `${esummaries.length.toLocaleString()} records`
 
 let openRow: number | null
-let details: ESummaryNuccore
+let details: ESummaryNuccore | undefined
 
 const toggleRow = (i: number) => {
   openRow = openRow === i ? null : i
@@ -74,7 +76,6 @@ onMount(async () => {
   const x = document.getElementById('table-search')
   x?.setAttribute('spellcheck', 'false')
   x?.setAttribute('autocomplete', 'false')
-  console.log()
 })
 onDestroy(() => {
   $status.main = ''
@@ -125,25 +126,24 @@ onDestroy(() => {
       {#if openRow === i}
         <TableBodyRow on:dblclick="{() => (details = s)}">
           <TableBodyCell colspan="4" class="m-0 p-0">
-            <div
-              class="px-2 py-2"
-              transition:slide="{{ duration: 300, axis: 'y' }}">
-              <p>{s.accessionversion}</p>
-              <p>{s.title}</p>
-              <p>{s.organism}</p>
-            </div>
+            {#await $_db_main.get(s.accessionversion, 'gbseq') then obj}
+              <div
+                class="p-2"
+                transition:slide="{{ duration: 300, axis: 'y' }}">
+                <ObjectTree hideName {obj} />
+                <Modal
+                  on:close="{() => (details = undefined)}"
+                  title="{details?.accessionversion}"
+                  open="{!!details}"
+                  autoclose
+                  outsideclose>
+                  <ObjectTree hideName {obj} />
+                </Modal>
+              </div>
+            {/await}
           </TableBodyCell>
         </TableBodyRow>
       {/if}
     {/each}
   </TableBody>
 </TableSearch>
-<Modal
-  title="{details?.accessionversion}"
-  open="{!!details}"
-  autoclose
-  outsideclose>
-  <p>{details.accessionversion}</p>
-  <p>{details.title}</p>
-  <p>{details.organism}</p>
-</Modal>

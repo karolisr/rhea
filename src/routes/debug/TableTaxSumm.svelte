@@ -2,7 +2,7 @@
 import { onMount, onDestroy } from 'svelte'
 import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
 import { slide } from 'svelte/transition'
-
+import ObjectTree from '$lib/app/ui/views/ObjectTree'
 import { type ESummaryTaxonomy } from '$lib/ncbi'
 import type { Writable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
@@ -46,13 +46,11 @@ onDestroy(() => {})
       </TableBodyRow>
       {#if openRow === i}
         <TableBodyRow>
-          <TableBodyCell class="m-0 p-0 text-xs"
-            ><pre
-              class="p-1"
-              transition:slide="{{
-                duration: 250,
-                axis: 'y'
-              }}">{summ.scientificname} {summ.commonname}</pre></TableBodyCell>
+          <TableBodyCell class="m-0 p-0 text-xs">
+            <div class="p-2" transition:slide="{{ duration: 300, axis: 'y' }}">
+              <ObjectTree hideName obj="{summ}" />
+            </div>
+          </TableBodyCell>
         </TableBodyRow>
       {/if}
     {/each}

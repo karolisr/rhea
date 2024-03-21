@@ -2,14 +2,12 @@
 import { onMount, onDestroy } from 'svelte'
 import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
 import { slide } from 'svelte/transition'
+import ObjectTree from '$lib/app/ui/views/ObjectTree'
 
 import { type GBSeq } from '$lib/ncbi/types/gbseq'
 import type { Writable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import db_main from '$lib/app/svelte-stores/db-main'
-
-import ObjectTree from '$lib/app/ui/views/ObjectTree'
-
 let _db_main: Writable<DBMainSvelteStore>
 let gbseqs: GBSeq[]
 $: gbseqs = _db_main ? $_db_main.gbseq : []
@@ -56,7 +54,7 @@ onDestroy(() => {
         <TableBodyRow>
           <TableBodyCell colspan="4" class="m-0 p-0">
             <div
-              class="overflow-clip text-wrap p-2"
+              class="p-2"
               transition:slide="{{
                 delay: 0,
                 duration: 500,
