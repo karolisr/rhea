@@ -1,8 +1,10 @@
+import type { Indexed } from '$lib/types'
+
 export interface GBSet {
   GBSeq: GBSeq[]
 }
 
-export interface GBSeq {
+export interface GBSeq extends Indexed {
   GBSeq_locus: string
   GBSeq_length: number
   GBSeq_strandedness: string

@@ -1,3 +1,5 @@
+import type { Indexed } from "$lib/types"
+
 export enum EntrezFilters {
   plastid = 'plastid',
   chloroplast = 'chloroplast',
@@ -65,10 +67,6 @@ export interface ESummaryJSON {
     [uid: string]: object
     uids: string[]
   }
-}
-
-export interface Indexed {
-  [index: string]: string | number | object
 }
 
 export interface ESummary extends Indexed {
