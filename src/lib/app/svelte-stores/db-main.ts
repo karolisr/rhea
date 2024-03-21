@@ -1,13 +1,14 @@
 import { writable } from 'svelte/store'
-import { db_main_init, db_get_all, db_put } from '$lib/app/db'
+import { db_main_init, db_get, db_get_all, db_put } from '$lib/app/db'
 import type { DBMain } from '$lib/app/db/types'
-import type { IDBPDatabase, StoreNames, StoreValue } from 'idb'
+import type { IDBPDatabase, StoreNames, StoreValue, StoreKey } from 'idb'
 import type { ESummaryNuccore, ESummaryTaxonomy } from '$lib/ncbi'
 import { type GBSeq } from '$lib/ncbi/types/gbseq'
 
 let db: IDBPDatabase<DBMain>
 
 export interface DBMainSvelteStore {
+  get: typeof db_main_get
   get_all: typeof db_main_get_all
   put: typeof db_main_put
   seq_nt_summ: ESummaryNuccore[]
@@ -19,6 +20,7 @@ export interface DBMainSvelteStore {
 async function prep_db_main() {
   db = await db_main_init()
   const _db_main_svelte_store: DBMainSvelteStore = {
+    get: db_main_get,
     get_all: db_main_get_all,
     put: db_main_put,
     gbseq: await db_main_get_all('gbseq'),
@@ -31,6 +33,13 @@ async function prep_db_main() {
 
 const db_main = prep_db_main()
 export default db_main
+
+const db_main_get = async <StoreName extends StoreNames<DBMain>>(
+  id: StoreKey<DBMain, StoreName> | IDBKeyRange,
+  store_name: StoreName
+) => {
+  return (await db_get(id, store_name, db)) as StoreValue<DBMain, StoreName>
+}
 
 const db_main_get_all = async <StoreName extends StoreNames<DBMain>>(
   store_name: StoreName

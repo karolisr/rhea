@@ -1,6 +1,6 @@
 import { deleteDB, openDB } from 'idb'
 import type { DBMain } from './types'
-import type { IDBPDatabase, StoreNames, StoreValue } from 'idb'
+import type { IDBPDatabase, StoreNames, StoreValue, StoreKey } from 'idb'
 
 const db_main_name = 'DBMain'
 // const db_raw_name = 'DBRaw'
@@ -66,4 +66,12 @@ export async function db_get_all<T>(
   db: IDBPDatabase<T>
 ) {
   return await db.getAll(store_name)
+}
+
+export async function db_get<T>(
+  id: StoreKey<T, StoreNames<T>> | IDBKeyRange,
+  store_name: StoreNames<T>,
+  db: IDBPDatabase<T>
+) {
+  return await db.get<StoreNames<T>>(store_name, id)
 }
