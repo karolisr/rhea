@@ -74,7 +74,7 @@ function draw() {
 
 function scale() {
   // width = rec.GBSeq_length * 2
-  width = window.innerWidth * 2
+  width = window.innerWidth * 2 - 80
   height = hRow
   canvas.width = width
   canvas.height = height
@@ -107,9 +107,9 @@ onDestroy(() => {
 
 <style>
 div {
-  flex-grow: 1;
-  background-color: seashell;
-  overflow-x: scroll;
+  background-color: orangered;
+  overflow: hidden;
+  /* overflow-x: scroll; */
 }
 
 canvas {
