@@ -7,6 +7,7 @@ import type { GBSeq } from '$lib/ncbi/types/gbseq'
 import db_main from '$lib/app/svelte-stores/db-main'
 import status from '$lib/app/svelte-stores/status'
 import SeqView from './SeqView.svelte'
+import ObjectTree from '$lib/app/ui/views/ObjectTree'
 
 export let data: PageData
 
@@ -26,7 +27,7 @@ onDestroy(() => {
 })
 </script>
 
-<div class="pt-5">
+<div class="p-5">
   {#if rec}
     <span class="pb-5 text-center text-base">
       {data.recid}
@@ -37,6 +38,9 @@ onDestroy(() => {
         .GBQualifier_value}
     </span>
     <SeqView {rec} />
+    <div class="p-5">
+      <ObjectTree hideName name="{rec.GBSeq_accession_version}" obj="{rec}" />
+    </div>
   {/if}
 </div>
 
@@ -45,5 +49,6 @@ div {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  /* background-color: honeydew; */
 }
 </style>

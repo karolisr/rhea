@@ -8,6 +8,8 @@ import type { Writable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import db_main from '$lib/app/svelte-stores/db-main'
 
+import ObjectTree from '$lib/app/ui/views/ObjectTree'
+
 let _db_main: Writable<DBMainSvelteStore>
 let gbseqs: GBSeq[]
 $: gbseqs = _db_main ? $_db_main.gbseq : []
@@ -38,7 +40,7 @@ onDestroy(() => {
     {#each gbseqs as gbseq, i}
       <TableBodyRow on:click="{() => toggleRow(i)}">
         <TableBodyCell class="whitespace-nowrap p-1"
-          >{gbseq.GBSeq_accession_version}</TableBodyCell>
+          ><a class="text-primary-800 hover:text-primary-600 cursor-pointer font-semibold" href="/view/{gbseq.GBSeq_accession_version}">{gbseq.GBSeq_accession_version}</a></TableBodyCell>
         <TableBodyCell class="whitespace-nowrap p-1">
           {gbseq.GBSeq_organism}</TableBodyCell>
         <TableBodyCell class="whitespace-nowrap p-1">
@@ -48,13 +50,20 @@ onDestroy(() => {
       </TableBodyRow>
       {#if openRow === i}
         <TableBodyRow>
-          <TableBodyCell colspan="4" class="m-0 p-0"
-            ><pre
-              class="p-1"
+          <TableBodyCell colspan="4" class="m-0 p-0">
+            <div
+              class="overflow-clip text-wrap p-2"
               transition:slide="{{
-                duration: 250,
+                delay: 0,
+                duration: 500,
                 axis: 'y'
-              }}">{gbseq.GBSeq_definition}</pre></TableBodyCell>
+              }}">
+              <ObjectTree
+                hideName
+                name="{gbseq.GBSeq_accession_version}"
+                obj="{gbseq}" />
+            </div>
+          </TableBodyCell>
         </TableBodyRow>
       {/if}
     {/each}
