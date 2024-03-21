@@ -40,7 +40,11 @@ onDestroy(() => {
     {#each gbseqs as gbseq, i}
       <TableBodyRow on:click="{() => toggleRow(i)}">
         <TableBodyCell class="whitespace-nowrap p-1"
-          ><a class="text-primary-800 hover:text-primary-600 cursor-pointer font-semibold" href="/view/{gbseq.GBSeq_accession_version}">{gbseq.GBSeq_accession_version}</a></TableBodyCell>
+          ><a
+            class="cursor-pointer font-semibold text-primary-800 hover:text-primary-600"
+            href="/view/{gbseq.GBSeq_accession_version}"
+            >{gbseq.GBSeq_accession_version}</a
+          ></TableBodyCell>
         <TableBodyCell class="whitespace-nowrap p-1">
           {gbseq.GBSeq_organism}</TableBodyCell>
         <TableBodyCell class="whitespace-nowrap p-1">

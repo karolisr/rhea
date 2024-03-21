@@ -1,4 +1,4 @@
-import type { Indexed } from "$lib/types"
+import type { Indexed } from '$lib/types'
 
 export enum EntrezFilters {
   plastid = 'plastid',

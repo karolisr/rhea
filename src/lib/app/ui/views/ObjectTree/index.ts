@@ -1,3 +1,3 @@
-import ObjectTree from "./ObjectTree.svelte";
+import ObjectTree from './ObjectTree.svelte'
 
 export default ObjectTree

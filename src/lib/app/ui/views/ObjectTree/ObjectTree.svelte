@@ -27,7 +27,8 @@ let nodeNames = Object.getOwnPropertyNames(obj)
     </ul>
   {/each}
 {:else if !hideName}
-  <A on:click="{toggle}"><div class="w-svw"><span class="node-name">{name}</span></div></A>
+  <A on:click="{toggle}"
+    ><div class="w-svw"><span class="node-name">{name}</span></div></A>
 {/if}
 
 {#if expanded}

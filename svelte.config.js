@@ -12,7 +12,7 @@ const config = {
     adapter: adapter(),
     prerender: {
       entries: ['*', '/view/[recid]']
-    },
+    }
   }
 }
 

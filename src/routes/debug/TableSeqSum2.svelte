@@ -31,7 +31,7 @@ onDestroy(() => {})
   divClass="overflow-hidden shadow rounded-md">
   <TableBody>
     {#each esummaries as summ, i}
-      <TableBodyRow on:click="{() => toggleRow(i)}" >
+      <TableBodyRow on:click="{() => toggleRow(i)}">
         {#if openRow === i}
           <TableBodyCell class="whitespace-nowrap p-1"
             >{summ.accessionversion}</TableBodyCell>

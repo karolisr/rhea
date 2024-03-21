@@ -21,7 +21,6 @@ import db_main from '$lib/app/svelte-stores/db-main'
 
 import status from '$lib/app/svelte-stores/status'
 
-
 let _db_main: Writable<DBMainSvelteStore>
 let esummaries: ESummaryNuccore[]
 $: esummaries = _db_main ? $_db_main.seq_nt_summ : []
@@ -97,28 +96,31 @@ onDestroy(() => {
   divClass="overflow-hidden shadow rounded-md">
   <TableHead theadClass="text-xs uppercase">
     <TableHeadCell
-      class="whitespace-nowrap p-1 bg-neutral-100"
+      class="whitespace-nowrap bg-neutral-100 p-1"
       on:click="{() => sortTable('accessionversion')}">Accession</TableHeadCell>
     <TableHeadCell
-      class="whitespace-nowrap p-1 bg-neutral-100"
+      class="whitespace-nowrap bg-neutral-100 p-1"
       on:click="{() => sortTable('title')}">Title</TableHeadCell>
     <TableHeadCell
-      class="whitespace-nowrap p-1 bg-neutral-100"
+      class="whitespace-nowrap bg-neutral-100 p-1"
       on:click="{() => sortTable('organism')}">Organism</TableHeadCell>
     <TableHeadCell
-      class="whitespace-nowrap p-1 bg-neutral-100"
+      class="whitespace-nowrap bg-neutral-100 p-1"
       on:click="{() => sortTable('slen')}">Length</TableHeadCell>
   </TableHead>
   <TableBody tableBodyClass="divide-y text-xs">
     {#each $sortItems as s, i}
       <TableBodyRow on:click="{() => toggleRow(i)}">
         <TableBodyCell class="whitespace-nowrap p-1"
-          ><a class="text-primary-800 hover:text-primary-600 cursor-pointer font-semibold" href="/view/{s.accessionversion}">{s.accessionversion}</a>
+          ><a
+            class="cursor-pointer font-semibold text-primary-800 hover:text-primary-600"
+            href="/view/{s.accessionversion}">{s.accessionversion}</a>
         </TableBodyCell>
         <TableBodyCell class="whitespace-nowrap p-1">{s.genome}</TableBodyCell>
         <TableBodyCell class="whitespace-nowrap p-1"
           >{s.organism}</TableBodyCell>
-        <TableBodyCell class="whitespace-nowrap p-1">{s.slen.toLocaleString($settings.locale)}</TableBodyCell>
+        <TableBodyCell class="whitespace-nowrap p-1"
+          >{s.slen.toLocaleString($settings.locale)}</TableBodyCell>
       </TableBodyRow>
       {#if openRow === i}
         <TableBodyRow on:dblclick="{() => (details = s)}">
