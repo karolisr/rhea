@@ -22,6 +22,7 @@ import db_main from '$lib/app/svelte-stores/db-main'
 import status from '$lib/app/svelte-stores/status'
 
 import ObjectTree from '$lib/app/ui/views/ObjectTree'
+import type { GBSeq } from '$lib/ncbi/types/gbseq'
 
 let _db_main: Writable<DBMainSvelteStore>
 let esummaries: ESummaryNuccore[]
@@ -30,8 +31,10 @@ $: $status.main = `${esummaries.length.toLocaleString()} records`
 
 let openRow: number | null
 let details: ESummaryNuccore | undefined
+let obj: GBSeq | undefined
 
-const toggleRow = (i: number) => {
+const toggleRow = async (i: number, s: ESummaryNuccore) => {
+  obj = await $_db_main.get(s.accessionversion, 'gbseq')
   openRow = openRow === i ? null : i
 }
 
@@ -111,7 +114,7 @@ onDestroy(() => {
   </TableHead>
   <TableBody tableBodyClass="divide-y text-xs">
     {#each $sortItems as s, i}
-      <TableBodyRow on:click="{() => toggleRow(i)}">
+      <TableBodyRow on:click="{() => toggleRow(i, s)}">
         <TableBodyCell class="whitespace-nowrap p-1"
           ><a
             class="cursor-pointer font-semibold text-primary-800 hover:text-primary-600"
@@ -123,25 +126,32 @@ onDestroy(() => {
         <TableBodyCell class="whitespace-nowrap p-1"
           >{s.slen.toLocaleString($settings.locale)}</TableBodyCell>
       </TableBodyRow>
+
       {#if openRow === i}
         <TableBodyRow on:dblclick="{() => (details = s)}">
           <TableBodyCell colspan="4" class="m-0 p-0">
-            {#await $_db_main.get(s.accessionversion, 'gbseq') then obj}
-              <div
-                class="p-2"
-                transition:slide="{{ duration: 300, axis: 'y' }}">
+            <div
+              transition:slide="{{
+                delay: 0,
+                duration: 500,
+                axis: 'y'
+              }}"
+              class="p-2">
+              {#if obj}
                 <ObjectTree hideName {obj} />
-                <Modal
-                  on:close="{() => (details = undefined)}"
-                  title="{details?.accessionversion}"
-                  open="{!!details}"
-                  autoclose
-                  outsideclose>
-                  <ObjectTree hideName {obj} />
-                </Modal>
-              </div>
-            {/await}
+              {/if}
+            </div>
           </TableBodyCell>
+          <Modal
+            on:close="{() => (details = undefined)}"
+            title="{details?.accessionversion}"
+            open="{!!details}"
+            autoclose
+            outsideclose>
+            {#if obj}
+              <ObjectTree hideName {obj} />
+            {/if}
+          </Modal>
         </TableBodyRow>
       {/if}
     {/each}
