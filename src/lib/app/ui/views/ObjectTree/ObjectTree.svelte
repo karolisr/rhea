@@ -2,19 +2,33 @@
 // @ts-nocheck
 import type { Indexed } from '$lib/types'
 import { A } from 'flowbite-svelte'
+import { cbw } from '$lib/app/api/clipboard'
 
 export let name: string | undefined = undefined
+$: key = name ? name.split(' ')[0].split(':')[0] : undefined
+
 export let obj: Indexed
 export let expanded = false
 export let hideName = false
 
 if (hideName) expanded = true
 
-function toggle() {
+function toggleExpand() {
   expanded = !expanded
 }
 
-let nodeNames = Object.getOwnPropertyNames(obj)
+const _oncontextmenu: typeof oncontextmenu = (event) => {
+  let _: Indexed = {}
+  if (key) {
+    _[key] = obj
+  } else {
+    _ = obj
+  }
+  cbw(JSON.stringify(_))
+  console.log(`Copied JSON representation of "${key}" to clipboard.`)
+}
+
+let nodeNames = Object.getOwnPropertyNames(obj).sort()
 </script>
 
 {#if obj instanceof Array}
@@ -27,13 +41,19 @@ let nodeNames = Object.getOwnPropertyNames(obj)
     </ul>
   {/each}
 {:else if !hideName}
-  <A on:click="{toggle}"
-    ><div class="w-svw"><span class="node-name">{name}</span></div></A>
+  <A on:click="{toggleExpand}"
+    ><div
+      on:contextmenu="{_oncontextmenu}"
+      role="button"
+      tabindex="0"
+      class="w-svw hover:bg-yellow-200 hover:bg-opacity-25">
+      <span class="node-name">{name}</span>
+    </div></A>
 {/if}
 
 {#if expanded}
   <ul class:show-border="{!hideName}">
-    {#each nodeNames as leafName}
+    {#each nodeNames as leafName, i}
       <li>
         {#if obj[leafName] instanceof Object}
           <!-- ToDo: fix type errors and then remove @ts-nocheck -->
@@ -46,8 +66,13 @@ let nodeNames = Object.getOwnPropertyNames(obj)
           {/if}
         {:else}
           <span class="node-name">{leafName}</span>:&nbsp;<span
-            class="node-value"
-            >{obj[leafName].toString().substring(0, 1000)}</span>
+            class="node-value">
+            {#if obj[leafName]}
+              {obj[leafName].toString().substring(0, 1000)}
+            {:else}
+              {obj[leafName]}
+            {/if}
+          </span>
         {/if}
       </li>
     {/each}
@@ -58,6 +83,7 @@ let nodeNames = Object.getOwnPropertyNames(obj)
 ul {
   list-style: none;
   max-width: 90vmax;
+  user-select: text;
 }
 
 .show-border {
@@ -70,13 +96,16 @@ li {
   padding: 0em 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  user-select: text;
 }
 
 .node-name {
   font-weight: bold;
+  user-select: text;
 }
 
 .node-value {
   color: blue;
+  user-select: text;
 }
 </style>
