@@ -19,7 +19,7 @@
         "show": false
       },
       "clipboard": {
-        "all": false,
+        "all": true,
         "readText": false,
         "writeText": false
       },
