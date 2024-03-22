@@ -19,7 +19,8 @@ import db_main from '$lib/app/svelte-stores/db-main'
 let _db_main: Readable<DBMainSvelteStore>
 
 let searchTerm: string = ''
-let searchStatusMessage: string = ''
+let searchStatusMessage: string = 'No results yet.'
+$: updateStatus(searchStatusMessage)
 $: searchTermProcessed = searchTerm.trim()
 let refSeqOnly = true
 let searchButtonDisabled = true
@@ -27,7 +28,6 @@ let searching = false
 
 let esummaryResult: ESummaryNuccore[] = []
 import status from '$lib/app/svelte-stores/status'
-$: $status.main = `${esummaryResult.length.toLocaleString()} results`
 
 let errorMsg: string = ''
 $: error = errorMsg ? true : false
@@ -38,6 +38,10 @@ function validateSearchTerm() {
   } else {
     searchButtonDisabled = true
   }
+}
+
+async function updateStatus(msg: string) {
+  $status.main = msg
 }
 
 async function search(): Promise<void> {
@@ -59,14 +63,19 @@ async function search(): Promise<void> {
     if (esummaryResult.length === 0) {
       searchStatusMessage = `No results for ${searchTerm}. TaxIDs: ${taxids.join(', ')}`
     } else {
-      searchStatusMessage = ''
       // ---------------------
       const accs: string[] = []
       esummaryResult.forEach((x) => {
         accs.push(x.accessionversion)
       })
+      // ---------------------
+      searching = false
+      searchStatusMessage = `Downloading complete sequence records.`
+      // ---------------------
       const gbseqs = await getSeqRecords('nuccore', accs)
       $_db_main.put(gbseqs, 'gbseq')
+      // ---------------------
+      searchStatusMessage = `Downloading taxonomy records.`
       // ---------------------
       const p = new EutilParams()
       p.db = 'taxonomy'
@@ -81,6 +90,7 @@ async function search(): Promise<void> {
       // const tax_summs = (await efetch(p)) as { Taxon: ESummaryTaxonomy[] }
       // ---------------------
     }
+    searchStatusMessage = `${esummaryResult.length.toLocaleString()} results`
     $_db_main.put(esummaryResult, 'seq_nt_summ')
     searching = false
   } else {
@@ -95,7 +105,7 @@ onMount(async () => {
 })
 
 onDestroy(() => {
-  $status.main = ''
+  // $status.main = ''
 })
 </script>
 
@@ -157,18 +167,5 @@ onDestroy(() => {
             border-neutral-300
             bg-lime-50 p-2
             ">{summ.accessionversion} {summ.organism}</pre>
-  {:else}
-    <pre
-      class="
-            p-2
-            m-2
-            rounded-md
-            border
-            border-neutral-300
-            select-all
-            bg-red-50
-            ">{searchStatusMessage
-        ? searchStatusMessage
-        : 'No results yet'}</pre>
   {/each}
 </div>
