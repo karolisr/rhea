@@ -2,11 +2,15 @@
 import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
 import { slide } from 'svelte/transition'
 import { dtds, dtd_urls } from '$lib/app/svelte-stores/cache-dtd'
+import type { Indexed } from '$lib/types'
+import { parse_dtd_txt } from '$lib/xml/dtd'
+import ObjectTree from '$lib/app/ui/views/ObjectTree'
 
 let openRow: number | null
-let details
+let obj: Indexed | undefined
 
-const toggleRow = (i: number) => {
+const toggleRow = async (i: number, dtd_txt: string, url: string) => {
+  obj = await parse_dtd_txt(dtd_txt, url)
   openRow = openRow === i ? null : i
 }
 </script>
@@ -18,7 +22,7 @@ const toggleRow = (i: number) => {
   divClass="overflow-hidden shadow rounded-md">
   <TableBody>
     {#each $dtd_urls as url, i}
-      <TableBodyRow on:click="{() => toggleRow(i)}">
+      <TableBodyRow on:click="{() => toggleRow(i, $dtds[url], url)}">
         {#if openRow === i}
           <TableBodyCell class="whitespace-nowrap p-1">{url}</TableBodyCell>
         {:else}
@@ -26,13 +30,20 @@ const toggleRow = (i: number) => {
         {/if}
       </TableBodyRow>
       {#if openRow === i}
-        <TableBodyRow on:dblclick="{() => (details = $dtds[url])}">
-          <TableBodyCell class="m-0 p-0 text-xs"
-            ><pre
-              class="p-1"
-              transition:slide="{{ duration: 500, axis: 'y' }}">{$dtds[
-                url
-              ]}</pre></TableBodyCell>
+        <TableBodyRow>
+          <TableBodyCell class="m-0 p-0">
+            <div
+              class="p-2"
+              transition:slide="{{
+                delay: 0,
+                duration: 500,
+                axis: 'y'
+              }}">
+              {#if obj}
+                <ObjectTree hideName name="{url}" {obj} />
+              {/if}
+            </div>
+          </TableBodyCell>
         </TableBodyRow>
       {/if}
     {/each}
