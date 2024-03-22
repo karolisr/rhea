@@ -21,7 +21,7 @@ import db_main from '$lib/app/svelte-stores/db-main'
 
 import status from '$lib/app/svelte-stores/status'
 
-import ObjectTree from '$lib/app/ui/views/ObjectTree'
+import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
 import type { GBSeq } from '$lib/ncbi/types/gbseq'
 
 let _db_main: Writable<DBMainSvelteStore>

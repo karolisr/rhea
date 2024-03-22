@@ -2,7 +2,7 @@
 import { onMount, onDestroy } from 'svelte'
 import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
 import { slide } from 'svelte/transition'
-import ObjectTree from '$lib/app/ui/views/ObjectTree'
+import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
 import { type ESummaryTaxonomy } from '$lib/ncbi'
 import type { Writable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'

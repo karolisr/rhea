@@ -7,7 +7,7 @@ import type { GBSeq } from '$lib/ncbi/types/gbseq'
 import db_main from '$lib/app/svelte-stores/db-main'
 import status from '$lib/app/svelte-stores/status'
 import SeqView from './SeqView.svelte'
-import ObjectTree from '$lib/app/ui/views/ObjectTree'
+import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
 
 export let data: PageData
 

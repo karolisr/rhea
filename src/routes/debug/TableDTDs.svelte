@@ -4,7 +4,7 @@ import { slide } from 'svelte/transition'
 import { dtds, dtd_urls } from '$lib/app/svelte-stores/cache-dtd'
 import type { Indexed } from '$lib/types'
 import { parse_dtd_txt } from '$lib/xml/dtd'
-import ObjectTree from '$lib/app/ui/views/ObjectTree'
+import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
 
 let openRow: number | null
 let obj: Indexed | undefined
