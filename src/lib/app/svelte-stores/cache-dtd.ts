@@ -23,9 +23,27 @@ export const dtd_urls = derived(dtds, ($dtds) =>
 
 // --------------------------------------------------------------------------
 
-function dtd_url(url: string, ref_url?: string) {
-  const base_url = ref_url ? ref_url : 'https://www.ncbi.nlm.nih.gov/dtd/'
-  return new URL(url, base_url)
+function getDtdUrls(url: string, ref_url?: string): URL[] {
+  const base_urls = [
+    'https://www.ncbi.nlm.nih.gov/dtd/',
+    'https://www.ncbi.nlm.nih.gov/entrez/query/DTD/',
+    'https://www.ncbi.nlm.nih.gov/data_specs/dtd/other/entrez/',
+    'https://www.ncbi.nlm.nih.gov/data_specs/dtd/',
+    'https://www.nlm.nih.gov/databases/dtd/'
+  ]
+  const rv: URL[] = []
+
+  url = url.replace('http:', 'https:')
+
+  if (ref_url) {
+    rv.push(new URL(url, ref_url))
+  }
+
+  base_urls.forEach((bu) => {
+    rv.push(new URL(url, bu))
+  })
+
+  return rv
 }
 
 export interface _DTD_TXT {
@@ -45,26 +63,43 @@ export function cache_get_dtd_txt(
   url: string,
   ref_url?: string
 ): _DTD_TXT | null {
-  url = dtd_url(url, ref_url).toString()
+  const urls = getDtdUrls(url, ref_url)
   let dtd_txt: _DTD_TXT | null = null
-  const unsubscribe = dtds.subscribe((_dtds) => {
-    if (url in _dtds) {
-      // console.info(`DTD cache hit: ${url}`)
-      dtd_txt = { url: url, data: _dtds[url] }
-    } else {
-      // console.info(`DTD cache miss: ${url}`)
-    }
-  })
-  unsubscribe()
+
+  for (const _url of urls) {
+    const url = _url.toString()
+    const unsubscribe = dtds.subscribe((_dtds) => {
+      if (url in _dtds) {
+        console.info(`DTD cache hit: ${url}`)
+        dtd_txt = { url: url, data: _dtds[url] }
+      } else {
+        console.info(`DTD cache miss: ${url}`)
+        dtd_txt = null
+      }
+    })
+    unsubscribe()
+    if (dtd_txt) break
+  }
+
   return dtd_txt
 }
 
-export function dnld_dtd_txt(url: string, ref_url?: string): Promise<_DTD_TXT> {
-  url = dtd_url(url, ref_url).toString()
-  const dtd_txt_promise = dnld_txt(url)
-  dtd_txt_promise.then((rslt) => {
-    cache_add_dtd_txt(rslt.url, rslt.data)
-    console.info(`DTD added to cache: ${rslt.url}`)
-  })
-  return dtd_txt_promise
+export async function dnld_dtd_txt(
+  url: string,
+  ref_url?: string
+): Promise<_DTD_TXT | null> {
+  const urls = getDtdUrls(url, ref_url)
+  let dtd_txt: { url: string; data: string } | null = { url, data: '' }
+
+  for (const _url of urls) {
+    const url = _url.toString()
+    dtd_txt = await dnld_txt(url)
+    if (dtd_txt) {
+      cache_add_dtd_txt(dtd_txt.url, dtd_txt.data)
+      console.info(`DTD added to cache: ${dtd_txt.url}`)
+      break
+    }
+  }
+
+  return dtd_txt
 }

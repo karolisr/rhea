@@ -6,7 +6,7 @@ interface DTDEntityRaw extends DTDItemRaw {
   entity_name: string
   entity_pubsys?: string
   entity_description?: string
-  entity_value: string
+  entity_value?: string
   entity_url?: string
 }
 

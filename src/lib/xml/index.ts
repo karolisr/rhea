@@ -1,4 +1,4 @@
-import type { Indexed } from '$lib/ncbi'
+import type { Indexed } from '$lib/types'
 import { parse_dtd_txt, parse_dtd_at_url, element_value_type } from './dtd'
 
 // ToDo: create_parent_object_for_arrays type problems.
