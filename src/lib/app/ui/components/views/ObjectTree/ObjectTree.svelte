@@ -28,18 +28,37 @@ const _oncontextmenu: typeof oncontextmenu = (event) => {
   console.log(`Copied JSON representation of "${key}" to clipboard.`)
 }
 
-let nodeNames = Object.getOwnPropertyNames(obj).sort()
+function isPrimitiveArray(array: Array<unknown>): boolean {
+  return array.every(
+    (i) =>
+      typeof i === 'string' || typeof i === 'number' || typeof i === 'boolean'
+  )
+}
+
+let objectIsPrimitiveArray = false
+let nodeNames: string[] = []
+
+if (obj instanceof Array && isPrimitiveArray(obj)) {
+  objectIsPrimitiveArray = true
+} else {
+  nodeNames = Object.getOwnPropertyNames(obj).sort()
+}
 </script>
 
 {#if obj instanceof Array}
-  {#each obj as arrayObj, i}
-    <ul
-      class="my-1 border-b border-b-slate-300 bg-slate-400 bg-opacity-5 p-0.5 px-1">
-      <li>
-        <svelte:self name="{`${name}: ${i + 1}`}" obj="{arrayObj}" />
-      </li>
-    </ul>
-  {/each}
+  {#if objectIsPrimitiveArray}
+    <span class="node-name">{name}</span>:&nbsp;<span class="node-value"
+      >{obj.toString().replaceAll(',', ', ')}</span>
+  {:else}
+    {#each obj as item, i}
+      <ul
+        class="my-1 border-b border-b-slate-300 bg-slate-400 bg-opacity-5 p-0.5 px-1">
+        <li>
+          <svelte:self name="{`${name}: ${i + 1}`}" obj="{item}" />
+        </li>
+      </ul>
+    {/each}
+  {/if}
 {:else if !hideName}
   <A on:click="{toggleExpand}"
     ><div
