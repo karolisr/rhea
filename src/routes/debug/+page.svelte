@@ -1,9 +1,8 @@
 <script lang="ts">
 import { Tabs, TabItem, Button } from 'flowbite-svelte'
 import TableDTDs from './TableDTDs.svelte'
-import TableSeqSum1 from './TableSeqSum1.svelte'
-import TableSeqSum2 from './TableSeqSum2.svelte'
-import TableGbSeqs from './TableGBSeqs.svelte'
+import TableSeqSum from './TableSeqSum.svelte'
+import TableGBSeqs from './TableGBSeqs.svelte'
 import TableTaxSumm from './TableTaxSumm.svelte'
 
 import { type Readable } from 'svelte/store'
@@ -28,24 +27,19 @@ hover:text-neutral-600 hover:bg-neutral-50 text-xs`
   contentClass="px-5 py-5">
   <TabItem
     open
-    title="TableSeqSum1"
+    title="TableSeqSum"
     activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}"><TableSeqSum1 /></TabItem>
+    inactiveClasses="{tabClassInactive}"><TableSeqSum /></TabItem>
 
   <TabItem
-    title="TableGbSeqs"
+    title="TableGBSeqs"
     activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}"><TableGbSeqs /></TabItem>
+    inactiveClasses="{tabClassInactive}"><TableGBSeqs /></TabItem>
 
   <TabItem
     title="TableTaxSumm"
     activeClasses="{tabClassActive}"
     inactiveClasses="{tabClassInactive}"><TableTaxSumm /></TabItem>
-
-  <TabItem
-    title="TableSeqSum2"
-    activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}"><TableSeqSum2 /></TabItem>
 
   <TabItem
     title="DTDs"

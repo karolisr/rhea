@@ -3,7 +3,7 @@ import { onMount, onDestroy } from 'svelte'
 import type { PageData } from './$types'
 import type { Writable } from 'svelte/store'
 import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
-import type { GBSeq } from '$lib/ncbi/types/gbseq'
+import type { GBSeq } from '$lib/ncbi/types/GBSet'
 import db_main from '$lib/app/svelte-stores/db-main'
 import status from '$lib/app/svelte-stores/status'
 import SeqView from './SeqView.svelte'
@@ -30,12 +30,10 @@ onDestroy(() => {
 <div class="p-5">
   {#if rec}
     <span class="pb-5 text-center text-base">
-      {data.recid}
-      |
-      {rec.GBSeq_organism}
-      |
-      {rec.GBSeq_feature_table.GBFeature[0].GBFeature_quals.GBQualifier[1]
-        .GBQualifier_value}
+      {data.recid} | {rec.GBSeq_organism}
+      {#if rec.GBSeq_feature_table && rec.GBSeq_feature_table[0].GBFeature_quals}
+        | {rec.GBSeq_feature_table[0].GBFeature_quals[1].GBQualifier_value}
+      {/if}
     </span>
     <SeqView {rec} />
     <div class="p-5">

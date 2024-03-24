@@ -4,7 +4,7 @@ import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte'
 import { slide } from 'svelte/transition'
 import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
 
-import { type GBSeq } from '$lib/ncbi/types/gbseq'
+import { type GBSeq } from '$lib/ncbi/types/GBSet'
 import type { Writable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import db_main from '$lib/app/svelte-stores/db-main'

@@ -8,8 +8,9 @@ import {
 } from '$lib/app/db'
 import type { DBMain } from '$lib/app/db/types'
 import type { IDBPDatabase, StoreNames, StoreValue, StoreKey } from 'idb'
-import type { ESummaryNuccore, ESummaryTaxonomy } from '$lib/ncbi'
-import { type GBSeq } from '$lib/ncbi/types/gbseq'
+import type { ESummaryNuccore } from '$lib/ncbi'
+import { type GBSeq } from '$lib/ncbi/types/GBSet'
+import type { Taxon } from '$lib/ncbi/types/TaxaSet'
 
 let db: IDBPDatabase<DBMain>
 
@@ -19,7 +20,7 @@ export interface DBMainSvelteStore {
   get_all: typeof db_main_get_all
   put: typeof db_main_put
   seq_nt_summ: ESummaryNuccore[]
-  tax_summ: ESummaryTaxonomy[]
+  taxon: Taxon[]
   gbseq: GBSeq[]
   db: IDBPDatabase<DBMain>
 }
@@ -34,7 +35,7 @@ async function prep_db_main() {
       ;(await db_main).update((_) => {
         _.gbseq = []
         _.seq_nt_summ = []
-        _.tax_summ = []
+        _.taxon = []
         _.db = db
         return _
       })
@@ -44,7 +45,7 @@ async function prep_db_main() {
     put: db_main_put,
     gbseq: (await db_main_get_all('gbseq')) ?? [],
     seq_nt_summ: (await db_main_get_all('seq_nt_summ')) ?? [],
-    tax_summ: (await db_main_get_all('tax_summ')) ?? [],
+    taxon: (await db_main_get_all('taxon')) ?? [],
     db
   }
   return writable(_db_main_svelte_store)
@@ -73,12 +74,12 @@ const db_main_put = async <StoreName extends StoreNames<DBMain>>(
   await db_put(items, store_name, db)
   const gbseq = await db_main_get_all('gbseq')
   const seq_nt_summ = await db_main_get_all('seq_nt_summ')
-  const tax_summ = await db_main_get_all('tax_summ')
+  const taxon = await db_main_get_all('taxon')
   const store = await db_main
   store.update((_) => {
     _.gbseq = gbseq
     _.seq_nt_summ = seq_nt_summ
-    _.tax_summ = tax_summ
+    _.taxon = taxon
     return _
   })
 }

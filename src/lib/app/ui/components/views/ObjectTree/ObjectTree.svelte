@@ -1,6 +1,6 @@
 <script lang="ts">
 // @ts-nocheck
-import type { Indexed } from '$lib/types'
+import type { IndexedUndefined } from '$lib/types'
 import { A } from 'flowbite-svelte'
 import { cbw } from '$lib/app/api/clipboard'
 import { getPropNames } from '$lib'
@@ -8,7 +8,7 @@ import { getPropNames } from '$lib'
 export let name: string | undefined = undefined
 $: key = name ? name.split(' ')[0].split(':')[0] : undefined
 
-export let obj: Indexed
+export let obj: IndexedUndefined
 export let expanded = false
 export let hideName = false
 
@@ -19,7 +19,7 @@ function toggleExpand() {
 }
 
 const _oncontextmenu: typeof oncontextmenu = (event) => {
-  let _: Indexed = {}
+  let _: IndexedUndefined = {}
   if (key) {
     _[key] = obj
   } else {
@@ -46,11 +46,21 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 }
 </script>
 
+{#if !hideName}
+  <A on:click="{toggleExpand}"
+    ><div
+      on:contextmenu="{_oncontextmenu}"
+      role="button"
+      tabindex="0"
+      class="w-svw hover:bg-yellow-200 hover:bg-opacity-25">
+      <span class="node-name">{name}</span>
+    </div></A>
+{/if}
 {#if obj instanceof Array}
   {#if objectIsPrimitiveArray}
     <span class="node-name">{name}</span>:&nbsp;<span class="node-value"
       >{obj.toString().replaceAll(',', ', ')}</span>
-  {:else}
+  {:else if expanded}
     {#each obj as item, i}
       <ul
         class="my-1 border-b border-b-slate-300 bg-slate-400 bg-opacity-5 p-0.5 px-1">
@@ -60,20 +70,11 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
       </ul>
     {/each}
   {/if}
-{:else if !hideName}
-  <A on:click="{toggleExpand}"
-    ><div
-      on:contextmenu="{_oncontextmenu}"
-      role="button"
-      tabindex="0"
-      class="w-svw hover:bg-yellow-200 hover:bg-opacity-25">
-      <span class="node-name">{name}</span>
-    </div></A>
 {:else if getPropNames(obj).length === 0}
   <span class="node-name">Empty Object</span>
 {/if}
 
-{#if expanded}
+{#if expanded && !(obj instanceof Array)}
   <ul class:show-border="{!hideName}">
     {#each nodeNames as leafName, i}
       <li>
@@ -90,7 +91,7 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
           <span class="node-name">{leafName}</span>:&nbsp;<span
             class="node-value">
             {#if obj[leafName]}
-              {obj[leafName].toString().substring(0, 1000)}
+              {obj[leafName]?.toString().substring(0, 1000)}
             {:else}
               {obj[leafName]}
             {/if}

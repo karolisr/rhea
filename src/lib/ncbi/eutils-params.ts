@@ -48,6 +48,8 @@ export class EutilParams {
 
   set ids(ids: string[] | number[]) {
     this._ids = ids.map((id) => id.toString())
+    const unique = [...new Set<string>(this._ids).values()]
+    this._ids = unique
   }
 
   get ids(): string[] | number[] {

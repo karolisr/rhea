@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { GBSeq } from '$lib/ncbi/types/gbseq'
+import type { GBSeq } from '$lib/ncbi/types/GBSet'
 import { onMount, onDestroy } from 'svelte'
 import { scaleLinear, type ScaleLinear } from 'd3-scale'
 
@@ -63,10 +63,11 @@ function draw() {
   ctx.lineWidth = 1
   drawTicks(Math.round(rec.GBSeq_length / 50), rec.GBSeq_length)
   ctx.lineWidth = 1
-  rec.GBSeq_feature_table.GBFeature.forEach((f) => {
+  rec.GBSeq_feature_table?.forEach((f) => {
     if (f.GBFeature_key === 'CDS') {
-      f.GBFeature_intervals.GBInterval.forEach((i) => {
-        drawAnnot(i.GBInterval_from, i.GBInterval_to)
+      f.GBFeature_intervals?.forEach((i) => {
+        if (i.GBInterval_from && i.GBInterval_to)
+          drawAnnot(i.GBInterval_from, i.GBInterval_to)
       })
     }
   })

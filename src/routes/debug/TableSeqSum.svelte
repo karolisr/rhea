@@ -22,7 +22,7 @@ import db_main from '$lib/app/svelte-stores/db-main'
 import status from '$lib/app/svelte-stores/status'
 
 import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
-import type { GBSeq } from '$lib/ncbi/types/gbseq'
+import type { GBSeq } from '$lib/ncbi/types/GBSet'
 
 let _db_main: Writable<DBMainSvelteStore>
 let esummaries: ESummaryNuccore[]

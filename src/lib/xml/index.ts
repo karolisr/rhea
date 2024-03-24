@@ -101,7 +101,7 @@ const DTD_MAP: { [element_name: string]: string } = {
 
 export async function parse_xml_txt(
   txt: string,
-  create_parent_object_for_arrays: boolean = true
+  create_parent_object_for_arrays: boolean = false
 ) {
   let dtd = await parse_dtd_txt(txt)
   const dp = new DOMParser()

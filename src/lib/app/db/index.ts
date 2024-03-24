@@ -3,7 +3,6 @@ import type { DBMain } from './types'
 import type { IDBPDatabase, StoreNames, StoreValue, StoreKey } from 'idb'
 
 const db_main_name = 'DBMain'
-// const db_raw_name = 'DBRaw'
 
 export async function db_main_delete() {
   await deleteDB(db_main_name, {
@@ -14,6 +13,7 @@ export async function db_main_delete() {
 }
 
 export async function db_main_init(version: number = 1) {
+  // await db_main_delete()
   const db_main = await openDB<DBMain>(db_main_name, version, {
     upgrade(database, oldVersion, newVersion, transaction, event) {
       console.log(
@@ -27,8 +27,8 @@ export async function db_main_init(version: number = 1) {
       const os_seq_nt_summ = database.createObjectStore('seq_nt_summ', {
         keyPath: 'accessionversion'
       })
-      os_seq_nt_summ.createIndex('taxid', 'taxid')
-      database.createObjectStore('tax_summ', { keyPath: 'taxid' })
+      os_seq_nt_summ.createIndex('TaxId', 'taxid')
+      database.createObjectStore('taxon', { keyPath: 'TaxId' })
       database.createObjectStore('gbseq', {
         keyPath: 'GBSeq_accession_version'
       })

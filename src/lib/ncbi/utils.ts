@@ -1,7 +1,7 @@
 import { EutilParams } from './eutils-params'
 import { RetMode, RetTypeEFetch, NCBIDatabase } from '.'
 import { esearch, efetch } from './eutils'
-import type { GBSet, GBSeq } from './types/gbseq'
+import type { GBSet, GBSeq } from './types/GBSet'
 
 export async function getTaxIDs(term: string): Promise<number[]> {
   if (term.trim() !== '') {
@@ -43,17 +43,17 @@ export function makeESearchTerm(
 export async function getSeqRecords(
   db: keyof typeof NCBIDatabase,
   accs: string[]
-): Promise<GBSeq[]> {
+): Promise<GBSet> {
   const p = new EutilParams()
   p.db = db
   p.ids = accs
   p.retmode = RetMode.xml
   p.rettype = RetTypeEFetch.gb
-  const rv: GBSeq[] = []
+  const rv: GBSet = []
   if (accs.length > 0) {
     const efetch_result = (await efetch(p)) as GBSet[]
     efetch_result.forEach((gbset) => {
-      gbset.GBSeq.forEach((gbseq) => {
+      gbset.forEach((gbseq) => {
         rv.push(gbseq)
       })
     })

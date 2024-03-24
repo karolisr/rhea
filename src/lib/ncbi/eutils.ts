@@ -108,7 +108,7 @@ async function processResponse(response: Response): Promise<object> {
       break
     case RetContentType.xml:
       xmlText = await response.text()
-      data = await parse_xml_txt(xmlText)
+      data = (await parse_xml_txt(xmlText)) as object
       break
     case RetContentType.json:
       data = await response.json()

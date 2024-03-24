@@ -4,12 +4,7 @@ import { Input, Button, ButtonGroup, Alert, Spinner } from 'flowbite-svelte'
 import { fade } from 'svelte/transition'
 import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getSeqRecords, getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
-import {
-  EntrezFilters,
-  NCBIDatabase,
-  type ESummaryNuccore,
-  type ESummaryTaxonomy
-} from '$lib/ncbi'
+import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
 import { EutilParams } from '$lib/ncbi/eutils-params'
 
@@ -28,6 +23,7 @@ let searching = false
 
 let esummaryResult: ESummaryNuccore[] = []
 import status from '$lib/app/svelte-stores/status'
+import type { TaxaSet } from '$lib/ncbi/types/TaxaSet'
 
 let errorMsg: string = ''
 $: error = errorMsg ? true : false
@@ -47,7 +43,7 @@ async function updateStatus(msg: string) {
 async function search(): Promise<void> {
   searching = true
   searchTerm = searchTermProcessed
-  const taxids: number[] = await getTaxIDs(searchTerm).catch((message) => {
+  let taxids: number[] = await getTaxIDs(searchTerm).catch((message) => {
     console.warn(message)
     errorMsg = message
     return []
@@ -67,6 +63,7 @@ async function search(): Promise<void> {
       const accs: string[] = []
       esummaryResult.forEach((x) => {
         accs.push(x.accessionversion)
+        taxids.push(x.taxid)
       })
       // ---------------------
       searching = false
@@ -80,14 +77,13 @@ async function search(): Promise<void> {
       const p = new EutilParams()
       p.db = 'taxonomy'
       p.ids = taxids
-      const tax_summs = (await esummary(p)) as ESummaryTaxonomy[]
-      $_db_main.put(tax_summs, 'tax_summ')
-      // ---------------------
-      // const p = new EutilParams()
-      // p.db = 'taxonomy'
-      // p.ids = taxids
-      // p.retmode = 'xml'
-      // const tax_summs = (await efetch(p)) as { Taxon: ESummaryTaxonomy[] }
+      p.retmode = 'xml'
+      const _ = (await efetch(p)) as TaxaSet[]
+      let taxa: TaxaSet = []
+      for (const taxaSet of _) {
+        taxa = [...taxa, ...taxaSet]
+      }
+      $_db_main.put(taxa, 'taxon')
       // ---------------------
     }
     searchStatusMessage = `${esummaryResult.length.toLocaleString()} results`
