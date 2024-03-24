@@ -1,11 +1,46 @@
 import type { Indexed } from '$lib/types'
-import { getPropNames, setDiff } from '$lib'
+import { getPropNames, removeCycle } from '$lib'
 import { element_value_type } from '.'
 
-export function elements_to_json(elements: {
-  [element_name: string]: _dtd_element
-}): Indexed {
-  return _elements_to_json(elements)
+export function elements_to_json(
+  elements: { [element_name: string]: _dtd_element },
+  dashToUnderscore: boolean = true
+): Indexed {
+  let _els: { [element_name: string]: _dtd_element } = {}
+
+  if (dashToUnderscore) {
+    const ens = getPropNames(elements)
+    for (const en of ens) {
+      const enNew = en.replaceAll('-', '_')
+      _els[enNew] = { children: null, attributes: null, value: null }
+      _els[enNew].attributes = elements[en].attributes
+      _els[enNew].value = elements[en].value
+      if (elements[en].children) {
+        _els[enNew].children = {}
+        const children = _els[enNew].children as {
+          [key: string]: {
+            type: string
+            required: string
+          }
+        }
+        const ecns = getPropNames(elements[en].children)
+        for (const ecn of ecns) {
+          const ecnNew = ecn.replaceAll('-', '_')
+          const _ = elements[en].children as {
+            [key: string]: {
+              type: string
+              required: string
+            }
+          }
+          children[ecnNew] = { required: _[ecn].required, type: _[ecn].type }
+        }
+      }
+    }
+  } else {
+    _els = elements
+  }
+
+  return removeCycle(_elements_to_json(_els)) as Indexed
 }
 
 export function _never_children(elements: {
