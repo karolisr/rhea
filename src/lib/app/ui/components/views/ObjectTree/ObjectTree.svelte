@@ -3,6 +3,7 @@
 import type { Indexed } from '$lib/types'
 import { A } from 'flowbite-svelte'
 import { cbw } from '$lib/app/api/clipboard'
+import { getPropNames } from '$lib'
 
 export let name: string | undefined = undefined
 $: key = name ? name.split(' ')[0].split(':')[0] : undefined
@@ -41,7 +42,7 @@ let nodeNames: string[] = []
 if (obj instanceof Array && isPrimitiveArray(obj)) {
   objectIsPrimitiveArray = true
 } else {
-  nodeNames = Object.getOwnPropertyNames(obj).sort()
+  nodeNames = getPropNames(obj).sort()
 }
 </script>
 
@@ -68,6 +69,8 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
       class="w-svw hover:bg-yellow-200 hover:bg-opacity-25">
       <span class="node-name">{name}</span>
     </div></A>
+{:else if getPropNames(obj).length === 0}
+  <span class="node-name">Empty Object</span>
 {/if}
 
 {#if expanded}
@@ -76,9 +79,9 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
       <li>
         {#if obj[leafName] instanceof Object}
           <!-- ToDo: fix type errors and then remove @ts-nocheck -->
-          {#if Object.getOwnPropertyNames(obj[leafName]).length === 1 && obj[leafName] instanceof Object && obj[leafName][Object.getOwnPropertyNames(obj[leafName])[0]] instanceof Array}
+          {#if getPropNames(obj[leafName]).length === 1 && obj[leafName] instanceof Object && obj[leafName][getPropNames(obj[leafName])[0]] instanceof Array}
             <svelte:self
-              name="{`${leafName} (${obj[leafName][Object.getOwnPropertyNames(obj[leafName])[0]].length})`}"
+              name="{`${leafName} (${obj[leafName][getPropNames(obj[leafName])[0]].length})`}"
               obj="{obj[leafName]}" />
           {:else}
             <svelte:self name="{leafName}" obj="{obj[leafName]}" />

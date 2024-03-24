@@ -56,7 +56,7 @@ function get_dtd_tags(txt: string, re: RegExp): string[] {
 
 function parse_dtd_entity_txt(txt: string): DTDEntityRaw {
   const re =
-    /(%?\s+?)(?<entity_name>[\w.]+)(\s+)((?<entity_pubsys>(PUBLIC|SYSTEM))(\s+))?(['"](?<entity_description>[-,./\s\w]+)['"](\s+))?((['"](?<entity_value>[-,;.%()\s|\w#?]+)['"])|(['"](?<entity_url>[-:./\s\w]+)['"]))/
+    /(%?\s?)(?<entity_name>[\w.]+)(\s+)((?<entity_pubsys>(PUBLIC|SYSTEM))(\s+))?(['"](?<entity_description>[-,./\s\w]+)['"](\s+))?((['"](?<entity_value>[-,;.%()\s|\w#?]+)['"])|(['"](?<entity_url>[-:./\s\w]+)['"]))/
   // <!ENTITY entity-name "entity-value">
   const m = txt.match(re)
   let g: DTDEntityRaw = {} as DTDEntityRaw
@@ -73,7 +73,7 @@ function parse_dtd_entity_txt(txt: string): DTDEntityRaw {
 
   // Hack, see Version 4 in get_xml_doctype_tags.
   if (!g.entity_name) {
-    g.entity_name = txt
+    g.entity_name = txt.replaceAll('.dtd', '').replaceAll('-', '_')
     g.entity_url =
       txt.replaceAll('-', '_').replaceAll('"', '').split('.dtd')[0] + '.dtd'
     g.entity_value = undefined
@@ -161,7 +161,7 @@ function parse_dtd_element_txt(txt: string): DTDElementRaw {
 async function _parse_dtd_txt(
   txt: string,
   ref_url?: string,
-  urls_done?: Set<string>
+  urls_done: Set<string> = new Set()
 ): DTDRawPromise {
   const dcts = get_xml_doctype_tags(txt)
   const ents = get_dtd_entity_tags(txt)
@@ -204,7 +204,6 @@ async function _parse_dtd_txt(
     const name = item['entity_name']
     const value = item['entity_value']
     const url = item['entity_url']
-    if (!urls_done) urls_done = new Set()
     if (!value && name && url && !urls_done.has(url)) {
       urls_done.add(url)
       const dtd_txt: _DTD_TXT | null = cache_get_dtd_txt(url, ref_url)

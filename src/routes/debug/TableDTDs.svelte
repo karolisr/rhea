@@ -4,13 +4,16 @@ import { slide } from 'svelte/transition'
 import { dtds, dtd_urls } from '$lib/app/svelte-stores/cache-dtd'
 import type { Indexed } from '$lib/types'
 import { parse_dtd_txt } from '$lib/xml/dtd'
+import { elements_to_json } from '$lib/xml/dtd/utils'
 import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
 
 let openRow: number | null
-let obj: Indexed | undefined
+// let obj: { [element_name: string]: _dtd_element }
+let obj: Indexed
 
 const toggleRow = async (i: number, dtd_txt: string, url: string) => {
-  obj = await parse_dtd_txt(dtd_txt, url)
+  const dtd = await parse_dtd_txt(dtd_txt, url)
+  obj = dtd ? elements_to_json(dtd) : {}
   openRow = openRow === i ? null : i
 }
 </script>
