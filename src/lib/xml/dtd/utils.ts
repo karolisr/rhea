@@ -5,7 +5,7 @@ import { element_value_type } from '.'
 export function elements_to_json(elements: {
   [element_name: string]: _dtd_element
 }): Indexed {
-  return _elements_to_json(elements)._rv
+  return _elements_to_json(elements)
 }
 
 export function _never_children(elements: {
@@ -35,37 +35,33 @@ export function _never_children(elements: {
 function _build_object(
   rootName: string,
   parts: Indexed,
-  done: Set<string> = new Set(),
-  level: number = 0
-): { _obj: Indexed; _level: number } {
+  done: Indexed = {}
+): { _obj: Indexed; _done: Indexed } {
   const obj: Indexed = parts[rootName] as Indexed
   const cns = getPropNames(obj)
   for (const cn of cns) {
-    if (done.has(rootName + cn)) {
-      level = level - 1
+    const k = `${rootName} ${cn}`
+    if (k in (done as Indexed)) {
       continue
     }
     if (cn in parts) {
-      done.add(rootName + cn)
+      done[k] = { p: rootName, c: cn }
       const objc = obj[cn] as Indexed
-      const { _obj, _level } = _build_object(cn, parts, done, level)
-      level = level + 1
-      level = level - _level
+      const { _obj } = _build_object(cn, parts, done)
       for (const _objn of getPropNames(_obj)) {
         objc[_objn] = _obj[_objn]
       }
     }
   }
-  return { _obj: obj, _level: level }
+
+  return { _obj: obj, _done: done }
 }
 
 function _elements_to_json(
   elements: { [element_name: string]: _dtd_element },
-  element_name: string | null = null,
-  level: number = 0
-): { _rv: Indexed; _level: number } {
+  element_name: string | null = null
+): Indexed {
   let rv: Indexed = {}
-
   if (element_name) {
     // WHEN: element_name !== null
     const el = elements[element_name]
@@ -73,7 +69,6 @@ function _elements_to_json(
       // WHEN: el.children !== undefined
       const ecns = getPropNames(el.children)
       for (const ecn of ecns) {
-        level = level - 1
         const c = el.children[ecn]
         if (!(ecn in rv)) rv[ecn] = {}
         const rvc = rv[ecn] as Indexed
@@ -109,39 +104,32 @@ function _elements_to_json(
     }
   } else {
     // WHEN: element_name === null
-
     const parts: Indexed = {}
-    const levels: Indexed = {}
     for (const en of getPropNames(elements)) {
-      const { _rv, _level } = _elements_to_json(elements, en)
-      parts[en] = _rv
-      levels[en] = _level
+      parts[en] = _elements_to_json(elements, en)
     }
-
-    // const parents: Set<string> = _never_children(elements)
-    // let rootName: string | undefined
-    // if (parents.size === 1) {
-    //   rootName = [...parents][0]
-    // }
-
-    // if (rootName) {
-    //   rv[rootName] = _build_object(rootName, parts)
-    // } else {
-    //   console.warn('No parent element or too many parents:', parents)
-    // }
 
     const objs: Indexed = {}
+    const dones: Indexed = {}
     for (const en of getPropNames(elements)) {
-      const { _obj, _level } = _build_object(en, parts)
+      const { _obj, _done } = _build_object(en, parts)
       objs[en] = _obj
-      levels[en] = (levels[en] as number) + _level
+      dones[en] = _done
     }
 
-    const rootName = Object.entries(levels).sort(
-      (a, b) => (b[1] as number) - (a[1] as number)
-    )[0][0]
+    const _ = getPropNames(dones)
+    let counts: [string, number][] = []
+    for (const k of _) {
+      const v = dones[k]
+      if (getPropNames(v).length !== 0) {
+        counts.push([k, getPropNames(v).length])
+      }
+    }
+
+    counts = counts.sort((a, b) => (b[1] as number) - (a[1] as number))
+    const rootName = counts[0][0]
     rv[rootName] = objs[rootName]
   }
 
-  return { _rv: rv, _level: level }
+  return rv
 }
