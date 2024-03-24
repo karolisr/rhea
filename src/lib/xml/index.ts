@@ -111,12 +111,12 @@ export async function parse_xml_txt(
   const doc_element = doc.children[0]
   const doc_element_name = doc_element.nodeName
 
-  if (Object.getOwnPropertyNames(dtd).length === 0) {
+  if (!dtd) {
     if (doc_element_name in DTD_MAP) {
       dtd = await parse_dtd_at_url(DTD_MAP[doc_element_name])
     }
 
-    if (Object.getOwnPropertyNames(dtd).length === 0) {
+    if (!dtd) {
       throw new Error(`No DTD for: ${doc_element_name}`)
     }
   }

@@ -1,3 +1,4 @@
+import { getPropNames } from '$lib'
 import {
   cache_get_dtd_txt,
   dnld_dtd_txt,
@@ -7,11 +8,11 @@ import {
 // --------------------------------------------------------------------------
 
 function get_xml_doctype_tags(txt: string): string[] {
-  // const re = /<!DOCTYPE.+?>/g                                      // Version 1
-  // const re = /<!-?-?\s+?DOCTYPE.+?\s+?-?-?>/g                      // Version 2
-  // const re = /(<!-?-?\s+?DOCTYPE.+?\s+?-?-?>)|(<!--\s+\S+\.dtd)/gi // Version 3 (Hack)
+  // const re = /<!DOCTYPE.+?>/g                                    // Version 1
+  // const re = /<!-?-?\s?DOCTYPE.+?\s?-?-?>/g                      // Version 2
+  // const re = /(<!-?-?\s?DOCTYPE.+?\s?-?-?>)|(<!--\s+\S+\.dtd)/gi // Version 3 (Hack)
   const re =
-    /(<!-?-?\s+?DOCTYPE.+?\s+?-?-?>)|(<!--\s+\S+\.dtd)|((?<=This section is mapped from module ")\S+(?="))/gi // Version 4 (Hack)
+    /(<!-?-?\s?DOCTYPE.+?\s?-?-?>)|(<!--\s+\S+\.dtd)|((?<=This section is mapped from module ")\S+(?="))/gi // Version 4 (Hack)
   return get_dtd_tags(txt, re)
 }
 
@@ -288,7 +289,11 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
     elements[el.element_name] = _
   })
 
-  return elements
+  if (getPropNames(elements).length === 0) {
+    return null
+  } else {
+    return elements
+  }
 }
 
 interface Required {
