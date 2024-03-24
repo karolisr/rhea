@@ -1,5 +1,5 @@
 import type { Indexed } from '$lib/types'
-import { getPropNames, removeCycle } from '$lib'
+import { getPropNames, removeCycle, setDiff } from '$lib'
 import { element_value_type } from '.'
 
 export function elements_to_json(
