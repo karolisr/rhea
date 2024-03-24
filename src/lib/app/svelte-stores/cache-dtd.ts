@@ -70,10 +70,10 @@ export function cache_get_dtd_txt(
     const url = _url.toString()
     const unsubscribe = dtds.subscribe((_dtds) => {
       if (url in _dtds) {
-        console.info(`DTD cache hit: ${url}`)
+        // console.info(`DTD cache hit: ${url}`)
         dtd_txt = { url: url, data: _dtds[url] }
       } else {
-        console.info(`DTD cache miss: ${url}`)
+        // console.info(`DTD cache miss: ${url}`)
         dtd_txt = null
       }
     })

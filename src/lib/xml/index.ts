@@ -96,8 +96,7 @@ function _parse_xml(
 // These are only necessary when the XML file does not reference a DTD.
 const DTD_MAP: { [element_name: string]: string } = {
   'Bioseq-set': 'NCBI_Seqset.dtd',
-  'INSDSet': 'INSD_INSDSeq.dtd',
-  'TaxaSet': 'https://www.ncbi.nlm.nih.gov/corehtml/query/DTD/taxon.dtd'
+  'INSDSet': 'INSD_INSDSeq.dtd'
 }
 
 export async function parse_xml_txt(
