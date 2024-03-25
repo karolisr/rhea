@@ -21,6 +21,8 @@ let refSeqOnly = true
 let searchButtonDisabled = true
 let searching = false
 
+let gbseqRemaining: number = 0
+
 let esummaryResult: ESummaryNuccore[] = []
 import status from '$lib/app/svelte-stores/status'
 import type { TaxaSet } from '$lib/ncbi/types/TaxaSet'
@@ -69,8 +71,19 @@ async function search(): Promise<void> {
       searching = false
       searchStatusMessage = `Downloading complete sequence records.`
       // ---------------------
-      const gbseqs = await getSeqRecords('nuccore', accs)
-      $_db_main.put(gbseqs, 'gbseq')
+      const nBatches = 5
+      const batchSize = Math.round(accs.length / nBatches)
+      gbseqRemaining += accs.length
+      searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
+      for (let i = 0; i < accs.length; i += batchSize) {
+        const batch = accs.slice(i, i + batchSize)
+        setTimeout(async () => {
+          const gbsp = await getSeqRecords('nuccore', batch)
+          $_db_main.put(gbsp, 'gbseq')
+          gbseqRemaining -= gbsp.length
+          searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
+        }, Math.random() * 10000)
+      }
       // ---------------------
       searchStatusMessage = `Downloading taxonomy records.`
       // ---------------------
