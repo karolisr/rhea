@@ -288,8 +288,6 @@ export async function parse_dtd_txt(txt: string, ref_url?: string) {
     elements[el.element_name] = _
   })
 
-  console.log(elements)
-
   if (getPropNames(elements).length === 0) {
     return null
   } else {
@@ -395,7 +393,6 @@ function parse_dtd_element_raw(
           type: _type,
           required: content_part_required
         }
-        // console.log(e.element_name, _type, rv)
       } else {
         console.warn(
           `ENTITY or ELEMENT referenced in "${e.element_name}" was not found:`,
