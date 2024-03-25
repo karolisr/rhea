@@ -105,7 +105,7 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 <style>
 ul {
   list-style: none;
-  max-width: 90vmax;
+  max-width: 55vmax;
   user-select: text;
 }
 

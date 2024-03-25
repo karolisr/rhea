@@ -20,7 +20,7 @@ hover:text-neutral-600 hover:bg-neutral-50 text-xs`
 
 <Tabs
   divider="{false}"
-  class="flex flex-wrap space-x-2 border-b border-t-neutral-100 bg-white px-5 pt-5"
+  class="flex flex-wrap space-x-2 border-b bg-white px-5 pt-5"
   defaultClass=""
   activeClasses=""
   inactiveClasses=""

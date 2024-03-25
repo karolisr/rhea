@@ -104,7 +104,7 @@ onDestroy(() => {
       on:click="{() => sortTable('accessionversion')}">Accession</TableHeadCell>
     <TableHeadCell
       class="whitespace-nowrap bg-neutral-100 p-1"
-      on:click="{() => sortTable('title')}">Title</TableHeadCell>
+      on:click="{() => sortTable('genome')}">Organelle</TableHeadCell>
     <TableHeadCell
       class="whitespace-nowrap bg-neutral-100 p-1"
       on:click="{() => sortTable('organism')}">Organism</TableHeadCell>
