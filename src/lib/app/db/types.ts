@@ -7,12 +7,19 @@ export interface DBMain extends DBSchema {
   seq_nt_summ: {
     key: ESummaryNuccore['accessionversion']
     value: ESummaryNuccore
-    indexes: { TaxId: TaxId }
+    indexes: { TaxId: TaxId; genome: string; sourcedb: string }
   }
 
   taxon: {
     key: Taxon['TaxId']
     value: Taxon
+    indexes: {
+      Division: string
+      GCId: string
+      MGCId: string
+      ParentTaxId: TaxId
+      Rank: string
+    }
   }
 
   gbseq: {

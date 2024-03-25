@@ -12,8 +12,7 @@ export async function db_main_delete() {
   })
 }
 
-export async function db_main_init(version: number = 1) {
-  // await db_main_delete()
+export async function db_main_init(version: number = 4) {
   const db_main = await openDB<DBMain>(db_main_name, version, {
     upgrade(database, oldVersion, newVersion, transaction, event) {
       console.log(
@@ -24,14 +23,35 @@ export async function db_main_init(version: number = 1) {
         transaction,
         event
       )
-      const os_seq_nt_summ = database.createObjectStore('seq_nt_summ', {
-        keyPath: 'accessionversion'
-      })
-      os_seq_nt_summ.createIndex('TaxId', 'taxid')
-      database.createObjectStore('taxon', { keyPath: 'TaxId' })
-      database.createObjectStore('gbseq', {
-        keyPath: 'GBSeq_accession_version'
-      })
+      if (newVersion !== oldVersion) {
+        if (oldVersion === 0) {
+          const os_seq_nt_summ = database.createObjectStore('seq_nt_summ', {
+            keyPath: 'accessionversion'
+          })
+          os_seq_nt_summ.createIndex('TaxId', 'taxid')
+          database.createObjectStore('taxon', { keyPath: 'TaxId' })
+          database.createObjectStore('gbseq', {
+            keyPath: 'GBSeq_accession_version'
+          })
+        }
+        if (oldVersion < 2) {
+          transaction.objectStore('seq_nt_summ').createIndex('genome', 'genome')
+        }
+        if (oldVersion < 3) {
+          transaction
+            .objectStore('seq_nt_summ')
+            .createIndex('sourcedb', 'sourcedb')
+        }
+        if (oldVersion < 4) {
+          transaction.objectStore('taxon').createIndex('Division', 'Division')
+          transaction.objectStore('taxon').createIndex('GCId', 'GCId')
+          transaction.objectStore('taxon').createIndex('MGCId', 'MGCId')
+          transaction
+            .objectStore('taxon')
+            .createIndex('ParentTaxId', 'ParentTaxId')
+          transaction.objectStore('taxon').createIndex('Rank', 'Rank')
+        }
+      }
     },
     blocked(currentVersion, blockedVersion, event) {
       console.log(
