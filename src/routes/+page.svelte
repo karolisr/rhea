@@ -1,2 +1,1 @@
-<script lang="ts">
-</script>
+<a href="/settings/">settings</a>
