@@ -17,11 +17,19 @@ async function getCurentTheme() {
 
 async function setTheme() {
   const _tdl = await getCurentTheme()
-  localStorage.setItem('color-theme', _tdl)
+  // localStorage.setItem('color-theme', _tdl)
   if (_tdl === themeDarkLight.dark) {
-    window.document.documentElement.classList.add(themeDarkLight.dark)
+    // window.document.documentElement.classList.add(themeDarkLight.dark)
+    window.document.documentElement.setAttribute(
+      'app-theme',
+      themeDarkLight.dark
+    )
   } else {
-    window.document.documentElement.classList.remove(themeDarkLight.dark)
+    // window.document.documentElement.classList.remove(themeDarkLight.dark)
+    window.document.documentElement.setAttribute(
+      'app-theme',
+      themeDarkLight.light
+    )
   }
 }
 
