@@ -1,11 +1,2 @@
-@import 'other/mantine-global';
-
-@import 'tailwindcss/base';
-@import 'tailwindcss/utilities';
-// @import 'tailwindcss/components';
-
-@import 'defs';
-@import 'base';
-@import 'layout';
-@import 'tabnav';
-@import 'statusbar';
+@import '11-reset.scss';
+@import '31-base.scss';
