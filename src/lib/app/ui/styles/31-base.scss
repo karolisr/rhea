@@ -1,16 +1,16 @@
-@import '21-defs.scss';
+@import '01-defs.scss';
 
 button,
 input {
-  background-color: $input-bg;
-  outline-width: $input-outline-width;
+  // background-color: $mono_1;
+  // outline-width: $border_width;
 }
 
 input[type='checkbox']:checked::after {
-  border-color: $primary-color;
+  // border-color: $color_1;
 }
 input[type='radio']:checked::after {
-  background-color: $primary-color;
+  // background-color: $color_1;
 }
 
 button:hover,
@@ -25,4 +25,12 @@ input:active {
 
 :focus {
   outline-style: solid;
+}
+
+:disabled {
+  // color: darkgray;
+}
+
+:disabled:hover {
+  // outline-style: none;
 }

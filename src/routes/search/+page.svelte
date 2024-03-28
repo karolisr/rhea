@@ -1,7 +1,5 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import { Input, Button, ButtonGroup, Alert, Spinner } from 'flowbite-svelte'
-import { fade } from 'svelte/transition'
 import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getSeqRecords, getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
@@ -71,7 +69,7 @@ async function search(): Promise<void> {
       searching = false
       searchStatusMessage = `Downloading complete sequence records.`
       // ---------------------
-      const nBatches = 5
+      const nBatches = Math.min(accs.length, 5)
       const batchSize = Math.round(accs.length / nBatches)
       gbseqRemaining += accs.length
       searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
@@ -114,67 +112,32 @@ onMount(async () => {
 })
 
 onDestroy(() => {
-  // $status.main = ''
+  $status.main = ''
 })
 </script>
 
-<div class="grid gap-6 p-5 md:grid-cols-1">
-  <form on:submit|preventDefault="{search}">
-    <ButtonGroup class="w-full">
-      <Input
-        type="search"
-        id="gsearch"
-        placeholder="Species, Genus, Family, etc."
-        spellcheck="false"
-        autocomplete="off"
-        required
-        bind:value="{searchTerm}"
-        on:input="{validateSearchTerm}"
-        disabled="{searching}"
-        class="block w-full disabled:bg-opacity-75 rtl:text-right" />
-      <Button
-        type="submit"
-        color="primary"
-        disabled="{searchButtonDisabled || searching}"
-        class="disabled:cursor-default disabled:hover:bg-primary-700">
-        {#if searching}
-          <Spinner color="white" size="4" class="mr-1" />Searching
-        {:else}
-          Search
-        {/if}
-      </Button>
-    </ButtonGroup>
-  </form>
-  {#if error}
-    <div
-      in:fade
-      out:fade
-      class="absolute bottom-auto left-32 right-32 top-20 z-10 w-auto cursor-default">
-      <Alert
-        class="cursor-default shadow"
-        border
-        color="red"
-        dismissable
-        on:close="{() => {
-          errorMsg = ''
-        }}">
-        <IconError slot="icon" class="h-4 w-4" />
-        {errorMsg}
-      </Alert>
-    </div>
-  {/if}
-</div>
+<form on:submit|preventDefault="{search}">
+  <input
+    id="search"
+    type="text"
+    placeholder="Species, Genus, Family, etc."
+    spellcheck="false"
+    autocomplete="off"
+    required
+    bind:value="{searchTerm}"
+    on:input="{validateSearchTerm}"
+    disabled="{searching}" />
+  <input
+    type="submit"
+    value="{searching ? 'Searching' : 'Search'}"
+    disabled="{searchButtonDisabled || searching}" />
+</form>
+{#if error}
+  <div><IconError />{errorMsg}</div>
+{/if}
 
-<div class="px-4">
+<div>
   {#each esummaryResult as summ}
-    <pre
-      class="
-            m-2
-            select-all
-            rounded-md
-            border
-            border-neutral-300
-            bg-lime-50 p-2
-            ">{summ.accessionversion} {summ.organism}</pre>
+    <div>{summ.accessionversion} {summ.organism}</div>
   {/each}
 </div>

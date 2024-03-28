@@ -1,5 +1,6 @@
 import { listen, TauriEvent } from '@tauri-apps/api/event'
 import { getCurrent } from '@tauri-apps/api/window'
+import settings from '$lib/app/svelte-stores/settings'
 
 enum themeDarkLight {
   light = 'light',
@@ -15,21 +16,16 @@ async function getCurentTheme() {
   }
 }
 
-async function setTheme() {
+export async function setTheme() {
   const _tdl = await getCurentTheme()
-  // localStorage.setItem('color-theme', _tdl)
-  if (_tdl === themeDarkLight.dark) {
-    // window.document.documentElement.classList.add(themeDarkLight.dark)
-    window.document.documentElement.setAttribute(
-      'app-theme',
-      themeDarkLight.dark
-    )
+  let userSetting: string = 'os'
+  settings.subscribe((stng) => {
+    userSetting = stng.theme
+  })()
+  if (userSetting === 'os') {
+    window.document.documentElement.setAttribute('app-theme', _tdl)
   } else {
-    // window.document.documentElement.classList.remove(themeDarkLight.dark)
-    window.document.documentElement.setAttribute(
-      'app-theme',
-      themeDarkLight.light
-    )
+    window.document.documentElement.setAttribute('app-theme', userSetting)
   }
 }
 

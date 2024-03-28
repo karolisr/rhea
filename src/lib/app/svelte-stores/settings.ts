@@ -1,10 +1,12 @@
 import { writable, type Writable } from 'svelte/store'
 import { getLocale } from '$lib/app/api'
+import { setTheme } from '$lib/app/api/darkmode'
 
 export interface Settings {
   email: string
   ncbi_api_key: string
   locale: string
+  theme: string
 }
 
 const key = 'settings'
@@ -14,7 +16,8 @@ function init(): Writable<Settings> {
   let stng: Settings = {
     email: '',
     ncbi_api_key: '',
-    locale: ''
+    locale: '',
+    theme: 'os'
   }
   if (stng_stored) {
     stng = JSON.parse(stng_stored)
@@ -31,6 +34,7 @@ export default settings
 export function saveSettings(): void {
   settings.update((stng) => {
     localStorage.setItem(key, JSON.stringify(stng))
+    setTheme()
     return stng
   })
 }
