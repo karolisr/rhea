@@ -1,13 +1,66 @@
 @import 'defs.scss';
 
+*,
+*::before,
+*::after {
+  font-size: $rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Open Sans',
+    'Helvetica Neue',
+    sans-serif;
+
+  line-height: $line_height;
+
+  border-width: $border_width;
+  border-color: var(--fg);
+
+  outline-offset: -0.15rem;
+  outline-width: calc($spacing / 5);
+  outline-color: var(--primary-light);
+
+  color: var(--fg);
+  background-color: var(--bg);
+}
+
+html {
+}
+
+body {
+}
+
 button,
 input {
+  border-color: var(--fg);
+  padding: calc($spacing / 5);
+}
+input[type='checkbox'],
+input[type='radio'] {
+  min-width: calc($spacing * 1);
+  min-height: calc($spacing * 1);
+  width: calc($spacing * 1);
+  height: calc($spacing * 1);
+  max-width: calc($spacing * 1);
+  max-height: calc($spacing * 1);
+  margin-inline-end: calc($spacing / 2);
+  padding: 0;
 }
 
 input[type='checkbox']:checked::after {
+  border-color: var(--primary);
 }
 
 input[type='radio']:checked::after {
+  width: calc($spacing * 0.5);
+  height: calc($spacing * 0.5);
+  background-color: var(--primary);
 }
 
 button:hover,
@@ -19,6 +72,7 @@ input:active {
 }
 
 :focus {
+  outline-style: solid;
 }
 
 :disabled {
@@ -28,19 +82,34 @@ input:active {
 }
 
 fieldset {
-  // display: grid;
-  // border-style: solid;
-  // row-gap: 0.5rem;
-  // padding: 1rem;
-  // margin: 1rem;
+  display: grid;
+  border-style: solid;
+  row-gap: calc($spacing / 2);
+  padding: $spacing;
+  margin: calc($spacing * 2);
 }
 
 fieldset legend {
-  // padding: 0.5rem;
+  padding-inline: $spacing;
+  padding-block: calc($spacing / 2);
+  background-color: var(--primary);
+  font-weight: bold;
+  color: var(--bg);
+}
+
+fieldset div {
+  display: flex;
+  flex-direction: column;
+}
+
+fieldset div div {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
 }
 
 ol,
 ul {
-  margin-inline-start: 1rem;
-  margin-block: 0.25rem;
+  padding-inline: calc($spacing * 2);
+  padding-block: calc($spacing / 4);
 }

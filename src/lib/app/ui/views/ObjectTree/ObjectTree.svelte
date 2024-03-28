@@ -46,11 +46,11 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 </script>
 
 {#if !hideName}
-  <button type="button" on:click="{toggleExpand}">
-    <div on:contextmenu="{_oncontextmenu}" role="button" tabindex="0">
-      <span class="node-name">{name}</span>
-    </div>
-  </button>
+  <button
+    on:click="{toggleExpand}"
+    on:contextmenu="{_oncontextmenu}"
+    type="button"
+    tabindex="0"><span class="node-name">{name}</span></button>
 {/if}
 {#if obj instanceof Array}
   {#if objectIsPrimitiveArray}

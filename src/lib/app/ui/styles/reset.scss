@@ -1,3 +1,5 @@
+@import 'defs.scss';
+
 *,
 *::before,
 *::after {
@@ -9,8 +11,6 @@
 
   color: unset;
   background-color: unset;
-
-  vertical-align: middle;
 
   text-align: unset;
   text-decoration: unset;
@@ -62,6 +62,7 @@ body {
 button,
 input {
   overflow: hidden;
+  border-style: solid;
 }
 
 button,
@@ -76,7 +77,7 @@ input[type='radio'] {
 }
 
 input[type='radio'] {
-  border-radius: 100%;
+  border-radius: 50%;
 }
 
 input[type='checkbox']:checked::after {
@@ -98,8 +99,9 @@ input[type='radio']:checked::after {
   content: '';
   display: block;
   margin: auto;
-  width: 0.75rem;
-  height: 0.75rem;
-  // background-color: black;
-  border-radius: 100%;
+  border-radius: 50%;
+}
+
+label {
+  margin-block: 0.125rem;
 }

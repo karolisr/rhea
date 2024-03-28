@@ -1,29 +1,36 @@
 // @use 'sass:meta';
 @import 'colors.scss';
 
-$rem: small;
+$rem: 12px;
+$line_height: 1.25rem;
 $spacing: 1rem;
-$input_size: calc($spacing * 1.5);
-$line_height: calc($spacing * 1.25);
-$border_width: calc($spacing * 0.125);
+$border_width: calc($spacing / 8);
 
-$color_1: $A500;
-$color_2: $A100;
+$color_1: $A100;
+$color_2: $A400;
+$color_3: $A500;
+$color_4: $A600;
 
-$mono_1: $C100;
+$mono_1: $C050;
 $mono_2: $C800;
-$mono_3: $C500;
+$mono_3: $C700;
 
 :root {
   --fb: #{$mono_3};
 }
 
-:root[app-theme='dark'] {
-  --fg: #{$mono_1};
-  --bg: #{$mono_2};
-}
-
 :root[app-theme='light'] {
   --fg: #{$mono_2};
   --bg: #{$mono_1};
+
+  --primary: #{$color_4};
+  --primary-light: #{$color_2};
+}
+
+:root[app-theme='dark'] {
+  --fg: #{$mono_1};
+  --bg: #{$mono_3};
+
+  --primary: #{$color_3};
+  --primary-light: #{$color_2};
 }
