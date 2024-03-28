@@ -6,8 +6,8 @@ import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import type { GBSeq } from '$lib/ncbi/types/GBSet'
 import db_main from '$lib/app/svelte-stores/db-main'
 import status from '$lib/app/svelte-stores/status'
-import SeqView from './SeqView.svelte'
-import ObjectTree from '$lib/app/ui/components/views/ObjectTree'
+import SeqView from '$lib/app/ui/views/SeqView'
+import ObjectTree from '$lib/app/ui/views/ObjectTree'
 
 export let data: PageData
 
@@ -27,26 +27,17 @@ onDestroy(() => {
 })
 </script>
 
-<div class="p-5">
+<div>
   {#if rec}
-    <span class="pb-5 text-center text-base">
+    <span>
       {data.recid} | {rec.GBSeq_organism}
       {#if rec.GBSeq_feature_table && rec.GBSeq_feature_table[0].GBFeature_quals}
         | {rec.GBSeq_feature_table[0].GBFeature_quals[1].GBQualifier_value}
       {/if}
     </span>
     <SeqView {rec} />
-    <div class="p-5">
+    <div>
       <ObjectTree hideName name="{rec.GBSeq_accession_version}" obj="{rec}" />
     </div>
   {/if}
 </div>
-
-<style>
-div {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  /* background-color: honeydew; */
-}
-</style>

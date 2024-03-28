@@ -1,31 +1,18 @@
-@import 'defs';
+@import 'defs.scss';
 
-.#{$prefix}-container {
-  overflow-x: hidden;
-  overflow-y: hidden;
+.head-foot {
+}
+
+.head {
+}
+
+.foot {
+}
+
+.main {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  min-height: 100vh;
-}
-
-.#{$prefix}-head {
-}
-
-.#{$prefix}-foot {
-  font-size: small;
-}
-
-.#{$prefix}-headfoot {
-}
-
-.#{$prefix}-main {
-  display: flex;
-  flex-direction: column;
-  font-size: small;
   overflow-x: hidden;
   overflow-y: auto;
   flex-grow: 1;
-  // box-shadow: 0.05rem -0.34rem 0.25rem -0.75rem $A800;
-  z-index: 10;
 }

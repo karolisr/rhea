@@ -1,4 +1,4 @@
-import type { PageLoad } from '../$types'
+import type { PageLoad } from './$types'
 
 export const load = (async (raw) => {
   const params: Record<string, string> = raw.params

@@ -1,60 +1,23 @@
 <script lang="ts">
-import { Tabs, TabItem, Button } from 'flowbite-svelte'
-import TableDTDs from './TableDTDs.svelte'
-import TableSeqSum from './TableSeqSum.svelte'
-import TableGBSeqs from './TableGBSeqs.svelte'
-import TableTaxSumm from './TableTaxSumm.svelte'
+import TableDTDs from '$lib/app/ui/views/TableDTDs.svelte'
+import TableSeqSum from '$lib/app/ui/views/TableSeqSum.svelte'
+import TableGBSeqs from '$lib/app/ui/views/TableGBSeqs.svelte'
+import TableTaxSumm from '$lib/app/ui/views/TableTaxSumm.svelte'
 
 import { type Readable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import db_main from '$lib/app/svelte-stores/db-main'
 let _db_main: Readable<DBMainSvelteStore>
 
-const tabClassActive = `mb-0 px-2 pb-1 pt-1.5 rounded-t-md border border-solid
-border-neutral-200 text-primary-600 border-b-white bg-white text-xs`
-
-const tabClassInactive = `mb-0 px-2 pb-1 pt-1.5 rounded-t-md border border-solid
-border-neutral-200 text-neutral-500 border-b-neutral-100 bg-neutral-100
-hover:text-neutral-600 hover:bg-neutral-50 text-xs`
+async function delete_db_main() {
+  _db_main = await db_main
+  await $_db_main.delete()
+}
 </script>
 
-<Tabs
-  divider="{false}"
-  class="flex flex-wrap space-x-2 border-b bg-white px-5 pt-5"
-  defaultClass=""
-  activeClasses=""
-  inactiveClasses=""
-  contentClass="px-5 py-5">
-  <TabItem
-    open
-    title="TableSeqSum"
-    activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}"><TableSeqSum /></TabItem>
+<!-- <div><button on:click="{delete_db_main}">Delete DBMain</button></div> -->
 
-  <TabItem
-    title="TableGBSeqs"
-    activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}"><TableGBSeqs /></TabItem>
-
-  <TabItem
-    title="TableTaxSumm"
-    activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}"><TableTaxSumm /></TabItem>
-
-  <TabItem
-    title="DTDs"
-    activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}"><TableDTDs /></TabItem>
-
-  <TabItem
-    title="Danger"
-    activeClasses="{tabClassActive}"
-    inactiveClasses="{tabClassInactive}">
-    <Button
-      color="red"
-      on:click="{async () => {
-        _db_main = await db_main
-        await $_db_main.delete()
-      }}">Delete DBMain</Button>
-  </TabItem>
-</Tabs>
+<TableDTDs />
+<TableTaxSumm />
+<TableSeqSum />
+<TableGBSeqs />

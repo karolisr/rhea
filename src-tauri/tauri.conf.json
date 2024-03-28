@@ -159,9 +159,9 @@
       {
         "title": "CDSDB",
         "center": false,
-        "height": 200,
+        "height": 400,
         "minHeight": 0,
-        "width": 200,
+        "width": 500,
         "minWidth": 0,
         "resizable": true,
         "fullscreen": false,

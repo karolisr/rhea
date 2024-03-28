@@ -107,13 +107,13 @@ onDestroy(() => {
 </div>
 
 <style>
-div {
+/* div {
   background-color: orangered;
   overflow: hidden;
-  /* overflow-x: scroll; */
+  overflow-x: scroll;
 }
 
 canvas {
   background-color: snow;
-}
+} */
 </style>

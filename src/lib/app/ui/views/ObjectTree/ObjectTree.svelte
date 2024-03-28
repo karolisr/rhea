@@ -1,7 +1,6 @@
 <script lang="ts">
 // @ts-nocheck
 import type { IndexedUndefined } from '$lib/types'
-import { A } from 'flowbite-svelte'
 import { cbw } from '$lib/app/api/clipboard'
 import { getPropNames } from '$lib'
 
@@ -47,14 +46,11 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 </script>
 
 {#if !hideName}
-  <A on:click="{toggleExpand}"
-    ><div
-      on:contextmenu="{_oncontextmenu}"
-      role="button"
-      tabindex="0"
-      class="w-svw hover:bg-yellow-200 hover:bg-opacity-25">
+  <button type="button" on:click="{toggleExpand}">
+    <div on:contextmenu="{_oncontextmenu}" role="button" tabindex="0">
       <span class="node-name">{name}</span>
-    </div></A>
+    </div>
+  </button>
 {/if}
 {#if obj instanceof Array}
   {#if objectIsPrimitiveArray}
@@ -62,8 +58,7 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
       >{obj.toString().replaceAll(',', ', ')}</span>
   {:else if expanded}
     {#each obj as item, i}
-      <ul
-        class="my-1 border-b border-b-slate-300 bg-slate-400 bg-opacity-5 p-0.5 px-1">
+      <ul>
         <li>
           <svelte:self name="{`${name}: ${i + 1}`}" obj="{item}" />
         </li>
@@ -101,34 +96,3 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
     {/each}
   </ul>
 {/if}
-
-<style>
-ul {
-  list-style: none;
-  max-width: 55vmax;
-  user-select: text;
-}
-
-.show-border {
-  border-left: 1px solid rgba(128, 128, 128, 0.4);
-  margin: 0 0 0 0.5em;
-  padding: 0em 0 0 0.5em;
-}
-
-li {
-  padding: 0em 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  user-select: text;
-}
-
-.node-name {
-  font-weight: bold;
-  user-select: text;
-}
-
-.node-value {
-  color: blue;
-  user-select: text;
-}
-</style>

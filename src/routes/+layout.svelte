@@ -2,9 +2,9 @@
 import { onMount, onDestroy } from 'svelte'
 import { themeChangeListener } from '$lib/app/api/darkmode'
 import { disableDefault } from '$lib/app/ui'
-import Layout from '$lib/app/ui/components/layout/Layout.svelte'
-import NavMain from '$lib/app/ui/components/nav/NavMain.svelte'
-import StatusBar from '$lib/app/ui/components/status/StatusBar.svelte'
+import Layout from '$lib/app/ui/chrome/layout/Layout.svelte'
+import NavMain from '$lib/app/ui/chrome/nav/NavMain.svelte'
+import StatusBar from '$lib/app/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
 
 let themeChangeUnListener: () => void

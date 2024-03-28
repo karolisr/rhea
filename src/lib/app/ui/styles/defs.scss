@@ -1,8 +1,29 @@
-@import 'colors';
+// @use 'sass:meta';
+@import 'colors.scss';
 
-$prefix: kr;
+$rem: small;
+$spacing: 1rem;
+$input_size: calc($spacing * 1.5);
+$line_height: calc($spacing * 1.25);
+$border_width: calc($spacing * 0.125);
 
-$titlebar-bg-mac: color(srgb 0.9176470588 0.9411764706 0.937254902);
+$color_1: $A500;
+$color_2: $A100;
 
-$titlebar-bg-mac-fade-1: color-mix(in srgb, $C050 65%, $titlebar-bg-mac 35%);
-$titlebar-bg-mac-fade-2: color-mix(in srgb, $C400 20%, $titlebar-bg-mac 80%);
+$mono_1: $C100;
+$mono_2: $C800;
+$mono_3: $C500;
+
+:root {
+  --fb: #{$mono_3};
+}
+
+:root[app-theme='dark'] {
+  --fg: #{$mono_1};
+  --bg: #{$mono_2};
+}
+
+:root[app-theme='light'] {
+  --fg: #{$mono_2};
+  --bg: #{$mono_1};
+}

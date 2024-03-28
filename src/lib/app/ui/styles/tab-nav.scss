@@ -1,0 +1,30 @@
+.tab-nav {
+  display: flex;
+  flex-direction: row;
+}
+
+.tab-nav a {
+}
+
+.tab-nav a div {
+}
+
+.tab-nav a div svg {
+}
+
+.tab-nav a div span {
+}
+
+.tab-nav a:hover {
+  background-color: $C050;
+}
+
+.tab-nav a:active {
+}
+
+.tab-nav a[aria-current='true'] {
+}
+
+.tab-nav-tab-spacer {
+  flex-grow: 1;
+}
