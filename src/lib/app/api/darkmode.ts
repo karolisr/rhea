@@ -2,17 +2,17 @@ import { listen, TauriEvent } from '@tauri-apps/api/event'
 import { getCurrent } from '@tauri-apps/api/window'
 import settings from '$lib/app/svelte-stores/settings'
 
-enum themeDarkLight {
+export enum ThemeDarkLight {
   light = 'light',
   dark = 'dark'
 }
 
-async function getCurentTheme() {
+export async function getCurentTheme() {
   const _theme = (await getCurrent().theme()) || 'light'
-  if (_theme === themeDarkLight.dark) {
-    return themeDarkLight.dark
+  if (_theme === ThemeDarkLight.dark) {
+    return ThemeDarkLight.dark
   } else {
-    return themeDarkLight.light
+    return ThemeDarkLight.light
   }
 }
 

@@ -3,7 +3,7 @@
 *,
 *::before,
 *::after {
-  font-size: $rem;
+  font-size: var(--fs);
   font-family:
     system-ui,
     -apple-system,
@@ -20,11 +20,11 @@
   line-height: $line_height;
 
   border-width: $border_width;
-  border-color: var(--fg);
+  border-color: var(--border-color);
 
   outline-offset: -0.15rem;
   outline-width: calc($spacing / 5);
-  outline-color: var(--primary-light);
+  outline-color: var(--focus-color);
 
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -40,11 +40,11 @@ body {
 
 button,
 input {
-  border-color: var(--fg);
+  border-color: var(--border-color);
   padding: calc($spacing / 5);
   background-color: var(--bg);
   border-radius: calc($spacing / 4);
-  box-shadow: 0rem -0.1rem 0.65rem -0.4rem $C900;
+  box-shadow: var(--shadow);
   min-height: calc($line_height + $spacing);
 }
 input[type='checkbox'],
@@ -89,19 +89,19 @@ fieldset {
   row-gap: calc($spacing / 2);
   padding: $spacing;
   margin-bottom: calc($spacing * 1.25);
-  background-color: $titlebar-bg-mac-fade-1;
+  background-color: var(--bg2);
   border-radius: calc($spacing / 4);
-  box-shadow: 0rem -0.1rem 0.65rem -0.4rem $C900;
+  box-shadow: var(--shadow);
 }
 
 fieldset legend {
-  padding-inline: $spacing / 2;
+  padding-inline: calc($spacing / 2);
   padding-block: calc($spacing / 3);
   background-color: var(--primary);
   font-weight: bold;
-  color: var(--bg);
+  color: var(--fg-inv);
   border-radius: calc($spacing / 4);
-  box-shadow: 0rem -0.1rem 0.65rem -0.4rem $C900;
+  box-shadow: var(--shadow);
 }
 
 fieldset div {

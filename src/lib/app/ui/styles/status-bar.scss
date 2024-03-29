@@ -3,17 +3,16 @@
 .status-bar {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  background-color: $titlebar-bg-mac;
+  background-color: var(--title-bar-color);
   min-height: calc($spacing * 2);
   max-height: calc($spacing * 2);
   border-top: solid;
   border-width: $border_width;
-  border-color: $titlebar-bg-mac-fade-2;
+  border-color: var(--chrome-border-color);
   gap: calc($spacing / 2);
   text-align: center;
-
   text-wrap: nowrap;
-  padding-top: calc($spacing / 5);
+  padding-top: calc($spacing / 4);
   padding-left: calc($spacing / 1.5);
   padding-right: calc($spacing / 1.5);
 }

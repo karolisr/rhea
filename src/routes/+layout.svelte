@@ -1,7 +1,9 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { themeChangeListener } from '$lib/app/api/darkmode'
+import { setScale } from '$lib/app/api/scale'
 import { disableDefault } from '$lib/app/ui'
+import settings from '$lib/app/svelte-stores/settings'
 import Layout from '$lib/app/ui/chrome/layout/Layout.svelte'
 import NavMain from '$lib/app/ui/chrome/nav/NavMain.svelte'
 import StatusBar from '$lib/app/ui/chrome/status/StatusBar.svelte'
@@ -9,7 +11,10 @@ import subheader from '$lib/app/svelte-stores/subheader'
 
 let themeChangeUnListener: () => void
 
+$: setScale($settings.scale)
+
 onMount(async () => {
+  setScale()
   themeChangeUnListener = await themeChangeListener()
   disableDefault('contextmenu')
 })

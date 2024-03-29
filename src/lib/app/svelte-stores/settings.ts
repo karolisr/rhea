@@ -1,12 +1,14 @@
 import { writable, type Writable } from 'svelte/store'
 import { getLocale } from '$lib/app/api'
 import { setTheme } from '$lib/app/api/darkmode'
+import { AppScale } from '../api/scale'
 
 export interface Settings {
   email: string
   ncbi_api_key: string
   locale: string
   theme: string
+  scale: AppScale
 }
 
 const key = 'settings'
@@ -17,7 +19,8 @@ function init(): Writable<Settings> {
     email: '',
     ncbi_api_key: '',
     locale: '',
-    theme: 'os'
+    theme: 'os',
+    scale: AppScale.small
   }
   if (stng_stored) {
     stng = JSON.parse(stng_stored)

@@ -1,7 +1,6 @@
 // @use 'sass:meta';
 @import 'colors.scss';
 
-$rem: 12px;
 $line_height: 1.25rem;
 $spacing: 1rem;
 $border_width: calc($spacing / 8);
@@ -10,31 +9,46 @@ $titlebar-bg-mac: color(srgb 0.9176470588 0.9411764706 0.937254902);
 $titlebar-bg-mac-fade-1: color-mix(in srgb, $C050 65%, $titlebar-bg-mac 35%);
 $titlebar-bg-mac-fade-2: color-mix(in srgb, $C400 20%, $titlebar-bg-mac 80%);
 
-$color_1: $A100;
-$color_2: color-mix(in srgb, $A400 15%, $A500 85%);
-$color_3: $A500;
-$color_4: $A600;
+$focus_color_light: color-mix(in srgb, $A400 15%, $A500 85%);
+$focus_color_dark: color-mix(in srgb, $A400 15%, $A500 85%);
 
-$mono_1: $C050;
-$mono_2: $C800;
-$mono_3: $C700;
-
-:root {
-  --fb: #{$mono_3};
-}
+$shadow-light: 0.05rem 0.1rem 0.15rem $C300;
+$shadow-dark: 0.05rem 0.1rem 0.25rem $C900;
 
 :root[app-theme='light'] {
-  --fg: #{$mono_2};
-  --bg: #{$mono_1};
-
-  --primary: #{$color_4};
-  --primary-light: #{$color_2};
+  --fg: #{$C800};
+  --bg: #{$C050};
+  --bg2: #{$titlebar-bg-mac-fade-1};
+  --fg-inv: #{$C050};
+  --border-color: #{$C500};
+  --chrome-border-color: #{$titlebar-bg-mac-fade-2};
+  --primary: #{$A600};
+  --focus-color: #{$focus_color_light};
+  --title-bar-color: #{$titlebar-bg-mac};
+  --shadow: #{$shadow-light};
 }
 
 :root[app-theme='dark'] {
-  --fg: #{$mono_1};
-  --bg: #{$mono_3};
+  --fg: #{$C050};
+  --bg: #{$C700};
+  --bg2: #{$C800};
+  --fg-inv: #{$C900};
+  --border-color: #{$C400};
+  --chrome-border-color: #{$C600};
+  --primary: #{$A500};
+  --focus-color: #{$focus_color_dark};
+  --title-bar-color: #{$C800};
+  --shadow: #{$shadow-dark};
+}
 
-  --primary: #{$color_3};
-  --primary-light: #{$color_2};
+:root[scale='small'] {
+  --fs: 12px;
+}
+
+:root[scale='medium'] {
+  --fs: 16px;
+}
+
+:root[scale='large'] {
+  --fs: 24px;
 }

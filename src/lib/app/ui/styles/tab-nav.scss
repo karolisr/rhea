@@ -5,9 +5,9 @@
   flex-direction: row;
   padding-left: calc($spacing * 5.5);
   padding-inline-end: calc($spacing / 4);
-  background-color: $titlebar-bg-mac;
+  background-color: var(--title-bar-color);
   border-bottom-style: solid;
-  border-color: $titlebar-bg-mac-fade-2;
+  border-color: var(--chrome-border-color);
 }
 
 .tab-nav a {
@@ -23,8 +23,8 @@
   border-bottom-style: solid;
   border-top-left-radius: calc($spacing / 1.45);
   border-top-right-radius: calc($spacing / 1.45);
-  border-color: $titlebar-bg-mac-fade-2;
-  background-color: $titlebar-bg-mac-fade-1;
+  border-color: var(--chrome-border-color);
+  background-color: var(--bg2);
   margin-bottom: -$border_width;
 }
 
@@ -43,7 +43,7 @@
 
 .tab-nav a div span {
   font-size: calc($spacing * 1);
-  // color: var(--primary);
+  color: var(--fg);
 }
 
 .tab-nav a:hover {
