@@ -1,28 +1,61 @@
+@import 'defs.scss';
+
 .tab-nav {
   display: flex;
   flex-direction: row;
+  padding-left: calc($spacing * 5.5);
+  padding-inline-end: calc($spacing / 4);
+  background-color: $titlebar-bg-mac;
+  border-bottom-style: solid;
+  border-color: $titlebar-bg-mac-fade-2;
 }
 
 .tab-nav a {
+  padding-block-start: calc($spacing / 3);
+  padding-block-end: calc($spacing / 4);
+  padding-inline-start: calc($spacing / 3);
+  padding-inline-end: calc($spacing / 2);
+  margin-top: calc($spacing / 4);
+  margin-inline-start: calc($spacing / 4);
+  border-top-style: solid;
+  border-left-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+  border-top-left-radius: calc($spacing / 1.45);
+  border-top-right-radius: calc($spacing / 1.45);
+  border-color: $titlebar-bg-mac-fade-2;
+  background-color: $titlebar-bg-mac-fade-1;
+  margin-bottom: -$border_width;
 }
 
 .tab-nav a div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .tab-nav a div svg {
+  font-size: calc($spacing * 1);
+  color: var(--primary);
+  margin-inline-start: calc($spacing / 10);
+  margin-inline-end: calc($spacing / 3);
 }
 
 .tab-nav a div span {
+  font-size: calc($spacing * 1);
+  // color: var(--primary);
 }
 
 .tab-nav a:hover {
-  background-color: $C050;
 }
 
 .tab-nav a:active {
 }
 
 .tab-nav a[aria-current='true'] {
+  background-color: var(--bg);
+  border-bottom-color: transparent;
+  box-shadow: 0rem -0.14rem 0.35rem -0.4rem $A800;
 }
 
 .tab-nav-tab-spacer {

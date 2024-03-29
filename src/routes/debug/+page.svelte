@@ -1,8 +1,8 @@
 <script lang="ts">
-import TableDTDs from '$lib/app/ui/views/TableDTDs.svelte'
+// import TableDTDs from '$lib/app/ui/views/TableDTDs.svelte'
 import TableSeqSum from '$lib/app/ui/views/TableSeqSum.svelte'
-import TableGBSeqs from '$lib/app/ui/views/TableGBSeqs.svelte'
-import TableTaxSumm from '$lib/app/ui/views/TableTaxSumm.svelte'
+// import TableGBSeqs from '$lib/app/ui/views/TableGBSeqs.svelte'
+// import TableTaxSumm from '$lib/app/ui/views/TableTaxSumm.svelte'
 
 import { type Readable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
@@ -17,7 +17,7 @@ async function delete_db_main() {
 
 <!-- <div><button on:click="{delete_db_main}">Delete DBMain</button></div> -->
 
-<TableDTDs />
-<TableTaxSumm />
+<!-- <TableDTDs /> -->
+<!-- <TableTaxSumm /> -->
 <TableSeqSum />
-<TableGBSeqs />
+<!-- <TableGBSeqs /> -->

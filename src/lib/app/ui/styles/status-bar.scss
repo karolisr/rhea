@@ -1,4 +1,31 @@
+@import 'defs.scss';
+
 .status-bar {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
+  background-color: $titlebar-bg-mac;
+  min-height: calc($spacing * 2);
+  max-height: calc($spacing * 2);
+  border-top: solid;
+  border-width: $border_width;
+  border-color: $titlebar-bg-mac-fade-2;
+  gap: calc($spacing / 2);
+  text-align: center;
+
+  text-wrap: nowrap;
+  padding-top: calc($spacing / 5);
+  padding-left: calc($spacing / 1.5);
+  padding-right: calc($spacing / 1.5);
+}
+
+.status-bar-left {
+  text-align: left;
+}
+
+.status-bar-center {
+  text-align: center;
+}
+
+.status-bar-right {
+  text-align: right;
 }

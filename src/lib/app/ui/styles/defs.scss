@@ -6,8 +6,12 @@ $line_height: 1.25rem;
 $spacing: 1rem;
 $border_width: calc($spacing / 8);
 
+$titlebar-bg-mac: color(srgb 0.9176470588 0.9411764706 0.937254902);
+$titlebar-bg-mac-fade-1: color-mix(in srgb, $C050 65%, $titlebar-bg-mac 35%);
+$titlebar-bg-mac-fade-2: color-mix(in srgb, $C400 20%, $titlebar-bg-mac 80%);
+
 $color_1: $A100;
-$color_2: $A400;
+$color_2: color-mix(in srgb, $A400 15%, $A500 85%);
 $color_3: $A500;
 $color_4: $A600;
 

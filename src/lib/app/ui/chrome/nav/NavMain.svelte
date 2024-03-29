@@ -10,9 +10,9 @@ import iconSettings from '~icons/fa6-solid/gear'
 </script>
 
 <TabNav>
-  <Tab link="/" icon="{iconHome}" />
-  <Tab link="/search/" icon="{iconSearch}" />
   <TabSpacer />
-  <Tab link="/debug/" icon="{iconDebug}" />
-  <Tab link="/settings/" icon="{iconSettings}" />
+  <Tab link="/" icon="{iconHome}" label="Home" />
+  <Tab link="/search/" icon="{iconSearch}" label="Search" />
+  <Tab link="/debug/" icon="{iconDebug}" label="Debug" />
+  <Tab link="/settings/" icon="{iconSettings}" label="Settings" />
 </TabNav>

@@ -26,30 +26,32 @@
   outline-width: calc($spacing / 5);
   outline-color: var(--primary-light);
 
-  color: var(--fg);
-  background-color: var(--bg);
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
 html {
 }
 
 body {
+  color: var(--fg);
+  background-color: var(--bg);
 }
 
 button,
 input {
   border-color: var(--fg);
   padding: calc($spacing / 5);
+  background-color: var(--bg);
+  border-radius: calc($spacing / 4);
+  box-shadow: 0rem -0.1rem 0.65rem -0.4rem $C900;
+  min-height: calc($line_height + $spacing);
 }
 input[type='checkbox'],
 input[type='radio'] {
-  min-width: calc($spacing * 1);
-  min-height: calc($spacing * 1);
-  width: calc($spacing * 1);
-  height: calc($spacing * 1);
-  max-width: calc($spacing * 1);
-  max-height: calc($spacing * 1);
-  margin-inline-end: calc($spacing / 2);
+  min-width: calc($spacing * 1.25);
+  min-height: calc($spacing * 1.25);
+  margin-inline-end: calc($spacing / 2.25);
   padding: 0;
 }
 
@@ -58,8 +60,8 @@ input[type='checkbox']:checked::after {
 }
 
 input[type='radio']:checked::after {
-  width: calc($spacing * 0.5);
-  height: calc($spacing * 0.5);
+  width: calc($spacing * 0.75);
+  height: calc($spacing * 0.75);
   background-color: var(--primary);
 }
 
@@ -86,15 +88,20 @@ fieldset {
   border-style: solid;
   row-gap: calc($spacing / 2);
   padding: $spacing;
-  margin: calc($spacing * 2);
+  margin-bottom: calc($spacing * 1.25);
+  background-color: $titlebar-bg-mac-fade-1;
+  border-radius: calc($spacing / 4);
+  box-shadow: 0rem -0.1rem 0.65rem -0.4rem $C900;
 }
 
 fieldset legend {
-  padding-inline: $spacing;
-  padding-block: calc($spacing / 2);
+  padding-inline: $spacing / 2;
+  padding-block: calc($spacing / 3);
   background-color: var(--primary);
   font-weight: bold;
   color: var(--bg);
+  border-radius: calc($spacing / 4);
+  box-shadow: 0rem -0.1rem 0.65rem -0.4rem $C900;
 }
 
 fieldset div {
@@ -112,4 +119,8 @@ ol,
 ul {
   padding-inline: calc($spacing * 2);
   padding-block: calc($spacing / 4);
+}
+
+li {
+  padding-block: calc($spacing / 8);
 }
