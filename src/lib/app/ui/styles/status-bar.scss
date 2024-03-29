@@ -1,11 +1,10 @@
 @import 'defs.scss';
 
 .status-bar {
+  flex-grow: 1;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   background-color: var(--title-bar-color);
-  min-height: calc($spacing * 2);
-  max-height: calc($spacing * 2);
   border-top: solid;
   border-width: $border_width;
   border-color: var(--chrome-border-color);
