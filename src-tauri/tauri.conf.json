@@ -157,18 +157,20 @@
     },
     "windows": [
       {
+        "label": "main",
         "title": "CDSDB",
         "center": false,
         "width": 560,
-        "minWidth": 450,
+        "minWidth": 0,
         "height": 540,
-        "minHeight": 380,
+        "minHeight": 0,
         "resizable": true,
         "fullscreen": false,
         "titleBarStyle": "Overlay",
         "acceptFirstMouse": true,
         "fileDropEnabled": true,
-        "hiddenTitle": true
+        "hiddenTitle": true,
+        "alwaysOnTop": true
       }
     ]
   }

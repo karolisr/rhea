@@ -3,19 +3,17 @@
 .tab-nav {
   display: flex;
   flex-direction: row;
-  padding-left: calc($spacing * 5.5);
+  padding-top: calc($spacing / 4);
   padding-inline-end: calc($spacing / 4);
   background-color: var(--title-bar-color);
   border-bottom-style: solid;
   border-color: var(--chrome-border-color);
+  transition:
+    color 125ms linear,
+    background-color 125ms linear;
 }
 
 .tab-nav a {
-  padding-block-start: calc($spacing / 3);
-  padding-block-end: calc($spacing / 4);
-  padding-inline-start: calc($spacing / 3);
-  padding-inline-end: calc($spacing / 2);
-  margin-top: calc($spacing / 4);
   margin-inline-start: calc($spacing / 4);
   border-top-style: solid;
   border-left-style: solid;
@@ -25,25 +23,29 @@
   border-top-right-radius: calc($spacing / 1.45);
   border-color: var(--chrome-border-color);
   background-color: var(--bg2);
-  margin-bottom: -$border_width;
+  margin-bottom: calc(var(--border-width) * -1);
 }
 
 .tab-nav a div {
   display: flex;
-  flex-direction: row;
   align-items: center;
+  padding-block-start: calc($spacing / 3);
+  padding-block-end: calc($spacing / 4);
+  padding-inline: calc($spacing / 2.45);
 }
 
 .tab-nav a div svg {
-  font-size: calc($spacing * 1);
   color: var(--primary);
-  margin-inline-start: calc($spacing / 10);
-  margin-inline-end: calc($spacing / 3);
+  transition: color 125ms linear;
 }
 
 .tab-nav a div span {
-  font-size: calc($spacing * 1);
   color: var(--fg);
+  margin-inline-start: calc($spacing / 4);
+  transition:
+    color 125ms linear,
+    background-color 125ms linear,
+    font-size 125ms linear;
 }
 
 .tab-nav a:hover {
@@ -55,9 +57,36 @@
 .tab-nav a[aria-current='true'] {
   background-color: var(--bg);
   border-bottom-color: transparent;
-  box-shadow: 0rem -0.14rem 0.35rem -0.4rem $A800;
+  // box-shadow: 0rem -0.14rem 0.35rem -0.4rem $A800;
 }
 
 .tab-nav-tab-spacer {
   flex-grow: 1;
+}
+
+@media (max-width: 365px) {
+  :root[scale='small'] {
+    .tab-nav a div span {
+      font-size: 0;
+      margin-inline-start: 0;
+    }
+  }
+}
+
+@media (max-width: 460px) {
+  :root[scale='medium'] {
+    .tab-nav a div span {
+      font-size: 0;
+      margin-inline-start: 0;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  :root[scale='large'] {
+    .tab-nav a div span {
+      font-size: 0;
+      margin-inline-start: 0;
+    }
+  }
 }

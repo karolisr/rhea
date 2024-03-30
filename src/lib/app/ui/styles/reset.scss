@@ -45,10 +45,9 @@
   appearance: none;
 }
 
-html {
+:root {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   height: 100%;
 }
 
@@ -61,7 +60,6 @@ body {
 
 button,
 input {
-  overflow: hidden;
   border-style: solid;
 }
 

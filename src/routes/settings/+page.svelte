@@ -8,20 +8,18 @@ let currentOsThemeSetting: string
 
 onMount(async () => {
   currentOsThemeSetting = await getCurentTheme()
-  currentOsThemeSetting = currentOsThemeSetting[0].toUpperCase() + currentOsThemeSetting.slice(1)
+  currentOsThemeSetting =
+    currentOsThemeSetting[0].toUpperCase() + currentOsThemeSetting.slice(1)
 })
 
-onDestroy(() => {
-})
-
+onDestroy(() => {})
 </script>
 
-<div>
-  <div class="flex-row">
-    <div class="flex-grow">
+<div class="padded">
+  <div class="LOCAL-flex-row">
+    <div class="LOCAL-flex-grow">
       <fieldset>
         <legend>Theme</legend>
-
         <div>
           <div>
             <input
@@ -62,7 +60,8 @@ onDestroy(() => {
         </div>
       </fieldset>
     </div>
-    <div class="flex-grow">
+
+    <div class="LOCAL-flex-grow">
       <fieldset>
         <legend>Scale</legend>
 
@@ -122,6 +121,7 @@ onDestroy(() => {
         bind:value="{$settings.email}"
         on:change="{saveSettings}" />
     </div>
+
     <div>
       <label for="ncbiapikey">API Key</label>
       <input
@@ -138,12 +138,12 @@ onDestroy(() => {
 </div>
 
 <style>
-.flex-row {
+.LOCAL-flex-row {
   display: flex;
   gap: 1rem;
 }
 
-.flex-grow {
+.LOCAL-flex-grow {
   flex-grow: 1;
 }
 </style>

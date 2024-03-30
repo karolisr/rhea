@@ -1,29 +1,34 @@
 @import 'defs.scss';
 
 .status-bar {
-  flex-grow: 1;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   background-color: var(--title-bar-color);
+  min-height: calc($spacing * 2);
+  max-height: calc($spacing * 2);
   border-top: solid;
-  border-width: $border_width;
+  border-width: var(--border-width);
   border-color: var(--chrome-border-color);
   gap: calc($spacing / 2);
-  text-align: center;
   text-wrap: nowrap;
-  padding-top: calc($spacing / 4);
-  padding-left: calc($spacing / 1.5);
-  padding-right: calc($spacing / 1.5);
+  padding-bottom: calc($spacing / 7);
+  padding-inline: calc($spacing / 1.5);
+  transition:
+    color 125ms linear,
+    background-color 125ms linear;
 }
 
 .status-bar-left {
   text-align: left;
+  margin-block: auto;
 }
 
 .status-bar-center {
   text-align: center;
+  margin-block: auto;
 }
 
 .status-bar-right {
   text-align: right;
+  margin-block: auto;
 }

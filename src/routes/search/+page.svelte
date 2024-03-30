@@ -116,28 +116,32 @@ onDestroy(() => {
 })
 </script>
 
-<form on:submit|preventDefault="{search}">
-  <input
-    id="search"
-    type="text"
-    placeholder="Species, Genus, Family, etc."
-    spellcheck="false"
-    autocomplete="off"
-    required
-    bind:value="{searchTerm}"
-    on:input="{validateSearchTerm}"
-    disabled="{searching}" />
-  <input
-    type="submit"
-    value="{searching ? 'Searching' : 'Search'}"
-    disabled="{searchButtonDisabled || searching}" />
-</form>
-{#if error}
-  <div><IconError />{errorMsg}</div>
-{/if}
+<div class="padded">
+  <div class="flex-row">
+    <form on:submit|preventDefault="{search}">
+      <input
+        id="search"
+        type="text"
+        placeholder="Species, Genus, Family, etc."
+        spellcheck="false"
+        autocomplete="off"
+        required
+        bind:value="{searchTerm}"
+        on:input="{validateSearchTerm}"
+        disabled="{searching}" />
+      <input
+        type="submit"
+        value="{searching ? 'Searching' : 'Search'}"
+        disabled="{searchButtonDisabled || searching}" />
+    </form>
+    {#if error}
+      <div><IconError />{errorMsg}</div>
+    {/if}
 
-<div>
-  {#each esummaryResult as summ}
-    <div>{summ.accessionversion} {summ.organism}</div>
-  {/each}
+    <div>
+      {#each esummaryResult as summ}
+        <div>{summ.accessionversion} {summ.organism}</div>
+      {/each}
+    </div>
+  </div>
 </div>
