@@ -1,0 +1,40 @@
+@import 'defs.scss';
+
+table {
+  border-spacing: 0;
+  overflow-x: scroll;
+  // background-color: var(--bg2);
+  // border-top-style: solid;
+  // border-left-style: solid;
+  // border-color: var(--fg);
+}
+
+thead,
+tfoot {
+  background-color: var(--primary);
+  color: var(--fg-inv);
+  font-weight: bold;
+}
+
+tbody {
+  overflow-x: scroll;
+}
+
+tr {
+  overflow-x: scroll;
+}
+
+th,
+td {
+  font-family: 'JetBrains Mono';
+  font-size: x-small;
+  overflow-x: scroll;
+  // padding-inline: calc($spacing / 3);
+  // padding-block: calc($spacing / 10);
+  // border-bottom-style: solid;
+  // border-right-style: solid;
+  // border-color: var(--fg);
+  // overflow-x: hidden;
+  text-wrap: nowrap;
+  // text-overflow: ellipsis;
+}
