@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import Table from '$lib/app/ui/views/Table/TableTmp.svelte'
+import Table from '$lib/app/ui/views/Table'
 import { type GBSeq } from '$lib/ncbi/types/GBSet'
 import { type Taxon } from '$lib/ncbi/types/TaxaSet'
 import { type ESummaryNuccore } from '$lib/ncbi'
