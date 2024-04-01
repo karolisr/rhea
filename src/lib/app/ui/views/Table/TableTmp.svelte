@@ -2,7 +2,7 @@
 import subheader from '$lib/app/svelte-stores/subheader'
 import type { IndexedUndefined } from '$lib/types'
 
-import { ObjArray } from '$lib/obj'
+import { ObjArray } from './ObjTmp'
 import { range } from 'd3'
 
 export let objArray: ObjArray<IndexedUndefined>

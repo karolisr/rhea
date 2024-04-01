@@ -1,6 +1,3 @@
-// import type { Indexed, IndexedUndefined } from './types'
-// import type { GBSeq } from './ncbi/types/GBSet'
-
 import { getPropNames } from "$lib"
 
 declare type KeyToKeyNoIndex<T> = {
