@@ -1,55 +1,31 @@
 <script lang="ts">
 import subheader from '$lib/app/svelte-stores/subheader'
 import type { IndexedUndefined } from '$lib/types'
-import { getPropNames } from '$lib'
 
-export let data: IndexedUndefined[]
+import { ObjArray } from '$lib/obj'
+import { range } from 'd3'
+
+export let objArray: ObjArray<IndexedUndefined>
+$: idxs = range(0, objArray.length)
+
 export let pageSize: number = 10
 export let sortBy: string | undefined = undefined
-
 export let fields: string[] | undefined = undefined
 
-$: _data = dataPrep(data)
+$: _ok = dataPrep(objArray)
 
-function sortF(
-  a: IndexedUndefined,
-  b: IndexedUndefined,
-  field: string,
-  rev: boolean = true
-): number {
-  const x = a[field]
-  const y = b[field]
+function dataPrep(objArray: ObjArray<IndexedUndefined>) {
+  if (fields === undefined && objArray.length > 0) {
 
-  let i = 1
-  if (rev) {
-    i = -1
-  }
-
-  if (typeof x === 'string' && typeof y === 'string') {
-    if (x === y) return 0
-    return x < y ? -i : i
-  } else if (typeof x === 'number' && typeof y === 'number') {
-    if (x === y) return 0
-    return x < y ? -i : i
-  } else if (typeof x === 'boolean' && typeof y === 'boolean') {
-    if (x === y) return 0
-    return x < y ? -i : i
-  }
-
-  return 1
-}
-
-function dataPrep(data: IndexedUndefined[]) {
-  if (fields === undefined && data && data.length > 0) {
-    const _fields = getPropNames(data[0])
+    const _fields = objArray.fields
     fields = []
 
     for (const f of _fields) {
       if (f !== 'GBSeq_sequence') {
         if (
-          typeof data[0][f] === 'string' ||
-          typeof data[0][f] === 'number' ||
-          typeof data[0][f] === 'boolean'
+          typeof objArray.value(0, f) === 'string' ||
+          typeof objArray.value(0, f) === 'number' ||
+          typeof objArray.value(0, f) === 'boolean'
         )
           fields.push(f)
       }
@@ -57,18 +33,31 @@ function dataPrep(data: IndexedUndefined[]) {
   }
   if (fields && fields.length > 0) {
     if (sortBy !== undefined) {
-      const _ = sortBy
-      return data.sort((a, b) => sortF(a, b, _)).slice(0, pageSize)
-    } else {
-      return data.slice(0, pageSize)
+      objArray.sort(sortBy)
     }
+    return true
   }
-  return undefined
+  return false
 }
 
 $subheader = undefined
 </script>
 
+{#if dataPrep(objArray) === false}
+  <span>Loading...</span>
+{:else if fields === undefined}
+  <span>Field list is undefined.</span>
+{:else}
+  {#each fields as field}{field}&nbsp;{/each}
+  {#each idxs as i}
+    {#each fields as field}
+      {objArray.value(i, field)}&nbsp;
+    {/each}
+    <br /><br />
+  {/each}
+{/if}
+
+<!--
 {#if _data === undefined}
   <span>Loading...</span>
 {:else if fields === undefined}
@@ -102,3 +91,4 @@ $subheader = undefined
     </tfoot>
   </table>
 {/if}
+-->

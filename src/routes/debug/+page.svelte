@@ -4,6 +4,8 @@ import Table from '$lib/app/ui/views/Table/Table.svelte'
 import { type GBSeq } from '$lib/ncbi/types/GBSet'
 import { type Taxon } from '$lib/ncbi/types/TaxaSet'
 import { type ESummaryNuccore } from '$lib/ncbi'
+import { ObjArray } from '$lib/obj'
+
 import { type Readable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import db_main from '$lib/app/svelte-stores/db-main'
@@ -39,4 +41,4 @@ onDestroy(() => {})
   fields="{['GBSeq_accession_version', 'GBSeq_length', 'GBSeq_definition']}"
   sortBy="{'GBSeq_length'}"
   pageSize="{10}" /> -->
-<Table data="{taxa}" sortBy="{'ParentTaxId'}" pageSize="{10}" />
+<Table objArray="{new ObjArray(esummaries)}" sortBy="{'genome'}" pageSize="{10}" />
