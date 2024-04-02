@@ -6,7 +6,6 @@ function sort(fs: typeof recs.fields, ds: (1 | -1)[]) {
   recs.sortBy(fs, ds)
   recs = recs
 }
-
 </script>
 
 {#if recs.length === 0}
