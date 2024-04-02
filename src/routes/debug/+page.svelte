@@ -1,9 +1,10 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import Table from '$lib/app/ui/views/Table'
-import { type GBSeq } from '$lib/ncbi/types/GBSet'
+import { RecordList } from '$lib/utils/record-list'
+import TableView from '$lib/app/ui/views/TableView'
+// import { type GBSeq } from '$lib/ncbi/types/GBSet'
+// import { type ESummaryNuccore } from '$lib/ncbi'
 import { type Taxon } from '$lib/ncbi/types/TaxaSet'
-import { type ESummaryNuccore } from '$lib/ncbi'
 import { type Readable } from 'svelte/store'
 import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import db_main from '$lib/app/svelte-stores/db-main'
@@ -15,14 +16,21 @@ let _db_main: Readable<DBMainSvelteStore>
 //   await $_db_main.delete()
 // }
 
-let esummaries: ESummaryNuccore[]
-$: esummaries = _db_main ? $_db_main.seq_nt_summ : []
+// let esummaries: ESummaryNuccore[]
+// $: esummaries = _db_main ? $_db_main.seq_nt_summ : []
 
-let gbseqs: GBSeq[]
-$: gbseqs = _db_main ? $_db_main.gbseq : []
+// let gbseqs: GBSeq[]
+// $: gbseqs = _db_main ? $_db_main.gbseq : []
 
 let taxa: Taxon[]
 $: taxa = _db_main ? $_db_main.taxon : []
+
+let recs: RecordList<Taxon>
+$: {
+  recs = new RecordList(taxa)
+  recs.fieldsToShow = ['ParentTaxId', 'TaxId', 'ScientificName']
+  recs.sortBy(['ParentTaxId', 'TaxId'], [-1, -1])
+}
 
 onMount(async () => {
   _db_main = await db_main
@@ -31,13 +39,4 @@ onMount(async () => {
 onDestroy(() => {})
 </script>
 
-<!-- <button on:click="{delete_db_main}">Delete DBMain</button> -->
-
-<!-- <Table data="{esummaries}" sortBy="{'uid'}" pageSize="{10}" /> -->
-<!-- <Table
-  data="{gbseqs}"
-  fields="{['GBSeq_accession_version', 'GBSeq_length', 'GBSeq_definition']}"
-  sortBy="{'GBSeq_length'}"
-  pageSize="{10}" /> -->
-
-<Table />
+<TableView {recs} />

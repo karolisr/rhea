@@ -2,7 +2,7 @@
 
 table {
   border-spacing: 0;
-  overflow-x: scroll;
+  // overflow-x: hidden;
   // background-color: var(--bg2);
   // border-top-style: solid;
   // border-left-style: solid;
@@ -13,28 +13,27 @@ thead,
 tfoot {
   background-color: var(--primary);
   color: var(--fg-inv);
-  font-weight: bold;
+  // font-weight: bold;
 }
 
 tbody {
-  overflow-x: scroll;
+  // overflow-x: hidden;
 }
 
 tr {
-  overflow-x: scroll;
+  // overflow-x: hidden;
 }
 
 th,
 td {
-  font-family: 'JetBrains Mono';
-  font-size: x-small;
-  overflow-x: scroll;
+  // font-family: 'JetBrains Mono';
+  // font-size: x-small;
+  // overflow-x: hidden;
   // padding-inline: calc($spacing / 3);
   // padding-block: calc($spacing / 10);
   // border-bottom-style: solid;
   // border-right-style: solid;
   // border-color: var(--fg);
-  // overflow-x: hidden;
   text-wrap: nowrap;
-  // text-overflow: ellipsis;
+  text-overflow: ellipsis;
 }

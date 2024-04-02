@@ -1,6 +1,7 @@
 {
   "bracketSameLine": true,
   "bracketSpacing": true,
+  "singleAttributePerLine": false,
   "overrides": [
     {
       "files": "*.svelte",

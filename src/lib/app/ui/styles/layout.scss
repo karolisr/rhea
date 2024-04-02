@@ -16,7 +16,7 @@
 .main {
   display: flex;
   flex-direction: column;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: auto;
   flex-grow: 1;
   z-index: 10;

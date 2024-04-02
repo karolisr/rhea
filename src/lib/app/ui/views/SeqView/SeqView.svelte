@@ -105,15 +105,3 @@ onDestroy(() => {
 <div>
   <canvas bind:this="{canvas}"></canvas>
 </div>
-
-<style>
-/* div {
-  background-color: orangered;
-  overflow: hidden;
-  overflow-x: scroll;
-}
-
-canvas {
-  background-color: snow;
-} */
-</style>
