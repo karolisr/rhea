@@ -23,6 +23,6 @@
   transition: color 125ms linear;
 }
 
-.main .padded {
-  padding: calc($spacing * 1.25);
+.padded {
+  margin: calc($spacing * 1.25);
 }

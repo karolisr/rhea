@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
-import TableView from '$lib/ui/views/TableView'
+import TableView from '$lib/ui/views/TableView3'
 // import { type GBSeq } from '$lib/ncbi/types/GBSet'
 // import { type ESummaryNuccore } from '$lib/ncbi'
 import { type Taxon } from '$lib/ncbi/types/TaxaSet'
@@ -28,8 +28,9 @@ $: taxa = _db_main ? $_db_main.taxon : []
 let recs: RecordList<Taxon>
 $: {
   recs = new RecordList(taxa)
-  recs.fieldsToShow = ['ParentTaxId', 'TaxId', 'ScientificName']
-  recs.sortBy(['ParentTaxId', 'TaxId'], [-1, -1])
+  // recs = new RecordList(taxa.slice(0, 250))
+  recs.fieldsToShow = ['ParentTaxId', 'TaxId', 'ScientificName', 'PubDate']
+  recs.sortBy(['Lineage', 'ParentTaxId', 'ScientificName'], [1, 1, 1])
 }
 
 onMount(async () => {
@@ -39,4 +40,4 @@ onMount(async () => {
 onDestroy(() => {})
 </script>
 
-<TableView {recs} />
+<TableView rl={recs} />

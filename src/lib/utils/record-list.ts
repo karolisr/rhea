@@ -58,11 +58,11 @@ export class RecordList<T> extends Array<T> {
   valueByIndex(
     index: number,
     field: keyof T,
-    stringValueForObjects: string = ''
+    stringValueForObjects: string | undefined = undefined
   ) {
     const rec = this[index] as T
     const rv = rec[field]
-    if (stringValueForObjects && typeof rv === 'object') {
+    if (stringValueForObjects !== undefined && typeof rv === 'object') {
       return stringValueForObjects
     } else {
       return rv

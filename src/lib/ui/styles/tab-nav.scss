@@ -11,6 +11,8 @@
   transition:
     color 125ms linear,
     background-color 125ms linear;
+  min-height: calc($spacing * 2.25);
+  max-height: calc($spacing * 2.25);
 }
 
 .tab-nav a {
@@ -30,7 +32,6 @@
   display: flex;
   align-items: center;
   padding-block-start: calc($spacing / 3);
-  padding-block-end: calc($spacing / 4);
   padding-inline: calc($spacing / 2.45);
 }
 
