@@ -49,7 +49,7 @@ export let recs: RecordList<any>
   grid-auto-flow: column;
   grid-template-columns: 6rem 6rem 1fr 12rem;
   column-gap: 1px;
-  font-family: "JetBrains Mono"
+  font-family: 'JetBrains Mono';
 }
 
 .cell {

@@ -19,13 +19,14 @@
 :root {
   font-size: var(--fs);
   font-family: system-ui;
-  transition: font-size 125ms linear;
 }
 
 body {
+  font-size: var(--fs);
   color: var(--fg);
   background-color: var(--bg);
   transition: background-color 125ms linear;
+  transition: font-size 125ms linear;
 }
 
 input {

@@ -5,3 +5,7 @@ import { removeCycle as _removeCycle } from './utils'
 export const getPropNames = _getPropNames
 export const setDiff = _setDiff
 export const removeCycle = _removeCycle
+
+export const min = Math.min
+export const max = Math.max
+export const floor = Math.floor

@@ -1,201 +1,271 @@
 <script lang="ts">
-import { onMount, onDestroy, afterUpdate } from 'svelte'
+import { onMount, onDestroy, afterUpdate, beforeUpdate, tick } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
+import { min, max, floor } from '$lib'
 import status from '$lib/app/svelte-stores/status'
-
-onMount(() => {
-  colSizesStringX = '1fr 1fr 1fr 1fr'
-  getColSizes()
-})
-
-afterUpdate(() => {
-  getColSizes()
-  if (columnHeight) {
-    const elt = document.getElementById('table') as HTMLElement
-    const elm = document.getElementById('main') as HTMLElement
-    const tableHeight = columnHeight * (rowsToShow.length + 2)
-    const tableHeightFull = columnHeight * (rl.length + 2)
-    console.log(
-      columnHeight,
-      rowsToShow.length,
-      tableHeight,
-      elt.offsetHeight,
-      elm.offsetHeight,
-      Math.floor(elm.offsetHeight / columnHeight) - 2,
-      tableHeightFull
-    )
-    console.log()
-  }
-})
 
 onDestroy(() => {
   $status.main = ''
 })
 
-let columnHeight: number = 0
-let columnWidths: number[] = []
+onMount(() => {
+  const _ = document.getElementById(`row-height-${uid}`) as HTMLElement
+  if (_) rowH = _.offsetHeight
+  _.remove()
+  elt.style.gridTemplateColumns = colWsStr
+})
 
-async function getColSizes() {
-  const n = rl.fieldsToShow.length
-  for (let i = 0; i < n; i++) {
-    const el = document.getElementById(`col-${i}`)
-    if (el) columnWidths[i] = el.offsetWidth
-    if (el) columnHeight = el.offsetHeight
-  }
-}
+beforeUpdate(() => {
+  elc = document.getElementById(`table-container-${uid}`) as HTMLElement
+  elt = document.getElementById(`table-${uid}`) as HTMLElement
+  if (!rowH) rowH = 15
+})
 
-export let rl: RecordList<any>
+afterUpdate(() => {
+  getColWidths()
+  calcTableProperties()
+})
+
 $: $status.main = `${rl.length.toLocaleString()} records`
 
-let moreRows: boolean = false
-let rowsToShow: number[] = []
-$: rowsToShow = prepRows(moreRows, rl)
+export let rl: RecordList<any>
+export let showHeaderRow: boolean = true
+export let showFooterRow: boolean = false
+export let minColW: number = 50
+export let uid: string
 
-$: tableHeightFull = columnHeight * (rl.length + 2)
+$: nHeadRow = showHeaderRow ? 1 : 0
+$: nFootRow = showFooterRow ? 1 : 0
 
-function prepRows(_moreRows: boolean, _rl: RecordList<any>): number[] {
-  const rv: number[] = []
-  const start = 0
-  // const end = 52
-  const end = 100000
-  for (let i = start; i < Math.min(end, _rl.length); i++) {
-    rv.push(i)
+let rowH: number
+let elc: HTMLElement
+let elt: HTMLElement
+let colWs: number[] = []
+let colWsStr: string
+let maxRowsVis: number
+let rowsVis: number[] = []
+
+let scrollTop: number = 0
+
+$: if (!colWsStr) {
+  let _ = ''
+  for (let i = 0; i < rl.fieldsToShow.length; i++) {
+    _ += ` 1fr`
   }
-  moreRows = false
-  return rv
+  colWsStr = _.trim()
+}
+
+$: scrollHeight = rowH * (rl.length + (nHeadRow + nFootRow))
+$: topRow = elc && rowH ? floor(scrollTop / rowH) : 0
+
+addEventListener('resize', (_: UIEvent) => {
+  prepRows()
+})
+
+const onscroll = (_: Event) => {
+  scrollTop = elc.scrollTop + rowH / 1.25
+}
+
+function calcTableProperties() {
+  maxRowsVis = floor(elc.offsetHeight / rowH) - (nHeadRow + nFootRow)
+}
+
+async function getColWidths() {
+  const n = rl.fieldsToShow.length
+  let el
+  for (let i = 0; i < n; i++) {
+    el = document.getElementById(`cell-td-${uid}-${rowsVis[0]}-${i}`)
+    if (el) colWs[i] = el.offsetWidth
+  }
+  if (el) rowH = el.offsetHeight
+}
+
+$: if (!rowsVis && elt) prepRows()
+
+$: if (min(...rowsVis) > max(topRow - maxRowsVis, 0)) prepRows()
+$: if (max(...rowsVis) < min(topRow + maxRowsVis, rl.length)) prepRows()
+
+async function prepRows() {
+  const start = topRow
+  const end = topRow + maxRowsVis
+  const _: number[] = []
+  for (let i = max(0, start); i <= min(end, rl.length); i++) {
+    _.push(i)
+  }
+  rowsVis = _
 }
 
 // -----------------------------------------------------------------------------
-onmouseup = resizeColEnd
-onmousemove = resizeCol
 
-let colSizesStringX: string
-let resizeStartX: number | null = null
-let colInintialWidth: number | null = null
-let colDragged: number | null = null
-let tableElement: HTMLElement | null = null
+addEventListener('mousemove', (evt: MouseEvent) => {
+  resizeCol(evt)
+})
+
+addEventListener('mouseup', (evt: MouseEvent) => {
+  resizeColEnd(evt)
+})
+
+let colPrevX: number | null = null
+let colPrevWidth: number | null = null
+let colResizing: number | null = null
 
 async function resizeColBegin(evt: MouseEvent) {
   document.body.style.cursor = 'col-resize'
-  getColSizes()
-  resizeStartX = evt.x
-  const col = Number((evt.target as HTMLElement).id.replace('resizer-col-', ''))
-  colInintialWidth = columnWidths[col]
-  colDragged = col
-  tableElement = document.getElementById('table') as HTMLElement
+  getColWidths()
+  colPrevX = evt.x
+  const col = Number(
+    (evt.target as HTMLElement).id.replace(`resizer-col-${uid}-`, '')
+  )
+  colPrevWidth = colWs[col]
+  colResizing = col
 }
 
 async function resizeCol(evt: MouseEvent) {
-  if (
-    colDragged !== null &&
-    resizeStartX !== null &&
-    colInintialWidth !== null &&
-    tableElement !== null
-  ) {
-    const dist = evt.x - resizeStartX
-    columnWidths[colDragged] = Math.max(50, colInintialWidth + dist)
-    let _ = ''
-    columnWidths.forEach((w) => {
-      _ += `${w}px `
+  if (colResizing !== null && colPrevX !== null && colPrevWidth !== null) {
+    window.requestAnimationFrame(() => {
+      const d = evt.x - (colPrevX as number)
+      colWs[colResizing as number] = max(minColW, (colPrevWidth as number) + d)
+      let _ = ''
+      colWs.forEach((w) => {
+        _ += ` ${w}px`
+      })
+      elt.style.gridTemplateColumns = _.trim()
     })
-    tableElement.style.gridTemplateColumns = _
   }
 }
 
-async function resizeColEnd(evt: MouseEvent) {
-  if (tableElement !== null) {
-    const _ = tableElement.style.gridTemplateColumns
-    if (_) colSizesStringX = _
+async function resizeColEnd(_: MouseEvent) {
+  if (colResizing !== null && colPrevX !== null && colPrevWidth !== null) {
+    colWsStr = elt.style.gridTemplateColumns
+    colPrevX = null
+    colPrevWidth = null
+    colResizing = null
+    document.body.style.cursor = 'default'
   }
-  resizeStartX = null
-  colInintialWidth = null
-  colDragged = null
-  tableElement = null
-  document.body.style.cursor = 'default'
 }
 // -----------------------------------------------------------------------------
 </script>
 
-{#if rl.length === 0}
-  Loading...
-{:else if rl.fieldsToShow.length === 0}
-  Field list is undefined.
-{:else}
+<!-- <div class="padded">
+  <button
+    disabled="{topRow <= 0}"
+    on:click="{() => {
+      elc.scrollTo({
+        top: rowH * max(topRow - maxRowsVis, 0)
+      })
+    }}">UP</button>
+
+  <button
+    disabled="{topRow + maxRowsVis + 1 >= rl.length}"
+    on:click="{() => {
+      elc.scrollTo({
+        top: rowH * min(topRow + maxRowsVis, rl.length)
+      })
+    }}">DOWN</button>
+</div> -->
+<!-- style="grid-template-columns:{colWsStr};" -->
+<div id="table-container-{uid}" class="table-container" on:scroll="{onscroll}">
   <div
-    style="min-height: {tableHeightFull}px; max-height: {tableHeightFull}px;">
-    <div
-      id="table"
-      class="table"
-      style="--grid-template-columns:{colSizesStringX}">
-      {#each rl.fieldsToShow as field, i}
-        <div id="col-{i}" class="cell th sticky-top">
-          {field}
-          <resizer
-            id="resizer-col-{i}"
-            class="resizer-col"
-            role="none"
-            on:mousedown="{resizeColBegin}"></resizer>
-        </div>
-      {/each}
-      {#each rowsToShow as i}
-        {#each rl.fieldsToShow as field, j}
-          <div id="cell-td-{i}-{j}" class="cell">
-            {rl.valueByIndex(i, field, '')}
-          </div>
-        {/each}
-      {/each}
-      {#each rl.fieldsToShow as field}
-        <div class="cell tf sticky-bottom">
-          {field}
-        </div>
-      {/each}
+    id="table-scroll-container-{uid}"
+    class="table-scroll-container"
+    style="height:{scrollHeight}px; max-height:{scrollHeight}px;">
+    <div id="table-{uid}" class="table">
+      <div id="row-height-{uid}" class="cell">ROW HEIGHT</div>
+      {#if rl.length === 0}
+        <pre>rl.length === 0</pre>
+      {:else if rl.fieldsToShow.length === 0}
+        <pre>rl.fieldsToShow.length === 0</pre>
+      {:else}
+        {#if showHeaderRow}
+          {#each rl.fieldsToShow as field, i}
+            <div id="col-{uid}-{i}" class="cell th sticky-top">
+              {field}
+              <resizer
+                id="resizer-col-{uid}-{i}"
+                class="resizer-col"
+                role="none"
+                on:mousedown="{resizeColBegin}"></resizer>
+            </div>
+          {/each}
+        {/if}
+
+        {#if rowsVis}
+          {#each rl as _, i}
+            {#if rowsVis.includes(i)}
+              {#each rl.fieldsToShow as field, j}
+                <div id="cell-td-{uid}-{i}-{j}" class="cell">
+                  {rl.valueByIndex(i, field, '')}
+                </div>
+              {/each}
+            {/if}
+          {/each}
+        {/if}
+
+        {#if showFooterRow}
+          {#each rl.fieldsToShow as field}
+            <div class="cell tf sticky-bottom">
+              {field}
+            </div>
+          {/each}
+        {/if}
+      {/if}
     </div>
   </div>
-{/if}
+</div>
 
 <style lang="scss">
-.table {
-  display: grid;
-  font-family: 'JetBrains Mono';
-  grid-template-columns: var(--grid-template-columns);
+.table-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: auto;
 
-  .cell {
-    text-wrap: nowrap;
-    background-color: var(--bg);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-inline: 0.25rem;
-    // padding-block: 0.125rem;
-    // border-inline-end-style: solid;
+  .table-scroll-container {
+    .table {
+      display: grid;
+      font-family: 'JetBrains Mono';
+      position: sticky;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      .cell {
+        overflow: hidden;
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        background-color: var(--bg);
+      }
+
+      .sticky-top,
+      .sticky-bottom {
+        position: sticky;
+      }
+
+      .th.sticky-top {
+        top: 0;
+      }
+
+      .tf.sticky-bottom {
+        bottom: 0;
+      }
+
+      .th,
+      .tf {
+        background-color: var(--primary);
+        color: var(--fg-inv);
+        font-weight: bold;
+
+        .resizer-col {
+          cursor: col-resize;
+          background-color: deeppink;
+          position: absolute;
+          display: inline-block;
+          right: 0rem;
+          width: 1rem;
+          height: 100%;
+        }
+      }
+    }
   }
-
-  .sticky-top,
-  .sticky-bottom {
-    position: sticky;
-  }
-
-  .th.sticky-top {
-    top: 0;
-  }
-
-  .tf.sticky-bottom {
-    bottom: 0;
-  }
-
-  .th,
-  .tf {
-    background-color: var(--primary);
-    color: var(--fg-inv);
-    font-weight: bold;
-  }
-}
-
-.resizer-col {
-  position: absolute;
-  display: inline-block;
-  right: 0rem;
-  width: 1rem;
-  height: 100%;
-  cursor: col-resize;
 }
 </style>

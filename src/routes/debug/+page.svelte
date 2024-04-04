@@ -2,7 +2,7 @@
 import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
 import TableView from '$lib/ui/views/TableView3'
-// import { type GBSeq } from '$lib/ncbi/types/GBSet'
+import { type GBSeq } from '$lib/ncbi/types/GBSet'
 // import { type ESummaryNuccore } from '$lib/ncbi'
 import { type Taxon } from '$lib/ncbi/types/TaxaSet'
 import { type Readable } from 'svelte/store'
@@ -19,18 +19,26 @@ let _db_main: Readable<DBMainSvelteStore>
 // let esummaries: ESummaryNuccore[]
 // $: esummaries = _db_main ? $_db_main.seq_nt_summ : []
 
-// let gbseqs: GBSeq[]
-// $: gbseqs = _db_main ? $_db_main.gbseq : []
+let gbseqs: GBSeq[]
+$: gbseqs = _db_main ? $_db_main.gbseq : []
+let gbseqsRL: RecordList<GBSeq>
+$: {
+  gbseqsRL = new RecordList(gbseqs)
+  gbseqsRL.fieldsToShow = [
+    'GBSeq_accession_version',
+    'GBSeq_definition',
+    'GBSeq_organism'
+  ]
+  gbseqsRL.sortBy(['GBSeq_accession_version'], [1])
+}
 
 let taxa: Taxon[]
 $: taxa = _db_main ? $_db_main.taxon : []
-
-let recs: RecordList<Taxon>
+let taxaRL: RecordList<Taxon>
 $: {
-  recs = new RecordList(taxa)
-  // recs = new RecordList(taxa.slice(0, 250))
-  recs.fieldsToShow = ['ParentTaxId', 'TaxId', 'ScientificName', 'PubDate']
-  recs.sortBy(['Lineage', 'ParentTaxId', 'ScientificName'], [1, 1, 1])
+  taxaRL = new RecordList(taxa)
+  taxaRL.fieldsToShow = ['ScientificName', 'ParentTaxId', 'TaxId', 'PubDate']
+  taxaRL.sortBy(['ScientificName', 'Lineage', 'ParentTaxId'], [-1, 1, 1])
 }
 
 onMount(async () => {
@@ -40,4 +48,5 @@ onMount(async () => {
 onDestroy(() => {})
 </script>
 
-<TableView rl={recs} />
+<TableView uid="tax" rl="{taxaRL}" />
+<TableView uid="gbs" rl="{gbseqsRL}" />
