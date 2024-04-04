@@ -63,7 +63,7 @@ addEventListener('resize', (_: UIEvent) => {
 })
 
 const onscroll = (_: Event) => {
-  scrollTop = elc.scrollTop + rowH / 1.25
+  scrollTop = elc.scrollTop
 }
 
 function calcTableProperties() {
@@ -114,7 +114,7 @@ async function resizeColBegin(evt: MouseEvent) {
   getColWidths()
   colPrevX = evt.x
   const col = Number(
-    (evt.target as HTMLElement).id.replace(`resizer-col-${uid}-`, '')
+    (evt.target as HTMLElement).id.replace(`col-sizer-${uid}-`, '')
   )
   colPrevWidth = colWs[col]
   colResizing = col
@@ -130,6 +130,7 @@ async function resizeCol(evt: MouseEvent) {
         _ += ` ${w}px`
       })
       elt.style.gridTemplateColumns = _.trim()
+      colWsStr = _.trim()
     })
   }
 }
@@ -146,30 +147,25 @@ async function resizeColEnd(_: MouseEvent) {
 // -----------------------------------------------------------------------------
 </script>
 
-<!-- <div class="padded">
-  <button
-    disabled="{topRow <= 0}"
-    on:click="{() => {
-      elc.scrollTo({
-        top: rowH * max(topRow - maxRowsVis, 0)
-      })
-    }}">UP</button>
-
-  <button
-    disabled="{topRow + maxRowsVis + 1 >= rl.length}"
-    on:click="{() => {
-      elc.scrollTo({
-        top: rowH * min(topRow + maxRowsVis, rl.length)
-      })
-    }}">DOWN</button>
-</div> -->
-<!-- style="grid-template-columns:{colWsStr};" -->
 <div id="table-container-{uid}" class="table-container" on:scroll="{onscroll}">
   <div
     id="table-scroll-container-{uid}"
     class="table-scroll-container"
     style="height:{scrollHeight}px; max-height:{scrollHeight}px;">
     <div id="table-{uid}" class="table">
+      <div
+        id="col-sizers-{uid}"
+        class="col-sizers"
+        style:grid-template-columns="{colWsStr}">
+        {#each rl.fieldsToShow as field, i}
+          <resizer
+            id="col-sizer-{uid}-{i}"
+            class="col-sizer"
+            role="none"
+            on:mousedown="{resizeColBegin}">
+          </resizer>
+        {/each}
+      </div>
       <div id="row-height-{uid}" class="cell">ROW HEIGHT</div>
       {#if rl.length === 0}
         <pre>rl.length === 0</pre>
@@ -180,11 +176,6 @@ async function resizeColEnd(_: MouseEvent) {
           {#each rl.fieldsToShow as field, i}
             <div id="col-{uid}-{i}" class="cell th sticky-top">
               {field}
-              <resizer
-                id="resizer-col-{uid}-{i}"
-                class="resizer-col"
-                role="none"
-                on:mousedown="{resizeColBegin}"></resizer>
             </div>
           {/each}
         {/if}
@@ -193,7 +184,7 @@ async function resizeColEnd(_: MouseEvent) {
           {#each rl as _, i}
             {#if rowsVis.includes(i)}
               {#each rl.fieldsToShow as field, j}
-                <div id="cell-td-{uid}-{i}-{j}" class="cell">
+                <div id="cell-td-{uid}-{i}-{j}" class="cell td">
                   {rl.valueByIndex(i, field, '')}
                 </div>
               {/each}
@@ -213,59 +204,111 @@ async function resizeColEnd(_: MouseEvent) {
   </div>
 </div>
 
+<div class="padded">
+  <button
+    disabled="{topRow <= 0}"
+    on:click="{() => {
+      elc.scrollTo({
+        top: rowH * max(topRow - maxRowsVis, 0)
+      })
+    }}">U</button>
+
+  <button
+    disabled="{topRow + maxRowsVis + 1 >= rl.length}"
+    on:click="{() => {
+      elc.scrollTo({
+        top: rowH * min(topRow + maxRowsVis, rl.length)
+      })
+    }}">D</button>
+</div>
+
 <style lang="scss">
+.col-sizers {
+  background-color: transparent;
+  display: grid;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 0;
+}
+
+.col-sizer {
+  position: relative;
+  left: calc(100% - 0.75rem);
+  width: 0.75rem;
+  cursor: col-resize;
+  transition: background-color 0.125s ease-in-out;
+}
+
+.col-sizer:hover,
+.col-sizer:active {
+  background-color: rgba($color: orange, $alpha: 0.25);
+}
+
 .table-container {
+  background-color: transparent;
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: auto;
+}
 
-  .table-scroll-container {
-    .table {
-      display: grid;
-      font-family: 'JetBrains Mono';
-      position: sticky;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
+.table-scroll-container {
+  background-color: transparent;
+}
 
-      .cell {
-        overflow: hidden;
-        text-wrap: nowrap;
-        text-overflow: ellipsis;
-        background-color: var(--bg);
-      }
+.table {
+  background-color: transparent;
+  display: grid;
+  font-family: 'JetBrains Mono';
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 
-      .sticky-top,
-      .sticky-bottom {
-        position: sticky;
-      }
+.cell {
+  background-color: var(--bg);
+  color: var(--fg);
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  padding-inline: 0.125rem;
+}
 
-      .th.sticky-top {
-        top: 0;
-      }
+.td {
+  background-color: transparent;
+  border-inline-end-style: solid;
+}
 
-      .tf.sticky-bottom {
-        bottom: 0;
-      }
+.sticky-top,
+.sticky-bottom {
+  position: sticky;
+}
 
-      .th,
-      .tf {
-        background-color: var(--primary);
-        color: var(--fg-inv);
-        font-weight: bold;
+.th.sticky-top {
+  top: 0;
+}
 
-        .resizer-col {
-          cursor: col-resize;
-          background-color: deeppink;
-          position: absolute;
-          display: inline-block;
-          right: 0rem;
-          width: 1rem;
-          height: 100%;
-        }
-      }
-    }
-  }
+.tf.sticky-bottom {
+  bottom: 0;
+}
+
+.th,
+.tf {
+  background-color: transparent;
+  font-weight: bold;
+}
+
+.th {
+  background-color: var(--fg);
+  color: var(--fg-inv);
+}
+
+.tf {
+  background-color: var(--fg);
+  color: var(--fg-inv);
 }
 </style>
