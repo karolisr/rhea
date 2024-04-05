@@ -1,32 +1,21 @@
 <script lang="ts">
-import { onMount, onDestroy, afterUpdate, beforeUpdate, tick } from 'svelte'
+import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
 import { min, max, floor } from '$lib'
-import status from '$lib/app/svelte-stores/status'
+// import status from '$lib/app/svelte-stores/status'
 
 onDestroy(() => {
-  $status.main = ''
+  // $status.main = ''
 })
 
 onMount(() => {
-  const _ = document.getElementById(`row-height-${uid}`) as HTMLElement
-  if (_) rowH = _.offsetHeight
-  _.remove()
-  elt.style.gridTemplateColumns = colWsStr
-})
-
-beforeUpdate(() => {
   elc = document.getElementById(`table-container-${uid}`) as HTMLElement
   elt = document.getElementById(`table-${uid}`) as HTMLElement
-  if (!rowH) rowH = 15
+  elt.style.gridTemplateColumns = colWsStr
+  calcHeights()
 })
 
-afterUpdate(() => {
-  getColWidths()
-  calcTableProperties()
-})
-
-$: $status.main = `${rl.length.toLocaleString()} records`
+// $: $status.main = `${rl.length.toLocaleString()} records`
 
 export let rl: RecordList<any>
 export let showHeaderRow: boolean = true
@@ -38,6 +27,7 @@ $: nHeadRow = showHeaderRow ? 1 : 0
 $: nFootRow = showFooterRow ? 1 : 0
 
 let rowH: number
+let visH: number
 let elc: HTMLElement
 let elt: HTMLElement
 let colWs: number[] = []
@@ -46,6 +36,7 @@ let maxRowsVis: number
 let rowsVis: number[] = []
 
 let scrollTop: number = 0
+let topRow: number
 
 $: if (!colWsStr) {
   let _ = ''
@@ -56,41 +47,56 @@ $: if (!colWsStr) {
 }
 
 $: scrollHeight = rowH * (rl.length + (nHeadRow + nFootRow))
-$: topRow = elc && rowH ? floor(scrollTop / rowH) : 0
+$: topRow = rowH && rowH > 0 ? floor(scrollTop / rowH) : 0
+$: maxRowsVis =
+  rowH && rowH > 0 ? max(floor(visH / rowH) - (nHeadRow + nFootRow), 0) : 0
 
 addEventListener('resize', (_: UIEvent) => {
-  prepRows()
+  visH = elc.offsetHeight
 })
 
 const onscroll = (_: Event) => {
   scrollTop = elc.scrollTop
 }
 
-function calcTableProperties() {
-  maxRowsVis = floor(elc.offsetHeight / rowH) - (nHeadRow + nFootRow)
+function calcHeights() {
+  const _ = document.createElement('div')
+  _.className = 'cell'
+  _.textContent = 'rowH'
+  elt.appendChild(_)
+  rowH = _.offsetHeight
+  visH = elc.offsetHeight
+  _.remove()
 }
 
-async function getColWidths() {
+async function calcColWidths() {
   const n = rl.fieldsToShow.length
   let el
   for (let i = 0; i < n; i++) {
     el = document.getElementById(`cell-td-${uid}-${rowsVis[0]}-${i}`)
     if (el) colWs[i] = el.offsetWidth
   }
-  if (el) rowH = el.offsetHeight
 }
 
-$: if (!rowsVis && elt) prepRows()
+$: {
+  if (
+    min(...rowsVis) > max(topRow - maxRowsVis, 0) ||
+    max(...rowsVis) < min(topRow + maxRowsVis, rl.length) ||
+    visH
+  ) {
+    prepRows()
+  }
+}
 
-$: if (min(...rowsVis) > max(topRow - maxRowsVis, 0)) prepRows()
-$: if (max(...rowsVis) < min(topRow + maxRowsVis, rl.length)) prepRows()
-
-async function prepRows() {
-  const start = topRow
-  const end = topRow + maxRowsVis
+function prepRows() {
   const _: number[] = []
-  for (let i = max(0, start); i <= min(end, rl.length); i++) {
-    _.push(i)
+  if (maxRowsVis > 0) {
+    const start = topRow
+    const end = topRow + maxRowsVis
+    for (let i = max(0, start); i <= min(end, rl.length); i++) {
+      _.push(i)
+    }
+    // console.log(min(..._), max(..._))
   }
   rowsVis = _
 }
@@ -109,9 +115,9 @@ let colPrevX: number | null = null
 let colPrevWidth: number | null = null
 let colResizing: number | null = null
 
-async function resizeColBegin(evt: MouseEvent) {
+function resizeColBegin(evt: MouseEvent) {
   document.body.style.cursor = 'col-resize'
-  getColWidths()
+  calcColWidths()
   colPrevX = evt.x
   const col = Number(
     (evt.target as HTMLElement).id.replace(`col-sizer-${uid}-`, '')
@@ -120,7 +126,7 @@ async function resizeColBegin(evt: MouseEvent) {
   colResizing = col
 }
 
-async function resizeCol(evt: MouseEvent) {
+function resizeCol(evt: MouseEvent) {
   if (colResizing !== null && colPrevX !== null && colPrevWidth !== null) {
     window.requestAnimationFrame(() => {
       const d = evt.x - (colPrevX as number)
@@ -135,7 +141,7 @@ async function resizeCol(evt: MouseEvent) {
   }
 }
 
-async function resizeColEnd(_: MouseEvent) {
+function resizeColEnd(_: MouseEvent) {
   if (colResizing !== null && colPrevX !== null && colPrevWidth !== null) {
     colWsStr = elt.style.gridTemplateColumns
     colPrevX = null
@@ -157,7 +163,7 @@ async function resizeColEnd(_: MouseEvent) {
         id="col-sizers-{uid}"
         class="col-sizers"
         style:grid-template-columns="{colWsStr}">
-        {#each rl.fieldsToShow as field, i}
+        {#each rl.fieldsToShow as _, i}
           <resizer
             id="col-sizer-{uid}-{i}"
             class="col-sizer"
@@ -166,9 +172,8 @@ async function resizeColEnd(_: MouseEvent) {
           </resizer>
         {/each}
       </div>
-      <div id="row-height-{uid}" class="cell">ROW HEIGHT</div>
       {#if rl.length === 0}
-        <pre>rl.length === 0</pre>
+        <pre>Loading...</pre>
       {:else if rl.fieldsToShow.length === 0}
         <pre>rl.fieldsToShow.length === 0</pre>
       {:else}
@@ -204,7 +209,7 @@ async function resizeColEnd(_: MouseEvent) {
   </div>
 </div>
 
-<div class="padded">
+<!-- <div class="padded">
   <button
     disabled="{topRow <= 0}"
     on:click="{() => {
@@ -220,7 +225,7 @@ async function resizeColEnd(_: MouseEvent) {
         top: rowH * min(topRow + maxRowsVis, rl.length)
       })
     }}">D</button>
-</div>
+</div> -->
 
 <style lang="scss">
 .col-sizers {
@@ -252,6 +257,7 @@ async function resizeColEnd(_: MouseEvent) {
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: auto;
+  height: 100%;
 }
 
 .table-scroll-container {

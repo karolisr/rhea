@@ -170,7 +170,7 @@
         "acceptFirstMouse": true,
         "fileDropEnabled": true,
         "hiddenTitle": true,
-        "alwaysOnTop": true
+        "alwaysOnTop": false
       }
     ]
   }
