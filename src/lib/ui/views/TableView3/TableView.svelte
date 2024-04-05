@@ -19,7 +19,7 @@ onMount(() => {
 
 export let rl: RecordList<any>
 export let showHeaderRow: boolean = true
-export let showFooterRow: boolean = false
+export let showFooterRow: boolean = true
 export let minColW: number = 50
 export let uid: string
 
@@ -255,8 +255,8 @@ function resizeColEnd(_: MouseEvent) {
 .table-container {
   background-color: transparent;
   flex-grow: 1;
-  overflow-y: auto;
-  overflow-x: auto;
+  overflow-y: scroll;
+  overflow-x: scroll;
   height: 100%;
 }
 
