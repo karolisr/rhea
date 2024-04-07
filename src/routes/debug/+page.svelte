@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
-import TableView from '$lib/ui/views/TableView3'
+import TableView from '$lib/ui/views/TableView'
 import { type GBSeq } from '$lib/ncbi/types/GBSet'
 // import { type ESummaryNuccore } from '$lib/ncbi'
 import { type Taxon } from '$lib/ncbi/types/TaxaSet'

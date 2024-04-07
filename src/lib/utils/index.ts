@@ -19,3 +19,8 @@ export function removeCycle(
         Object.entries(obj).map(([k, v]) => [k, removeCycle(v, s)])
       )
 }
+
+export function seq(b: number, e: number, step: number = 1) {
+  if (step === 0) return []
+  return Array.from({ length: (e - b) / step + 1 }, (_, i) => b + i * step)
+}
