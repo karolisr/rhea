@@ -1,0 +1,19 @@
+@import 'defs.scss';
+
+.toolbar {
+  background-color: var(--bg2);
+  display: flex;
+  flex-direction: row;
+  gap: calc($spacing / 3);
+  margin: calc($spacing / 1.5);
+  margin-block-end: 0;
+  padding-block: calc($spacing / 3);
+  padding-inline: calc($spacing / 3);
+  // box-shadow: var(--shadow);
+  // border-style: solid;
+  border-radius: calc($spacing / 4);
+}
+
+.toolbar-button {
+  box-shadow: none;
+}

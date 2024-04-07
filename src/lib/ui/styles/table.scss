@@ -1,39 +1,44 @@
 @import 'defs.scss';
-
-table {
-  border-spacing: 0;
-  // overflow-x: hidden;
-  // background-color: var(--bg2);
-  // border-top-style: solid;
-  // border-left-style: solid;
-  // border-color: var(--fg);
+.table-container {
+  margin: calc($spacing / 1.5);
 }
 
-thead,
-tfoot {
-  background-color: var(--primary);
-  color: var(--fg-inv);
-  // font-weight: bold;
+.cell {
+  padding-inline: calc($spacing / 3);
 }
 
-tbody {
-  // overflow-x: hidden;
+.row-th,
+.row-td,
+.row-tf {
+  padding-block: 1px;
 }
 
-tr {
-  // overflow-x: hidden;
+.row-th,
+.row-tf {
+  color: var(--fg2);
+  font-weight: bold;
+  background-color: rgba($color: $C400, $alpha: 0.25);
 }
 
-th,
-td {
-  // font-family: 'JetBrains Mono';
-  // font-size: x-small;
-  // overflow-x: hidden;
-  // padding-inline: calc($spacing / 3);
-  // padding-block: calc($spacing / 10);
-  // border-bottom-style: solid;
-  // border-right-style: solid;
-  // border-color: var(--fg);
-  text-wrap: nowrap;
-  text-overflow: ellipsis;
+.row-td {
+  font-family: 'JetBrains Mono';
+}
+
+.row-td:hover {
+  background-color: rgba($color: $A300, $alpha: 0.25);
+}
+
+.col-sizer {
+  position: relative;
+  left: calc(100% - 0.75rem);
+  width: 0.75rem;
+  cursor: col-resize;
+  transition: background-color 0.125s ease-in-out;
+  pointer-events: fill;
+  border-inline-end-style: solid;
+}
+
+.col-sizer:hover,
+.col-sizer:active {
+  background-color: rgba($color: $A300, $alpha: 0.25);
 }

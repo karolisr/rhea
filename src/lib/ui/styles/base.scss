@@ -25,11 +25,13 @@ body {
   font-size: var(--fs);
   color: var(--fg);
   background-color: var(--bg);
-  transition: background-color 125ms linear;
-  transition: font-size 125ms linear;
+  transition:
+    background-color 125ms linear,
+    font-size 125ms linear;
 }
 
 input {
+  min-width: calc($line_height * 15 + $spacing);
   background-color: var(--bg);
   border-color: var(--border-color);
 }
@@ -46,6 +48,7 @@ input {
 button,
 input[type='button'],
 input[type='submit'] {
+  min-width: calc($line_height + $spacing);
   color: var(--fg-inv);
   background-color: var(--primary);
   border-style: none;
@@ -57,6 +60,7 @@ input[type='radio'] {
   min-height: calc($spacing * 1.25);
   margin-inline-end: calc($spacing / 2.25);
   padding: 0;
+  border-style: solid;
 }
 
 input[type='checkbox']:checked::after {
@@ -108,7 +112,7 @@ fieldset {
 fieldset legend {
   padding-inline: calc($spacing / 2);
   padding-block: calc($spacing / 3);
-  background-color: var(--primary);
+  background-color: var(--bg3);
   font-weight: bold;
   color: var(--fg-inv);
   border-radius: calc($spacing / 4);

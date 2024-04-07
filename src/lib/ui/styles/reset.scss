@@ -56,11 +56,12 @@ body {
   flex-direction: column;
   overflow: hidden;
   flex-grow: 1;
+  cursor: default;
 }
 
 button,
 input {
-  border-style: solid;
+  // border-style: solid;
 }
 
 button,

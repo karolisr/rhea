@@ -14,28 +14,38 @@ $focus_color_dark: color-mix(in srgb, $A400 15%, $A500 85%);
 $shadow-light: 0.05rem 0.1rem 0.15rem $C300;
 $shadow-dark: 0.05rem 0.1rem 0.25rem $C900;
 
+// rgba($color: $B500, $alpha: 0.35);
+
 :root[app-theme='light'] {
-  --fg: #{$C800};
+  --fg: #{rgba($color: $C900, $alpha: 0.95)};
+  --fg2: black;
   --bg: #{$C050};
   --bg2: #{$titlebar-bg-mac-fade-1};
-  --fg-inv: #{$C050};
-  --border-color: #{$C500};
+  --bg3: #{rgba($color: $A600, $alpha: 0.9)};
+  --bg-head: #{rgba($color: $B300, $alpha: 0.35)};
+  --fg-inv: white;
+  --border-color: #{color-mix(in srgb, $titlebar-bg-mac-fade-1 80%, $C600 20%)};
   --chrome-border-color: #{$titlebar-bg-mac-fade-2};
   --primary: #{$A600};
+  --secondary: #{$B600};
   --focus-color: #{$focus_color_light};
   --title-bar-color: #{$titlebar-bg-mac};
   --shadow: #{$shadow-light};
 }
 
 :root[app-theme='dark'] {
-  --fg: #{$C050};
-  --bg: #{$C700};
-  --bg2: #{$C800};
-  --fg-inv: #{$C900};
-  --border-color: #{$C400};
+  --fg: #{rgba($color: $C050, $alpha: 0.65)};
+  --fg2: #{rgba($color: $C200, $alpha: 0.85)};
+  --bg: #{rgba($color: $C700, $alpha: 1)};
+  --bg2: #{$C600};
+  --bg3: #{rgba($color: $A900, $alpha: 0.65)};
+  --bg-head: #{rgba($color: $A900, $alpha: 0.35)};
+  --fg-inv: #{rgba($color: $C200, $alpha: 0.85)};
+  --border-color: #{rgba($color: $C300, $alpha: 0.35)};
   --chrome-border-color: #{$C600};
-  --primary: #{$A500};
-  --focus-color: #{$focus_color_dark};
+  --primary: #{rgba($color: $A600, $alpha: 0.85)};
+  --secondary: #{$B200};
+  --focus-color: #{rgba($color: $A600, $alpha: 0.75)};
   --title-bar-color: #{$C800};
   --shadow: #{$shadow-dark};
 }

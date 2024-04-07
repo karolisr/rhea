@@ -3,6 +3,7 @@
 ::-webkit-scrollbar {
   width: 15px;
   height: 15px;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
@@ -37,5 +38,16 @@
 }
 
 ::-webkit-scrollbar-button {
-  background-color: red;
+  // background-color: var(--primary);
+  // border-width: 1px;
+}
+
+::-webkit-scrollbar-button:vertical {
+}
+
+::-webkit-scrollbar-button:horizontal {
+}
+
+::-webkit-scrollbar-button:hover {
+  background-color: var(--focus-color);
 }

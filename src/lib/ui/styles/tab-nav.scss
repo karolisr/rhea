@@ -3,8 +3,8 @@
 .tab-nav {
   display: flex;
   flex-direction: row;
-  padding-top: calc($spacing / 4);
-  padding-inline-end: calc($spacing / 4);
+  // padding-top: calc($spacing / 4);
+  // padding-inline-end: calc($spacing / 4);
   background-color: var(--title-bar-color);
   border-bottom-style: solid;
   border-color: var(--chrome-border-color);
@@ -16,22 +16,22 @@
 }
 
 .tab-nav a {
-  margin-inline-start: calc($spacing / 4);
-  border-top-style: solid;
+  // margin-inline-start: calc($spacing / 4);
+  // border-top-style: solid;
   border-left-style: solid;
-  border-right-style: solid;
+  // border-right-style: solid;
   border-bottom-style: solid;
-  border-top-left-radius: calc($spacing / 1.45);
-  border-top-right-radius: calc($spacing / 1.45);
+  // border-top-left-radius: calc($spacing / 1.45);
+  // border-top-right-radius: calc($spacing / 1.45);
   border-color: var(--chrome-border-color);
-  background-color: var(--bg2);
+  // background-color: var(--bg2);
   margin-bottom: calc(var(--border-width) * -1);
 }
 
 .tab-nav a div {
   display: flex;
   align-items: center;
-  padding-block-start: calc($spacing / 3);
+  padding-block-start: calc($spacing / 2);
   padding-inline: calc($spacing / 2.45);
 }
 
@@ -49,16 +49,26 @@
     font-size 125ms linear;
 }
 
-.tab-nav a:hover {
+// .tab-nav a:hover {
+// }
+
+.tab-nav a:hover div svg {
+  color: $A500;
 }
 
-.tab-nav a:active {
-}
+// .tab-nav a:active {
+// }
 
 .tab-nav a[aria-current='true'] {
+  border-bottom-color: var(--focus-color);
   background-color: var(--bg);
-  border-bottom-color: transparent;
-  // box-shadow: 0rem -0.14rem 0.35rem -0.4rem $A800;
+}
+
+// .tab-nav a[aria-current='true'] div svg {
+// }
+
+.tab-nav a[aria-current='true'] div span {
+  color: var(--fg2);
 }
 
 .tab-nav-tab-spacer {
