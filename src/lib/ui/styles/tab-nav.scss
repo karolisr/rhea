@@ -8,6 +8,7 @@
 // }
 
 .tab-nav > a > div {
+  background-color: $Y200;
   display: flex;
   align-items: center;
   border-left-style: solid;
@@ -18,11 +19,12 @@
 // }
 
 .tab-nav > a > div > span {
-  margin-left: 6px;
+  margin-left: 3px;
 }
 
-// .tab-nav > a:hover {
-// }
+.tab-nav > a:hover > div {
+  background-color: white;
+}
 
 // .tab-nav > a:hover > div > svg {
 // }
@@ -30,11 +32,13 @@
 // .tab-nav > a:hover > div > span {
 // }
 
-// .tab-nav > a[aria-current='true'] {
-// }
+.tab-nav > a[aria-current='true'] > div {
+  background-color: white;
+}
 
-// .tab-nav > a[aria-current='true'] > div > svg {
-// }
+.tab-nav > a[aria-current='true'] > div > svg {
+  color: $A600;
+}
 
 // .tab-nav > a[aria-current='true'] > div > span {
 // }

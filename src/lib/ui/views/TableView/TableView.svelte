@@ -1,46 +1,46 @@
 <script lang="ts">
 import { onMount } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
-import { min, max, floor, ceil, seq } from '$lib'
+import { min, max, floor, ceil, seq, round } from '$lib'
+import { mean, standardDeviation } from 'simple-statistics'
 
 onMount(() => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
   elc = document.getElementById(`${uid}-table-container`) as HTMLElement
-  colWsStr = colWStrDefault()
-  rowH = getRowHeight()
+  // colWsStr = colWStrDefault()
+  const _ = getRowHeight()
+  rowH = _.rowH
+  charW = _.chrW
   visH = elh.clientHeight
 })
 
-function getRowHeight(): number {
-  const _table = document.createElement('div')
-  const _row = document.createElement('div')
-  const _cell = document.createElement('div')
-  _table.className = 'table'
-  _row.className = 'row-td'
-  _cell.className = 'cell td'
-  _cell.textContent = 'rowH'
-  _row.appendChild(_cell)
-  _table.appendChild(_row)
-  const _container = document.getElementById(
-    `${uid}-table-container`
-  ) as HTMLElement
-  _container.appendChild(_table)
-  const rowH = _row.offsetHeight
-  _cell.remove()
-  _row.remove()
-  _table.remove()
-  return rowH
+function calColWidths(rl: RecordList<any>, charW: number) {
+  const colWs: number[] = []
+  for (let i = 0; i < rl.fieldsToShow.length; i++) {
+    const field = rl.fieldsToShow[i]
+    const values: number[] = []
+    for (let j = 0; j < rl.length; j++) {
+      const value = rl.valueByIndex(j, field, '')
+      values.push(String(value).length)
+    }
+    if (values.length > 0) {
+      const w = ceil(mean(values) + 2 * standardDeviation(values)) * charW
+      colWs.push(max(95, min(400, w)))
+    }
+  }
+  return colWs
 }
 
 export let rl: RecordList<any>
 export let showHeaderRow: boolean = true
-export let showFooterRow: boolean = true
-export let minColW: number = 50
+export let showFooterRow: boolean = false
+export let minColW: number = 40
 export let uid: string
 
 $: nH = showHeaderRow ? 1 : 0
 $: nF = showFooterRow ? 1 : 0
 
+let charW: number
 let rowH: number
 let visH: number
 let elh: HTMLElement
@@ -55,14 +55,15 @@ let firstRowRequested: number
 let firstRow: number
 let lastRow: number
 
-$: colWsStr = colWStrFromColWs(colWs)
-
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
 $: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) - 0 : 0
 $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
 $: rows = seq(firstRow, lastRow)
+
+$: colWs = calColWidths(rl, charW)
+$: colWsStr = colWStrFromColWs(colWs)
 
 addEventListener('resize', (_: UIEvent) => {
   visH = elh.clientHeight
@@ -98,6 +99,28 @@ function getColWidths(): number[] {
     if (el) colWs[i] = el.offsetWidth
   }
   return colWs
+}
+
+function getRowHeight(): { rowH: number; chrW: number } {
+  const _table = document.createElement('div')
+  const _row = document.createElement('div')
+  const _cell = document.createElement('div')
+  _table.className = 'table'
+  _row.className = 'row-td'
+  _cell.className = 'cell td'
+  _cell.textContent = '_1-2_3-4_5-6_7-'
+  _row.appendChild(_cell)
+  _table.appendChild(_row)
+  const _container = document.getElementById(
+    `${uid}-table-container`
+  ) as HTMLElement
+  _container.appendChild(_table)
+  const rowH = _cell.offsetHeight
+  const chrW = ceil(_cell.offsetWidth / _cell.textContent.length)
+  _cell.remove()
+  _row.remove()
+  _table.remove()
+  return { rowH, chrW }
 }
 
 // -----------------------------------------------------------------------------
@@ -310,8 +333,8 @@ function resizeColEnd(_: MouseEvent) {
 
 .col-sizer {
   position: relative;
-  left: calc(100% - 0.75rem);
-  width: 0.75rem;
+  left: calc(100% - 12px);
+  width: 12px;
   cursor: col-resize;
   pointer-events: fill;
 }

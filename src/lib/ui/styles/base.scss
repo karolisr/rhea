@@ -16,32 +16,40 @@ body {
 // input {
 // }
 
-// button,
-// input {
-// }
+button,
+input {
+  padding: 3px;
+}
 
-// button,
-// input[type='button'],
-// input[type='submit'] {
-// }
+button,
+input[type='button'],
+input[type='submit'] {
+  background-color: $A600;
+  color: white;
+}
 
 // input[type='checkbox'],
 // input[type='radio'] {
 // }
 
-// input[type='checkbox']:checked::after {
-// }
+input[type='checkbox']:checked::after {
+  color: $A600;
+}
 
-// input[type='radio']:checked::after {
-// }
+input[type='radio']:checked::after {
+  background-color: $A600;
+  border-color: $A600;
+}
 
 // button:hover,
 // input[type='button']:hover,
 // input[type='submit']:hover {
 // }
 
-// :focus {
-// }
+:focus {
+  outline-color: $A400;
+  outline-width: 2px;
+}
 
 // :root :disabled,
 // :root :disabled:hover {

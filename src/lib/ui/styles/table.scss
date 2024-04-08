@@ -2,6 +2,9 @@
 }
 
 .cell {
+  padding-left: 6px;
+  padding-right: 3px;
+  padding-block: 1px;
 }
 
 .row-th,
@@ -11,6 +14,9 @@
 
 .row-th,
 .row-tf {
+  background-color: $X800;
+  color: white;
+  font-weight: bold;
 }
 
 .row-td {
@@ -18,11 +24,16 @@
 }
 
 .row-td:hover {
+  background-color: rgba($color: $A300, $alpha: 0.25);
 }
 
 .col-sizer {
+  border-inline-end-style: solid;
+  border-color: $X400;
+  transition: background-color 0.1s linear;
 }
 
 .col-sizer:hover,
 .col-sizer:active {
+  background-color: rgba($color: $A300, $alpha: 0.25);
 }

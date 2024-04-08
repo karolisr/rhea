@@ -1,4 +1,5 @@
 fieldset {
+  background-color: $Y050;
   display: grid;
   border-style: solid;
   padding: 6px;
@@ -6,8 +7,12 @@ fieldset {
 }
 
 fieldset > legend {
+  background-color: $A600;
+  color: white;
   border-style: solid;
-  padding: 6px;
+  padding: 3px;
+  border-color: black;
+  font-weight: bold;
 }
 
 fieldset > div {
@@ -22,5 +27,5 @@ fieldset > div > div {
 }
 
 fieldset > div > div > label {
-  margin-left: 6px;
+  margin-left: 3px;
 }
