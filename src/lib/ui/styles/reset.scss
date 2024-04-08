@@ -1,4 +1,6 @@
-@import 'defs.scss';
+::-webkit-scrollbar {
+  display: none;
+}
 
 *,
 *::before,
@@ -16,11 +18,11 @@
   text-decoration: unset;
 
   border-style: unset;
-  border-width: unset;
+  border-width: 1px;
   border-color: unset;
 
   border-style: unset;
-  outline-width: unset;
+  outline-width: 1px;
   outline-color: unset;
   outline-offset: unset;
 
@@ -46,22 +48,23 @@
 }
 
 :root {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  font-family: system-ui;
 }
 
 body {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex-grow: 1;
   cursor: default;
+}
+
+input {
+  background-color: white;
+  border-color: black;
+  border-style: solid;
 }
 
 button,
 input {
-  // border-style: solid;
+  min-width: 0.75rem;
+  min-height: 0.75rem;
 }
 
 button,
@@ -75,8 +78,15 @@ input[type='radio'] {
   align-content: center;
 }
 
+input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+}
+
 input[type='radio'] {
   border-radius: 50%;
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 input[type='checkbox']:checked::after {
@@ -84,11 +94,11 @@ input[type='checkbox']:checked::after {
   display: block;
   margin: auto;
   position: relative;
-  bottom: 0.1rem;
-  width: 0.2rem;
-  height: 0.8rem;
+  bottom: 0.075rem;
+  width: 0.3rem;
+  height: 0.45rem;
   border-style: solid;
-  border-width: 0 0.25rem 0.225rem 0;
+  border-width: 0 0.125rem 0.125rem 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
@@ -99,8 +109,12 @@ input[type='radio']:checked::after {
   display: block;
   margin: auto;
   border-radius: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-style: solid;
+  background-color: black;
 }
 
-label {
-  margin-block: 0.125rem;
+:focus {
+  outline-style: solid;
 }

@@ -58,7 +58,7 @@ let lastRow: number
 $: colWsStr = colWStrFromColWs(colWs)
 
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
-$: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) - 1 : 0
+$: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) - 0 : 0
 $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
@@ -127,10 +127,8 @@ function resizeColBegin(evt: MouseEvent) {
 
 function resizeCol(evt: MouseEvent) {
   if (colResizing !== null) {
-    window.requestAnimationFrame(() => {
-      const d = evt.x - (colPrevX as number)
-      colWs[colResizing as number] = max(minColW, (colPrevWidth as number) + d)
-    })
+    const d = evt.x - (colPrevX as number)
+    colWs[colResizing as number] = max(minColW, (colPrevWidth as number) + d)
   }
 }
 
@@ -273,7 +271,6 @@ function resizeColEnd(_: MouseEvent) {
   position: sticky;
   top: 0;
   display: grid;
-  grid-auto-flow: row;
 }
 
 .row-th,
@@ -302,7 +299,6 @@ function resizeColEnd(_: MouseEvent) {
 }
 
 .col-sizers {
-  background-color: transparent;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -310,5 +306,13 @@ function resizeColEnd(_: MouseEvent) {
   right: 0;
   display: grid;
   pointer-events: none;
+}
+
+.col-sizer {
+  position: relative;
+  left: calc(100% - 0.75rem);
+  width: 0.75rem;
+  cursor: col-resize;
+  pointer-events: fill;
 }
 </style>

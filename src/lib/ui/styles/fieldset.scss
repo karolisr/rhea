@@ -1,0 +1,26 @@
+fieldset {
+  display: grid;
+  border-style: solid;
+  padding: 6px;
+  row-gap: 6px;
+}
+
+fieldset > legend {
+  border-style: solid;
+  padding: 6px;
+}
+
+fieldset > div {
+  display: flex;
+  flex-direction: column;
+}
+
+fieldset > div > div {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+fieldset > div > div > label {
+  margin-left: 6px;
+}

@@ -1,23 +1,16 @@
-@import 'defs.scss';
 .table-container {
-  margin: calc($spacing / 1.5);
 }
 
 .cell {
-  padding-inline: calc($spacing / 3);
 }
 
 .row-th,
 .row-td,
 .row-tf {
-  padding-block: 1px;
 }
 
 .row-th,
 .row-tf {
-  color: var(--fg2);
-  font-weight: bold;
-  background-color: rgba($color: $C400, $alpha: 0.25);
 }
 
 .row-td {
@@ -25,20 +18,11 @@
 }
 
 .row-td:hover {
-  background-color: rgba($color: $A300, $alpha: 0.25);
 }
 
 .col-sizer {
-  position: relative;
-  left: calc(100% - 0.75rem);
-  width: 0.75rem;
-  cursor: col-resize;
-  transition: background-color 0.125s ease-in-out;
-  pointer-events: fill;
-  border-inline-end-style: solid;
 }
 
 .col-sizer:hover,
 .col-sizer:active {
-  background-color: rgba($color: $A300, $alpha: 0.25);
 }

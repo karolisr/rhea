@@ -16,8 +16,8 @@ onDestroy(() => {})
 </script>
 
 <div class="padded">
-  <div class="LOCAL-flex-row">
-    <div class="LOCAL-flex-grow">
+  <div id="settings-row">
+    <div id="settings-theme" class="padded">
       <fieldset>
         <legend>Theme</legend>
         <div>
@@ -61,7 +61,7 @@ onDestroy(() => {})
       </fieldset>
     </div>
 
-    <div class="LOCAL-flex-grow">
+    <div id="settings-scale" class="padded">
       <fieldset>
         <legend>Scale</legend>
 
@@ -107,43 +107,34 @@ onDestroy(() => {})
     </div>
   </div>
 
-  <fieldset>
-    <legend>NCBI&nbsp;API</legend>
-    <div>
-      <label for="email">E-Mail</label>
-      <input
-        type="email"
-        id="email"
-        placeholder="charles.darwin@something.edu"
-        spellcheck="false"
-        autocomplete="off"
-        required
-        bind:value="{$settings.email}"
-        on:change="{saveSettings}" />
-    </div>
+  <div id="settings-ncbi-api" class="padded">
+    <fieldset>
+      <legend>NCBI&nbsp;API</legend>
+      <div>
+        <label for="email">E-Mail</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="charles.darwin@something.edu"
+          spellcheck="false"
+          autocomplete="off"
+          required
+          bind:value="{$settings.email}"
+          on:change="{saveSettings}" />
+      </div>
 
-    <div>
-      <label for="ncbiapikey">API Key</label>
-      <input
-        type="text"
-        id="ncbiapikey"
-        placeholder=""
-        spellcheck="false"
-        autocomplete="off"
-        required
-        bind:value="{$settings.ncbi_api_key}"
-        on:change="{saveSettings}" />
-    </div>
-  </fieldset>
+      <div>
+        <label for="ncbiapikey">API Key</label>
+        <input
+          type="text"
+          id="ncbiapikey"
+          placeholder=""
+          spellcheck="false"
+          autocomplete="off"
+          required
+          bind:value="{$settings.ncbi_api_key}"
+          on:change="{saveSettings}" />
+      </div>
+    </fieldset>
+  </div>
 </div>
-
-<style>
-.LOCAL-flex-row {
-  display: flex;
-  gap: 1rem;
-}
-
-.LOCAL-flex-grow {
-  flex-grow: 1;
-}
-</style>

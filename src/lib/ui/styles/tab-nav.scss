@@ -1,103 +1,72 @@
-@import 'defs.scss';
-
 .tab-nav {
   display: flex;
   flex-direction: row;
-  // padding-top: calc($spacing / 4);
-  // padding-inline-end: calc($spacing / 4);
-  background-color: var(--title-bar-color);
   border-bottom-style: solid;
-  border-color: var(--chrome-border-color);
-  transition:
-    color 125ms linear,
-    background-color 125ms linear;
-  min-height: calc($spacing * 2.25);
-  max-height: calc($spacing * 2.25);
 }
 
-.tab-nav a {
-  // margin-inline-start: calc($spacing / 4);
-  // border-top-style: solid;
-  border-left-style: solid;
-  // border-right-style: solid;
-  border-bottom-style: solid;
-  // border-top-left-radius: calc($spacing / 1.45);
-  // border-top-right-radius: calc($spacing / 1.45);
-  border-color: var(--chrome-border-color);
-  // background-color: var(--bg2);
-  margin-bottom: calc(var(--border-width) * -1);
-}
+// .tab-nav > a {
+// }
 
-.tab-nav a div {
+.tab-nav > a > div {
   display: flex;
   align-items: center;
-  padding-block-start: calc($spacing / 2);
-  padding-inline: calc($spacing / 2.45);
+  border-left-style: solid;
+  padding: 6px;
 }
 
-.tab-nav a div svg {
-  color: var(--primary);
-  transition: color 125ms linear;
-}
-
-.tab-nav a div span {
-  color: var(--fg);
-  margin-inline-start: calc($spacing / 4);
-  transition:
-    color 125ms linear,
-    background-color 125ms linear,
-    font-size 125ms linear;
-}
-
-// .tab-nav a:hover {
+// .tab-nav > a > div > svg {
 // }
 
-.tab-nav a:hover div svg {
-  color: $A500;
+.tab-nav > a > div > span {
+  margin-left: 6px;
 }
 
-// .tab-nav a:active {
+// .tab-nav > a:hover {
 // }
 
-.tab-nav a[aria-current='true'] {
-  border-bottom-color: var(--focus-color);
-  background-color: var(--bg);
-}
-
-// .tab-nav a[aria-current='true'] div svg {
+// .tab-nav > a:hover > div > svg {
 // }
 
-.tab-nav a[aria-current='true'] div span {
-  color: var(--fg2);
-}
+// .tab-nav > a:hover > div > span {
+// }
+
+// .tab-nav > a[aria-current='true'] {
+// }
+
+// .tab-nav > a[aria-current='true'] > div > svg {
+// }
+
+// .tab-nav > a[aria-current='true'] > div > span {
+// }
 
 .tab-nav-tab-spacer {
   flex-grow: 1;
+  min-width: 68px;
 }
 
-@media (max-width: 365px) {
-  :root[scale='small'] {
-    .tab-nav a div span {
-      font-size: 0;
-      margin-inline-start: 0;
-    }
-  }
-}
+// @media (max-width: 365px) {
+//   :root[scale='small'] {
+//     .tab-nav > a > div > span {
+//       font-size: 0;
+//       margin-inline-start: 0;
+//     }
+//   }
+// }
 
-@media (max-width: 460px) {
-  :root[scale='medium'] {
-    .tab-nav a div span {
-      font-size: 0;
-      margin-inline-start: 0;
-    }
-  }
-}
+// @media (max-width: 460px) {
+//   :root[scale='medium'] {
+//     .tab-nav > a > div > span {
+//       font-size: 0;
+//       margin-inline-start: 0;
+//     }
+//   }
+// }
 
-@media (max-width: 640px) {
-  :root[scale='large'] {
-    .tab-nav a div span {
-      font-size: 0;
-      margin-inline-start: 0;
-    }
-  }
-}
+// @media (max-width: 640px) {
+//   :root[scale='large'] {
+//     .tab-nav > a > div > span {
+//       font-size: 0;
+//       margin-inline-start: 0;
+//     }
+//   }
+// }

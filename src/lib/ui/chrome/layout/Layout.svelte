@@ -9,23 +9,25 @@ export let mn = false
 export let ft = false
 </script>
 
-{#if hd}
-  <Header>
-    <slot name="hd">HEADER PLACEHOLDER: element Header</slot>
-    {#if subhd}
-      <slot name="subhd">SUBHEADER PLACEHOLDER: element Header</slot>
-    {/if}
-  </Header>
-{/if}
+<div class="layout">
+  {#if hd}
+    <Header>
+      <slot name="hd">HEADER PLACEHOLDER: element Header</slot>
+      {#if subhd}
+        <slot name="subhd">SUBHEADER PLACEHOLDER: element Header</slot>
+      {/if}
+    </Header>
+  {/if}
 
-{#if mn}
-  <Main>
-    <slot name="mn">MAIN PLACEHOLDER: element Header</slot>
-  </Main>
-{/if}
+  {#if mn}
+    <Main>
+      <slot name="mn">MAIN PLACEHOLDER: element Header</slot>
+    </Main>
+  {/if}
 
-{#if ft}
-  <Footer>
-    <slot name="ft">FOOTER PLACEHOLDER: element Header</slot>
-  </Footer>
-{/if}
+  {#if ft}
+    <Footer>
+      <slot name="ft">FOOTER PLACEHOLDER: element Header</slot>
+    </Footer>
+  {/if}
+</div>

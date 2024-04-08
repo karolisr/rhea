@@ -1,53 +1,41 @@
-@import 'defs.scss';
+// ::-webkit-scrollbar {
+// }
 
-::-webkit-scrollbar {
-  width: 15px;
-  height: 15px;
-  display: none;
-}
+// ::-webkit-scrollbar-track {
+// }
 
-::-webkit-scrollbar-track {
-  background-color: $C100;
-}
+// ::-webkit-scrollbar-track:vertical {
+// }
 
-::-webkit-scrollbar-track:vertical {
-}
+// ::-webkit-scrollbar-track:horizontal {
+// }
 
-::-webkit-scrollbar-track:horizontal {
-}
+// ::-webkit-scrollbar-track-piece {
+// }
 
-::-webkit-scrollbar-track-piece {
-}
+// ::-webkit-scrollbar-corner {
+// }
 
-::-webkit-scrollbar-corner {
-  background-color: $C200;
-}
+// ::-webkit-scrollbar-thumb {
+// }
 
-::-webkit-scrollbar-thumb {
-  background-color: var(--primary);
-}
+// ::-webkit-scrollbar-thumb:vertical {
+// }
 
-::-webkit-scrollbar-thumb:vertical {
-}
+// ::-webkit-scrollbar-thumb:horizontal {
+// }
 
-::-webkit-scrollbar-thumb:horizontal {
-}
+// ::-webkit-scrollbar-thumb:hover {
+// }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--focus-color);
-}
+// ::-webkit-scrollbar-button {
+// }
 
-::-webkit-scrollbar-button {
-  // background-color: var(--primary);
-  // border-width: 1px;
-}
+// ::-webkit-scrollbar-button:vertical {
+// }
 
-::-webkit-scrollbar-button:vertical {
-}
+// ::-webkit-scrollbar-button:horizontal {
+// }
 
-::-webkit-scrollbar-button:horizontal {
-}
-
-::-webkit-scrollbar-button:hover {
-  background-color: var(--focus-color);
-}
+// ::-webkit-scrollbar-button:hover {
+// }

@@ -1,21 +1,8 @@
-@import 'defs.scss';
-
 .status-bar {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  background-color: var(--title-bar-color);
-  min-height: calc($spacing * 2);
-  max-height: calc($spacing * 2);
-  border-top: solid;
-  border-width: var(--border-width);
-  border-color: var(--chrome-border-color);
-  gap: calc($spacing / 2);
-  text-wrap: nowrap;
-  padding-bottom: calc($spacing / 7);
-  padding-inline: calc($spacing / 1.5);
-  transition:
-    color 125ms linear,
-    background-color 125ms linear;
+  border-top-style: solid;
+  padding: 6px;
 }
 
 .status-bar-left {

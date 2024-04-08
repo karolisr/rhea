@@ -1,28 +1,19 @@
-@import 'defs.scss';
-
-.head-foot {
+.layout {
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .head {
-  z-index: 100;
 }
 
 .foot {
-  z-index: 100;
 }
 
 .main {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: hidden;
-  flex-grow: 1;
-  z-index: 10;
-  transition: color 125ms linear;
-}
-
-.padded {
-  margin: calc($spacing / 1.5);
 }

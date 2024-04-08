@@ -1,3 +1,3 @@
-<footer data-tauri-drag-region class="head-foot foot">
+<footer data-tauri-drag-region class="foot">
   <slot />
 </footer>

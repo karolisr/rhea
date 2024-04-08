@@ -49,4 +49,4 @@ onDestroy(() => {})
 </script>
 
 <TableView uid="tax" rl="{taxaRL}" />
-<TableView uid="gbs" rl="{gbseqsRL}" />
+<!-- <TableView uid="gbs" rl="{gbseqsRL}" /> -->
