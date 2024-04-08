@@ -1,4 +1,7 @@
 import { getPropNames } from '$lib'
+import { type Readable } from 'svelte/store'
+import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
+import { type DBMain } from '$lib/app/db/types'
 
 declare type KeyToKeyNoIndex<T> = {
   [K in keyof T]: string extends K ? never : number extends K ? never : K
@@ -10,12 +13,50 @@ export class RecordList<T> extends Array<T> {
   private _sortFields: KnownKeys<T>[]
   private _fieldsToShow: KnownKeys<T>[]
   private _sortDirections: (1 | -1)[]
+  private _db_main: DBMainSvelteStore
+  private _db_main_unsubscriber: () => void
+  private _dbStoreName: 'gbseq' | 'taxon' | 'seq_nt_summ'
+  private _keyField: DBMain[typeof this._dbStoreName]['key']
 
-  constructor(recs: T[]) {
-    super(...recs)
+  constructor(
+    sveteDBStore: Readable<DBMainSvelteStore>,
+    dbStoreName: 'gbseq' | 'taxon' | 'seq_nt_summ',
+    fieldsToShow: KnownKeys<T>[] | undefined = undefined
+  ) {
+    let _db_main: DBMainSvelteStore | undefined
+    const _db_main_unsubscriber = sveteDBStore.subscribe((_) => {
+      _db_main = _
+    })
+
+    if (_db_main) {
+      super(...(_db_main[dbStoreName] as T[]))
+    } else {
+      throw new Error('Error creating a RecordList object.')
+    }
+
+    this._db_main_unsubscriber = _db_main_unsubscriber
+    this._db_main = _db_main
+    this._dbStoreName = dbStoreName
+
+    this._keyField = this._db_main.db.transaction(dbStoreName).store
+      .keyPath as string
+
     this._sortFields = []
     this._sortDirections = []
-    this._fieldsToShow = this.fields
+
+    if (fieldsToShow) {
+      this._fieldsToShow = fieldsToShow
+    } else {
+      this._fieldsToShow = this.fields
+    }
+  }
+
+  unsubscribe() {
+    this._db_main_unsubscriber()
+  }
+
+  get keyField() {
+    return this._keyField
   }
 
   get fields(): KnownKeys<T>[] {
@@ -55,6 +96,10 @@ export class RecordList<T> extends Array<T> {
     return rv
   }
 
+  stringValueByIndex(index: number, field: keyof T) {
+    return this.valueByIndex(index, field, '') as string
+  }
+
   valueByIndex(
     index: number,
     field: keyof T,
@@ -63,7 +108,7 @@ export class RecordList<T> extends Array<T> {
     const rec = this[index] as T
     const rv = rec[field]
     if (stringValueForObjects !== undefined && typeof rv === 'object') {
-      return stringValueForObjects
+      return stringValueForObjects as string
     } else {
       return rv
     }

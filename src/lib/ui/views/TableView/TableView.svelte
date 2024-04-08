@@ -20,7 +20,6 @@ export let showFooterRow: boolean = false
 export let showCheckBoxes: boolean = true
 export let minColW: number = 40
 export let uid: string
-export let key: string
 
 $: nH = showHeaderRow ? 1 : 0
 $: nF = showFooterRow ? 1 : 0
@@ -245,7 +244,7 @@ function resizeColEnd(_: MouseEvent) {
 
           {#each rows as i}
             <div
-              class="row-td {checkedRows[rl.valueByIndex(i, key, '')]
+              class="row-td {checkedRows[rl.stringValueByIndex(i, rl.keyField)]
                 ? 'selected'
                 : ''}"
               id="{uid}-row-td-{i}"
@@ -254,7 +253,9 @@ function resizeColEnd(_: MouseEvent) {
                 <div id="{uid}-cell-td-{i}-checkbox" class="cell td">
                   <input
                     type="checkbox"
-                    bind:checked="{checkedRows[rl.valueByIndex(i, key, '')]}" />
+                    bind:checked="{checkedRows[
+                      rl.stringValueByIndex(i, rl.keyField)
+                    ]}" />
                 </div>
               {/if}
               {#each rl.fieldsToShow as field, j}
