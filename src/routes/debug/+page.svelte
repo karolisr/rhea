@@ -48,5 +48,5 @@ onMount(async () => {
 onDestroy(() => {})
 </script>
 
-<TableView uid="tax" rl="{taxaRL}" />
-<TableView uid="gbs" rl="{gbseqsRL}" />
+<TableView uid="tax" key="TaxId" rl="{taxaRL}" />
+<TableView uid="gbs" key="GBSeq_accession_version" rl="{gbseqsRL}" />

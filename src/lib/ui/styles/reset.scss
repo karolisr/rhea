@@ -80,8 +80,9 @@ input[type='radio'] {
   height: 1.25rem;
 }
 
-// input[type='checkbox'] {
-// }
+input[type='checkbox'] {
+  margin-bottom: -3px;
+}
 
 input[type='radio'] {
   border-radius: 50%;
