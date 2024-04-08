@@ -43,6 +43,7 @@
     "d3": "^7.9.0",
     "d3-scale": "^4.0.2",
     "file-type-checker": "^1.0.9",
-    "idb": "^8.0.0"
+    "idb": "^8.0.0",
+    "simple-statistics": "^7.8.3"
   }
 }
