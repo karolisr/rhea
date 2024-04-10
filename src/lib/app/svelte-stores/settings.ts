@@ -8,7 +8,7 @@ export interface Settings {
   ncbi_api_key: string
   locale: string
   theme: string
-  scale: AppScale
+  scale: keyof typeof AppScale
 }
 
 const key = 'settings'
@@ -20,7 +20,7 @@ function init(): Writable<Settings> {
     ncbi_api_key: '',
     locale: '',
     theme: 'os',
-    scale: AppScale.small
+    scale: 'small'
   }
   if (stng_stored) {
     stng = JSON.parse(stng_stored)

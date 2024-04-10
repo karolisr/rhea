@@ -6,7 +6,7 @@ export enum AppScale {
   large = 'large'
 }
 
-export async function setScale(scale: AppScale = AppScale.small) {
+export async function setScale(scale: keyof typeof AppScale) {
   let userSetting: string = scale
   settings.subscribe((stng) => {
     userSetting = stng.scale

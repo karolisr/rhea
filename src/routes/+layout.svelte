@@ -14,7 +14,6 @@ let themeChangeUnListener: () => void
 $: setScale($settings.scale)
 
 onMount(async () => {
-  setScale()
   themeChangeUnListener = await themeChangeListener()
   disableDefault('contextmenu')
 })
