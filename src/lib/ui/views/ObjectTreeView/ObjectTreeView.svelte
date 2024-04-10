@@ -49,8 +49,7 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
   <button
     on:click="{toggleExpand}"
     on:contextmenu="{_oncontextmenu}"
-    type="button"
-    tabindex="0"><span class="node-name">{name}</span></button>
+    type="button"><span class="node-name">{name}</span></button>
 {/if}
 {#if obj instanceof Array}
   {#if objectIsPrimitiveArray}
