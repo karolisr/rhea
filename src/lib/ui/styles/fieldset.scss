@@ -2,17 +2,17 @@ fieldset {
   background-color: $Y050;
   display: grid;
   border-style: solid;
-  padding: 6px;
-  row-gap: 6px;
+  padding: calc(var(--pad) * 2);
+  row-gap: calc(var(--pad) * 2);
 }
 
 fieldset > legend {
   background-color: $A600;
   color: white;
   border-style: solid;
-  padding: 3px;
+  padding: var(--pad);
   border-color: black;
-  font-weight: bold;
+  font-weight: 500;
 }
 
 fieldset > div {
@@ -27,5 +27,5 @@ fieldset > div > div {
 }
 
 fieldset > div > div > label {
-  margin-left: 3px;
+  margin-left: calc(var(--pad) * 1);
 }

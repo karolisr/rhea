@@ -10,7 +10,12 @@ $: path = $page.url.pathname
 $: current = path === link
 </script>
 
-<a href="{link}" aria-current="{current}" draggable="false">
+<a
+  id="{link}"
+  href="{link}"
+  aria-current="{current}"
+  draggable="false"
+  tabindex="-1">
   <div>
     {#if icon !== null}
       <svelte:component this="{icon}" />

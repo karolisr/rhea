@@ -1,39 +1,81 @@
+.table-height-container {
+  // margin: calc(var(--pad) * 1);
+  margin-bottom: 5px;
+}
+
 .table-container {
 }
 
+.table-container:focus {
+}
+
 .cell {
-  padding-left: 6px;
-  padding-right: 3px;
+  padding-inline: 3px;
   padding-block: 1px;
 }
 
-.row-th,
-.row-td,
-.row-tf {
+.cell-corner {
+  // background-color: white;
 }
 
-.row-th,
-.row-tf {
-  background-color: $X800;
+.row-h,
+.row-b,
+.row-f {
+}
+
+.row-h,
+.row-f {
+  background-color: $Z400;
+  color: $Y100;
+  font-weight: 500;
+  margin-bottom: 1px;
+  border-bottom-style: solid;
+  padding-block: 1px;
+  border-color: $Y800;
+}
+
+.table-container:focus .row-h,
+.table-container:focus .row-f {
+  background-color: $A600;
   color: white;
-  font-weight: bold;
 }
 
-.row-td {
+// .row-h > .cell,
+// .row-f > .cell {
+// }
+
+.row-b {
   font-family: 'JetBrains Mono';
+  border-bottom-style: solid;
+  border-color: white;
 }
 
-.row-td:hover {
-  background-color: rgba($color: $A300, $alpha: 0.25);
+.col-sizers {
 }
 
 .col-sizer {
+  border-color: $Y300;
   border-inline-end-style: solid;
-  border-color: $X400;
   transition: background-color 0.1s linear;
+}
+
+.table-container:focus .col-sizer {
+  border-color: $Y800;
 }
 
 .col-sizer:hover,
 .col-sizer:active {
   background-color: rgba($color: $A300, $alpha: 0.25);
+}
+
+.selected-row {
+  background-color: rgba($color: $B300, $alpha: 0.2);
+}
+
+.active-row {
+  background-color: rgba($color: $A300, $alpha: 0.25);
+  border-color: rgba($color: $A400, $alpha: 0.8);
+  border-top-style: solid;
+  border-bottom-style: solid;
+  margin-top: -1px;
 }

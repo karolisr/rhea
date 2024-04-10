@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount } from 'svelte'
+import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
 import { min, max, floor, ceil, seq } from '$lib'
 import { mean, standardDeviation } from 'simple-statistics'
@@ -7,12 +7,38 @@ import { mean, standardDeviation } from 'simple-statistics'
 onMount(() => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
   elc = document.getElementById(`${uid}-table-container`) as HTMLElement
-  // colWsStr = colWStrDefault()
+
+  elc.tabIndex = 0
+  elc.onfocus = _onfocus
+  elc.onkeydown = _onkeydown
+  elc.onscroll = _onscroll
+
   const _ = getRowHeight()
   rowH = _.rowH
   charW = _.chrW
   visH = elh.clientHeight
+
+  addEventListener('resize', resizeEvtListener)
+  addEventListener('mousemove', resizeCol)
+  addEventListener('mouseup', resizeColEnd)
+  addEventListener('keydown', keyboardEventListener)
 })
+
+onDestroy(() => {
+  removeEventListener('resize', resizeEvtListener)
+  removeEventListener('mousemove', resizeCol)
+  removeEventListener('mouseup', resizeColEnd)
+  removeEventListener('keydown', keyboardEventListener)
+})
+
+const keyboardEventListener = (ev: KeyboardEvent) => {
+  const allowed = ['Tab']
+  if (!allowed.includes(ev.code)) ev.preventDefault()
+}
+
+const resizeEvtListener = (_: UIEvent) => {
+  visH = elh.clientHeight
+}
 
 export let rl: RecordList<any>
 export let showHeaderRow: boolean = true
@@ -39,10 +65,11 @@ let firstRowRequested: number
 let firstRow: number
 let lastRow: number
 
-let checkedRows: { [key: string]: boolean | null | undefined } = {}
+let selectedRows: { [key: string]: boolean | null | undefined } = {}
+let activeRow: number
 
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
-$: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) - 0 : 0
+$: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) : 0
 $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
@@ -51,20 +78,50 @@ $: rows = seq(firstRow, lastRow)
 $: colWs = calcColWidths(rl, charW)
 $: colWsStr = colWStrFromColWs(colWs)
 
-$: console.log(checkedRows)
-
-addEventListener('resize', (_: UIEvent) => {
-  visH = elh.clientHeight
-})
-
-const onscroll = (_: Event) => {
+const _onscroll = (_: Event) => {
   scrollTop = elc.scrollTop
+}
+
+const _onfocus = (ev: FocusEvent) => {
+  if (!activeRow) activeRow = firstRow
+  ev.stopPropagation()
+  ev.stopImmediatePropagation()
+}
+
+const _onkeydown = (ev: KeyboardEvent) => {
+  switch (ev.code) {
+    case 'ArrowDown':
+      activeRow = min(activeRow + 1, rl.length - 1)
+      if (lastRow < activeRow) {
+        elc.scrollTo({ top: (activeRow - lastRow + firstRow) * rowH })
+      }
+      break
+    case 'ArrowUp':
+      activeRow = max(activeRow - 1, 0)
+      if (firstRow > activeRow) {
+        elc.scrollTo({ top: activeRow * rowH })
+      }
+      break
+    case 'Space':
+      const activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
+      selectedRows[activeRowKey] = !selectedRows[activeRowKey]
+      break
+    default:
+      break
+  }
+
+  if (activeRow < firstRow - 1 || activeRow > lastRow + 1) {
+    elc.scrollTo({
+      top: max(activeRow - floor(maxRowsVis / 2), 0) * rowH,
+      behavior: 'smooth'
+    })
+  }
 }
 
 function calcColWidths(rl: RecordList<any>, charW: number) {
   const colWs: number[] = []
   if (showCheckBoxes) {
-    colWs.push(28)
+    colWs.push(charW * 2.5)
   }
   for (let i = 0; i < rl.fieldsToShow.length; i++) {
     const field = rl.fieldsToShow[i]
@@ -81,17 +138,6 @@ function calcColWidths(rl: RecordList<any>, charW: number) {
   return colWs
 }
 
-// function colWStrDefault(): string {
-//   let _ = ''
-//   if (showCheckBoxes) {
-//     _ += ` 28px`
-//   }
-//   for (let i = 0; i < rl.fieldsToShow.length; i++) {
-//     _ += ` 1fr`
-//   }
-//   return _.trim()
-// }
-
 function colWStrFromColWs(colWs: number[]): string {
   let _ = ''
   colWs.forEach((w) => {
@@ -106,15 +152,13 @@ function getColWidths(): number[] {
   let j = 0
   if (showCheckBoxes) {
     const el = document.getElementById(
-      `${uid}-cell-td-${firstRowRequested}-checkbox`
+      `${uid}-cell-${firstRowRequested}-checkbox`
     )
     if (el) colWs[0] = el.offsetWidth
     j = 1
   }
   for (let i = 0; i < n; i++) {
-    const el = document.getElementById(
-      `${uid}-cell-td-${firstRowRequested}-${i}`
-    )
+    const el = document.getElementById(`${uid}-cell-${firstRowRequested}-${i}`)
     if (el) colWs[i + j] = el.offsetWidth
   }
   return colWs
@@ -125,8 +169,8 @@ function getRowHeight(): { rowH: number; chrW: number } {
   const _row = document.createElement('div')
   const _cell = document.createElement('div')
   _table.className = 'table'
-  _row.className = 'row-td'
-  _cell.className = 'cell td'
+  _row.className = 'row-b'
+  _cell.className = 'cell'
   _cell.textContent = '_1-2_3-4_5-6_7-'
   _row.appendChild(_cell)
   _table.appendChild(_row)
@@ -134,7 +178,7 @@ function getRowHeight(): { rowH: number; chrW: number } {
     `${uid}-table-container`
   ) as HTMLElement
   _container.appendChild(_table)
-  const rowH = _cell.offsetHeight
+  const rowH = _row.offsetHeight
   const chrW = ceil(_cell.offsetWidth / _cell.textContent.length)
   _cell.remove()
   _row.remove()
@@ -143,14 +187,6 @@ function getRowHeight(): { rowH: number; chrW: number } {
 }
 
 // -----------------------------------------------------------------------------
-addEventListener('mousemove', (evt: MouseEvent) => {
-  resizeCol(evt)
-})
-
-addEventListener('mouseup', (evt: MouseEvent) => {
-  resizeColEnd(evt)
-})
-
 let colResizing: number | null = null
 let colPrevX: number | null = null
 let colPrevWidth: number | null = null
@@ -175,13 +211,16 @@ function resizeCol(evt: MouseEvent) {
 
 function resizeColEnd(_: MouseEvent) {
   if (colResizing !== null) {
-    // console.log(colWs)
     colResizing = null
     colPrevX = null
     colPrevWidth = null
     document.body.style.cursor = 'default'
   }
 }
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// $: console.log(rowH)
 // -----------------------------------------------------------------------------
 </script>
 
@@ -213,8 +252,7 @@ function resizeColEnd(_: MouseEvent) {
   <div
     id="{uid}-table-container"
     class="table-container"
-    style:height="{(maxRowsVis + nH + nF) * rowH}px"
-    on:scroll="{onscroll}">
+    style:height="{nH * 3 + nF * 3 + (maxRowsVis + nH + nF) * rowH}px">
     {#if rl.length === 0}
       <pre>Loading...</pre>
     {:else if rl.fieldsToShow.length === 0}
@@ -229,12 +267,15 @@ function resizeColEnd(_: MouseEvent) {
         <div id="{uid}-table" class="table">
           <!-- header BEG -->
           {#if showHeaderRow}
-            <div class="row-th" style:grid-template-columns="{colWsStr}">
+            <div
+              id="{uid}-row-h"
+              class="row-h"
+              style:grid-template-columns="{colWsStr}">
               {#if showCheckBoxes}
-                <div class="cell th sticky-top"></div>
+                <div class="cell-corner"></div>
               {/if}
               {#each rl.fieldsToShow as field}
-                <div class="cell th sticky-top">
+                <div class="cell">
                   {field}
                 </div>
               {/each}
@@ -244,22 +285,34 @@ function resizeColEnd(_: MouseEvent) {
 
           {#each rows as i}
             <div
-              class="row-td {checkedRows[rl.stringValueByIndex(i, rl.keyField)]
-                ? 'selected'
-                : ''}"
-              id="{uid}-row-td-{i}"
+              id="{uid}-row-{i}"
+              class="
+                row-b
+                {selectedRows[rl.stringValueByIndex(i, rl.keyField)]
+                ? 'selected-row'
+                : ''}
+                {activeRow === i ? 'active-row' : ''}
+              "
+              role="none"
+              on:mousedown="{() => {
+                activeRow = i
+              }}"
               style:grid-template-columns="{colWsStr}">
               {#if showCheckBoxes}
-                <div id="{uid}-cell-td-{i}-checkbox" class="cell td">
+                <div id="{uid}-cell-{i}-checkbox" class="cell">
                   <input
                     type="checkbox"
-                    bind:checked="{checkedRows[
+                    id="{uid}-checkbox-{i}"
+                    tabindex="-1"
+                    on:click="{() => elc.focus()}"
+                    on:contextmenu="{() => elc.focus()}"
+                    bind:checked="{selectedRows[
                       rl.stringValueByIndex(i, rl.keyField)
                     ]}" />
                 </div>
               {/if}
               {#each rl.fieldsToShow as field, j}
-                <div id="{uid}-cell-td-{i}-{j}" class="cell td">
+                <div id="{uid}-cell-{i}-{j}" class="cell">
                   {rl.valueByIndex(i, field, '')}
                 </div>
               {/each}
@@ -268,12 +321,15 @@ function resizeColEnd(_: MouseEvent) {
 
           <!-- footer BEG -->
           {#if showFooterRow}
-            <div class="row-tf" style:grid-template-columns="{colWsStr}">
+            <div
+              id="{uid}-row-f"
+              class="row-f"
+              style:grid-template-columns="{colWsStr}">
               {#if showCheckBoxes}
-                <div class="cell tf sticky-bottom"></div>
+                <div class="cell-corner"></div>
               {/if}
               {#each rl.fieldsToShow as field}
-                <div class="cell tf sticky-bottom">
+                <div class="cell">
                   {field}
                 </div>
               {/each}
@@ -287,32 +343,16 @@ function resizeColEnd(_: MouseEvent) {
             class="col-sizers"
             style:grid-template-columns="{colWsStr}">
             {#if showCheckBoxes}
+              <resizer id="{uid}-col-sizer-checkbox"></resizer>
+            {/if}
+            {#each rl.fieldsToShow as _, i}
               <resizer
-                id="{uid}-col-sizer-checkbox"
-                class=""
+                id="{uid}-col-sizer-{i + Number(showCheckBoxes)}"
+                class="col-sizer"
                 role="none"
                 on:mousedown="{resizeColBegin}">
               </resizer>
-            {/if}
-            {#if showCheckBoxes}
-              {#each rl.fieldsToShow as _, i}
-                <resizer
-                  id="{uid}-col-sizer-{i + 1}"
-                  class="col-sizer"
-                  role="none"
-                  on:mousedown="{resizeColBegin}">
-                </resizer>
-              {/each}
-            {:else}
-              {#each rl.fieldsToShow as _, i}
-                <resizer
-                  id="{uid}-col-sizer-{i}"
-                  class="col-sizer"
-                  role="none"
-                  on:mousedown="{resizeColBegin}">
-                </resizer>
-              {/each}
-            {/if}
+            {/each}
           </div>
           <!-- col-sizers END -->
         </div>
@@ -353,33 +393,26 @@ function resizeColEnd(_: MouseEvent) {
   display: grid;
 }
 
-.row-th,
-.row-td,
-.row-tf {
+.row-h,
+.row-b,
+.row-f {
   display: grid;
 }
 
-.selected {
-  color: blue;
+.row-h {
+  position: sticky;
+  top: 0;
+}
+
+.row-f {
+  position: sticky;
+  bottom: 0;
 }
 
 .cell {
   overflow: hidden;
   text-wrap: nowrap;
   text-overflow: ellipsis;
-}
-
-.th,
-.tf {
-  position: sticky;
-}
-
-.th {
-  top: 0;
-}
-
-.tf {
-  bottom: 0;
 }
 
 .col-sizers {

@@ -1,8 +1,3 @@
-// *,
-// *::before,
-// *::after {
-// }
-
 :root {
   height: 100%;
   font-size: var(--fs);
@@ -13,12 +8,20 @@ body {
   overflow: hidden;
 }
 
-// input {
-// }
+input:focus {
+  outline-style: solid;
+  outline-color: $A400;
+  outline-width: 2px;
+}
 
 button,
 input {
-  padding: 3px;
+  padding: var(--pad);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  padding: 0;
 }
 
 button,
@@ -27,10 +30,6 @@ input[type='submit'] {
   background-color: $A600;
   color: white;
 }
-
-// input[type='checkbox'],
-// input[type='radio'] {
-// }
 
 input[type='checkbox']:checked::after {
   color: $A600;
@@ -46,22 +45,20 @@ input[type='radio']:checked::after {
 // input[type='submit']:hover {
 // }
 
-:focus {
-  outline-color: $A400;
-  outline-width: 2px;
-}
-
 // :root :disabled,
 // :root :disabled:hover {
 // }
 
-// ol,
-// ul {
-// }
-
-// li {
-//
-
 .padded {
-  padding: 6px;
+  padding: var(--pad);
+}
+
+::selection {
+  background-color: yellow;
+}
+
+:root :disabled,
+:root :disabled:hover {
+  background-color: #ddd;
+  color: #999;
 }

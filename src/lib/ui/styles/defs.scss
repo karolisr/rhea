@@ -8,12 +8,54 @@
 
 :root[scale='small'] {
   --fs: 12px;
+  --pad: 3px;
+
+  input[type='checkbox'] {
+    position: absolute;
+    margin: 0;
+    width: 15px;
+    height: 15px;
+  }
+
+  input[type='radio'] {
+    margin: 0;
+    width: 12px;
+    height: 12px;
+  }
 }
 
 :root[scale='medium'] {
   --fs: 16px;
+  --pad: 5px;
+
+  input[type='checkbox'] {
+    position: absolute;
+    margin: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  input[type='radio'] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+  }
 }
 
 :root[scale='large'] {
   --fs: 24px;
+  --pad: 5px;
+
+  input[type='checkbox'] {
+    position: absolute;
+    margin: 0;
+    width: 30px;
+    height: 30px;
+  }
+
+  input[type='radio'] {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+  }
 }

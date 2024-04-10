@@ -12,14 +12,14 @@
   display: flex;
   align-items: center;
   border-left-style: solid;
-  padding: 6px;
+  padding: calc(var(--pad) * 2);
 }
 
 // .tab-nav > a > div > svg {
 // }
 
 .tab-nav > a > div > span {
-  margin-left: 3px;
+  margin-left: var(--pad);
 }
 
 .tab-nav > a:hover > div {

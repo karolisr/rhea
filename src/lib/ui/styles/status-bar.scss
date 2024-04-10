@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   border-top-style: solid;
-  padding: 6px;
+  padding: var(--pad);
 }
 
 .status-bar-left {
