@@ -3,6 +3,7 @@
   grid-template-columns: 1fr 2fr 1fr;
   border-top-style: solid;
   padding: var(--pad);
+  text-wrap: nowrap;
 }
 
 .status-bar-left {

@@ -18,34 +18,44 @@ onMount(() => {
   charW = _.chrW
   visH = elh.clientHeight
 
-  addEventListener('resize', resizeEvtListener)
-  addEventListener('mousemove', resizeCol)
-  addEventListener('mouseup', resizeColEnd)
-  addEventListener('keydown', keyboardEventListener)
+  addEventListener('resize', resizeEvtListener, { capture: true })
+  addEventListener('mousemove', resizeCol, { capture: true })
+  addEventListener('mouseup', resizeColEnd, { capture: true })
+  // addEventListener('keydown', keyboardEventListener, { capture: true })
 })
 
 onDestroy(() => {
-  removeEventListener('resize', resizeEvtListener)
-  removeEventListener('mousemove', resizeCol)
-  removeEventListener('mouseup', resizeColEnd)
-  removeEventListener('keydown', keyboardEventListener)
+  removeEventListener('resize', resizeEvtListener, { capture: true })
+  removeEventListener('mousemove', resizeCol, { capture: true })
+  removeEventListener('mouseup', resizeColEnd, { capture: true })
+  // removeEventListener('keydown', keyboardEventListener, { capture: true })
 })
 
-const keyboardEventListener = (ev: KeyboardEvent) => {
-  const allowed = ['Tab']
-  if (!allowed.includes(ev.code)) ev.preventDefault()
-}
+// const keyboardEventListener = (ev: KeyboardEvent) => {
+//   const allowed = ['Tab']
+//   if (!allowed.includes(ev.code)) ev.preventDefault()
+// }
 
 const resizeEvtListener = (_: UIEvent) => {
   visH = elh.clientHeight
 }
 
 export let rl: RecordList<any>
-export let showHeaderRow: boolean = true
+export let showHeaderRow: boolean = false
 export let showFooterRow: boolean = false
-export let showCheckBoxes: boolean = true
-export let minColW: number = 40
+
+export let multiRowSelect: boolean = false
+export let showCheckBoxes: boolean = false
+
+if (!multiRowSelect && showCheckBoxes) {
+  console.warn('multiRowSelect === false && showCheckBoxes === true')
+  showCheckBoxes = false
+}
+
+export let minColW: number = 50
 export let uid: string
+export let activeRowKey: string | number | undefined = undefined
+export let activeRowRecord: any | undefined = undefined
 
 $: nH = showHeaderRow ? 1 : 0
 $: nF = showFooterRow ? 1 : 0
@@ -66,7 +76,7 @@ let firstRow: number
 let lastRow: number
 
 let selectedRows: { [key: string]: boolean | null | undefined } = {}
-let activeRow: number
+let activeRow: number = 0
 
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
 $: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) : 0
@@ -78,17 +88,25 @@ $: rows = seq(firstRow, lastRow)
 $: colWs = calcColWidths(rl, charW)
 $: colWsStr = colWStrFromColWs(colWs)
 
+$: if (activeRow !== undefined) {
+  activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
+  activeRowRecord = rl.items[activeRow]
+}
+
 const _onscroll = (_: Event) => {
   scrollTop = elc.scrollTop
 }
 
 const _onfocus = (ev: FocusEvent) => {
-  if (!activeRow) activeRow = firstRow
+  if (activeRow === undefined) activeRow = firstRow
   ev.stopPropagation()
   ev.stopImmediatePropagation()
 }
 
 const _onkeydown = (ev: KeyboardEvent) => {
+  const allowed = ['Tab']
+  if (!allowed.includes(ev.code)) ev.preventDefault()
+
   switch (ev.code) {
     case 'ArrowDown':
       activeRow = min(activeRow + 1, rl.length - 1)
@@ -103,8 +121,9 @@ const _onkeydown = (ev: KeyboardEvent) => {
       }
       break
     case 'Space':
-      const activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
-      selectedRows[activeRowKey] = !selectedRows[activeRowKey]
+      if (multiRowSelect && activeRowKey !== undefined) {
+        selectedRows[activeRowKey] = !selectedRows[activeRowKey]
+      }
       break
     default:
       break
@@ -121,7 +140,7 @@ const _onkeydown = (ev: KeyboardEvent) => {
 function calcColWidths(rl: RecordList<any>, charW: number) {
   const colWs: number[] = []
   if (showCheckBoxes) {
-    colWs.push(charW * 2.5)
+    colWs.push(charW * 3)
   }
   for (let i = 0; i < rl.fieldsToShow.length; i++) {
     const field = rl.fieldsToShow[i]
@@ -132,7 +151,7 @@ function calcColWidths(rl: RecordList<any>, charW: number) {
     }
     if (values.length > 0) {
       const w = ceil(mean(values) + 2 * standardDeviation(values)) * charW
-      colWs.push(max(95, min(400, w)))
+      colWs.push(max(95, min(300, w)))
     }
   }
   return colWs
@@ -219,13 +238,13 @@ function resizeColEnd(_: MouseEvent) {
 }
 // -----------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-// $: console.log(rowH)
-// -----------------------------------------------------------------------------
+function getActiveRowElement(activeRow: number) {
+  return document.getElementById(`${uid}-row-${activeRow}`) ?? undefined
+}
 </script>
 
 <!-- toolbar BEG -->
-<!-- <div class="toolbar">
+<div class="toolbar">
   <button
     class="toolbar-button"
     disabled="{firstRow <= 0}"
@@ -244,7 +263,7 @@ function resizeColEnd(_: MouseEvent) {
         behavior: 'instant'
       })
     }}">D</button>
-</div> -->
+</div>
 <!-- toolbar END -->
 
 <div id="{uid}-table-height-container" class="table-height-container">
@@ -254,7 +273,7 @@ function resizeColEnd(_: MouseEvent) {
     class="table-container"
     style:height="{nH * 3 + nF * 3 + (maxRowsVis + nH + nF) * rowH}px">
     {#if rl.length === 0}
-      <pre>Loading...</pre>
+      <pre>No records.</pre>
     {:else if rl.fieldsToShow.length === 0}
       <pre>No fields to display.</pre>
     {:else}
@@ -368,6 +387,8 @@ function resizeColEnd(_: MouseEvent) {
 .table-height-container {
   min-height: 0;
   max-height: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: 100%;
 }
 

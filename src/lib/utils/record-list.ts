@@ -1,7 +1,7 @@
 import { getPropNames } from '$lib'
-import { type Readable } from 'svelte/store'
-import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
-import { type DBMain } from '$lib/app/db/types'
+// import { type Readable } from 'svelte/store'
+// import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
+// import { type DBMain } from '$lib/app/db/types'
 
 declare type KeyToKeyNoIndex<T> = {
   [K in keyof T]: string extends K ? never : number extends K ? never : K
@@ -9,50 +9,42 @@ declare type KeyToKeyNoIndex<T> = {
 declare type ValuesOf<T> = T extends { [K in keyof T]: infer U } ? U : never
 declare type KnownKeys<T> = ValuesOf<KeyToKeyNoIndex<T>>
 
-export class RecordList<T> extends Array<T> {
+export class RecordList<T> {
   private _sortFields: KnownKeys<T>[]
-  private _fieldsToShow: KnownKeys<T>[]
+  private _fieldsToShow: KnownKeys<T>[] | undefined
   private _sortDirections: (1 | -1)[]
-  private _db_main: DBMainSvelteStore
-  private _db_main_unsubscriber: () => void
-  private _dbStoreName: 'gbseq' | 'taxon' | 'seq_nt_summ'
-  private _keyField: DBMain[typeof this._dbStoreName]['key']
+  private _keyField: keyof T
+  private _allItems: T[]
+  private _filterField: keyof T
+  private _filterQuery: T[typeof this._filterField] | undefined
 
-  constructor(
-    sveteDBStore: Readable<DBMainSvelteStore>,
-    dbStoreName: 'gbseq' | 'taxon' | 'seq_nt_summ',
-    fieldsToShow: KnownKeys<T>[] | undefined = undefined
-  ) {
-    let _db_main: DBMainSvelteStore | undefined
-    const _db_main_unsubscriber = sveteDBStore.subscribe((_) => {
-      _db_main = _
-    })
-
-    if (_db_main) {
-      super(...(_db_main[dbStoreName] as T[]))
-    } else {
-      throw new Error('Error creating a RecordList object.')
-    }
-
-    this._db_main_unsubscriber = _db_main_unsubscriber
-    this._db_main = _db_main
-    this._dbStoreName = dbStoreName
-
-    this._keyField = this._db_main.db.transaction(dbStoreName).store
-      .keyPath as string
-
+  constructor(items: T[], keyField: KnownKeys<T>) {
+    this._allItems = items
+    this._keyField = keyField as keyof T
+    this._filterField = this.keyField
     this._sortFields = []
     this._sortDirections = []
+  }
 
-    if (fieldsToShow) {
-      this._fieldsToShow = fieldsToShow
+  get items() {
+    if (this._filterQuery === undefined) {
+      return this._allItems
     } else {
-      this._fieldsToShow = this.fields
+      const rv: T[] = []
+      this._allItems.forEach((itm) => {
+        if (itm[this._filterField] === this._filterQuery) rv.push(itm)
+      })
+      return rv
     }
   }
 
-  unsubscribe() {
-    this._db_main_unsubscriber()
+  filterBy(field: KnownKeys<T>, query: T[keyof T]) {
+    this._filterField = field as keyof T
+    this._filterQuery = query as T[typeof this._filterField]
+  }
+
+  get length() {
+    return this.items.length
   }
 
   get keyField() {
@@ -61,7 +53,7 @@ export class RecordList<T> extends Array<T> {
 
   get fields(): KnownKeys<T>[] {
     if (this.length > 0) {
-      return getPropNames(this.at(0)) as KnownKeys<T>[]
+      return getPropNames(this.items.at(0)) as KnownKeys<T>[]
     } else {
       return []
     }
@@ -72,7 +64,11 @@ export class RecordList<T> extends Array<T> {
   }
 
   get fieldsToShow() {
-    return this._fieldsToShow
+    if (this._fieldsToShow !== undefined) {
+      return this._fieldsToShow
+    } else {
+      return this.fields
+    }
   }
 
   get sortFields() {
@@ -83,12 +79,23 @@ export class RecordList<T> extends Array<T> {
     return this._sortDirections
   }
 
-  fieldsByType(type: 'string' | 'number' | 'boolean' | 'object') {
+  fieldsByType(
+    types: (
+      | 'string'
+      | 'number'
+      | 'boolean'
+      | 'object'
+      | 'bigint'
+      | 'symbol'
+      | 'undefined'
+      | 'function'
+    )[]
+  ) {
     const rv: KnownKeys<T>[] = []
     if (this.length > 0) {
-      const _ = this.at(0) as T
+      const _ = this._allItems.at(0) as T
       for (const f of this.fields) {
-        if (typeof _[f as keyof T] === type) {
+        if (types.includes(typeof _[f as keyof T])) {
           rv.push(f)
         }
       }
@@ -105,12 +112,14 @@ export class RecordList<T> extends Array<T> {
     field: keyof T,
     stringValueForObjects: string | undefined = undefined
   ) {
-    const rec = this[index] as T
-    const rv = rec[field]
-    if (stringValueForObjects !== undefined && typeof rv === 'object') {
-      return stringValueForObjects as string
-    } else {
-      return rv
+    const rec = this.items.at(index) as T
+    if (rec) {
+      const rv = rec[field]
+      if (stringValueForObjects !== undefined && typeof rv === 'object') {
+        return stringValueForObjects as string
+      } else {
+        return rv
+      }
     }
   }
 
@@ -124,7 +133,7 @@ export class RecordList<T> extends Array<T> {
     for (let i = 0; i < fields.length; i++) {
       const f = fs[i]
       const d = ds[i]
-      this.sort((a, b) => {
+      this._allItems.sort((a, b) => {
         const x = a[f as keyof T]
         const y = b[f as keyof T]
         if (x === y) return 0

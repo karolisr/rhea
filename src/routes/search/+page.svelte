@@ -67,8 +67,8 @@ async function search(): Promise<void> {
       })
       // ---------------------
       searching = false
-      searchStatusMessage = `Downloading complete sequence records.`
       // ---------------------
+      searchStatusMessage = `Downloading complete sequence records.`
       const nBatches = Math.min(accs.length, 5)
       const batchSize = Math.round(accs.length / nBatches)
       gbseqRemaining += accs.length
@@ -116,7 +116,7 @@ onDestroy(() => {
 })
 </script>
 
-<div class="padded">
+<div class="rows padded">
   <form on:submit|preventDefault="{search}">
     <input
       id="search"
@@ -133,6 +133,12 @@ onDestroy(() => {
       value="{searching ? 'Searching' : 'Search'}"
       disabled="{searchButtonDisabled || searching}" />
   </form>
+  <div class="cols">
+    <div>
+      <input id="refseq-only" type="checkbox" bind:checked="{refSeqOnly}" />
+    </div>
+    <div><label for="refseq-only">RefSeq Only?</label></div>
+  </div>
   {#if error}
     <div><IconError />{errorMsg}</div>
   {/if}
@@ -143,3 +149,16 @@ onDestroy(() => {
     {/each}
   </div>
 </div>
+
+<style>
+.rows {
+  display: grid;
+  grid-auto-rows: auto;
+  row-gap: 6px;
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: 17px auto;
+}
+</style>
