@@ -16,5 +16,3 @@ onDestroy(() => {
   }
 })
 </script>
-
-<slot />
