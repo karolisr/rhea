@@ -69,27 +69,19 @@ onMount(async () => {
 onDestroy(() => {})
 </script>
 
-<div class="grid">
-  <TableView uid="lin" rl="{lineageRL}" showHeaderRow />
-  <TableView
-    uid="tax"
-    rl="{taxaRL}"
-    bind:activeRowKey="{taxid}"
-    bind:activeRowRecord="{taxon}"
-    showHeaderRow />
-  <TableView
-    uid="esm"
-    rl="{esummariesRL}"
-    bind:activeRowKey="{accver}"
-    showHeaderRow />
-  <TableView uid="gbs" rl="{gbseqsRL}" showHeaderRow />
-</div>
+<TableView uid="lin" rl="{lineageRL}" showHeaderRow />
 
-<style>
-.grid {
-  display: grid;
-  grid-auto-flow: dense;
-  gap: 0px;
-  height: 100%;
-}
-</style>
+<TableView
+  uid="tax"
+  rl="{taxaRL}"
+  bind:activeRowKey="{taxid}"
+  bind:activeRowRecord="{taxon}"
+  showHeaderRow />
+
+<TableView
+  uid="esm"
+  rl="{esummariesRL}"
+  bind:activeRowKey="{accver}"
+  showHeaderRow />
+
+<TableView uid="gbs" rl="{gbseqsRL}" showHeaderRow />

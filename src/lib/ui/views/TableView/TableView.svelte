@@ -78,6 +78,9 @@ let lastRow: number
 let selectedRows: { [key: string]: boolean | null | undefined } = {}
 let activeRow: number = 0
 
+$: sortFields = rl.sortFields
+$: sortDirections = rl.sortDirections
+
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
 $: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) : 0
 $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
@@ -104,8 +107,8 @@ const _onfocus = (ev: FocusEvent) => {
 }
 
 const _onkeydown = (ev: KeyboardEvent) => {
-  const allowed = ['Tab']
-  if (!allowed.includes(ev.code)) ev.preventDefault()
+  // const allowed = ['Tab']
+  // if (!allowed.includes(ev.code)) ev.preventDefault()
 
   switch (ev.code) {
     case 'ArrowDown':
@@ -113,17 +116,20 @@ const _onkeydown = (ev: KeyboardEvent) => {
       if (lastRow < activeRow) {
         elc.scrollTo({ top: (activeRow - lastRow + firstRow) * rowH })
       }
+      ev.preventDefault()
       break
     case 'ArrowUp':
       activeRow = max(activeRow - 1, 0)
       if (firstRow > activeRow) {
         elc.scrollTo({ top: activeRow * rowH })
       }
+      ev.preventDefault()
       break
     case 'Space':
       if (multiRowSelect && activeRowKey !== undefined) {
         selectedRows[activeRowKey] = !selectedRows[activeRowKey]
       }
+      ev.preventDefault()
       break
     default:
       break
@@ -238,12 +244,53 @@ function resizeColEnd(_: MouseEvent) {
 }
 // -----------------------------------------------------------------------------
 
-function getActiveRowElement(activeRow: number) {
-  return document.getElementById(`${uid}-row-${activeRow}`) ?? undefined
+// function getActiveRowElement(activeRow: number) {
+//   return document.getElementById(`${uid}-row-${activeRow}`) ?? undefined
+// }
+
+function sort(field: string | undefined, direction: boolean | undefined) {
+  let idx: number = -1
+  let dir: -1 | 1 = 1
+  if (field !== undefined) {
+    idx = sortFields.indexOf(field)
+    if (idx !== -1) {
+      dir = sortDirections[idx]
+      if (direction !== undefined) {
+        sortDirections[idx] = -dir as -1 | 1
+      } else {
+        if (idx > 0) {
+          sortFields = [
+            ...sortFields.slice(0, idx - 1),
+            sortFields[idx],
+            sortFields[idx - 1],
+            ...sortFields.slice(idx + 1)
+          ]
+
+          sortDirections = [
+            ...sortDirections.slice(0, idx - 1),
+            sortDirections[idx],
+            sortDirections[idx - 1],
+            ...sortDirections.slice(idx + 1)
+          ]
+        } else if (idx === 0) {
+          sortDirections.shift()
+          sortFields.shift()
+        }
+      }
+      rl.sortBy(sortFields as never[], sortDirections)
+      rl = rl
+    } else {
+      sortDirections.push(dir)
+      sortFields.push(field)
+      rl.sortBy(sortFields as never[], sortDirections)
+      rl = rl
+    }
+  }
 }
 </script>
 
 <!-- toolbar BEG -->
+<!--
 <div class="toolbar">
   <button
     class="toolbar-button"
@@ -264,6 +311,7 @@ function getActiveRowElement(activeRow: number) {
       })
     }}">D</button>
 </div>
+-->
 <!-- toolbar END -->
 
 <div id="{uid}-table-height-container" class="table-height-container">
@@ -301,7 +349,7 @@ function getActiveRowElement(activeRow: number) {
             </div>
           {/if}
           <!-- header END -->
-
+          <!-- {#key rl.sortFields[0]} -->
           {#each rows as i}
             <div
               id="{uid}-row-{i}"
@@ -337,6 +385,7 @@ function getActiveRowElement(activeRow: number) {
               {/each}
             </div>
           {/each}
+          <!-- {/key} -->
 
           <!-- footer BEG -->
           {#if showFooterRow}
@@ -365,12 +414,34 @@ function getActiveRowElement(activeRow: number) {
               <resizer id="{uid}-col-sizer-checkbox"></resizer>
             {/if}
             {#each rl.fieldsToShow as _, i}
-              <resizer
-                id="{uid}-col-sizer-{i + Number(showCheckBoxes)}"
-                class="col-sizer"
-                role="none"
-                on:mousedown="{resizeColBegin}">
-              </resizer>
+              <div class="col-tools">
+                <sorter
+                  id="{uid}-col-sorter-direction-{i + Number(showCheckBoxes)}"
+                  class="col-sorter-direction"
+                  role="none"
+                  on:click="{() => {
+                    sort(_, true)
+                  }}">
+                  {sortDirections[sortFields.indexOf(_)] ?? ''}
+                </sorter>
+                <sorter
+                  id="{uid}-col-sorter-order-{i + Number(showCheckBoxes)}"
+                  class="col-sorter-order"
+                  role="none"
+                  on:click="{() => {
+                    sort(_, undefined)
+                  }}">
+                  {sortFields.indexOf(_) !== -1
+                    ? sortFields.indexOf(_) + 1
+                    : ''}
+                </sorter>
+                <resizer
+                  id="{uid}-col-sizer-{i + Number(showCheckBoxes)}"
+                  class="col-sizer"
+                  role="none"
+                  on:mousedown="{resizeColBegin}">
+                </resizer>
+              </div>
             {/each}
           </div>
           <!-- col-sizers END -->
@@ -444,13 +515,57 @@ function getActiveRowElement(activeRow: number) {
   right: 0;
   display: grid;
   pointer-events: none;
+  // background-color: rgba($color: black, $alpha: 0.15);
+}
+
+.col-tools {
+  position: relative;
+  left: 0;
+  cursor: pointer;
+  pointer-events: none;
+  // border-right-style: solid;
+  // border-color: red;
 }
 
 .col-sizer {
-  position: relative;
+  position: absolute;
   left: calc(100% - 12px);
   width: 12px;
+  height: 100%;
   cursor: col-resize;
   pointer-events: fill;
+  z-index: 0;
+}
+
+.col-sorter-direction {
+  position: absolute;
+  left: calc(100% - 36px);
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  pointer-events: fill;
+  z-index: 1;
+  text-align: center;
+  font-size: calc(var(--fs) - 1px);
+  // background-color: black;
+  color: white;
+  // border-style: solid;
+}
+
+.col-sorter-order {
+  position: absolute;
+  left: calc(100% - 18px);
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  pointer-events: fill;
+  z-index: 1;
+  text-align: center;
+  font-size: calc(var(--fs) - 1px);
+  // background-color: black;
+  color: white;
+  // border-style: solid;
 }
 </style>

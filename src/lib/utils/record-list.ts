@@ -1,7 +1,4 @@
 import { getPropNames } from '$lib'
-// import { type Readable } from 'svelte/store'
-// import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
-// import { type DBMain } from '$lib/app/db/types'
 
 declare type KeyToKeyNoIndex<T> = {
   [K in keyof T]: string extends K ? never : number extends K ? never : K
