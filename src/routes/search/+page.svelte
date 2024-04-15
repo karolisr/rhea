@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
+import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getSeqRecords, getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
@@ -84,7 +85,6 @@ async function search(): Promise<void> {
       }
       // ---------------------
       searchStatusMessage = `Downloading taxonomy records.`
-      // ---------------------
       const p = new EutilParams()
       p.db = 'taxonomy'
       p.ids = taxids
@@ -116,7 +116,7 @@ onDestroy(() => {
 })
 </script>
 
-<div class="rows padded">
+<div class="padded">
   <form on:submit|preventDefault="{search}">
     <input
       id="search"
@@ -133,11 +133,11 @@ onDestroy(() => {
       value="{searching ? 'Searching' : 'Search'}"
       disabled="{searchButtonDisabled || searching}" />
   </form>
-  <div class="cols">
-    <div>
-      <input id="refseq-only" type="checkbox" bind:checked="{refSeqOnly}" />
-    </div>
-    <div><label for="refseq-only">RefSeq Only?</label></div>
+  <div>
+    <CheckBox
+      id="refseq-only"
+      bind:checked="{refSeqOnly}"
+      label="RefSeq Only?" />
   </div>
   {#if error}
     <div><IconError />{errorMsg}</div>
@@ -149,16 +149,3 @@ onDestroy(() => {
     {/each}
   </div>
 </div>
-
-<style>
-.rows {
-  display: grid;
-  grid-auto-rows: auto;
-  row-gap: 6px;
-}
-
-.cols {
-  display: grid;
-  grid-template-columns: 17px auto;
-}
-</style>

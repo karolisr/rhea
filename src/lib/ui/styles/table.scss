@@ -28,9 +28,7 @@
   background-color: $Z400;
   color: $Y100;
   font-weight: 500;
-  margin-bottom: 1px;
   border-bottom-style: solid;
-  padding-block: 1px;
   border-color: $Y800;
 }
 
@@ -40,9 +38,10 @@
   color: white;
 }
 
-// .row-h > .cell,
-// .row-f > .cell {
-// }
+.row-h > .cell,
+.row-f > .cell {
+  border-inline-end-style: solid;
+}
 
 .row-b {
   font-family: 'JetBrains Mono';
@@ -83,4 +82,14 @@
 .table-container:focus .active-row {
   background-color: rgba($color: $A300, $alpha: 0.25);
   border-color: rgba($color: $A400, $alpha: 0.8);
+}
+
+.sorting {
+  background-color: $B300;
+  color: $B900;
+}
+
+.col-sorter-direction:hover,
+.col-sorter-order:hover {
+  color: $B700;
 }

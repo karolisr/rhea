@@ -3,6 +3,7 @@ import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
 import { min, max, floor, ceil, seq } from '$lib'
 import { mean, standardDeviation } from 'simple-statistics'
+import CheckBox from '$lib/ui/components/CheckBox.svelte'
 
 onMount(() => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -82,7 +83,7 @@ $: sortFields = rl.sortFields
 $: sortDirections = rl.sortDirections
 
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
-$: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) : 0
+$: maxRowsVis = rowH > 0 ? floor(visH / rowH - 0.25) - (nH + nF) : 0
 $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
@@ -367,12 +368,14 @@ function sort(field: string | undefined, direction: boolean | undefined) {
               style:grid-template-columns="{colWsStr}">
               {#if showCheckBoxes}
                 <div id="{uid}-cell-{i}-checkbox" class="cell">
-                  <input
-                    type="checkbox"
+                  <CheckBox
                     id="{uid}-checkbox-{i}"
-                    tabindex="-1"
-                    on:click="{() => elc.focus()}"
-                    on:contextmenu="{() => elc.focus()}"
+                    tabindex="{-1}"
+                    margin="{false}"
+                    on:mousedown="{(e) => {
+                      elc.focus()
+                      e.preventDefault()
+                    }}"
                     bind:checked="{selectedRows[
                       rl.stringValueByIndex(i, rl.keyField)
                     ]}" />
@@ -416,17 +419,10 @@ function sort(field: string | undefined, direction: boolean | undefined) {
             {#each rl.fieldsToShow as _, i}
               <div class="col-tools">
                 <sorter
-                  id="{uid}-col-sorter-direction-{i + Number(showCheckBoxes)}"
-                  class="col-sorter-direction"
-                  role="none"
-                  on:click="{() => {
-                    sort(_, true)
-                  }}">
-                  {sortDirections[sortFields.indexOf(_)] ?? ''}
-                </sorter>
-                <sorter
                   id="{uid}-col-sorter-order-{i + Number(showCheckBoxes)}"
-                  class="col-sorter-order"
+                  class="col-sorter-order {sortDirections[sortFields.indexOf(_)]
+                    ? 'sorting'
+                    : ''}"
                   role="none"
                   on:click="{() => {
                     sort(_, undefined)
@@ -434,6 +430,22 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                   {sortFields.indexOf(_) !== -1
                     ? sortFields.indexOf(_) + 1
                     : ''}
+                </sorter>
+                <sorter
+                  id="{uid}-col-sorter-direction-{i + Number(showCheckBoxes)}"
+                  class="col-sorter-direction {sortDirections[
+                    sortFields.indexOf(_)
+                  ]
+                    ? 'sorting'
+                    : ''} {sortDirections[sortFields.indexOf(_)] === 1
+                    ? 'inc'
+                    : ''} {sortDirections[sortFields.indexOf(_)] === -1
+                    ? 'dec'
+                    : ''}"
+                  role="none"
+                  on:click="{() => {
+                    sort(_, true)
+                  }}">
                 </sorter>
                 <resizer
                   id="{uid}-col-sizer-{i + Number(showCheckBoxes)}"
@@ -458,6 +470,8 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 .table-height-container {
   min-height: 0;
   max-height: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
   min-width: 0;
   max-width: 100%;
   height: 100%;
@@ -494,11 +508,13 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 .row-h {
   position: sticky;
   top: 0;
+  z-index: 1;
 }
 
 .row-f {
   position: sticky;
   bottom: 0;
+  z-index: 1;
 }
 
 .cell {
@@ -515,16 +531,15 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   right: 0;
   display: grid;
   pointer-events: none;
-  // background-color: rgba($color: black, $alpha: 0.15);
 }
 
 .col-tools {
   position: relative;
+  top: 0;
   left: 0;
   cursor: pointer;
   pointer-events: none;
-  // border-right-style: solid;
-  // border-color: red;
+  font-size: calc(var(--fs) - 2px);
 }
 
 .col-sizer {
@@ -537,35 +552,62 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   z-index: 0;
 }
 
-.col-sorter-direction {
-  position: absolute;
-  left: calc(100% - 36px);
-  top: 2px;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  pointer-events: fill;
-  z-index: 1;
-  text-align: center;
-  font-size: calc(var(--fs) - 1px);
-  // background-color: black;
-  color: white;
-  // border-style: solid;
-}
-
 .col-sorter-order {
   position: absolute;
-  left: calc(100% - 18px);
+  right: 13px;
   top: 2px;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 13px;
   cursor: pointer;
   pointer-events: fill;
   z-index: 1;
+  text-align: right;
+  padding-inline-end: 2px;
+}
+
+
+.col-sorter-direction {
+  position: absolute;
+  right: 3px;
+  top: 2px;
+  width: 10px;
+  height: 13px;
+  cursor: pointer;
+  pointer-events: fill;
+  z-index: 2;
   text-align: center;
-  font-size: calc(var(--fs) - 1px);
-  // background-color: black;
-  color: white;
-  // border-style: solid;
+}
+
+.sorting {
+  align-content: center;
+  // align-items: left;
+  padding-right: 4px;
+  // background-color: red;
+}
+
+.sorting.inc::after {
+  content: '';
+  display: block;
+  margin: auto;
+  position: relative;
+  top: 0.125rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-width: 0.2rem 0 0 0.2rem;
+  border-style: solid;
+  transform: rotate(45deg);
+}
+
+.sorting.dec::after {
+  content: '';
+  display: block;
+  margin: auto;
+  position: relative;
+  bottom: 0.05rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-width: 0 0.2rem 0.2rem 0;
+  border-style: solid;
+  transform: rotate(45deg);
 }
 </style>

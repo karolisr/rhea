@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
+import Radio from '$lib/ui/components/Radio.svelte'
 import settings from '$lib/app/svelte-stores/settings'
 import { saveSettings } from '$lib/app/svelte-stores/settings'
 import { getCurentTheme, ThemeDarkLight } from '$lib/app/api/darkmode'
@@ -20,89 +21,58 @@ onDestroy(() => {})
     <div id="settings-theme" class="padded">
       <fieldset>
         <legend>Theme</legend>
-        <div>
-          <div>
-            <input
-              type="radio"
-              id="os"
-              name="theme"
-              value="os"
-              bind:group="{$settings.theme}"
-              on:change="{saveSettings}" />
-            <label for="os">Follow OS Setting ({currentOsThemeSetting})</label>
-          </div>
-        </div>
+        <Radio
+          label="Follow OS Setting ({currentOsThemeSetting})"
+          id="os"
+          name="theme"
+          value="os"
+          bind:group="{$settings.theme}"
+          on:change="{saveSettings}" />
 
-        <div>
-          <div>
-            <input
-              type="radio"
-              id="light"
-              name="theme"
-              value="light"
-              bind:group="{$settings.theme}"
-              on:change="{saveSettings}" />
-            <label for="light">Light</label>
-          </div>
-        </div>
+        <Radio
+          label="Light"
+          id="light"
+          name="theme"
+          value="light"
+          bind:group="{$settings.theme}"
+          on:change="{saveSettings}" />
 
-        <div>
-          <div>
-            <input
-              type="radio"
-              id="dark"
-              name="theme"
-              value="dark"
-              bind:group="{$settings.theme}"
-              on:change="{saveSettings}" />
-            <label for="dark">Dark</label>
-          </div>
-        </div>
+        <Radio
+          label="Dark"
+          id="dark"
+          name="theme"
+          value="dark"
+          bind:group="{$settings.theme}"
+          on:change="{saveSettings}" />
       </fieldset>
     </div>
 
     <div id="settings-scale" class="padded">
       <fieldset>
         <legend>Scale</legend>
+        <Radio
+          label="Small"
+          id="small"
+          name="scale"
+          value="small"
+          bind:group="{$settings.scale}"
+          on:change="{saveSettings}" />
 
-        <div>
-          <div>
-            <input
-              type="radio"
-              id="small"
-              name="scale"
-              value="small"
-              bind:group="{$settings.scale}"
-              on:change="{saveSettings}" />
-            <label for="small">Small</label>
-          </div>
-        </div>
+        <Radio
+          label="Medium"
+          id="medium"
+          name="scale"
+          value="medium"
+          bind:group="{$settings.scale}"
+          on:change="{saveSettings}" />
 
-        <div>
-          <div>
-            <input
-              type="radio"
-              id="medium"
-              name="scale"
-              value="medium"
-              bind:group="{$settings.scale}"
-              on:change="{saveSettings}" />
-            <label for="medium">Medium</label>
-          </div>
-        </div>
-
-        <div>
-          <div>
-            <input
-              type="radio"
-              id="large"
-              name="scale"
-              value="large"
-              bind:group="{$settings.scale}"
-              on:change="{saveSettings}" />
-            <label for="large">Large</label>
-          </div>
-        </div>
+        <Radio
+          label="Large"
+          id="large"
+          name="scale"
+          value="large"
+          bind:group="{$settings.scale}"
+          on:change="{saveSettings}" />
       </fieldset>
     </div>
   </div>

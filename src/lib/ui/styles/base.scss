@@ -29,6 +29,8 @@ input[type='button'],
 input[type='submit'] {
   background-color: $A600;
   color: white;
+  padding-block: calc(var(--pad) * 1);
+  padding-inline: calc(var(--pad) * 2);
 }
 
 input[type='checkbox']:checked::after {
@@ -40,14 +42,27 @@ input[type='radio']:checked::after {
   border-color: $A600;
 }
 
-// button:hover,
-// input[type='button']:hover,
-// input[type='submit']:hover {
-// }
+a:hover,
+button:hover,
+input[type='button']:hover,
+input[type='submit']:hover {
+  filter: brightness(1.075) saturate(1) hue-rotate(2.5deg);
+}
 
-// :root :disabled,
-// :root :disabled:hover {
-// }
+a:active,
+button:active,
+input[type='button']:active,
+input[type='submit']:active {
+  filter: brightness(1.05) saturate(1.1) hue-rotate(-2.5deg);
+}
+
+:root :disabled,
+:root :disabled:hover,
+:root :disabled:active {
+  background-color: #ddd;
+  color: #999;
+  filter: brightness(1) saturate(1) hue-rotate(0deg);
+}
 
 .padded {
   padding: var(--pad);
@@ -55,10 +70,4 @@ input[type='radio']:checked::after {
 
 ::selection {
   background-color: yellow;
-}
-
-:root :disabled,
-:root :disabled:hover {
-  background-color: #ddd;
-  color: #999;
 }

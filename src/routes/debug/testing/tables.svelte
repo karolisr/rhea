@@ -15,11 +15,6 @@ let taxid: number
 let taxon: Taxon
 let accver: string
 
-// async function delete_db_main() {
-//   _db_main = await db_main
-//   await $_db_main.delete()
-// }
-
 $: taxaRL = new RecordList<Taxon>(_db_main ? $_db_main.taxon : [], 'TaxId')
 $: {
   if (taxaRL) {

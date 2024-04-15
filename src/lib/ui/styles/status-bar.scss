@@ -2,8 +2,9 @@
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   border-top-style: solid;
-  padding: var(--pad);
+  padding-inline: calc(var(--pad) * 3);
   text-wrap: nowrap;
+  height: 100%;
 }
 
 .status-bar-left {
