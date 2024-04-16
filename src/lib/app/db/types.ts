@@ -26,4 +26,29 @@ export interface DBMain extends DBSchema {
     key: GBSeq['GBSeq_accession_version']
     value: GBSeq
   }
+
+  collection: {
+    key: Collection['id']
+    value: Collection
+  }
+
+  coll_gbseq_map: {
+    key: number
+    value: CollectionMapping
+    indexes: {
+      colId: CollectionMapping['colId']
+    }
+  }
+}
+
+export interface Collection {
+  id: string
+  label: string
+  notes: string
+}
+
+export interface CollectionMapping {
+  colId: string
+  recId: string
+  mapKey?: number
 }
