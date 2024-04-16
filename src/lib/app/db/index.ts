@@ -118,3 +118,11 @@ export async function db_get<T>(
 ) {
   return await db.get<StoreNames<T>>(store_name, id)
 }
+
+export async function db_del<T>(
+  id: StoreKey<T, StoreNames<T>> | IDBKeyRange,
+  store_name: StoreNames<T>,
+  db: IDBPDatabase<T>
+) {
+  return await db.delete<StoreNames<T>>(store_name, id)
+}

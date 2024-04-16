@@ -71,3 +71,14 @@ input[type='submit']:active {
 ::selection {
   background-color: yellow;
 }
+
+ul,
+ol {
+  padding-block-start: 5px;
+  padding-block-end: 5px;
+  padding-inline-start: 20px;
+}
+
+li::marker {
+  font-size: 0;
+}

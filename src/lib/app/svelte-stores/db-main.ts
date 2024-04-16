@@ -4,13 +4,15 @@ import {
   db_main_delete,
   db_get,
   db_get_all,
-  db_put
+  db_put,
+  db_del
 } from '$lib/app/db'
 import type { DBMain, Collection } from '$lib/app/db/types'
 import type { IDBPDatabase, StoreNames, StoreValue, StoreKey } from 'idb'
 import type { ESummaryNuccore } from '$lib/ncbi'
 import type { GBSeq } from '$lib/ncbi/types/GBSet'
 import type { Taxon } from '$lib/ncbi/types/TaxaSet'
+import { v4 as uuid } from 'uuid'
 
 let db: IDBPDatabase<DBMain>
 
@@ -19,6 +21,9 @@ export interface DBMainSvelteStore {
   get: typeof db_main_get
   get_all: typeof db_main_get_all
   put: typeof db_main_put
+  del: typeof db_main_del
+  createCollection: typeof createCollection
+  deleteCollection: typeof deleteCollection
   seq_nt_summ: ESummaryNuccore[]
   taxon: Taxon[]
   gbseq: GBSeq[]
@@ -45,6 +50,9 @@ async function prep_db_main() {
     get: db_main_get,
     get_all: db_main_get_all,
     put: db_main_put,
+    del: db_main_del,
+    createCollection: createCollection,
+    deleteCollection: deleteCollection,
     gbseq: (await db_main_get_all('gbseq')) ?? [],
     seq_nt_summ: (await db_main_get_all('seq_nt_summ')) ?? [],
     taxon: (await db_main_get_all('taxon')) ?? [],
@@ -75,6 +83,33 @@ const db_main_put = async <StoreName extends StoreNames<DBMain>>(
   store_name: StoreName
 ) => {
   await db_put(items, store_name, db)
+  await updateStore()
+}
+
+const db_main_del = async <StoreName extends StoreNames<DBMain>>(
+  id: StoreKey<DBMain, StoreName> | IDBKeyRange,
+  store_name: StoreName
+) => {
+  await db_del(id, store_name, db)
+  await updateStore()
+}
+
+const createCollection = async (
+  parentId: string,
+  label: string,
+  notes: string = ''
+) => {
+  const _ = { id: uuid(), parentId, label, notes }
+  await db_main_put([_], 'collection')
+}
+
+const deleteCollection = async (id: unknown) => {
+  if (id !== 'ROOT') {
+    await db_main_del(id as string, 'collection')
+  }
+}
+
+async function updateStore() {
   const gbseq = await db_main_get_all('gbseq')
   const seq_nt_summ = await db_main_get_all('seq_nt_summ')
   const taxon = await db_main_get_all('taxon')
