@@ -565,7 +565,6 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   padding-inline-end: 2px;
 }
 
-
 .col-sorter-direction {
   position: absolute;
   right: 3px;

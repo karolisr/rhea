@@ -22,7 +22,9 @@
 
 .tab-nav > a > div > span {
   margin-left: var(--pad);
-  transition: font-size 200ms ease-in-out, margin 100ms ease-in-out;
+  transition:
+    font-size 200ms ease-in-out,
+    margin 100ms ease-in-out;
 }
 
 // .tab-nav > a:hover > div {
@@ -45,34 +47,9 @@
 // .tab-nav > a[aria-current='true'] > div > span {
 // }
 
-.tab-nav-tab-spacer {
-  flex-grow: 1;
-  min-width: 68px;
-}
-
-@media (max-width: 370px) {
-  :root[scale='small'] {
-    .tab-nav > a > div > span {
-      font-size: 0;
-      margin-left: 0;
-    }
-  }
-}
-
-@media (max-width: 462px) {
-  :root[scale='medium'] {
-    .tab-nav > a > div > span {
-      font-size: 0;
-      margin-left: 0;
-    }
-  }
-}
-
-@media (max-width: 644px) {
-  :root[scale='large'] {
-    .tab-nav > a > div > span {
-      font-size: 0;
-      margin-left: 0;
-    }
+:root[nav-collapsed='true'] {
+  .tab-nav > a > div > span {
+    font-size: 0;
+    margin-left: 0;
   }
 }
