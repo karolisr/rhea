@@ -3,17 +3,28 @@ import { page } from '$app/stores'
 import type { ComponentType } from 'svelte'
 
 export let link: string
+export let current: 'equals' | 'startsWith' = 'equals'
 export let icon: ComponentType | null = null
 export let label: string | null = null
 
+let curr: boolean = false
+
 $: path = $page.url.pathname
-$: current = path === link
+$: {
+  if (current === 'equals') {
+    curr = path === link
+  }
+
+  if (current === 'startsWith') {
+    curr = path.startsWith(link)
+  }
+}
 </script>
 
 <a
   id="{link}"
   href="{link}"
-  aria-current="{current}"
+  aria-current="{curr}"
   draggable="false"
   tabindex="-1">
   <div>

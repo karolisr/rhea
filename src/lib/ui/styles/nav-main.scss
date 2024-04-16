@@ -1,0 +1,62 @@
+.nav-main.tab-nav {
+  display: flex;
+  flex-direction: row;
+  border-bottom-style: solid;
+  // padding-inline-end: calc(var(--pad) * 3);
+  height: calc(1px + var(--fs) + var(--pad) * 5);
+  min-height: calc(1px + var(--fs) + var(--pad) * 5);
+}
+
+// .nav-main.tab-nav > a {
+// }
+
+.nav-main.tab-nav > a > div {
+  background-color: $Y200;
+  display: flex;
+  align-items: center;
+  border-left-style: solid;
+  padding-inline: calc(var(--pad) * 3);
+  height: 100%;
+}
+
+.nav-main.tab-nav > a:last-of-type > div {
+  // border-right-style: solid;
+  // padding-inline-end: calc(2px + var(--pad) * 3);
+}
+
+// .nav-main.tab-nav > a > div > svg {
+// }
+
+.nav-main.tab-nav > a > div > span {
+  margin-left: var(--pad);
+  transition:
+    font-size 200ms ease-in-out,
+    margin 100ms ease-in-out;
+}
+
+// .nav-main.tab-nav > a:hover > div {
+// }
+
+// .nav-main.tab-nav > a:hover > div > svg {
+// }
+
+// .nav-main.tab-nav > a:hover > div > span {
+// }
+
+.nav-main.tab-nav > a[aria-current='true'] > div {
+  background-color: white;
+}
+
+.nav-main.tab-nav > a[aria-current='true'] > div > svg {
+  color: $A600;
+}
+
+// .nav-main.tab-nav > a[aria-current='true'] > div > span {
+// }
+
+:root[nav-main-left-spacer-nav-collapsed='true'] {
+  .nav-main.tab-nav > a > div > span {
+    font-size: 0;
+    margin-left: 0;
+  }
+}

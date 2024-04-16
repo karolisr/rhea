@@ -6,7 +6,7 @@
 
 .head,
 .foot {
-  min-height: calc(1px + var(--fs) + var(--pad) * 5);
+  z-index: 10;
 }
 
 .head {

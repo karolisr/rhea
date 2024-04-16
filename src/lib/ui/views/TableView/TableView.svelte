@@ -48,7 +48,9 @@ export let showFooterRow: boolean = false
 export let multiRowSelect: boolean = false
 export let showCheckBoxes: boolean = false
 
-export let onDeleteRow: (id: string | number | undefined) => any = () => {}
+export let onDeleteRow: (id: string | number | undefined) => any = (id) => {
+  console.log('onDeleteRow placeholder function:', uid, id)
+}
 
 if (!multiRowSelect && showCheckBoxes) {
   console.warn('multiRowSelect === false && showCheckBoxes === true')
@@ -136,7 +138,6 @@ const _onkeydown = (ev: KeyboardEvent) => {
       break
     case 'Backspace':
       if (ev.metaKey === true) {
-        console.log('Deleting:', activeRowKey)
         onDeleteRow(activeRowKey)
       }
     default:

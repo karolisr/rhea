@@ -1,7 +1,11 @@
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte'
 
-export let minW: number = 68
+export let uid: string
+export let minW: number = 0
+export let collapsable: boolean = false
+export let nSpacers: number = 1
+
 let w: number | undefined
 let wTabs: number = 0
 let wCollapsed: number = 0
@@ -10,15 +14,16 @@ let elSpacer: HTMLElement | null
 let navCollapsed: boolean = false
 
 function collapse() {
+  if (!collapsable) return
   if (elSpacer) w = elSpacer.offsetWidth
   wFree = document.documentElement.offsetWidth - minW
 
   if (!navCollapsed && w && w > minW) {
-    wTabs = document.documentElement.offsetWidth - w
+    wTabs = document.documentElement.offsetWidth - w * nSpacers
   }
 
   if (navCollapsed && w && w > minW) {
-    wCollapsed = document.documentElement.offsetWidth - w
+    wCollapsed = document.documentElement.offsetWidth - w * nSpacers
     if (wTabs === 0) {
       wTabs = wCollapsed * 2.5
     }
@@ -37,14 +42,17 @@ function collapse() {
   }
 }
 
-$: document.documentElement.setAttribute('nav-collapsed', String(navCollapsed))
+$: document.documentElement.setAttribute(
+  `${uid}-nav-collapsed`,
+  String(navCollapsed)
+)
 
 const _onResize = (_: UIEvent) => {
   collapse()
 }
 
 onMount(() => {
-  elSpacer = document.getElementById('tab-nav-tab-spacer')
+  elSpacer = document.getElementById(`${uid}-tab-nav-tab-spacer`)
   if (elSpacer) window.addEventListener('resize', _onResize)
   collapse()
 })
@@ -55,7 +63,7 @@ onDestroy(() => {
 </script>
 
 <div
-  id="tab-nav-tab-spacer"
+  id="{uid}-tab-nav-tab-spacer"
   data-tauri-drag-region
   class="tab-nav-tab-spacer"
   style="min-width: {minW}px;">

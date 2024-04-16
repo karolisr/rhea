@@ -1,11 +1,11 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { themeChangeListener } from '$lib/app/api/darkmode'
+import settings from '$lib/app/svelte-stores/settings'
 import { setScale } from '$lib/app/api/scale'
 import { disableDefault } from '$lib/ui'
-import settings from '$lib/app/svelte-stores/settings'
 import Layout from '$lib/ui/chrome/layout/Layout.svelte'
-import NavMain from './NavMain.svelte'
+import NavMain from './nav.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
 
