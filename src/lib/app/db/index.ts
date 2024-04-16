@@ -12,7 +12,7 @@ export async function db_main_delete() {
   })
 }
 
-export async function db_main_init(version: number = 6) {
+export async function db_main_init(version: number = 7) {
   const db_main = await openDB<DBMain>(db_main_name, version, {
     upgrade(database, oldVersion, newVersion, transaction, event) {
       console.log(
@@ -52,7 +52,15 @@ export async function db_main_init(version: number = 6) {
           transaction.objectStore('taxon').createIndex('Rank', 'Rank')
         }
         if (oldVersion < 6) {
-          database.createObjectStore('collection', { keyPath: 'id' })
+          const os_collection = database.createObjectStore('collection', {
+            keyPath: 'id'
+          })
+          os_collection.add({
+            id: 'ROOT',
+            label: 'ROOT',
+            parentId: 'NONE',
+            notes: ''
+          })
           const os_coll_gbseq_map = database.createObjectStore(
             'coll_gbseq_map',
             {

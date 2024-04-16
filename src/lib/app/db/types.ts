@@ -42,6 +42,7 @@ export interface DBMain extends DBSchema {
 }
 
 export interface Collection {
+  parentId: string
   id: string
   label: string
   notes: string
