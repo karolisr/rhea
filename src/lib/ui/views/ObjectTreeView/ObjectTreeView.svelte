@@ -53,14 +53,15 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 {/if}
 {#if obj instanceof Array}
   {#if objectIsPrimitiveArray}
-    <span class="node-name">{name}</span>:&nbsp;<span class="node-value"
-      >{obj.toString().replaceAll(',', ', ')}</span>
+    <!-- <span class="node-name">{name}</span>:&nbsp;<span class="node-value"
+      >{obj.toString().replaceAll(',', ', ')}</span> -->
   {:else if expanded}
     {#each obj as item, i}
-      <ul>
-        <li>
-          <svelte:self name="{`${name}: ${i + 1}`}" obj="{item}" />
-        </li>
+      <ul class:no-indent="{hideName}">
+        <!-- <li> -->
+        <!-- <svelte:self name="{`${name}: ${i + 1}`}" obj="{item}" /> -->
+        <svelte:self hideName obj="{item}" />
+        <!-- </li> -->
       </ul>
     {/each}
   {/if}
@@ -69,19 +70,21 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 {/if}
 
 {#if expanded && !(obj instanceof Array)}
-  <ul class:show-border="{!hideName}">
+  <!-- <ul class:show-border="{!hideName}" class:no-indent="{hideName}"> -->
     {#each nodeNames as leafName, i}
-      <li>
-        {#if obj[leafName] instanceof Object}
+      {#if obj[leafName] instanceof Object}
+        <li>
           <!-- ToDo: fix type errors and then remove @ts-nocheck -->
           {#if getPropNames(obj[leafName]).length === 1 && obj[leafName] instanceof Object && obj[leafName][getPropNames(obj[leafName])[0]] instanceof Array}
             <svelte:self
               name="{`${leafName} (${obj[leafName][getPropNames(obj[leafName])[0]].length})`}"
               obj="{obj[leafName]}" />
           {:else}
-            <svelte:self name="{leafName}" obj="{obj[leafName]}" />
+            <svelte:self name="{leafName}" obj="{obj[leafName]}" {expanded} />
           {/if}
-        {:else}
+        </li>
+      {:else}
+        <!-- <li>
           <span class="node-name">{leafName}</span>:&nbsp;<span
             class="node-value">
             {#if obj[leafName]}
@@ -90,8 +93,14 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
               {obj[leafName]}
             {/if}
           </span>
-        {/if}
-      </li>
+        </li> -->
+      {/if}
     {/each}
-  </ul>
+  <!-- </ul> -->
 {/if}
+
+<style lang="scss">
+ul.no-indent {
+  padding-inline-start: 0;
+}
+</style>

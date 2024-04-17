@@ -25,11 +25,17 @@ export interface DBMain extends DBSchema {
   gbseq: {
     key: GBSeq['GBSeq_accession_version']
     value: GBSeq
+    indexes: {
+      GBSeq_division: string
+    }
   }
 
   collection: {
     key: Collection['id']
     value: Collection
+    indexes: {
+      parentId: Collection['parentId']
+    }
   }
 
   coll_gbseq_map: {
