@@ -49,15 +49,12 @@ onMount(async () => {
 </script>
 
 {#if obj}
-
-
-<div class="OUTER">
-  <div class="INNER-L">
-    <ObjectTreeView hideName expanded={true} {obj} />
+  <div class="OUTER">
+    <div class="INNER-L">
+      <ObjectTreeView hideName expanded="{true}" {obj} />
+    </div>
+    <div class="INNER-R"></div>
   </div>
-  <div class="INNER-R"></div>
-</div>
-
 {/if}
 
 <style lang="scss">
