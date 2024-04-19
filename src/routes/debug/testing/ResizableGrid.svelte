@@ -2,19 +2,6 @@
 let nRow = 12
 let nCol = 12
 
-// let rows: number[] = []
-// let cols: number[] = []
-
-// let grid: { row: { b: number; e: number }; col: { b: number; e: number } }[][] =
-//   []
-
-// for (let r = 0; r < nRow; r++) {
-//   grid[r] = []
-//   for (let c = 0; c < nCol; c++) {
-//     grid[r][c] = { row: { b: 0, e: 0 }, col: { b: 0, e: 0 } }
-//   }
-// }
-
 let grid: {
   col: { start: number; end: number }
   row: { start: number; end: number }
@@ -65,22 +52,6 @@ grid.push({
 </script>
 
 <div class="resizable-grid" style:--nRow="{nRow}" style:--nCol="{nCol}">
-  <!-- <div class:subgrid="{true}" style="background-color: thistle;"> -->
-  <!-- <div style="background-color: aliceblue;">1</div>
-  <div style="background-color: antiquewhite;">2</div>
-  <div style="background-color: gainsboro;">3</div>
-  <div style="background-color: wheat;">4</div>
-  <div style="background-color: mintcream;">5</div> -->
-  <!-- </div> -->
-
-  <!-- {#each grid as row, r}
-    {#each row as pos, c}
-      <div class="subgrid">
-        <div>{r}:{c}</div>
-      </div>
-    {/each}
-  {/each} -->
-
   {#each grid as cell}
     <div
       style:grid-column-start="{cell.col.start}"
