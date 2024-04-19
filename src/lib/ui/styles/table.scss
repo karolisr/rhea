@@ -1,27 +1,24 @@
-.table-height-container {
-  // margin: calc(var(--pad) * 1);
-  // margin-bottom: 5px;
-}
+// .table-height-container {
+// }
 
-.table-container {
-}
+// .table-container {
+// }
 
-.table-container:focus {
-}
+// .table-container:focus {
+// }
 
 .cell {
   padding-inline: 3px;
   padding-block: 1px;
 }
 
-.cell-corner {
-  // background-color: white;
-}
+// .cell-corner {
+// }
 
-.row-h,
-.row-b,
-.row-f {
-}
+// .row-h,
+// .row-b,
+// .row-f {
+// }
 
 .row-h,
 .row-f {
@@ -49,24 +46,6 @@
   border-color: white;
 }
 
-.col-sizers {
-}
-
-.col-sizer {
-  border-color: $Y300;
-  border-inline-end-style: solid;
-  transition: background-color 0.1s linear;
-}
-
-.table-container:focus .col-sizer {
-  border-color: $Y800;
-}
-
-.col-sizer:hover,
-.col-sizer:active {
-  background-color: rgba($color: $A300, $alpha: 0.25);
-}
-
 .selected-row {
   background-color: rgba($color: $B300, $alpha: 0.2);
 }
@@ -92,4 +71,19 @@
 .col-sorter-direction:hover,
 .col-sorter-order:hover {
   color: $B700;
+}
+
+.col-sizer {
+  border-color: $Y300;
+  border-inline-end-style: solid;
+  transition: background-color 0.1s linear;
+}
+
+.table-container:focus .col-sizer {
+  border-color: $Y800;
+}
+
+.col-sizer:hover,
+.col-sizer:active {
+  background-color: rgba($color: $A300, $alpha: 0.25);
 }

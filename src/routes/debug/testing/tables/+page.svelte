@@ -71,6 +71,8 @@ onDestroy(() => {})
   rl="{taxaRL}"
   bind:activeRowKey="{taxid}"
   bind:activeRowRecord="{taxon}"
+  multiRowSelect
+  showCheckBoxes
   showHeaderRow />
 
 <TableView

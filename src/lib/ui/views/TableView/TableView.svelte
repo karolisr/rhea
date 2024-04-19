@@ -4,6 +4,7 @@ import { RecordList } from '$lib/utils/record-list'
 import { min, max, floor, ceil, seq } from '$lib'
 import { mean, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
+import ResizableCols from '$lib/ui/ResizableCols.svelte'
 
 onMount(() => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -20,22 +21,11 @@ onMount(() => {
   visH = elh.clientHeight
 
   addEventListener('resize', resizeEvtListener, { capture: true })
-  addEventListener('mousemove', resizeCol, { capture: true })
-  addEventListener('mouseup', resizeColEnd, { capture: true })
-  // addEventListener('keydown', keyboardEventListener, { capture: true })
 })
 
 onDestroy(() => {
   removeEventListener('resize', resizeEvtListener, { capture: true })
-  removeEventListener('mousemove', resizeCol, { capture: true })
-  removeEventListener('mouseup', resizeColEnd, { capture: true })
-  // removeEventListener('keydown', keyboardEventListener, { capture: true })
 })
-
-// const keyboardEventListener = (ev: KeyboardEvent) => {
-//   const allowed = ['Tab']
-//   if (!allowed.includes(ev.code)) ev.preventDefault()
-// }
 
 const resizeEvtListener = (_: UIEvent) => {
   visH = elh.clientHeight
@@ -92,9 +82,6 @@ $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
 $: rows = seq(firstRow, lastRow)
-
-$: colWs = calcColWidths(rl, charW)
-$: colWsStr = colWStrFromColWs(colWs)
 
 $: if (activeRow !== undefined) {
   activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
@@ -172,30 +159,9 @@ function calcColWidths(rl: RecordList<any>, charW: number) {
   return colWs
 }
 
-function colWStrFromColWs(colWs: number[]): string {
-  let _ = ''
-  colWs.forEach((w) => {
-    _ += ` ${w}px`
-  })
-  return _.trim()
-}
-
-function getColWidths(): number[] {
-  const n = rl.fieldsToShow.length
-  const colWs: number[] = []
-  let j = 0
-  if (showCheckBoxes) {
-    const el = document.getElementById(
-      `${uid}-cell-${firstRowRequested}-checkbox`
-    )
-    if (el) colWs[0] = el.offsetWidth
-    j = 1
-  }
-  for (let i = 0; i < n; i++) {
-    const el = document.getElementById(`${uid}-cell-${firstRowRequested}-${i}`)
-    if (el) colWs[i + j] = el.offsetWidth
-  }
-  return colWs
+function initColWs() {
+  colWs = calcColWidths(rl, charW)
+  return ''
 }
 
 function getRowHeight(): { rowH: number; chrW: number } {
@@ -219,43 +185,6 @@ function getRowHeight(): { rowH: number; chrW: number } {
   _table.remove()
   return { rowH, chrW }
 }
-
-// -----------------------------------------------------------------------------
-let colResizing: number | null = null
-let colPrevX: number | null = null
-let colPrevWidth: number | null = null
-
-function resizeColBegin(evt: MouseEvent) {
-  document.body.style.cursor = 'col-resize'
-  colWs = getColWidths()
-  colPrevX = evt.x
-  const col = Number(
-    (evt.target as HTMLElement).id.replace(`${uid}-col-sizer-`, '')
-  )
-  colPrevWidth = colWs[col]
-  colResizing = col
-}
-
-function resizeCol(evt: MouseEvent) {
-  if (colResizing !== null) {
-    const d = evt.x - (colPrevX as number)
-    colWs[colResizing as number] = max(minColW, (colPrevWidth as number) + d)
-  }
-}
-
-function resizeColEnd(_: MouseEvent) {
-  if (colResizing !== null) {
-    colResizing = null
-    colPrevX = null
-    colPrevWidth = null
-    document.body.style.cursor = 'default'
-  }
-}
-// -----------------------------------------------------------------------------
-
-// function getActiveRowElement(activeRow: number) {
-//   return document.getElementById(`${uid}-row-${activeRow}`) ?? undefined
-// }
 
 function sort(field: string | undefined, direction: boolean | undefined) {
   let idx: number = -1
@@ -335,6 +264,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
       <pre>No fields to display.</pre>
     {:else}
       <!-- table-scroll-container BEG -->
+      {initColWs()}
       <div
         id="{uid}-table-scroll-container"
         class="table-scroll-container"
@@ -358,7 +288,6 @@ function sort(field: string | undefined, direction: boolean | undefined) {
             </div>
           {/if}
           <!-- header END -->
-          <!-- {#key rl.sortFields[0]} -->
           {#each rows as i}
             <div
               id="{uid}-row-{i}"
@@ -396,7 +325,6 @@ function sort(field: string | undefined, direction: boolean | undefined) {
               {/each}
             </div>
           {/each}
-          <!-- {/key} -->
 
           <!-- footer BEG -->
           {#if showFooterRow}
@@ -416,13 +344,18 @@ function sort(field: string | undefined, direction: boolean | undefined) {
           {/if}
           <!-- footer END -->
 
-          <!-- col-sizers BEG -->
+          <ResizableCols
+            bind:colWs
+            bind:colWsStr
+            {minColW}
+            {uid}
+            firstColResizable="{!showCheckBoxes}" />
+
           <div
-            id="{uid}-col-sizers"
-            class="col-sizers"
+            class="col-tools-container"
             style:grid-template-columns="{colWsStr}">
             {#if showCheckBoxes}
-              <resizer id="{uid}-col-sizer-checkbox"></resizer>
+              <div class="col-tools"></div>
             {/if}
             {#each rl.fieldsToShow as _, i}
               <div class="col-tools">
@@ -455,16 +388,9 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                     sort(_, true)
                   }}">
                 </sorter>
-                <resizer
-                  id="{uid}-col-sizer-{i + Number(showCheckBoxes)}"
-                  class="col-sizer"
-                  role="none"
-                  on:mousedown="{resizeColBegin}">
-                </resizer>
               </div>
             {/each}
           </div>
-          <!-- col-sizers END -->
         </div>
         <!-- table END -->
       </div>
@@ -516,13 +442,11 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 .row-h {
   position: sticky;
   top: 0;
-  z-index: 1;
 }
 
 .row-f {
   position: sticky;
   bottom: 0;
-  z-index: 1;
 }
 
 .cell {
@@ -531,7 +455,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   text-overflow: ellipsis;
 }
 
-.col-sizers {
+.col-tools-container {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -543,21 +467,11 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 
 .col-tools {
   position: relative;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
   cursor: pointer;
   pointer-events: none;
   font-size: calc(var(--fs) - 2px);
-}
-
-.col-sizer {
-  position: absolute;
-  left: calc(100% - 12px);
-  width: 12px;
-  height: 100%;
-  cursor: col-resize;
-  pointer-events: fill;
-  z-index: 0;
 }
 
 .col-sorter-order {
@@ -568,7 +482,6 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   height: 13px;
   cursor: pointer;
   pointer-events: fill;
-  z-index: 1;
   text-align: right;
   padding-inline-end: 2px;
 }
@@ -581,15 +494,12 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   height: 13px;
   cursor: pointer;
   pointer-events: fill;
-  z-index: 2;
   text-align: center;
 }
 
 .sorting {
   align-content: center;
-  // align-items: left;
   padding-right: 4px;
-  // background-color: red;
 }
 
 .sorting.inc::after {
