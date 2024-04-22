@@ -77,7 +77,7 @@ $: sortFields = rl.sortFields
 $: sortDirections = rl.sortDirections
 
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
-$: maxRowsVis = rowH > 0 ? floor(visH / rowH - 0.25) - (nH + nF) : 0
+$: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) : 0
 $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
@@ -142,7 +142,7 @@ const _onkeydown = (ev: KeyboardEvent) => {
 function calcColWidths(rl: RecordList<any>, charW: number) {
   const colWs: number[] = []
   if (showCheckBoxes) {
-    colWs.push(charW * 3)
+    colWs.push(charW * 2.25)
   }
   for (let i = 0; i < rl.fieldsToShow.length; i++) {
     const field = rl.fieldsToShow[i]
@@ -152,8 +152,8 @@ function calcColWidths(rl: RecordList<any>, charW: number) {
       values.push(String(value).length)
     }
     if (values.length > 0) {
-      const w = ceil(mean(values) + 2 * standardDeviation(values)) * charW
-      colWs.push(max(95, min(300, w)))
+      const w = ceil(mean(values) + 5 * standardDeviation(values)) * charW
+      colWs.push(max(minColW, min(minColW * 4, w)))
     }
   }
   return colWs
@@ -171,7 +171,7 @@ function getRowHeight(): { rowH: number; chrW: number } {
   _table.className = 'table'
   _row.className = 'row-b'
   _cell.className = 'cell'
-  _cell.textContent = '_1-2_3-4_5-6_7-'
+  _cell.textContent = '_0123456789_'
   _row.appendChild(_cell)
   _table.appendChild(_row)
   const _container = document.getElementById(
@@ -179,7 +179,7 @@ function getRowHeight(): { rowH: number; chrW: number } {
   ) as HTMLElement
   _container.appendChild(_table)
   const rowH = _row.offsetHeight
-  const chrW = ceil(_cell.offsetWidth / _cell.textContent.length)
+  const chrW = floor(_cell.offsetWidth / _cell.textContent.length) + 0.5
   _cell.remove()
   _row.remove()
   _table.remove()
@@ -257,7 +257,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   <div
     id="{uid}-table-container"
     class="table-container"
-    style:height="{nH * 3 + nF * 3 + (maxRowsVis + nH + nF) * rowH}px">
+    style:height="{(maxRowsVis + nH + nF) * rowH}px">
     {#if rl.length === 0}
       <pre>No records.</pre>
     {:else if rl.fieldsToShow.length === 0}
@@ -402,13 +402,13 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 
 <style lang="scss">
 .table-height-container {
-  min-height: 0;
-  max-height: 100%;
   flex-grow: 1;
   flex-shrink: 1;
+  height: 100%;
   min-width: 0;
   max-width: 100%;
-  height: 100%;
+  min-height: 0;
+  max-height: 100%;
 }
 
 .table-container {
@@ -457,73 +457,57 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 
 .col-tools-container {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
   display: grid;
   pointer-events: none;
 }
 
 .col-tools {
   position: relative;
-  top: 0px;
-  left: 0px;
+  display: flex;
+  right: calc(0.05rem + 2px);
+  top: calc(0.075rem + 2px);
   cursor: pointer;
-  pointer-events: none;
-  font-size: calc(var(--fs) - 2px);
-}
-
-.col-sorter-order {
-  position: absolute;
-  right: 13px;
-  top: 2px;
-  width: 14px;
-  height: 13px;
-  cursor: pointer;
-  pointer-events: fill;
-  text-align: right;
-  padding-inline-end: 2px;
+  font-size: 0.75rem;
+  margin-block-start: auto;
+  margin-inline-start: auto;
 }
 
 .col-sorter-direction {
-  position: absolute;
-  right: 3px;
-  top: 2px;
-  width: 10px;
-  height: 13px;
-  cursor: pointer;
+  position: relative;
+  width: 1.25em;
+  height: 1.25em;
   pointer-events: fill;
   text-align: center;
 }
 
-.sorting {
-  align-content: center;
-  padding-right: 4px;
+.col-sorter-order {
+  position: relative;
+  width: 0.9em;
+  height: 1.25em;
+  pointer-events: fill;
+  text-align: right;
 }
 
 .sorting.inc::after {
   content: '';
-  display: block;
-  margin: auto;
+  display: inline-block;
   position: relative;
-  top: 0.125rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-width: 0.2rem 0 0 0.2rem;
+  top: 0em;
+  width: 0.5em;
+  height: 0.5em;
+  border-width: 0.2em 0 0 0.2em;
   border-style: solid;
   transform: rotate(45deg);
 }
 
 .sorting.dec::after {
   content: '';
-  display: block;
-  margin: auto;
+  display: inline-block;
   position: relative;
-  bottom: 0.05rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-width: 0 0.2rem 0.2rem 0;
+  bottom: 0.15em;
+  width: 0.5em;
+  height: 0.5em;
+  border-width: 0 0.2em 0.2em 0;
   border-style: solid;
   transform: rotate(45deg);
 }
