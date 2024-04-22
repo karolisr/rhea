@@ -18,7 +18,7 @@ async function buildTree(parentId: string = 'ROOT') {
   const nodes = await get_all_from_index('collection', 'parentId', parentId)
   if (p.label === 'ROOT') p.label = 'Collections'
   let rv: CollTree = { children: [], label: p.label, id: p.id, notes: p.notes }
-  const rvp = rv['children'] as {}[]
+  const rvp = rv['children'] as object[]
   if (nodes.length > 0) {
     nodes.sort((a, b) => {
       return a.label < b.label ? -1 : 1

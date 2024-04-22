@@ -2,6 +2,7 @@ import type { DBSchema } from 'idb'
 import type { ESummaryNuccore } from '$lib/ncbi'
 import type { GBSeq } from '$lib/ncbi/types/GBSet'
 import type { Taxon, TaxId } from '$lib/ncbi/types/TaxaSet'
+import type { IndexedUndefined } from '$lib/types'
 
 export interface DBMain extends DBSchema {
   seq_nt_summ: {
@@ -47,7 +48,7 @@ export interface DBMain extends DBSchema {
   }
 }
 
-export interface Collection {
+export interface Collection extends IndexedUndefined {
   parentId: string
   id: string
   label: string

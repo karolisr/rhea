@@ -5,6 +5,8 @@ import { min, max, floor, ceil, seq } from '$lib'
 import { mean, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import ResizableCols from '$lib/ui/ResizableCols.svelte'
+import type { Indexed, IndexedUndefined } from '$lib/types'
+import type { Collection } from '$lib/app/db/types'
 
 onMount(() => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -31,14 +33,14 @@ const resizeEvtListener = (_: UIEvent) => {
   visH = elh.clientHeight
 }
 
-export let rl: RecordList<any>
+export let rl: RecordList<IndexedUndefined | Collection>
 export let showHeaderRow: boolean = false
 export let showFooterRow: boolean = false
 
 export let multiRowSelect: boolean = false
 export let showCheckBoxes: boolean = false
 
-export let onDeleteRow: (id: string | number | undefined) => any = (id) => {
+export let onDeleteRow: (id: string | number | undefined) => unknown = (id) => {
   console.log('onDeleteRow placeholder function:', uid, id)
 }
 
@@ -50,7 +52,7 @@ if (!multiRowSelect && showCheckBoxes) {
 export let minColW: number = 50
 export let uid: string
 export let activeRowKey: string | number | undefined = undefined
-export let activeRowRecord: any | undefined = undefined
+export let activeRowRecord: object | undefined = undefined
 
 $: nH = showHeaderRow ? 1 : 0
 $: nF = showFooterRow ? 1 : 0
@@ -127,6 +129,7 @@ const _onkeydown = (ev: KeyboardEvent) => {
       if (ev.metaKey === true) {
         onDeleteRow(activeRowKey)
       }
+      break
     default:
       break
   }
@@ -139,7 +142,10 @@ const _onkeydown = (ev: KeyboardEvent) => {
   }
 }
 
-function calcColWidths(rl: RecordList<any>, charW: number) {
+function calcColWidths(
+  rl: RecordList<IndexedUndefined | Collection>,
+  charW: number
+) {
   const colWs: number[] = []
   if (showCheckBoxes) {
     colWs.push(charW * 2.25)
