@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount } from 'svelte'
 import { v4 as uuid } from 'uuid'
-import GridResizers from '$lib/ui/GridResizers.svelte'
+import GridResizers from '$lib/ui/views/TMP/GridResizers.svelte'
 import { randomColor } from '$lib'
 
 export let uid: string = uuid()

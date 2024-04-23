@@ -4,9 +4,9 @@ import { RecordList } from '$lib/utils/record-list'
 import { min, max, floor, ceil, seq } from '$lib'
 import { mean, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
-import GridResizers from '$lib/ui/GridResizers.svelte'
 import type { IndexedUndefined } from '$lib/types'
 import type { Collection } from '$lib/app/db/types'
+// import GridResizers from '$lib/ui/GridResizers.svelte'
 
 onMount(() => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -350,6 +350,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
           {/if}
           <!-- footer END -->
 
+          <!--
           <GridResizers
             bind:colWs
             bind:colWsStr
@@ -357,6 +358,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
             {uid}
             firstColResizable="{!showCheckBoxes}"
             lastColResizable="{false}" />
+          -->
 
           <div
             class="col-tools-container"
