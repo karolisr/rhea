@@ -123,13 +123,33 @@ li::marker {
   font-size: 0;
 }
 
-.col-sizer {
-  border-inline-end-style: solid;
-  border-color: $Y800;
-  transition: background-color 0.1s linear;
-}
+// .row-sizer {
+//   border-block-end-style: solid;
+//   height: 12px;
+// }
 
-.col-sizer:hover,
-.col-sizer:active {
-  background-color: rgba($color: $A300, $alpha: 0.25);
-}
+// .col-sizer {
+//   border-inline-end-style: solid;
+//   width: 12px;
+// }
+
+// .table .row-sizer {
+//   border-block-end-style: solid;
+// }
+
+// .table .col-sizer {
+//   border-inline-end-style: solid;
+// }
+
+// .row-sizer,
+// .col-sizer {
+//   border-color: $Y800;
+//   transition: background-color 0.1s linear;
+// }
+
+// .row-sizer:hover,
+// .row-sizer:active,
+// .col-sizer:hover,
+// .col-sizer:active {
+//   background-color: rgba($color: $A300, $alpha: 0.25);
+// }
