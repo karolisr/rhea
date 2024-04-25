@@ -6,7 +6,6 @@ import { mean, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import type { IndexedUndefined } from '$lib/types'
 import type { Collection } from '$lib/app/db/types'
-// import GridResizers from '$lib/ui/GridResizers.svelte'
 
 onMount(() => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -275,10 +274,12 @@ function sort(field: string | undefined, direction: boolean | undefined) {
         id="{uid}-table-scroll-container"
         class="table-scroll-container"
         style:height="{scrollH}px">
+
+        <!-- TABLE OLD BEGIN -->
         <!-- table BEG -->
-        <div id="{uid}-table" class="table">
+        <!-- <div id="{uid}-table" class="table"> -->
           <!-- header BEG -->
-          {#if showHeaderRow}
+          <!-- {#if showHeaderRow}
             <div
               id="{uid}-row-h"
               class="row-h"
@@ -292,9 +293,9 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                 </div>
               {/each}
             </div>
-          {/if}
+          {/if} -->
           <!-- header END -->
-          {#each rows as i}
+          <!-- {#each rows as i}
             <div
               id="{uid}-row-{i}"
               class="
@@ -330,10 +331,10 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                 </div>
               {/each}
             </div>
-          {/each}
+          {/each} -->
 
           <!-- footer BEG -->
-          {#if showFooterRow}
+          <!-- {#if showFooterRow}
             <div
               id="{uid}-row-f"
               class="row-f"
@@ -347,20 +348,10 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                 </div>
               {/each}
             </div>
-          {/if}
+          {/if} -->
           <!-- footer END -->
 
-          <!--
-          <GridResizers
-            bind:colWs
-            bind:colWsStr
-            {minColW}
-            {uid}
-            firstColResizable="{!showCheckBoxes}"
-            lastColResizable="{false}" />
-          -->
-
-          <div
+          <!-- <div
             class="col-tools-container"
             style:grid-template-columns="{colWsStr}">
             {#if showCheckBoxes}
@@ -399,9 +390,11 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                 </sorter>
               </div>
             {/each}
-          </div>
-        </div>
+          </div> -->
+        <!-- </div> -->
         <!-- table END -->
+        <!-- TABLE OLD END -->
+
       </div>
       <!-- table-scroll-container END -->
     {/if}

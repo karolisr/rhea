@@ -1,0 +1,53 @@
+<script lang="ts">
+import GridSizers from '$lib/ui/utils/GridSizers.svelte'
+import { v4 as uuid } from 'uuid'
+
+export let uid: string = uuid()
+export let minRowH: number = 50
+export let minColW: number = 50
+export let nRow: number
+export let nCol: number
+export let rowHs: number[]
+export let colWs: number[]
+
+let rowHsStr: string
+let colWsStr: string
+</script>
+
+<div
+  class="grid-container"
+  style:grid-template-rows="{rowHsStr}"
+  style:grid-template-columns="{colWsStr}">
+  <div
+    class="grid-items"
+    style:grid-row="1/{nRow + 1}"
+    style:grid-column="1/{nCol + 1}">
+    <slot />
+  </div>
+
+  <GridSizers
+    {uid}
+    {minRowH}
+    {minColW}
+    {nRow}
+    {nCol}
+    {rowHs}
+    {colWs}
+    bind:rowHsStr
+    bind:colWsStr />
+</div>
+
+<style lang="scss">
+.grid-container {
+  display: grid;
+  height: 100%;
+  overflow: hidden;
+}
+
+.grid-items {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-template-columns: subgrid;
+  overflow: hidden;
+}
+</style>
