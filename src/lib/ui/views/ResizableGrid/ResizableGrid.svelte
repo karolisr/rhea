@@ -9,6 +9,11 @@ export let nRow: number
 export let nCol: number
 export let rowHs: number[]
 export let colWs: number[]
+export let rowsResizable: boolean = true
+export let colsResizable: boolean = true
+export let enforceMaxSize: boolean = true
+export let fixedHRows: number[] = []
+export let fixedWCols: number[] = []
 
 let rowHsStr: string
 let colWsStr: string
@@ -33,6 +38,11 @@ let colWsStr: string
     {nCol}
     {rowHs}
     {colWs}
+    {rowsResizable}
+    {colsResizable}
+    {enforceMaxSize}
+    {fixedHRows}
+    {fixedWCols}
     bind:rowHsStr
     bind:colWsStr />
 </div>

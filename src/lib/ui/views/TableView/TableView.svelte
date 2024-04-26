@@ -1,13 +1,14 @@
 <script lang="ts">
-import { onMount, onDestroy } from 'svelte'
+import { onMount, onDestroy, tick } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
 import { min, max, floor, ceil, seq } from '$lib'
 import { mean, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import type { IndexedUndefined } from '$lib/types'
 import type { Collection } from '$lib/app/db/types'
+import ResizableGrid from '$lib/ui/views/ResizableGrid'
 
-onMount(() => {
+onMount(async () => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
   elc = document.getElementById(`${uid}-table-container`) as HTMLElement
 
@@ -15,6 +16,8 @@ onMount(() => {
   elc.onfocus = _onfocus
   elc.onkeydown = _onkeydown
   elc.onscroll = _onscroll
+
+  await tick()
 
   const _ = getRowHeight()
   rowH = _.rowH
@@ -62,7 +65,6 @@ let visH: number
 let elh: HTMLElement
 let elc: HTMLElement
 let colWs: number[] = []
-let colWsStr: string
 let maxRowsVis: number
 let rows: number[] = []
 
@@ -74,15 +76,25 @@ let lastRow: number
 let selectedRows: { [key: string]: boolean | null | undefined } = {}
 let activeRow: number = 0
 
+$: nRow = maxRowsVis + nH + nF
+$: nCol = rl.fieldsToShow.length + Number(showCheckBoxes)
+
 $: sortFields = rl.sortFields
 $: sortDirections = rl.sortDirections
 
 $: scrollH = rowH * rl.length + rowH * (nH + nF)
-$: maxRowsVis = rowH > 0 ? floor(visH / rowH) - (nH + nF) : 0
+$: maxRowsVis = rowH > 0 ? max(floor(visH / rowH) - (nH + nF), 0) : 0
 $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
 $: rows = seq(firstRow, lastRow)
+
+let rowHs: number[] = []
+$: {
+  for (let i = 0; i < nRow; i++) {
+    rowHs.push(rowH)
+  }
+}
 
 $: if (activeRow !== undefined) {
   activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
@@ -147,7 +159,7 @@ function calcColWidths(
 ) {
   const colWs: number[] = []
   if (showCheckBoxes) {
-    colWs.push(charW * 2.25)
+    colWs.push(charW * 3)
   }
   for (let i = 0; i < rl.fieldsToShow.length; i++) {
     const field = rl.fieldsToShow[i]
@@ -233,8 +245,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 </script>
 
 <!-- toolbar BEG -->
-<!--
-<div class="toolbar">
+<!-- <div class="toolbar">
   <button
     class="toolbar-button"
     disabled="{firstRow <= 0}"
@@ -253,8 +264,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
         behavior: 'instant'
       })
     }}">D</button>
-</div>
--->
+</div> -->
 <!-- toolbar END -->
 
 <div id="{uid}-table-height-container" class="table-height-container">
@@ -262,11 +272,13 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   <div
     id="{uid}-table-container"
     class="table-container"
-    style:height="{(maxRowsVis + nH + nF) * rowH}px">
+    style:height="{nRow * rowH}px">
     {#if rl.length === 0}
       <pre>No records.</pre>
     {:else if rl.fieldsToShow.length === 0}
       <pre>No fields to display.</pre>
+    {:else if maxRowsVis == 0}
+      <pre>Not enough space.</pre>
     {:else}
       <!-- table-scroll-container BEG -->
       {initColWs()}
@@ -274,127 +286,146 @@ function sort(field: string | undefined, direction: boolean | undefined) {
         id="{uid}-table-scroll-container"
         class="table-scroll-container"
         style:height="{scrollH}px">
-
-        <!-- TABLE OLD BEGIN -->
         <!-- table BEG -->
-        <!-- <div id="{uid}-table" class="table"> -->
-          <!-- header BEG -->
-          <!-- {#if showHeaderRow}
-            <div
-              id="{uid}-row-h"
-              class="row-h"
-              style:grid-template-columns="{colWsStr}">
-              {#if showCheckBoxes}
-                <div class="cell-corner"></div>
-              {/if}
-              {#each rl.fieldsToShow as field}
-                <div class="cell">
-                  {field}
-                </div>
-              {/each}
-            </div>
-          {/if} -->
-          <!-- header END -->
-          <!-- {#each rows as i}
-            <div
-              id="{uid}-row-{i}"
-              class="
+        <div id="{uid}-table" class="table">
+          <ResizableGrid
+            {uid}
+            {rowHs}
+            {colWs}
+            {minColW}
+            rowsResizable="{false}"
+            colsResizable="{true}"
+            {nRow}
+            {nCol}
+            fixedWCols="{showCheckBoxes ? [0] : []}"
+            enforceMaxSize="{false}"
+            minRowH="{rowH}">
+            <!-- header BEG -->
+            {#if showHeaderRow}
+              <div
+                id="{uid}-row-h"
+                style:grid-row="{1}/{2}"
+                style:grid-column="1/{nCol + 1}"
+                class="row-h">
+                {#if showCheckBoxes}
+                  <div class="cell-corner"></div>
+                {/if}
+                {#each rl.fieldsToShow as field}
+                  <div class="cell">
+                    {field}
+                  </div>
+                {/each}
+              </div>
+            {/if}
+            <!-- header END -->
+
+            {#each rows as i, k}
+              <div
+                id="{uid}-row-{i}"
+                style:grid-row="{k + 1 + nH}/{k + 2 + nH}"
+                style:grid-column="1/{nCol + 1}"
+                class="
                 row-b
                 {selectedRows[rl.stringValueByIndex(i, rl.keyField)]
-                ? 'selected-row'
-                : ''}
+                  ? 'selected-row'
+                  : ''}
                 {activeRow === i ? 'active-row' : ''}
               "
-              role="none"
-              on:mousedown="{() => {
-                activeRow = i
-              }}"
-              style:grid-template-columns="{colWsStr}">
-              {#if showCheckBoxes}
-                <div id="{uid}-cell-{i}-checkbox" class="cell">
-                  <CheckBox
-                    id="{uid}-checkbox-{i}"
-                    tabindex="{-1}"
-                    margin="{false}"
-                    on:mousedown="{(e) => {
-                      elc.focus()
-                      e.preventDefault()
-                    }}"
-                    bind:checked="{selectedRows[
-                      rl.stringValueByIndex(i, rl.keyField)
-                    ]}" />
-                </div>
-              {/if}
-              {#each rl.fieldsToShow as field, j}
-                <div id="{uid}-cell-{i}-{j}" class="cell">
-                  {rl.valueByIndex(i, field, '')}
-                </div>
-              {/each}
-            </div>
-          {/each} -->
-
-          <!-- footer BEG -->
-          <!-- {#if showFooterRow}
-            <div
-              id="{uid}-row-f"
-              class="row-f"
-              style:grid-template-columns="{colWsStr}">
-              {#if showCheckBoxes}
-                <div class="cell-corner"></div>
-              {/if}
-              {#each rl.fieldsToShow as field}
-                <div class="cell">
-                  {field}
-                </div>
-              {/each}
-            </div>
-          {/if} -->
-          <!-- footer END -->
-
-          <!-- <div
-            class="col-tools-container"
-            style:grid-template-columns="{colWsStr}">
-            {#if showCheckBoxes}
-              <div class="col-tools"></div>
-            {/if}
-            {#each rl.fieldsToShow as _, i}
-              <div class="col-tools">
-                <sorter
-                  id="{uid}-col-sorter-order-{i + Number(showCheckBoxes)}"
-                  class="col-sorter-order {sortDirections[sortFields.indexOf(_)]
-                    ? 'sorting'
-                    : ''}"
-                  role="none"
-                  on:click="{() => {
-                    sort(_, undefined)
-                  }}">
-                  {sortFields.indexOf(_) !== -1
-                    ? sortFields.indexOf(_) + 1
-                    : ''}
-                </sorter>
-                <sorter
-                  id="{uid}-col-sorter-direction-{i + Number(showCheckBoxes)}"
-                  class="col-sorter-direction {sortDirections[
-                    sortFields.indexOf(_)
-                  ]
-                    ? 'sorting'
-                    : ''} {sortDirections[sortFields.indexOf(_)] === 1
-                    ? 'inc'
-                    : ''} {sortDirections[sortFields.indexOf(_)] === -1
-                    ? 'dec'
-                    : ''}"
-                  role="none"
-                  on:click="{() => {
-                    sort(_, true)
-                  }}">
-                </sorter>
+                role="none"
+                on:mousedown="{() => {
+                  activeRow = i
+                }}">
+                {#if showCheckBoxes}
+                  <div id="{uid}-cell-{i}-checkbox" class="cell">
+                    <CheckBox
+                      id="{uid}-checkbox-{i}"
+                      tabindex="{-1}"
+                      margin="{false}"
+                      on:mousedown="{(e) => {
+                        elc.focus()
+                        e.preventDefault()
+                      }}"
+                      bind:checked="{selectedRows[
+                        rl.stringValueByIndex(i, rl.keyField)
+                      ]}" />
+                  </div>
+                {/if}
+                {#each rl.fieldsToShow as field, j}
+                  <div id="{uid}-cell-{i}-{j}" class="cell">
+                    {rl.valueByIndex(i, field, '', '-')}
+                  </div>
+                {/each}
               </div>
             {/each}
-          </div> -->
-        <!-- </div> -->
+            <!-- footer BEG -->
+            {#if showFooterRow}
+              <div
+                id="{uid}-row-f"
+                class="row-f"
+                style:grid-row="{nRow}/{nRow + 1}"
+                style:grid-column="1/{nCol + 1}">
+                {#if showCheckBoxes}
+                  <div class="cell-corner"></div>
+                {/if}
+                {#each rl.fieldsToShow as field}
+                  <div class="cell">
+                    {field}
+                  </div>
+                {/each}
+              </div>
+            {/if}
+            <!-- footer END -->
+            <!-- col-tools-container BEG -->
+            <div
+              class="col-tools-container"
+              style:grid-row="1/{nRow + 1}"
+              style:grid-column="1/{nCol + 1}">
+              {#if showCheckBoxes}
+                <div class="col-tools"></div>
+              {/if}
+              {#each rl.fieldsToShow as _, i}
+                <div
+                  class="col-tools {sortDirections[sortFields.indexOf(_)]
+                    ? 'sorting'
+                    : ''}">
+                  <sorter
+                    id="{uid}-col-sorter-order-{i + Number(showCheckBoxes)}"
+                    class="col-sorter-order {sortDirections[
+                      sortFields.indexOf(_)
+                    ]
+                      ? 'sorting'
+                      : ''}"
+                    role="none"
+                    on:click="{() => {
+                      sort(_, undefined)
+                    }}">
+                    {sortFields.indexOf(_) !== -1
+                      ? sortFields.indexOf(_) + 1
+                      : ''}
+                  </sorter>
+                  <sorter
+                    id="{uid}-col-sorter-direction-{i + Number(showCheckBoxes)}"
+                    class="col-sorter-direction {sortDirections[
+                      sortFields.indexOf(_)
+                    ]
+                      ? 'sorting'
+                      : ''} {sortDirections[sortFields.indexOf(_)] === 1
+                      ? 'inc'
+                      : ''} {sortDirections[sortFields.indexOf(_)] === -1
+                      ? 'dec'
+                      : ''}"
+                    role="none"
+                    on:click="{() => {
+                      sort(_, true)
+                    }}">
+                  </sorter>
+                </div>
+              {/each}
+            </div>
+            <!-- col-tools-container END -->
+          </ResizableGrid>
+        </div>
         <!-- table END -->
-        <!-- TABLE OLD END -->
-
       </div>
       <!-- table-scroll-container END -->
     {/if}
@@ -432,23 +463,23 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   flex-shrink: 1;
   position: sticky;
   top: 0;
-  display: grid;
 }
 
 .row-h,
 .row-b,
 .row-f {
   display: grid;
+  grid-template-rows: subgrid;
+  grid-template-columns: subgrid;
+}
+
+.row-b {
 }
 
 .row-h {
-  position: sticky;
-  top: 0;
 }
 
 .row-f {
-  position: sticky;
-  bottom: 0;
 }
 
 .cell {
@@ -458,36 +489,36 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 }
 
 .col-tools-container {
-  position: absolute;
   display: grid;
-  pointer-events: none;
+  grid-template-rows: subgrid;
+  grid-template-columns: subgrid;
 }
 
 .col-tools {
   position: relative;
   display: flex;
-  right: calc(0.05rem + 2px);
-  top: calc(0.075rem + 2px);
   cursor: pointer;
   font-size: 0.75rem;
-  margin-block-start: auto;
+  margin-block: auto;
   margin-inline-start: auto;
+  margin-inline-end: 0.25em;
+  z-index: 30;
 }
 
 .col-sorter-direction {
   position: relative;
   width: 1.25em;
   height: 1.25em;
-  pointer-events: fill;
   text-align: center;
+  z-index: 31;
 }
 
 .col-sorter-order {
   position: relative;
   width: 0.9em;
   height: 1.25em;
-  pointer-events: fill;
   text-align: right;
+  z-index: 32;
 }
 
 .sorting.inc::after {

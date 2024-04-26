@@ -107,16 +107,21 @@ export class RecordList<T> {
   valueByIndex(
     index: number,
     field: keyof T,
-    stringValueForObjects: string | undefined = undefined
+    stringValueForObjects: string | undefined = undefined,
+    stringValueWhenEmpty: string | undefined = undefined
   ) {
     const rec = this.items.at(index) as T
     if (rec) {
-      const rv = rec[field]
+      let rv = rec[field]
       if (stringValueForObjects !== undefined && typeof rv === 'object') {
-        return stringValueForObjects as string
-      } else {
-        return rv
+        rv = stringValueForObjects as NonNullable<T>[keyof T]
       }
+
+      if (stringValueWhenEmpty !== undefined && !rv) {
+        rv = stringValueWhenEmpty as NonNullable<T>[keyof T]
+      }
+
+      return rv
     }
   }
 

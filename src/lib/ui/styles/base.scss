@@ -123,33 +123,56 @@ li::marker {
   font-size: 0;
 }
 
-// .row-sizer {
-//   border-block-end-style: solid;
-//   height: 12px;
-// }
+grid-sizer-h,
+grid-sizer-v {
+  border-color: $Y800;
+}
 
-// .col-sizer {
-//   border-inline-end-style: solid;
-//   width: 12px;
-// }
+grid-sizer-h {
+  border-block-end-style: solid;
+}
 
-// .table .row-sizer {
-//   border-block-end-style: solid;
-// }
+grid-sizer-v {
+  border-inline-end-style: solid;
+}
 
-// .table .col-sizer {
-//   border-inline-end-style: solid;
-// }
+.table grid-sizer-h {
+  border-block-end-style: solid;
+  z-index: 20;
+}
 
-// .row-sizer,
-// .col-sizer {
-//   border-color: $Y800;
-//   transition: background-color 0.1s linear;
-// }
+.table grid-sizer-v {
+  border-inline-end-style: solid;
+  z-index: 20;
+}
 
-// .row-sizer:hover,
-// .row-sizer:active,
-// .col-sizer:hover,
-// .col-sizer:active {
-//   background-color: rgba($color: $A300, $alpha: 0.25);
-// }
+grid-sizer-h > div,
+grid-sizer-v > div {
+  transition: opacity 0.15s linear;
+  opacity: 0;
+}
+
+grid-sizer-h > div:hover,
+grid-sizer-h > div:active {
+  background: linear-gradient(
+    0deg,
+    transparent 0%,
+    rgba($color: $A300, $alpha: 0.5) 50%,
+    transparent 100%
+  );
+  opacity: 1;
+  // z-index: 10;
+}
+
+grid-sizer-v > div:hover,
+grid-sizer-v > div:active {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba($color: $A300, $alpha: 0.4) 40%,
+    rgba($color: $A300, $alpha: 0.4) 60%,
+    transparent 100%
+  );
+  opacity: 1;
+  // z-index: 50;
+}

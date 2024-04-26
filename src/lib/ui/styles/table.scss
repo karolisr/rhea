@@ -8,6 +8,7 @@
 }
 
 .cell {
+  padding-inline-start: calc(var(--pad) * 1);
 }
 
 .cell-corner {
@@ -25,6 +26,17 @@
   background-color: $Z400;
   color: $Y100;
   font-weight: 500;
+  z-index: 20;
+}
+
+.row-h {
+  border-block-start-color: black;
+  border-block-end-color: black;
+}
+
+.row-f {
+  border-block-start-color: black;
+  border-block-end-color: black;
 }
 
 .table-container:focus .row-h,
@@ -39,9 +51,15 @@
 
 .row-b {
   font-family: 'JetBrains Mono';
+  z-index: 20;
 }
 
-.selected-row {
+.row-b:hover {
+  background-color: rgba($color: $X300, $alpha: 0.25);
+}
+
+.selected-row,
+.selected-row:hover {
   background-color: rgba($color: $B300, $alpha: 0.2);
 }
 
@@ -55,6 +73,38 @@
   border-block-color: rgba($color: $A400, $alpha: 0.8);
 }
 
+.col-tools {
+  transition: background-color 0.15s linear;
+  border-radius: 2px;
+}
+
+.col-tools.sorting {
+  background-color: $B500;
+}
+
+.col-tools:hover {
+  background-color: rgba($color: $B500, $alpha: 0.75);
+  color: $B900;
+}
+
+.col-tools:hover::before {
+  content: 'sort';
+  position: absolute;
+  display: block;
+  font-size: 0.7rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.col-tools.sorting:hover::before {
+  content: none;
+}
+
+.col-tools.sorting:hover {
+  background-color: $B500;
+}
+
 .sorting {
   background-color: $B500;
   color: $B900;
@@ -63,4 +113,14 @@
 .col-sorter-direction:hover,
 .col-sorter-order:hover {
   color: $B700;
+}
+
+.col-sorter-order {
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+.col-sorter-direction {
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
