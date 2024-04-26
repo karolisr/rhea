@@ -1,6 +1,7 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
+import ResizableGrid from '$lib/ui/views/ResizableGrid/ResizableGrid.svelte'
 import TableView from '$lib/ui/views/TableView'
 import { type GBSeq } from '$lib/ncbi/types/GBSet'
 import { type ESummaryNuccore } from '$lib/ncbi'
@@ -64,21 +65,24 @@ onMount(async () => {
 onDestroy(() => {})
 </script>
 
-<TableView uid="lin" rl="{lineageRL}" showHeaderRow />
+<ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[750, -1]}">
+  <ResizableGrid nRow="{3}" nCol="{1}" rowHs="{[500, 100, -1]}" colWs="{[-1]}">
+    <TableView
+      uid="tax"
+      rl="{taxaRL}"
+      bind:activeRowKey="{taxid}"
+      bind:activeRowRecord="{taxon}"
+      multiRowSelect
+      showCheckBoxes
+      showHeaderRow />
 
-<TableView
-  uid="tax"
-  rl="{taxaRL}"
-  bind:activeRowKey="{taxid}"
-  bind:activeRowRecord="{taxon}"
-  multiRowSelect
-  showCheckBoxes
-  showHeaderRow />
+    <TableView
+      uid="esm"
+      rl="{esummariesRL}"
+      bind:activeRowKey="{accver}"
+      showHeaderRow />
 
-<TableView
-  uid="esm"
-  rl="{esummariesRL}"
-  bind:activeRowKey="{accver}"
-  showHeaderRow />
-
-<TableView uid="gbs" rl="{gbseqsRL}" showHeaderRow />
+    <TableView uid="gbs" rl="{gbseqsRL}" showHeaderRow />
+  </ResizableGrid>
+  <TableView uid="lin" rl="{lineageRL}" showHeaderRow />
+</ResizableGrid>

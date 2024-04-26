@@ -75,7 +75,7 @@
 
 .col-tools {
   transition: background-color 0.15s linear;
-  border-radius: 2px;
+  // border-radius: calc(var(--pad) / 2);
 }
 
 .col-tools.sorting {
@@ -110,17 +110,17 @@
   color: $B900;
 }
 
-.col-sorter-direction:hover,
-.col-sorter-order:hover {
-  color: $B700;
-}
-
 .col-sorter-order {
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
+  // border-top-left-radius: calc(var(--pad) / 2);
+  // border-bottom-left-radius: calc(var(--pad) / 2);
 }
 
 .col-sorter-direction {
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
+  // border-top-right-radius: calc(var(--pad) / 2);
+  // border-bottom-right-radius: calc(var(--pad) / 2);
+}
+
+.col-sorter-direction:hover,
+.col-sorter-order:hover {
+  color: $B700;
 }

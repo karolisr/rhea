@@ -235,8 +235,10 @@ function sort(field: string | undefined, direction: boolean | undefined) {
       rl.sortBy(sortFields as never[], sortDirections)
       rl = rl
     } else {
-      sortDirections.push(dir)
-      sortFields.push(field)
+      // sortDirections.push(dir)
+      sortDirections.unshift(dir)
+      // sortFields.push(field)
+      sortFields.unshift(field)
       rl.sortBy(sortFields as never[], sortDirections)
       rl = rl
     }
@@ -497,51 +499,40 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 .col-tools {
   position: relative;
   display: flex;
+  flex-direction: row;
   cursor: pointer;
   font-size: 0.75rem;
   margin-block: auto;
+  margin-inline-end: 0.15em;
   margin-inline-start: auto;
-  margin-inline-end: 0.25em;
+  width: 2.5em;
+  height: 1.4em;
   z-index: 30;
+  align-items: center;
 }
 
 .col-sorter-direction {
-  position: relative;
   width: 1.25em;
-  height: 1.25em;
+  height: 100%;
   text-align: center;
+  align-content: center;
   z-index: 31;
 }
 
 .col-sorter-order {
-  position: relative;
-  width: 0.9em;
-  height: 1.25em;
+  flex-grow: 1;
+  width: 1.25em;
+  height: 100%;
   text-align: right;
+  align-content: center;
   z-index: 32;
 }
 
 .sorting.inc::after {
-  content: '';
-  display: inline-block;
-  position: relative;
-  top: 0em;
-  width: 0.5em;
-  height: 0.5em;
-  border-width: 0.2em 0 0 0.2em;
-  border-style: solid;
-  transform: rotate(45deg);
+  content: '▲';
 }
 
 .sorting.dec::after {
-  content: '';
-  display: inline-block;
-  position: relative;
-  bottom: 0.15em;
-  width: 0.5em;
-  height: 0.5em;
-  border-width: 0 0.2em 0.2em 0;
-  border-style: solid;
-  transform: rotate(45deg);
+  content: '▼';
 }
 </style>

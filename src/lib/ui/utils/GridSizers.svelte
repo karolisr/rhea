@@ -25,7 +25,7 @@ export let rowHs: number[]
 export let colWs: number[]
 export let rowHsStr: string
 export let colWsStr: string
-export let sizerSize: number = 11
+export let sizerSize: number = 7
 export let rowsResizable: boolean = true
 export let colsResizable: boolean = true
 export let enforceMaxSize: boolean = true
@@ -182,7 +182,7 @@ function resizeGridElementEnd(_: MouseEvent) {
             id="{uid}-row-sizer-{row}"
             on:mousedown="{resizeGridElementBegin}"
             role="none"
-            style:top="{rowHs[row] - sizerSize / 2}px"
+            style:top="{rowHs[row] - 0.5 - sizerSize / 2}px"
             style:height="{sizerSize}px">
           </div>
         </grid-sizer-h>

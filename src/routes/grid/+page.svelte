@@ -10,8 +10,7 @@ import ResizableGrid from '$lib/ui/views/ResizableGrid/ResizableGrid.svelte'
         nRow="{1}"
         nCol="{3}"
         rowHs="{[-1]}"
-        colWs="{[50, 50, -1]}"
-        >
+        colWs="{[50, 50, -1]}">
         <div>1</div>
         <div>2</div>
         <div>3</div>

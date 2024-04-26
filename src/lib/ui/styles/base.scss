@@ -24,6 +24,19 @@ input[type='radio'] {
   padding: 0;
 }
 
+input[type='checkbox'] {
+  position: absolute;
+  margin: 0;
+  width: calc(var(--fs) + var(--pad));
+  height: calc(var(--fs) + var(--pad));
+}
+
+input[type='radio'] {
+  margin: 0;
+  width: calc(var(--fs));
+  height: calc(var(--fs));
+}
+
 button,
 input[type='button'],
 input[type='submit'] {
@@ -109,7 +122,7 @@ input[type='submit']:active {
 }
 
 ::selection {
-  background-color: yellow;
+  background-color: rgba($color: $B300, $alpha: 0.4);
 }
 
 ul,
@@ -125,7 +138,9 @@ li::marker {
 
 grid-sizer-h,
 grid-sizer-v {
-  border-color: $Y800;
+  border-color: $Y300;
+  border-width: 1px;
+  z-index: 21;
 }
 
 grid-sizer-h {
@@ -136,43 +151,34 @@ grid-sizer-v {
   border-inline-end-style: solid;
 }
 
+.table grid-sizer-h,
+.table grid-sizer-v {
+  border-color: $Y800;
+  border-width: 1px;
+  z-index: 20;
+}
+
 .table grid-sizer-h {
   border-block-end-style: solid;
-  z-index: 20;
 }
 
 .table grid-sizer-v {
   border-inline-end-style: solid;
-  z-index: 20;
 }
 
 grid-sizer-h > div,
 grid-sizer-v > div {
-  transition: opacity 0.15s linear;
-  opacity: 0;
+  transition: background-color 0.125s linear;
+}
+
+.table grid-sizer-h > div,
+.table grid-sizer-v > div {
+  background-color: transparent;
 }
 
 grid-sizer-h > div:hover,
-grid-sizer-h > div:active {
-  background: linear-gradient(
-    0deg,
-    transparent 0%,
-    rgba($color: $A300, $alpha: 0.5) 50%,
-    transparent 100%
-  );
-  opacity: 1;
-  // z-index: 10;
-}
-
+grid-sizer-h > div:active,
 grid-sizer-v > div:hover,
 grid-sizer-v > div:active {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba($color: $A300, $alpha: 0.4) 40%,
-    rgba($color: $A300, $alpha: 0.4) 60%,
-    transparent 100%
-  );
-  opacity: 1;
-  // z-index: 50;
+  background-color: rgba($color: $A400, $alpha: 0.35);
 }

@@ -10,17 +10,9 @@
   --fs: 12px;
   --pad: 3px;
 
-  input[type='checkbox'] {
-    position: absolute;
-    margin: 0;
-    width: 15px;
-    height: 15px;
-  }
-
-  input[type='radio'] {
-    margin: 0;
-    width: 12px;
-    height: 12px;
+  .table .col-tools {
+    margin-block-start: 2.5px;
+    margin-inline-end: 2px;
   }
 }
 
@@ -28,17 +20,11 @@
   --fs: 16px;
   --pad: 4px;
 
-  input[type='checkbox'] {
-    position: absolute;
-    margin: 0;
-    width: 20px;
-    height: 20px;
-  }
-
-  input[type='radio'] {
-    margin: 0;
-    width: 16px;
-    height: 16px;
+  .table .col-tools {
+    margin-block-start: 2.5px;
+    margin-inline-end: 2px;
+    height: 1.3em;
+    padding-block-end: 2px;
   }
 }
 
@@ -46,16 +32,9 @@
   --fs: 24px;
   --pad: 6px;
 
-  input[type='checkbox'] {
-    position: absolute;
-    margin: 0;
-    width: 30px;
-    height: 30px;
-  }
-
-  input[type='radio'] {
-    margin: 0;
-    width: 24px;
-    height: 24px;
+  .table .col-tools {
+    margin-block-start: 3px;
+    margin-inline-end: 2.5px;
+    height: 1.35em;
   }
 }
