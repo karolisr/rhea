@@ -5,10 +5,8 @@ import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import db_main from '$lib/app/svelte-stores/db-main'
 import TreeView from '$lib/ui/views/TreeView'
 import type { CollTree } from '$lib/ui/views/TreeView'
-let _db_main: Readable<DBMainSvelteStore>
-let get_all_from_index: typeof $_db_main.get_all_from_index
-let get: typeof $_db_main.get
-let obj: CollTree
+import ResizableGrid from '$lib/ui/views/ResizableGrid'
+
 async function buildTree(parentId: string = 'ROOT') {
   const p = await get(parentId, 'collection')
   const nodes = await get_all_from_index('collection', 'parentId', parentId)
@@ -33,8 +31,45 @@ onMount(async () => {
   get = $_db_main.get
   obj = await buildTree()
 })
+
+let _db_main: Readable<DBMainSvelteStore>
+let get_all_from_index: typeof $_db_main.get_all_from_index
+let get: typeof $_db_main.get
+let obj: CollTree
+
+let selectedColl: string | undefined = undefined
 </script>
 
-{#if obj}
-  <TreeView {obj} />
-{/if}
+<ResizableGrid
+  nRow="{1}"
+  nCol="{2}"
+  rowHs="{[-1]}"
+  colWs="{[150, -1]}"
+  minColW="{100}">
+  <ResizableGrid nRow="{1}" nCol="{1}" rowHs="{[-1]}" colWs="{[-1]}">
+    {#if obj}
+      <TreeView uid="{'xyz'}" {obj} bind:selected="{selectedColl}" />
+    {:else}
+      <div>Loading...</div>
+    {/if}
+    <!-- <div>A</div> -->
+  </ResizableGrid>
+
+  <ResizableGrid
+    nRow="{2}"
+    nCol="{1}"
+    rowHs="{[200, -1]}"
+    colWs="{[-1]}"
+    minRowH="{100}">
+    <div>{selectedColl ?? ''}</div>
+    <div>{selectedColl ? selectedColl + ': Selected Item' : ''}</div>
+  </ResizableGrid>
+</ResizableGrid>
+
+<style lang="scss">
+div {
+  align-content: center;
+  text-align: center;
+  background-color: white;
+}
+</style>

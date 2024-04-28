@@ -1,0 +1,30 @@
+.tree > button.tree-node {
+  background-color: $X100;
+  color: $X900;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-block-start: 0.25rem;
+  margin-inline-start: 0.25rem;
+  padding-block: 0.25rem;
+  padding-inline: 0.5rem;
+  border-radius: 2px;
+}
+
+.tree > button.tree-node:hover {
+  background-color: $X200;
+  filter: none;
+}
+
+.tree > button.tree-node:active {
+  filter: none;
+}
+
+.tree > button.tree-node.selected {
+  background-color: $A600;
+  color: $A050;
+}
+
+.tree > .children {
+  margin-inline-start: 1rem;
+}
