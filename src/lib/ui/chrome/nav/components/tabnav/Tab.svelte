@@ -37,7 +37,7 @@ onMount(() => {
   tabindex="-1">
   <div id="chrome-nav-a-{label}-div">
     {#if icon !== null}
-      <svelte:component id="chrome-nav-a-{label}-div-icon" this="{icon}" />
+      <svelte:component this="{icon}" id="chrome-nav-a-{label}-div-icon" />
     {/if}
     {#if label}
       <span id="chrome-nav-a-{label}-div-label">{label}</span>
