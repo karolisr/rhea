@@ -9,8 +9,8 @@ import iconSearch from '~icons/fa6-solid/magnifying-glass'
 import iconTables from '~icons/fa6-solid/table-cells'
 </script>
 
-<TabNav uid="nav-debug">
-  <TabSpacer uid="nav-debug-spacer-l" minW="{10}" />
+<TabNav uid="chrome-nav-debug" navClass="nav-debug">
+  <TabSpacer uid="chrome-nav-debug-spacer-l" minW="{10}" />
   <Tab link="/debug/" icon="{iconHome}" />
   <Tab link="/debug/testing/coll/" icon="{iconColl}" label="Collections" />
   <Tab link="/debug/testing/tables/" icon="{iconTables}" label="Tables" />

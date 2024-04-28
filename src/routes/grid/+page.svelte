@@ -1,5 +1,5 @@
 <script lang="ts">
-import ResizableGrid from '$lib/ui/views/ResizableGrid/ResizableGrid.svelte'
+import ResizableGrid from '$lib/ui/views/ResizableGrid'
 </script>
 
 <ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[400, -1]}">

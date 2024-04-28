@@ -54,7 +54,7 @@
 // .nav-main.tab-nav > a[aria-current='true'] > div > span {
 // }
 
-:root[nav-main-left-spacer-nav-collapsed='true'] {
+:root[chrome-nav-main-left-spacer-nav-collapsed='true'] {
   .nav-main.tab-nav > a > div > span {
     font-size: 0;
     margin-left: 0;

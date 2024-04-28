@@ -10,8 +10,8 @@ import iconSettings from '~icons/fa6-solid/gear'
 import iconDebug from '~icons/fa6-solid/bug'
 </script>
 
-<TabNav uid="nav-main">
-  <TabSpacer uid="nav-main-left-spacer" minW="{68}" collapsable />
+<TabNav uid="chrome-nav-main" navClass="nav-main">
+  <TabSpacer uid="chrome-nav-main-left-spacer" minW="{68}" collapsable />
   <Tab link="/" icon="{iconHome}" label="Home" />
   <Tab link="/grid/" icon="{iconCollections}" label="Grid" />
   <Tab link="/collections/" icon="{iconCollections}" label="Collections" />

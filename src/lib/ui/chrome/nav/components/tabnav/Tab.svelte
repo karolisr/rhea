@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/stores'
-import type { ComponentType } from 'svelte'
+import { onMount, type ComponentType } from 'svelte'
 
 export let link: string
 export let current: 'equals' | 'startsWith' = 'equals'
@@ -19,20 +19,28 @@ $: {
     curr = path.startsWith(link)
   }
 }
+
+onMount(() => {
+  const elSvg = document.getElementById(`chrome-nav-a-${label}-div-icon`)
+  const elSvgPath = elSvg?.getElementsByTagName('path')
+  if (elSvgPath && elSvgPath.length > 0) {
+    elSvgPath[0].id = `chrome-nav-a-${label}-div-icon-path`
+  }
+})
 </script>
 
 <a
-  id="{link}"
+  id="chrome-nav-a-{label}"
   href="{link}"
   aria-current="{curr}"
   draggable="false"
   tabindex="-1">
-  <div>
+  <div id="chrome-nav-a-{label}-div">
     {#if icon !== null}
-      <svelte:component this="{icon}" />
+      <svelte:component id="chrome-nav-a-{label}-div-icon" this="{icon}" />
     {/if}
     {#if label}
-      <span>{label}</span>
+      <span id="chrome-nav-a-{label}-div-label">{label}</span>
     {/if}
   </div>
 </a>
