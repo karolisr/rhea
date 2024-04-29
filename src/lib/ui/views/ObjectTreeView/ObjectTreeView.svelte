@@ -53,15 +53,15 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 {/if}
 {#if obj instanceof Array}
   {#if objectIsPrimitiveArray}
-    <!-- <span class="node-name">{name}</span>:&nbsp;<span class="node-value"
-      >{obj.toString().replaceAll(',', ', ')}</span> -->
+    <span class="node-name">{name}</span>:&nbsp;<span class="node-value"
+      >{obj.toString().replaceAll(',', ', ')}</span>
   {:else if expanded}
     {#each obj as item, i}
       <ul class:no-indent="{hideName}">
-        <!-- <li> -->
-        <!-- <svelte:self name="{`${name}: ${i + 1}`}" obj="{item}" /> -->
-        <svelte:self hideName obj="{item}" />
-        <!-- </li> -->
+        <li>
+          <svelte:self name="{`${name}: ${i + 1}`}" obj="{item}" />
+          <svelte:self hideName obj="{item}" />
+        </li>
       </ul>
     {/each}
   {/if}
@@ -70,21 +70,21 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 {/if}
 
 {#if expanded && !(obj instanceof Array)}
-  <!-- <ul class:show-border="{!hideName}" class:no-indent="{hideName}"> -->
-  {#each nodeNames as leafName, i}
-    {#if obj[leafName] instanceof Object}
-      <li>
-        <!-- ToDo: fix type errors and then remove @ts-nocheck -->
-        {#if getPropNames(obj[leafName]).length === 1 && obj[leafName] instanceof Object && obj[leafName][getPropNames(obj[leafName])[0]] instanceof Array}
-          <svelte:self
-            name="{`${leafName} (${obj[leafName][getPropNames(obj[leafName])[0]].length})`}"
-            obj="{obj[leafName]}" />
-        {:else}
-          <svelte:self name="{leafName}" obj="{obj[leafName]}" {expanded} />
-        {/if}
-      </li>
-    {:else}
-      <!-- <li>
+  <ul class:show-border="{!hideName}" class:no-indent="{hideName}">
+    {#each nodeNames as leafName, i}
+      {#if obj[leafName] instanceof Object}
+        <li>
+          <!-- ToDo: fix type errors and then remove @ts-nocheck -->
+          {#if getPropNames(obj[leafName]).length === 1 && obj[leafName] instanceof Object && obj[leafName][getPropNames(obj[leafName])[0]] instanceof Array}
+            <svelte:self
+              name="{`${leafName} (${obj[leafName][getPropNames(obj[leafName])[0]].length})`}"
+              obj="{obj[leafName]}" />
+          {:else}
+            <svelte:self name="{leafName}" obj="{obj[leafName]}" {expanded} />
+          {/if}
+        </li>
+      {:else}
+        <li>
           <span class="node-name">{leafName}</span>:&nbsp;<span
             class="node-value">
             {#if obj[leafName]}
@@ -93,10 +93,10 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
               {obj[leafName]}
             {/if}
           </span>
-        </li> -->
-    {/if}
-  {/each}
-  <!-- </ul> -->
+        </li>
+      {/if}
+    {/each}
+  </ul>
 {/if}
 
 <style lang="scss">

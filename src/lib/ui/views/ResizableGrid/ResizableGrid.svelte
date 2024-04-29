@@ -51,13 +51,11 @@ let colWsStr: string
 .grid-container {
   display: grid;
   height: 100%;
-  overflow: hidden;
 }
 
 .grid-items {
   display: grid;
   grid-template-rows: subgrid;
   grid-template-columns: subgrid;
-  overflow: hidden;
 }
 </style>
