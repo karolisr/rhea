@@ -1,13 +1,12 @@
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte'
-import { slide, fly, draw, fade, scale, blur } from 'svelte/transition'
+import { fade } from 'svelte/transition'
+import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
 
-// export let visible: boolean = false
-export let x: number = 0
-export let y: number = 0
+export let x: number
+export let y: number
 export let hide: () => void
-
-let el: HTMLElement
+export let items: ContextMenuItem[]
 
 onMount(() => {
   addEventListener('mousedown', mousedownEvtListener, { capture: true })
@@ -18,45 +17,43 @@ onDestroy(() => {
 })
 
 const mousedownEvtListener = (e: MouseEvent) => {
+  e.preventDefault()
+  const target = e.target
+  const targetId = target instanceof HTMLElement ? target.id : ''
+  if (targetId.startsWith('context-menu-item')) {
+    const itemId = Number((targetId.match(/\-(\d+)/) as string[])[1])
+    if (!items[itemId].disabled) {
+      const action = items[itemId].action
+      if (action !== undefined) action()
+    }
+  }
   hide()
 }
 </script>
 
-<!-- {#key visible} -->
 <div
   id="context-menu"
   class="context-menu"
   role="menu"
-  bind:this="{el}"
   in:fade="{{ duration: 150 }}"
   out:fade="{{ duration: 150 }}"
   style:left="{x}px"
   style:top="{y}px">
-  <div id="context-menu-item-0" class="context-menu-item">
-    <div class="context-menu-item-label">Rename</div>
-    <div class="context-menu-item-right">F2</div>
-  </div>
-  <div id="context-menu-item-1" class="context-menu-item">
-    <div class="context-menu-item-label">2</div>
-    <div class="context-menu-item-right">2</div>
-  </div>
-  <div id="context-menu-item-separator-0" class="context-menu-item-separator">
-  </div>
-  <div id="context-menu-item-2" class="context-menu-item">
-    <div class="context-menu-item-label">3</div>
-    <div class="context-menu-item-right">3</div>
-  </div>
-  <div id="context-menu-item-3" class="context-menu-item">
-    <div class="context-menu-item-label">4</div>
-    <div class="context-menu-item-right">4</div>
-  </div>
-  <div id="context-menu-item-4" class="context-menu-item">
-    <div class="context-menu-item-label">5</div>
-    <div class="context-menu-item-right">5</div>
-  </div>
+  {#each items as item, i}
+    {#if item.label !== undefined}
+      <div
+        id="context-menu-item-{i}"
+        class="context-menu-item{item.disabled ? ' disabled' : ''}"
+        role="menuitem">
+        <div class="context-menu-item-label">{item.label}</div>
+        <div class="context-menu-item-right">{item.hotKey}</div>
+      </div>
+    {:else}
+      <div id="context-menu-item-separator" class="context-menu-item-separator">
+      </div>
+    {/if}
+  {/each}
 </div>
-
-<!-- {/key} -->
 
 <style lang="scss">
 .context-menu {
@@ -82,6 +79,11 @@ const mousedownEvtListener = (e: MouseEvent) => {
   padding-block: 4px;
   border-radius: 3px;
   align-items: center;
+}
+
+.context-menu-item.disabled {
+  pointer-events: none;
+  color: grey;
 }
 
 .context-menu-item-label {
