@@ -7,8 +7,8 @@ declare type ValuesOf<T> = T extends { [K in keyof T]: infer U } ? U : never
 declare type KnownKeys<T> = ValuesOf<KeyToKeyNoIndex<T>>
 
 export class RecordList<T> {
-  private _sortFields: KnownKeys<T>[]
-  private _fieldsToShow: KnownKeys<T>[] | undefined
+  private _sortFields: KnownKeys<T>[] | string[]
+  private _fieldsToShow: KnownKeys<T>[] | string[]
   private _sortDirections: (1 | -1)[]
   private _keyField: keyof T
   private _allItems: T[]
@@ -21,6 +21,7 @@ export class RecordList<T> {
     this._filterField = this.keyField
     this._sortFields = []
     this._sortDirections = []
+    this._fieldsToShow = []
   }
 
   get items() {
@@ -48,7 +49,7 @@ export class RecordList<T> {
     return this._keyField
   }
 
-  get fields(): KnownKeys<T>[] {
+  get fields(): KnownKeys<T>[] | string[] {
     if (this.length > 0) {
       return getPropNames(this.items.at(0)) as KnownKeys<T>[]
     } else {
@@ -56,15 +57,16 @@ export class RecordList<T> {
     }
   }
 
-  set fieldsToShow(fields: KnownKeys<T>[]) {
+  set fieldsToShow(fields: KnownKeys<T>[] | string[]) {
     this._fieldsToShow = fields
   }
 
-  get fieldsToShow() {
-    if (this._fieldsToShow !== undefined) {
-      return this._fieldsToShow
+  get fieldsToShow(): KnownKeys<T>[] | string[] {
+    if (this._fieldsToShow.length > 0) {
+      return this._fieldsToShow as KnownKeys<T>[]
     } else {
-      return this.fields
+      // return this.fields as KnownKeys<T>[]
+      return [this.keyField] as KnownKeys<T>[]
     }
   }
 
@@ -87,13 +89,13 @@ export class RecordList<T> {
       | 'undefined'
       | 'function'
     )[]
-  ) {
+  ): KnownKeys<T>[] | string[] {
     const rv: KnownKeys<T>[] = []
     if (this.length > 0) {
       const _ = this._allItems.at(0) as T
       for (const f of this.fields) {
         if (types.includes(typeof _[f as keyof T])) {
-          rv.push(f)
+          rv.push(f as KnownKeys<T>)
         }
       }
     }

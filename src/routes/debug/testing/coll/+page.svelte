@@ -39,16 +39,6 @@ $: {
 onMount(async () => {
   _db_main = await db_main
   deleteCollection = $_db_main.deleteCollection
-  // await $_db_main.createCollection('ROOT', 'col01label')
-  // await $_db_main.createCollection('ROOT', 'col02label')
-  // await $_db_main.createCollection(
-  //   '864527d3-20ef-402e-890a-a3054c2b18b3',
-  //   'col03label'
-  // )
-  // await $_db_main.createCollection(
-  //   'cea9a89a-80a6-4911-a97c-3643d9c6b8bb',
-  //   'col05label'
-  // )
 })
 
 onDestroy(() => {})

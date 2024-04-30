@@ -35,14 +35,14 @@ const resizeEvtListener = (_: UIEvent) => {
   visH = elh.clientHeight
 }
 
-export let rl: RecordList<IndexedUndefined | Collection>
+export let rl: RecordList<IndexedUndefined>
 export let showHeaderRow: boolean = false
 export let showFooterRow: boolean = false
 
 export let multiRowSelect: boolean = false
 export let showCheckBoxes: boolean = false
 
-export let onDeleteRow: (id: string | number | undefined) => unknown = (id) => {
+export let onDeleteRow: (id: unknown) => unknown = (id) => {
   console.log('onDeleteRow placeholder function:', uid, id)
 }
 

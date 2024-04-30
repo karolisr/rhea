@@ -55,8 +55,8 @@ export interface Collection extends IndexedUndefined {
   notes: string
 }
 
-export interface CollectionMapping {
+export interface CollectionMapping extends IndexedUndefined {
   colId: string
   recId: string
-  mapKey?: number
+  mapKey: number
 }

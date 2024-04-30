@@ -19,7 +19,7 @@ export async function db_main_delete() {
   })
 }
 
-export async function db_main_init(version: number = 8) {
+export async function db_main_init(version: number = 9) {
   const db_main = await openDB<DBMain>(db_main_name, version, {
     upgrade(database, oldVersion, newVersion, transaction, event) {
       console.log(
@@ -73,20 +73,24 @@ export async function db_main_init(version: number = 8) {
             parentId: 'NONE',
             notes: ''
           })
-          const os_coll_gbseq_map = database.createObjectStore(
-            'coll_gbseq_map',
-            {
-              keyPath: 'mapKey',
-              autoIncrement: true
-            }
-          )
-          os_coll_gbseq_map.createIndex('colId', 'colId')
         }
 
         if (oldVersion < 8) {
           transaction
             .objectStore('collection')
             .createIndex('parentId', 'parentId')
+        }
+
+        if (oldVersion < 9) {
+          // transaction.db.deleteObjectStore('coll_gbseq_map')
+          // const os_coll_gbseq_map = database.createObjectStore(
+          //   'coll_gbseq_map',
+          //   {
+          //     keyPath: 'mapKey',
+          //     autoIncrement: true
+          //   }
+          // )
+          // os_coll_gbseq_map.createIndex('colId', 'colId')
         }
       }
     },

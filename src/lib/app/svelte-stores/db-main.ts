@@ -25,7 +25,7 @@ import { v4 as uuid } from 'uuid'
 let db: IDBPDatabase<DBMain>
 
 export interface DBMainSvelteStore {
-  delete: typeof db_main_delete
+  deleteDb: typeof db_main_delete
   get: typeof db_main_get
   get_all: typeof db_main_get_all
   put: typeof db_main_put
@@ -34,6 +34,7 @@ export interface DBMainSvelteStore {
   deleteCollection: typeof deleteCollection
   relabelCollection: typeof relabelCollection
   get_all_from_index: typeof db_main_get_all_from_index
+  keys: { [storeName: string]: keyof StoreValue<DBMain, StoreNames<DBMain>> }
   seq_nt_summ: ESummaryNuccore[]
   taxon: Taxon[]
   gbseq: GBSeq[]
@@ -45,7 +46,7 @@ export interface DBMainSvelteStore {
 async function prep_db_main() {
   db = await db_main_init()
   const _db_main_svelte_store: DBMainSvelteStore = {
-    delete: async () => {
+    deleteDb: async () => {
       db.close()
       await db_main_delete()
       db = await db_main_init()
@@ -66,6 +67,12 @@ async function prep_db_main() {
     deleteCollection: deleteCollection,
     relabelCollection: relabelCollection,
     get_all_from_index: db_main_get_all_from_index,
+    keys: {
+      seq_nt_summ: 'accessionversion',
+      taxon: 'TaxId',
+      gbseq: 'GBSeq_accession_version',
+      collection: 'id'
+    },
     gbseq: (await db_main_get_all('gbseq')) ?? [],
     seq_nt_summ: (await db_main_get_all('seq_nt_summ')) ?? [],
     taxon: (await db_main_get_all('taxon')) ?? [],
