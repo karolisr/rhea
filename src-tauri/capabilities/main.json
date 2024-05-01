@@ -1,0 +1,30 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Capability for the main window",
+  "local": true,
+  "windows": ["main"],
+  "permissions": [
+    "app:default",
+    "event:default",
+    "menu:default",
+    "os:allow-locale",
+    "path:default",
+    "resources:default",
+    "tray:default",
+    "window:allow-start-dragging",
+    "window:default",
+
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://*.nih.gov/*" }],
+      "deny": []
+    },
+
+    {
+      "identifier": "fs:default",
+      "allow": [],
+      "deny": []
+    }
+  ]
+}

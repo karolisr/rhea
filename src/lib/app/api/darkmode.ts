@@ -1,5 +1,5 @@
 import { listen, TauriEvent } from '@tauri-apps/api/event'
-import { getCurrent } from '@tauri-apps/api/window'
+import { getCurrent } from '@tauri-apps/api/webviewWindow'
 import settings from '$lib/app/svelte-stores/settings'
 
 export enum ThemeDarkLight {

@@ -1,5 +1,5 @@
-import { appWindow } from '@tauri-apps/api/window'
-import { readTextFile, readBinaryFile } from '@tauri-apps/api/fs'
+import { getCurrent } from '@tauri-apps/api/webviewWindow'
+import { readTextFile, readFile } from '@tauri-apps/plugin-fs'
 import { parse_dtd_txt } from '$lib/xml/dtd'
 import { parse_xml_txt } from '$lib/xml'
 
@@ -7,7 +7,7 @@ import fileTypeChecker from 'file-type-checker'
 import type { FileSignature } from 'file-type-checker/dist/core'
 
 export async function get_file_type(path: string) {
-  const fbin = await readBinaryFile(path).catch((error) => {
+  const fbin = await readFile(path).catch((error) => {
     console.warn(error)
   })
 
@@ -81,10 +81,10 @@ export async function get_file_parser(path: string) {
 }
 
 export async function fileDropListener(): Promise<() => void> {
-  const retFun = await appWindow.onFileDropEvent((event) => {
-    if (event.payload.type === 'hover') {
-      console.info('Hovering:', event.payload.paths)
-    } else if (event.payload.type === 'drop') {
+  const retFun = await getCurrent().onDragDropEvent((event) => {
+    if (event.payload.type === 'dragOver') {
+      console.info('Hovering:', event.payload.position)
+    } else if (event.payload.type === 'dropped') {
       console.info('Dropped:', event.payload.paths)
       event.payload.paths.forEach(async (p) => {
         const parser = await get_file_parser(p)

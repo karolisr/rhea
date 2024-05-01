@@ -3,158 +3,47 @@
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:5173",
-    "distDir": "../build"
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:5173"
   },
-  "package": {
-    "productName": "CDSDB",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "app": {
-        "all": false,
-        "hide": false,
-        "show": false
-      },
-      "clipboard": {
-        "all": true,
-        "readText": false,
-        "writeText": false
-      },
-      "dialog": {
-        "all": false,
-        "ask": false,
-        "confirm": false,
-        "message": false,
-        "open": false,
-        "save": false
-      },
-      "fs": {
-        "all": true,
-        "copyFile": false,
-        "createDir": false,
-        "exists": false,
-        "readDir": false,
-        "readFile": false,
-        "removeDir": false,
-        "removeFile": false,
-        "renameFile": false,
-        "scope": [],
-        "writeFile": false
-      },
-      "globalShortcut": {
-        "all": false
-      },
-      "http": {
-        "all": true,
-        "request": false,
-        "scope": ["https://*.nih.gov/*"]
-      },
-      "notification": {
-        "all": false
-      },
-      "os": {
-        "all": true
-      },
-      "path": {
-        "all": false
-      },
-      "process": {
-        "all": false,
-        "exit": false,
-        "relaunch": false,
-        "relaunchDangerousAllowSymlinkMacos": false
-      },
-      "protocol": {
-        "all": false,
-        "asset": false,
-        "assetScope": []
-      },
-      "shell": {
-        "all": false,
-        "execute": false,
-        "open": false,
-        "scope": [],
-        "sidecar": false
-      },
-      "window": {
-        "all": true,
-        "center": false,
-        "close": false,
-        "create": false,
-        "hide": false,
-        "maximize": false,
-        "minimize": false,
-        "print": false,
-        "requestUserAttention": false,
-        "setAlwaysOnTop": false,
-        "setClosable": false,
-        "setContentProtected": false,
-        "setCursorGrab": false,
-        "setCursorIcon": false,
-        "setCursorPosition": false,
-        "setCursorVisible": false,
-        "setDecorations": false,
-        "setFocus": false,
-        "setFullscreen": false,
-        "setIcon": false,
-        "setIgnoreCursorEvents": false,
-        "setMaxSize": false,
-        "setMaximizable": false,
-        "setMinSize": false,
-        "setMinimizable": false,
-        "setPosition": false,
-        "setResizable": false,
-        "setSize": false,
-        "setSkipTaskbar": false,
-        "setTitle": false,
-        "show": false,
-        "startDragging": false,
-        "unmaximize": false,
-        "unminimize": false
-      }
+  "bundle": {
+    "active": true,
+    "category": "Productivity",
+    "copyright": "© 2024 Karolis Ramanauskas",
+    "targets": "app",
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
     },
-    "bundle": {
-      "active": true,
-      "category": "Productivity",
-      "copyright": "© 2024 Karolis Ramanauskas",
+    "longDescription": "Phylogenetic conflict, locus-by-locus.",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "Phylogenetic conflict, locus-by-locus.",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "is.karol.cdsdb",
-      "longDescription": "Phylogenetic conflict, locus-by-locus.",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "Phylogenetic conflict, locus-by-locus.",
-      "targets": "app",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
-    },
+    }
+  },
+  "productName": "CDSDB",
+  "version": "0.1.0",
+  "identifier": "is.karol.cdsdb",
+  "app": {
     "windows": [
       {
         "label": "main",
@@ -168,10 +57,13 @@
         "fullscreen": false,
         "titleBarStyle": "Overlay",
         "acceptFirstMouse": true,
-        "fileDropEnabled": true,
+        "dragDropEnabled": true,
         "hiddenTitle": true,
         "alwaysOnTop": false
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }
