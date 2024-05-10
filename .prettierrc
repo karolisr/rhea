@@ -10,7 +10,23 @@
       }
     }
   ],
-  "plugins": ["prettier-plugin-svelte"],
+  "plugins": [
+    "prettier-plugin-svelte",
+    "prettier-plugin-embed",
+    "prettier-plugin-sql"
+  ],
+  "embeddedLanguageFormatting": "auto",
+
+  "denseOperators": false,
+  "newlineBeforeSemicolon": false,
+  "keywordCase": "upper",
+  "dataTypeCase": "lower",
+  "functionCase": "upper",
+  "identifierCase": "lower",
+  "language": "sqlite",
+  "expressionWidth": 30,
+  "linesBetweenQueries": 0,
+
   "printWidth": 80,
   "quoteProps": "consistent",
   "semi": false,

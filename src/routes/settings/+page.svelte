@@ -3,7 +3,7 @@ import { onMount, onDestroy } from 'svelte'
 import Radio from '$lib/ui/components/Radio.svelte'
 import settings from '$lib/app/svelte-stores/settings'
 import { saveSettings } from '$lib/app/svelte-stores/settings'
-import { getCurentTheme, ThemeDarkLight } from '$lib/app/api/darkmode'
+import { getCurentTheme } from '$lib/app/api/darkmode'
 
 let currentOsThemeSetting: string
 

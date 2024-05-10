@@ -2,24 +2,33 @@
 import { onMount, onDestroy } from 'svelte'
 import { themeChangeListener } from '$lib/app/api/darkmode'
 import settings from '$lib/app/svelte-stores/settings'
-import { setScale } from '$lib/app/api/scale'
+import { setScale } from '$lib/app/api'
 import { disableDefault } from '$lib/ui'
 import Layout from '$lib/ui/chrome/layout/Layout.svelte'
 import NavMain from './nav.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
+import { dragDropFileListener } from '$lib/app/api/drag-drop-file'
+import type { Unlistener } from '$lib/types'
+import { initDBTaxonomy } from '$lib/app/api/db'
+import { initDBSequences } from '$lib/app/api/db'
 
-let themeChangeUnListener: () => void
+let themeChangeUnListener: Unlistener
+let fileDropUnListener: Unlistener
 
 $: setScale($settings.scale)
 
 onMount(async () => {
   themeChangeUnListener = await themeChangeListener()
+  fileDropUnListener = await dragDropFileListener()
   disableDefault('contextmenu')
+  initDBTaxonomy()
+  initDBSequences()
 })
 
 onDestroy(() => {
   themeChangeUnListener()
+  fileDropUnListener()
 })
 </script>
 

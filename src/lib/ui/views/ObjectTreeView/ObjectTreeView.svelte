@@ -1,7 +1,6 @@
 <script lang="ts">
-// @ts-nocheck
 import type { IndexedUndefined } from '$lib/types'
-import { cbw } from '$lib/app/api/clipboard'
+import { clipboardWrite } from '$lib/app/api/clipboard'
 import { getPropNames } from '$lib'
 
 export let name: string | undefined = undefined
@@ -24,7 +23,7 @@ const _oncontextmenu: typeof oncontextmenu = (event) => {
   } else {
     _ = obj
   }
-  cbw(JSON.stringify(_))
+  clipboardWrite(JSON.stringify(_))
   console.log(`Copied JSON representation of "${key}" to clipboard.`)
 }
 

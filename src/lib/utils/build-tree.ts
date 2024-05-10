@@ -1,4 +1,4 @@
-import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
+import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
 import type { Tree } from '$lib/types'
 
 export async function buildTree(

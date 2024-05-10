@@ -1,9 +1,9 @@
 <script lang="ts">
 import type { Readable } from 'svelte/store'
-import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
+import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import TreeView from '$lib/ui/views/TreeView'
-import db_main from '$lib/app/svelte-stores/db-main'
+import db_main from '$lib/app/svelte-stores/db/db-main'
 import { onMount } from 'svelte'
 
 let _db_main: Readable<DBMainSvelteStore>

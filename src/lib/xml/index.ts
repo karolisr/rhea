@@ -9,11 +9,11 @@ function _parse_xml(
   parent_element_name?: string,
   create_parent_object_for_arrays: boolean = false
 ) {
-  const pen = parent_element_name?.replaceAll('-', '_')
+  const pen = parent_element_name?.replaceAll('-', '_').replaceAll('INSD', 'GB')
   for (let i = 0; i < ele.children.length; i++) {
     const doc_element = ele.children[i]
     const doc_element_name = doc_element.tagName
-    const den = doc_element_name.replaceAll('-', '_')
+    const den = doc_element_name.replaceAll('-', '_').replaceAll('INSD', 'GB')
 
     let obj_local = {} as { [key: string]: unknown }
     obj_local[den] = {}
@@ -43,7 +43,11 @@ function _parse_xml(
           if (c.required === 'ARRAY') {
             if (create_parent_object_for_arrays) {
               obj_local[den] = {}
-              obj_local[den][child_element_spec_name.replaceAll('-', '_')] = []
+              obj_local[den][
+                child_element_spec_name
+                  .replaceAll('-', '_')
+                  .replaceAll('INSD', 'GB')
+              ] = []
             } else {
               obj_local[den] = []
             }
@@ -128,7 +132,9 @@ export async function parse_xml_txt(
     create_parent_object_for_arrays
   ) as Indexed
 
-  const root_element_name = doc_element_name.replaceAll('-', '_')
+  const root_element_name = doc_element_name
+    .replaceAll('-', '_')
+    .replaceAll('INSD', 'GB')
 
   if (!(root_element_name in ret_val)) {
     let _ = {} as { [key: string]: unknown }

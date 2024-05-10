@@ -3,7 +3,7 @@ import { RetMode, RetTypeEFetch, NCBIDatabase } from '.'
 import { esearch, efetch } from './eutils'
 import type { GBSet, GBSeq } from './types/GBSet'
 
-export async function getTaxIDs(term: string): Promise<number[]> {
+export async function getTaxIds(term: string): Promise<number[]> {
   if (term.trim() !== '') {
     const response = await esearch(NCBIDatabase.taxonomy, term, false)
     const data = response.data as { esearchresult: { idlist: string[] } }
@@ -59,4 +59,27 @@ export async function getSeqRecords(
     })
   }
   return rv
+}
+
+export function getTaxId(gbseq: GBSeq): number | undefined {
+  let taxid: number | undefined
+  const ft = gbseq.GBSeq_feature_table
+  if (ft && ft.length > 0) {
+    if (ft[0].GBFeature_key === 'source') {
+      const qualifiers = ft[0].GBFeature_quals
+      if (qualifiers) {
+        qualifiers.forEach((q) => {
+          if (q.GBQualifier_name === 'db_xref') {
+            if (
+              q.GBQualifier_value &&
+              q.GBQualifier_value.startsWith('taxon')
+            ) {
+              taxid = Number(q.GBQualifier_value.split('taxon:')[1])
+            }
+          }
+        })
+      }
+    }
+  }
+  return taxid
 }

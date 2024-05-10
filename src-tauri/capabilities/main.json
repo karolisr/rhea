@@ -11,13 +11,20 @@
     "os:allow-locale",
     "path:default",
     "resources:default",
+    "sql:allow-close",
+    "sql:allow-execute",
+    "sql:allow-load",
+    "sql:allow-select",
     "tray:default",
     "window:allow-start-dragging",
     "window:default",
 
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://*.nih.gov/*" }],
+      "allow": [
+        { "url": "https://*.nih.gov/*" },
+        { "url": "https://*.wikimedia.org/*" }
+      ],
       "deny": []
     },
 

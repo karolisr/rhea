@@ -1,13 +1,14 @@
 import { listen, TauriEvent } from '@tauri-apps/api/event'
 import { getCurrent } from '@tauri-apps/api/webviewWindow'
 import settings from '$lib/app/svelte-stores/settings'
+import type { Unlistener } from '$lib/types'
 
 export enum ThemeDarkLight {
   light = 'light',
   dark = 'dark'
 }
 
-export async function getCurentTheme() {
+export async function getCurentTheme(): Promise<ThemeDarkLight> {
   const _theme = (await getCurrent().theme()) || 'light'
   if (_theme === ThemeDarkLight.dark) {
     return ThemeDarkLight.dark
@@ -16,7 +17,7 @@ export async function getCurentTheme() {
   }
 }
 
-export async function setTheme() {
+export async function setTheme(): Promise<void> {
   const _tdl = await getCurentTheme()
   let userSetting: string = 'os'
   settings.subscribe((stng) => {
@@ -29,7 +30,7 @@ export async function setTheme() {
   }
 }
 
-export async function themeChangeListener() {
+export async function themeChangeListener(): Promise<Unlistener> {
   const unlisten_fn = await listen<string>(
     TauriEvent.WINDOW_THEME_CHANGED,
     (_) => setTheme()

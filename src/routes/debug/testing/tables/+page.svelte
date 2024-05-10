@@ -7,8 +7,8 @@ import { type GBSeq } from '$lib/ncbi/types/GBSet'
 import { type ESummaryNuccore } from '$lib/ncbi'
 import { type Taxon } from '$lib/ncbi/types/TaxaSet'
 import { type Readable } from 'svelte/store'
-import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
-import db_main from '$lib/app/svelte-stores/db-main'
+import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
+import db_main from '$lib/app/svelte-stores/db/db-main'
 
 let _db_main: Readable<DBMainSvelteStore>
 

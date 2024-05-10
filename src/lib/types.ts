@@ -1,5 +1,5 @@
 export interface Indexed {
-  [index: string]: string | number | object | boolean
+  [index: string]: string | number | object | boolean | null
 }
 
 export interface IndexedUndefined {
@@ -13,3 +13,9 @@ export interface Tree {
   parentId: string
   notes: string
 }
+
+export type Prefixed<Type, Prefix extends string> = {
+  [Property in keyof Type as `${Prefix}${string & Property}`]: () => Type[Property]
+}
+
+export type Unlistener = () => void

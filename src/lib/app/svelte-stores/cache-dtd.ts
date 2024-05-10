@@ -1,5 +1,5 @@
 import { writable, derived, type Writable } from 'svelte/store'
-import { dnld_txt } from '../api/download'
+import { downloadText } from '../api/download'
 
 interface _CACHE_DTD {
   [url: string]: string
@@ -93,7 +93,7 @@ export async function dnld_dtd_txt(
 
   for (const _url of urls) {
     const url = _url.toString()
-    dtd_txt = await dnld_txt(url)
+    dtd_txt = await downloadText(url)
     if (dtd_txt) {
       cache_add_dtd_txt(dtd_txt.url, dtd_txt.data)
       console.info(`DTD added to cache: ${dtd_txt.url}`)

@@ -1,8 +1,8 @@
 import { writeText, readText } from '@tauri-apps/plugin-clipboard-manager'
 
-export const cbr = async () => {
+export const clipboardRead = async () => {
   return await readText()
 }
-export const cbw = async (txt: string) => {
+export const clipboardWrite = async (txt: string) => {
   return await writeText(txt)
 }

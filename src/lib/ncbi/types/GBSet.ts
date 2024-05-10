@@ -4,9 +4,19 @@ export type GBSet = GBSeq[]
 
 export interface GBSeq extends IndexedUndefined {
   GBSeq_accession_version: string
+  GBSeq_length: number
+  GBSeq_moltype: string
   GBSeq_alt_seq?: GBAltSeqData[]
-  GBSeq_comment?: string
   GBSeq_comment_set?: GBComment[]
+  GBSeq_feature_set?: GBFeatureSet[]
+  GBSeq_feature_table?: GBFeature[]
+  GBSeq_keywords?: GBKeyword[]
+  GBSeq_other_seqids?: GBSeqid[]
+  GBSeq_references?: GBReference[]
+  GBSeq_secondary_accessions?: GBSecondary_accn[]
+  GBSeq_struc_comments?: GBStrucComment[]
+  GBSeq_xrefs?: GBXref[]
+  GBSeq_comment?: string
   GBSeq_contig?: string
   GBSeq_create_date?: string
   GBSeq_create_release?: string
@@ -14,44 +24,34 @@ export interface GBSeq extends IndexedUndefined {
   GBSeq_definition?: string
   GBSeq_division?: string
   GBSeq_entry_version?: string
-  GBSeq_feature_set?: GBFeatureSet[]
-  GBSeq_feature_table?: GBFeature[]
-  GBSeq_keywords?: GBKeyword[]
-  GBSeq_length: number
   GBSeq_locus?: string
-  GBSeq_moltype: string
   GBSeq_organism?: string
-  GBSeq_other_seqids?: GBSeqid[]
   GBSeq_primary?: string
   GBSeq_primary_accession?: string
   GBSeq_project?: string
-  GBSeq_references?: GBReference[]
-  GBSeq_secondary_accessions?: GBSecondary_accn[]
   GBSeq_segment?: string
   GBSeq_sequence?: string
   GBSeq_source?: string
   GBSeq_source_db?: string
   GBSeq_strandedness?: string
-  GBSeq_struc_comments?: GBStrucComment[]
   GBSeq_taxonomy?: string
   GBSeq_topology?: string
   GBSeq_update_date?: string
   GBSeq_update_release?: string
-  GBSeq_xrefs?: GBXref[]
 }
 
 export interface GBAltSeqData {
-  GBAltSeqData_items?: GBAltSeqItem[]
   GBAltSeqData_name: string
+  GBAltSeqData_items?: GBAltSeqItem[]
 }
 
 export interface GBAltSeqItem {
+  GBAltSeqItem_interval?: GBInterval
   GBAltSeqItem_first_accn?: string
   GBAltSeqItem_gap_comment?: string
   GBAltSeqItem_gap_length?: number
   GBAltSeqItem_gap_linkage?: string
   GBAltSeqItem_gap_type?: string
-  GBAltSeqItem_interval?: GBInterval
   GBAltSeqItem_isgap?: boolean
   GBAltSeqItem_last_accn?: string
   GBAltSeqItem_value?: string
@@ -71,19 +71,19 @@ export interface GBCommentParagraph {
 }
 
 export interface GBFeature {
-  GBFeature_intervals?: GBInterval[]
   GBFeature_key: string
   GBFeature_location: string
+  GBFeature_intervals?: GBInterval[]
+  GBFeature_quals?: GBQualifier[]
+  GBFeature_xrefs?: GBXref[]
   GBFeature_operator?: string
   GBFeature_partial3?: boolean
   GBFeature_partial5?: boolean
-  GBFeature_quals?: GBQualifier[]
-  GBFeature_xrefs?: GBXref[]
 }
 
 export interface GBFeatureSet {
-  GBFeatureSet_annot_source?: string
   GBFeatureSet_features: GBFeature[]
+  GBFeatureSet_annot_source?: string
 }
 
 export interface GBInterval {
@@ -105,15 +105,15 @@ export interface GBQualifier {
 }
 
 export interface GBReference {
-  GBReference_authors?: GBAuthor[]
-  GBReference_consortium?: string
   GBReference_journal: string
+  GBReference_reference: string
+  GBReference_authors?: GBAuthor[]
+  GBReference_xref?: GBXref[]
+  GBReference_consortium?: string
   GBReference_position?: string
   GBReference_pubmed?: number
-  GBReference_reference: string
   GBReference_remark?: string
   GBReference_title?: string
-  GBReference_xref?: GBXref[]
 }
 
 export interface GBSecondary_accn {

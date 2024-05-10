@@ -4,9 +4,13 @@ import { parse_dtd_txt } from '$lib/xml/dtd'
 import { parse_xml_txt } from '$lib/xml'
 
 import fileTypeChecker from 'file-type-checker'
+import { getPropNames } from '$lib'
 import type { FileSignature } from 'file-type-checker/dist/core'
+import type { Unlistener } from '$lib/types'
 
-export async function get_file_type(path: string) {
+// import { insertGbSeqRecords } from './db/gbseq'
+
+export async function getFileType(path: string) {
   const fbin = await readFile(path).catch((error) => {
     console.warn(error)
   })
@@ -51,48 +55,81 @@ export async function get_file_type(path: string) {
   return info
 }
 
-export async function get_file_parser(path: string) {
-  const other_parser = () => {
+export async function getFileParser(path: string) {
+  const otherParser = () => {
     return async (path: string) => {
       console.info(`Default parser. Doing nothing with: ${path}`)
     }
   }
 
-  const txt_parser = async (f: (txt: string) => unknown) => {
+  const txtParser = async (f: (txt: string) => unknown) => {
     return async (path: string) => {
       const txt = await readTextFile(path)
       return f(txt)
     }
   }
 
-  const info = await get_file_type(path)
+  const info = await getFileType(path)
 
   if (info) {
     switch (info.mimeType) {
       case 'text/dtd':
-        return txt_parser(parse_dtd_txt)
+        return txtParser(parse_dtd_txt)
       case 'text/xml':
-        return txt_parser(parse_xml_txt)
+        return txtParser(parse_xml_txt)
       default:
         break
     }
   }
-  return other_parser()
+  return otherParser()
 }
 
-export async function fileDropListener(): Promise<() => void> {
+export function getContentsType(obj: object) {
+  let rv: string = '?'
+  let propNames: string[] = []
+  try {
+    if (obj instanceof Array) {
+      if (obj.length > 0) {
+        propNames = getPropNames(obj[0])
+      }
+    } else {
+      propNames = getPropNames(obj)
+    }
+  } catch {
+    const _ = 'getContentsType() failed to parse object.'
+    throw new Error(_)
+  }
+
+  propNames.forEach((n) => {
+    if (n === 'GBSeq_accession_version') {
+      rv = 'GBSeq'
+    } else if (n === 'TSeq_accver') {
+      rv = 'TSeq'
+    } else if (n === 'ParentTaxId') {
+      rv = 'Taxon'
+    }
+  })
+  return rv
+}
+
+export async function dragDropFileListener(): Promise<Unlistener> {
   const retFun = await getCurrent().onDragDropEvent((event) => {
-    if (event.payload.type === 'dragOver') {
-      console.info('Hovering:', event.payload.position)
+    if (event.payload.type === 'dragged') {
+      console.info('Hovering:', event.payload.paths)
+    } else if (event.payload.type === 'dragOver') {
+      // console.info('Hovering at:', event.payload.position)
     } else if (event.payload.type === 'dropped') {
       console.info('Dropped:', event.payload.paths)
-      event.payload.paths.forEach(async (p) => {
-        const parser = await get_file_parser(p)
-        const parsed = await parser(p).catch((reason) => {
-          console.error(reason)
-        })
-        console.log(parsed)
-      })
+      // event.payload.paths.forEach(async (p) => {
+      //   const parser = await getFileParser(p)
+      //   const parsed = await parser(p).catch((reason) => {
+      //     throw new Error(reason)
+      //   })
+      //   console.log(getContentsType(parsed as object), parsed)
+      //   if (getContentsType(parsed as object) === 'GBSeq') {
+      //     insertGbSeqRecords(parsed)
+      //   }
+      // })
     } else {
       console.info('Drop Cancelled.')
     }

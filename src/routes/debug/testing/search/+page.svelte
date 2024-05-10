@@ -2,15 +2,15 @@
 import { onMount, onDestroy } from 'svelte'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import IconError from '~icons/fa6-solid/circle-exclamation'
-import { getSeqRecords, getTaxIDs, makeESearchTerm } from '$lib/ncbi/utils'
+import { getSeqRecords, getTaxIds, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
 import { EutilParams } from '$lib/ncbi/eutils-params'
 
-import { type Readable } from 'svelte/store'
-import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
-import db_main from '$lib/app/svelte-stores/db-main'
-let _db_main: Readable<DBMainSvelteStore>
+// import { type Readable } from 'svelte/store'
+// import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
+// import db_main from '$lib/app/svelte-stores/db/db-main'
+// let _db_main: Readable<DBMainSvelteStore>
 
 let searchTerm: string = ''
 let searchStatusMessage: string = 'No results yet.'
@@ -44,7 +44,7 @@ async function updateStatus(msg: string) {
 async function search(): Promise<void> {
   searching = true
   searchTerm = searchTermProcessed
-  let taxids: number[] = await getTaxIDs(searchTerm).catch((message) => {
+  let taxids: number[] = await getTaxIds(searchTerm).catch((message) => {
     console.warn(message)
     errorMsg = message
     return []
@@ -78,7 +78,7 @@ async function search(): Promise<void> {
         const batch = accs.slice(i, i + batchSize)
         setTimeout(async () => {
           const gbsp = await getSeqRecords('nuccore', batch)
-          $_db_main.put(gbsp, 'gbseq')
+          // $_db_main.put(gbsp, 'gbseq')
           gbseqRemaining -= gbsp.length
           searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
         }, Math.random() * 10000)
@@ -94,11 +94,11 @@ async function search(): Promise<void> {
       for (const taxaSet of _) {
         taxa = [...taxa, ...taxaSet]
       }
-      $_db_main.put(taxa, 'taxon')
+      // $_db_main.put(taxa, 'taxon')
       // ---------------------
     }
     searchStatusMessage = `${esummaryResult.length.toLocaleString()} results`
-    $_db_main.put(esummaryResult, 'seq_nt_summ')
+    // $_db_main.put(esummaryResult, 'seq_nt_summ')
     searching = false
   } else {
     searchStatusMessage = `No TaxID hits for ${searchTerm}`
@@ -107,7 +107,7 @@ async function search(): Promise<void> {
 }
 
 onMount(async () => {
-  _db_main = await db_main
+  // _db_main = await db_main
   validateSearchTerm()
 })
 

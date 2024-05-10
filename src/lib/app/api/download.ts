@@ -1,6 +1,6 @@
 import { fetch } from '@tauri-apps/plugin-http'
 
-export async function dnld(
+export async function download(
   url: string,
   rt: 'text' | 'blob'
 ): Promise<{ url: string; data: string | Blob }> {
@@ -14,10 +14,10 @@ export async function dnld(
   })
 }
 
-export async function dnld_txt(
+export async function downloadText(
   url: string
 ): Promise<{ url: string; data: string } | null> {
-  const _ = await dnld(url, 'text').catch((_) => {
+  const _ = await download(url, 'text').catch((_) => {
     return null
   })
   if (_) {

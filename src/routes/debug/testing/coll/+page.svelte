@@ -4,8 +4,8 @@ import { RecordList } from '$lib/utils/record-list'
 import TableView from '$lib/ui/views/TableView'
 import { type Collection } from '$lib/app/db/types'
 import { type Readable } from 'svelte/store'
-import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
-import db_main from '$lib/app/svelte-stores/db-main'
+import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
+import db_main from '$lib/app/svelte-stores/db/db-main'
 import ObjectTreeView from '$lib/ui/views/ObjectTreeView'
 import type { IndexedUndefined } from '$lib/types'
 
@@ -26,11 +26,11 @@ $: {
       objs[_.id] = {}
     }
     let item = objs[_.id] as unknown as IndexedUndefined
-    item['parentId'] = _.parentId
+    item['parentId'] = _.id_parent
     item['label'] = _.label
 
-    if (!(_.parentId in objs)) objs[_.parentId] = {}
-    const parent = objs[_.parentId] as IndexedUndefined
+    if (!(_.id_parent in objs)) objs[_.id_parent] = {}
+    const parent = objs[_.id_parent] as IndexedUndefined
     parent[_.id] = item
   })
   if ('ROOT' in objs) colObj = objs['ROOT'] as IndexedUndefined
