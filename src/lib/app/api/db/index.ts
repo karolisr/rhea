@@ -1,9 +1,11 @@
 import { schemaTaxonomy } from './schema/taxonomy'
 import { schemaSequences } from './schema/sequences'
+import { schemaCollections } from './schema/collections'
 import Database from '@tauri-apps/plugin-sql'
 
 export const dbPathTaxonomy: string = 'sqlite:db/taxonomy.db'
 export const dbPathSequences: string = 'sqlite:db/sequences.db'
+export const dbPathCollections: string = 'sqlite:db/collections.db'
 
 export async function initDBTaxonomy() {
   const db: Database = await Database.load(dbPathTaxonomy)
@@ -14,6 +16,12 @@ export async function initDBTaxonomy() {
 export async function initDBSequences() {
   const db: Database = await Database.load(dbPathSequences)
   await db.execute(schemaSequences.text)
+  await db.close()
+}
+
+export async function initDBCollections() {
+  const db: Database = await Database.load(dbPathCollections)
+  await db.execute(schemaCollections.text)
   await db.close()
 }
 

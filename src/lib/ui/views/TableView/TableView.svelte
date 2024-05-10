@@ -5,7 +5,7 @@ import { min, max, floor, ceil, seq } from '$lib'
 import { mean, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import type { IndexedUndefined } from '$lib/types'
-import type { Collection } from '$lib/app/db/types'
+import type { Collection } from '$lib/types'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 
 onMount(async () => {

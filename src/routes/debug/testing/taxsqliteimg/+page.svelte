@@ -51,7 +51,7 @@ async function getSuggestions() {
 }
 
 onMount(async () => {
-  db = await Database.load('sqlite:db/db.db')
+  db = await Database.load('sqlite:db/taxonomy.db')
   await getSuggestions()
 })
 

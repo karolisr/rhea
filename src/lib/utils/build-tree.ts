@@ -1,21 +1,19 @@
-import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
 import type { Tree } from '$lib/types'
+import { getCollections } from '$lib/app/api/db/collections'
 
 export async function buildTree(
-  db: DBMainSvelteStore,
-  store_name: 'collection' = 'collection',
   parentId: string = 'ROOT',
   rootId: string = 'ROOT',
   rootLabel: string = 'Collections'
 ) {
-  const p = await db.get(parentId, store_name)
-  const nodes = await db.get_all_from_index(store_name, 'parentId', parentId)
+  const p = (await getCollections(parentId))[0]
+  const nodes = await getCollections(parentId, true)
   if (p.label === rootId) p.label = rootLabel
   let rv: Tree = {
     children: [],
     label: p.label,
     id: p.id,
-    parentId: '',
+    parent_id: '',
     notes: p.notes
   }
   const rvp = rv['children'] as object[]
@@ -25,8 +23,8 @@ export async function buildTree(
     })
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i]
-      const c = await buildTree(db, store_name, n.id, rootId, rootLabel)
-      c.parentId = parentId
+      const c = await buildTree(n.id, rootId, rootLabel)
+      c.parent_id = parentId
       rvp.push(c)
     }
   }

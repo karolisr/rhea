@@ -3,15 +3,7 @@ export interface Indexed {
 }
 
 export interface IndexedUndefined {
-  [index: string]: string | number | object | boolean | undefined
-}
-
-export interface Tree {
-  children: Tree[]
-  label: string
-  id: string
-  parentId: string
-  notes: string
+  [index: string]: string | number | object | boolean | null | undefined
 }
 
 export type Prefixed<Type, Prefix extends string> = {
@@ -19,3 +11,20 @@ export type Prefixed<Type, Prefix extends string> = {
 }
 
 export type Unlistener = () => void
+
+export interface Tree extends IndexedUndefined {
+  id: string
+  parent_id: Tree['id'] | null
+  children: Tree[]
+}
+
+export interface Collection extends Tree {
+  label: string
+  notes: string
+}
+
+export interface RecordCollectionMap extends IndexedUndefined {
+  id: string
+  collection_id: Collection['id']
+  record_id: string
+}
