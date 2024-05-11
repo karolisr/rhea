@@ -10,9 +10,6 @@ import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
 import { dragDropFileListener } from '$lib/app/api/drag-drop-file'
 import type { Unlistener } from '$lib/types'
-import { initDBTaxonomy } from '$lib/app/api/db'
-import { initDBSequences } from '$lib/app/api/db'
-import { initDBCollections } from '$lib/app/api/db'
 
 let themeChangeUnListener: Unlistener
 let fileDropUnListener: Unlistener
@@ -23,12 +20,9 @@ onMount(async () => {
   themeChangeUnListener = await themeChangeListener()
   fileDropUnListener = await dragDropFileListener()
   disableDefault('contextmenu')
-  initDBTaxonomy()
-  initDBSequences()
-  initDBCollections()
 })
 
-onDestroy(() => {
+onDestroy(async () => {
   themeChangeUnListener()
   fileDropUnListener()
 })

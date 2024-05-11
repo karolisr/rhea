@@ -3,48 +3,41 @@ import { schemaSequences } from './schema/sequences'
 import { schemaCollections } from './schema/collections'
 import Database from '@tauri-apps/plugin-sql'
 
+export class DB extends Database {}
 export const dbPathTaxonomy: string = 'sqlite:db/taxonomy.db'
 export const dbPathSequences: string = 'sqlite:db/sequences.db'
 export const dbPathCollections: string = 'sqlite:db/collections.db'
 
 export async function initDBTaxonomy() {
-  const db: Database = await Database.load(dbPathTaxonomy)
+  const db: DB = await DB.load(dbPathTaxonomy)
   await db.execute(schemaTaxonomy.text)
-  await db.close()
+  return db
 }
 
 export async function initDBSequences() {
-  const db: Database = await Database.load(dbPathSequences)
+  const db: DB = await DB.load(dbPathSequences)
   await db.execute(schemaSequences.text)
-  await db.close()
+  return db
 }
 
 export async function initDBCollections() {
-  const db: Database = await Database.load(dbPathCollections)
+  const db: DB = await DB.load(dbPathCollections)
   await db.execute(schemaCollections.text)
-  await db.close()
+  return db
 }
 
-export async function vacuum(db: Database) {
-  console.log('vacuum begin')
+export async function vacuum(db: DB) {
   await db.execute('VACUUM;')
-  console.log('vacuum done')
 }
 
-export async function beginTransaction(db: Database) {
-  console.log('beginTransaction begin')
+export async function beginTransaction(db: DB) {
   await db.execute('BEGIN TRANSACTION;')
-  console.log('beginTransaction done')
 }
 
-export async function commitTransaction(db: Database) {
-  console.log('commitTransaction begin')
+export async function commitTransaction(db: DB) {
   await db.execute('COMMIT TRANSACTION;')
-  console.log('commitTransaction done')
 }
 
-export async function rollbackTransaction(db: Database) {
-  console.log('rollbackTransaction begin')
+export async function rollbackTransaction(db: DB) {
   await db.execute('ROLLBACK TRANSACTION;')
-  console.log('rollbackTransaction done')
 }

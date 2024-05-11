@@ -18,18 +18,22 @@ export let uid: string
 export let selected: string | undefined
 export let relabelId: string | undefined
 export let expanded: boolean
-export let relabelNode: (id: string, label: string) => void
+export let rebuild: number
 export let createNode: (parentId: string, label: string) => Promise<string>
-export let deleteNode: (id: string) => void
+export let deleteNode: (id: string) => Promise<string | null>
+export let relabelNode: (id: string, label: string) => Promise<string>
 
 let _deleteNode: () => void = () => {
-  if (selected === tree.id) selected = tree.parentId
+  if (selected === tree.id)
+    selected = tree.parent_id ? tree.parent_id : undefined
   deleteNode(tree.id)
+  rebuild += 1
 }
 
 let _createNode: (label: string) => void = async (label) => {
   selected = await createNode(tree.id, label)
   relabelId = selected
+  rebuild += 1
 }
 
 function _relabelNodeInit() {
@@ -56,6 +60,7 @@ function relabelNodeComplete(target: HTMLInputElement) {
   relabelNode(tree.id, target.value)
   tree.label = target.value
   relabelId = undefined
+  rebuild += 1
 }
 
 const mousedownEvtListener = (e: MouseEvent) => {
@@ -146,6 +151,7 @@ function elFocus(el: HTMLInputElement) {
           tree="{chld}"
           bind:selected
           bind:relabelId
+          bind:rebuild
           {uid}
           {expanded}
           {createNode}

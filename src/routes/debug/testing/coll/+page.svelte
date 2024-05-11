@@ -2,22 +2,17 @@
 import { onMount, onDestroy } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
 import TableView from '$lib/ui/views/TableView'
-import { type Collection } from '$lib/app/db/types'
-import { type Readable } from 'svelte/store'
-import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
-import db_main from '$lib/app/svelte-stores/db/db-main'
+import { type Collection } from '$lib/types'
 import ObjectTreeView from '$lib/ui/views/ObjectTreeView'
 import type { IndexedUndefined } from '$lib/types'
+import databases from '$lib/app/svelte-stores/databases'
+import { getCollections, deleteCollection } from '$lib/app/api/db/collections'
 
-let _db_main: Readable<DBMainSvelteStore>
+let dbs: Awaited<typeof databases>
 let colId: string
 let colObj: IndexedUndefined
-let deleteCollection: typeof $_db_main.deleteCollection
-
-$: collectionsRL = new RecordList<Collection>(
-  _db_main ? $_db_main.collection : [],
-  'id'
-)
+let collections: Collection[]
+$: collectionsRL = new RecordList<Collection>(collections ?? [], 'id')
 
 $: {
   const objs: IndexedUndefined = {}
@@ -25,20 +20,23 @@ $: {
     if (!(_.id in objs)) {
       objs[_.id] = {}
     }
-    let item = objs[_.id] as unknown as IndexedUndefined
-    item['parentId'] = _.id_parent
-    item['label'] = _.label
-
-    if (!(_.id_parent in objs)) objs[_.id_parent] = {}
-    const parent = objs[_.id_parent] as IndexedUndefined
-    parent[_.id] = item
+    if (_.parent_id) {
+      if (!(_.parent_id in objs)) objs[_.parent_id] = {}
+      const parent = objs[_.parent_id] as IndexedUndefined
+      parent[_.id] = _
+    }
   })
   if ('ROOT' in objs) colObj = objs['ROOT'] as IndexedUndefined
 }
 
 onMount(async () => {
-  _db_main = await db_main
-  deleteCollection = $_db_main.deleteCollection
+  dbs = await databases
+  collections = await getCollections(
+    '',
+    false,
+    $dbs.dbCollections,
+    'collections'
+  )
 })
 
 onDestroy(() => {})
@@ -48,9 +46,13 @@ onDestroy(() => {})
   <ObjectTreeView expanded name="ROOT" bind:obj="{colObj}" />
 {/if}
 
-<TableView
-  uid="col"
-  rl="{collectionsRL}"
-  bind:activeRowKey="{colId}"
-  onDeleteRow="{deleteCollection}"
-  showHeaderRow />
+{#if dbs}
+  <TableView
+    uid="col"
+    rl="{collectionsRL}"
+    bind:activeRowKey="{colId}"
+    onDeleteRow="{(id) => {
+      deleteCollection(String(id), $dbs.dbCollections, 'collections')
+    }}"
+    showHeaderRow />
+{/if}

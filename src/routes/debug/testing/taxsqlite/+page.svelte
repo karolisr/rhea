@@ -3,14 +3,14 @@ import type { Indexed } from '$lib/types'
 import { onMount } from 'svelte'
 import { getPropNames } from '$lib'
 import sql from 'sql-template-tag'
-import Database from '@tauri-apps/plugin-sql'
+import databases from '$lib/app/svelte-stores/databases'
 
-let db: Database
+let dbs: Awaited<typeof databases>
 let results: Indexed[] = []
 
 onMount(async () => {
-  db = await Database.load('sqlite:db/taxonomy.db')
-  results = await db.select<Indexed[]>(sql`
+  dbs = await databases
+  results = await $dbs.dbTaxonomy.select<Indexed[]>(sql`
     SELECT
       tx_names.tax_id,
       tx_images.url,
@@ -26,10 +26,6 @@ onMount(async () => {
 </script>
 
 <div style="overflow-y: scroll;">
-  {#if db}
-    {db.path}
-  {/if}
-  <br />
   {#each results as r}
     <div>
       {#each getPropNames(r) as pn}

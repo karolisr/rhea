@@ -1,28 +1,56 @@
 <script lang="ts">
-// import type { Tree } from '$lib/types'
-// import type { Readable } from 'svelte/store'
-// import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db-main'
 import NodeView from './NodeView.svelte'
-// export let tree: Tree
-export let uid: string
-export let selected: string | undefined = undefined
-let relabelId: string | undefined = undefined
-export let expanded = true
-export let relabelNode: (id: string, label: string) => void
-export let createNode: (parentId: string, label: string) => Promise<string>
-export let deleteNode: (id: string) => void
-// export let _db_main: Readable<DBMainSvelteStore>
+import { DB } from '$lib/app/api/db'
 import { buildTree } from '$lib'
+
+export let uid: string
+export let expanded = true
+export let selected: string | undefined = undefined
+export let db: DB
+export let tableName: string
+
+let relabelId: string | undefined = undefined
+let rebuild: number = 1
+
+export let createNode: (
+  parentId: string,
+  label: string,
+  notes: string,
+  db: DB,
+  tableName: string
+) => Promise<string>
+export let deleteNode: (
+  id: string,
+  db: DB,
+  tableName: string
+) => Promise<string | null>
+export let relabelNode: (
+  id: string,
+  label: string,
+  db: DB,
+  tableName: string
+) => Promise<string>
+
+const _createNode = async (parentId: string, label: string) => {
+  return createNode(parentId, label, '', db, tableName)
+}
+const _deleteNode = async (id: string) => {
+  return deleteNode(id, db, tableName)
+}
+const _relabelNode = async (id: string, label: string) => {
+  return relabelNode(id, label, db, tableName)
+}
 </script>
 
-{#await buildTree() then collTree}
+{#await buildTree(db, tableName, rebuild) then collTree}
   <NodeView
     tree="{collTree}"
     bind:relabelId
     bind:selected
+    bind:rebuild
     {uid}
     {expanded}
-    {createNode}
-    {deleteNode}
-    {relabelNode} />
+    createNode="{_createNode}"
+    deleteNode="{_deleteNode}"
+    relabelNode="{_relabelNode}" />
 {/await}

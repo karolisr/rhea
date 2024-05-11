@@ -1,11 +1,12 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import Database from '@tauri-apps/plugin-sql'
 import type { Indexed } from '$lib/types'
 import { getPropNames } from '$lib/utils'
 import sql from 'sql-template-tag'
+import databases from '$lib/app/svelte-stores/databases'
 
-let db: Database
+let dbs: Awaited<typeof databases>
+
 let results: Indexed[] = []
 let query: string = 'western gray kangaroo'
 let working: boolean = false
@@ -43,21 +44,18 @@ async function getSuggestions() {
       LIMIT
         10;
     `
-    // console.log(_sql.text)
-    results = await db.select<Indexed[]>(_sql.text, _sql.values)
+    results = await $dbs.dbTaxonomy.select<Indexed[]>(_sql.text, _sql.values)
     results = results
     working = false
   }, 300)
 }
 
 onMount(async () => {
-  db = await Database.load('sqlite:db/taxonomy.db')
+  dbs = await databases
   await getSuggestions()
 })
 
-onDestroy(async () => {
-  await db.close()
-})
+onDestroy(async () => {})
 </script>
 
 <div style="align-items: center; text-align: center; overflow-y: scroll;">
@@ -97,13 +95,5 @@ onDestroy(async () => {
         <br />
       </div>
     {/each}
-    <!-- {#if results.length > 0}
-      <img
-        style="height: 200px; aspect-ratio: auto;"
-        src="{String(
-          results[0]['url'].replace('http', 'https').replace('httpss', 'https')
-        )}"
-        alt="" />
-    {/if} -->
   </div>
 </div>

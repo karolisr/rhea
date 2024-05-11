@@ -6,7 +6,6 @@ import Tab from '$lib/ui/chrome/nav/components/tabnav/Tab.svelte'
 import iconHome from '~icons/fa6-solid/house-chimney'
 import iconColl from '~icons/fa6-solid/database'
 import iconSearch from '~icons/fa6-solid/magnifying-glass'
-import iconTables from '~icons/fa6-solid/table-cells'
 import iconImages from '~icons/fa6-solid/image'
 </script>
 
@@ -23,8 +22,7 @@ import iconImages from '~icons/fa6-solid/image'
     link="/debug/testing/taxsqlite/"
     icon="{iconColl}"
     label="Taxonomy SQLite" />
-  <!-- <Tab link="/debug/testing/coll/" icon="{iconColl}" label="Collections" /> -->
-  <!-- <Tab link="/debug/testing/tables/" icon="{iconTables}" label="Tables" /> -->
+  <Tab link="/debug/testing/coll/" icon="{iconColl}" label="Collections" />
   <Tab link="/debug/testing/search/" icon="{iconSearch}" label="Search" />
   <TabSpacer uid="nav-debug-spacer-r" minW="{10}" collapsable nSpacers="{2}" />
 </TabNav>

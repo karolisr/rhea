@@ -23,8 +23,7 @@ export interface Collection extends Tree {
   notes: string
 }
 
-export interface RecordCollectionMap extends IndexedUndefined {
-  id: string
+export interface CollectionRecordMap extends IndexedUndefined {
   collection_id: Collection['id']
   record_id: string
 }

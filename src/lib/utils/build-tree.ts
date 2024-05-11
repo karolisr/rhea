@@ -1,13 +1,17 @@
 import type { Tree } from '$lib/types'
 import { getCollections } from '$lib/app/api/db/collections'
+import { DB } from '$lib/app/api/db'
 
-export async function buildTree(
+export async function buildTree<T extends DB>(
+  db: T,
+  tableName: string = 'collections',
+  rebuild: number = 1,
   parentId: string = 'ROOT',
   rootId: string = 'ROOT',
   rootLabel: string = 'Collections'
 ) {
-  const p = (await getCollections(parentId))[0]
-  const nodes = await getCollections(parentId, true)
+  const p = (await getCollections(parentId, false, db, tableName))[0]
+  const nodes = await getCollections(parentId, true, db, tableName)
   if (p.label === rootId) p.label = rootLabel
   let rv: Tree = {
     children: [],
@@ -23,7 +27,7 @@ export async function buildTree(
     })
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i]
-      const c = await buildTree(n.id, rootId, rootLabel)
+      const c = await buildTree(db, tableName, rebuild, n.id, rootId, rootLabel)
       c.parent_id = parentId
       rvp.push(c)
     }

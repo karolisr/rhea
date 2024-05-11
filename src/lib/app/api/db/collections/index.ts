@@ -1,15 +1,14 @@
 import { v4 as uuid } from 'uuid'
-import Database from '@tauri-apps/plugin-sql'
-import { dbPathCollections } from '..'
 import type { Collection } from '$lib/types'
-import sql from 'sql-template-tag'
+import sql, { empty } from 'sql-template-tag'
+import { DB } from '..'
 
 export const getCollections = async (
   id: string,
-  idIsParentId: boolean = false
+  idIsParentId: boolean,
+  db: DB,
+  tableName: string
 ) => {
-  let col = 'collection_id'
-  if (idIsParentId) col = 'parent_id'
   const _sql = sql`
     SELECT
       "collection_id" AS "id",
@@ -17,25 +16,38 @@ export const getCollections = async (
       "label",
       "notes"
     FROM
-      collections
-    WHERE
-      ${idIsParentId ? sql`parent_id = ${id}` : sql`id = ${id}`};
+      table_name ${id === ''
+      ? empty
+      : sql`
+          ${idIsParentId
+            ? sql`
+                WHERE
+                  parent_id = ${id}
+              `
+            : sql`
+                WHERE
+                  id = ${id}
+              `}
+        `};
   `
-  const db: Database = await Database.load(dbPathCollections)
-  const result: Collection[] = await db.select(_sql.text, _sql.values)
-  await db.close()
+  const result: Collection[] = await db.select(
+    _sql.text.replace('table_name', tableName),
+    _sql.values
+  )
   return result
 }
 
 export const createCollection = async (
   parentId: string,
   label: string,
-  notes: string = ''
+  notes: string,
+  db: DB,
+  tableName: string
 ) => {
   const id = uuid()
   const _sql = sql`
     INSERT INTO
-      collections (
+      table_name (
         "parent_id",
         "collection_id",
         "label",
@@ -50,62 +62,41 @@ export const createCollection = async (
       )
     ON CONFLICT ("collection_id") DO NOTHING;
   `
-  const db: Database = await Database.load(dbPathCollections)
-  await db.execute(_sql.text, _sql.values)
-  await db.close()
+  await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
   return id
 }
 
-export const deleteCollection = async (id: string) => {
+export const deleteCollection = async (
+  id: string,
+  db: DB,
+  tableName: string
+) => {
   if (id !== 'ROOT') {
     const _sql = sql`
-      DELETE FROM collections
+      DELETE FROM table_name
       WHERE
         "collection_id" = ${id};
     `
-    const db: Database = await Database.load(dbPathCollections)
-    await db.execute(_sql.text, _sql.values)
-    await db.close()
+    await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
     return id
   } else {
     return null
   }
 }
 
-export const relabelCollection = async (id: string, label: string) => {
+export const relabelCollection = async (
+  id: string,
+  label: string,
+  db: DB,
+  tableName: string
+) => {
   const _sql = sql`
-    UPDATE collections
+    UPDATE table_name
     SET
       label = ${label}
     WHERE
       collection_id = ${id};
   `
-  const db: Database = await Database.load(dbPathCollections)
-  await db.execute(_sql.text, _sql.values)
-  await db.close()
+  await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
   return label
 }
-
-// export const pruneCollections = async (db: IDBPDatabase<DBMain>) => {
-//   const obs = await db.getAll('collections')
-//   const ids = await db.getAllKeys('collections')
-//   const _: string[] = []
-//   for (let i = 0; i < obs.length; i++) {
-//     const ob = obs[i]
-//     const pid = ob.id_parent
-//     if (pid !== 'NONE' && !ids.includes(pid)) {
-//       _.push(ob.id)
-//       await db_main_del(ob.id, db, 'collections')
-//     }
-//   }
-// }
-
-// export const relabelCollection = async (
-//   id: string,
-//   label: string,
-//   db: IDBPDatabase<DBMain>
-// ) => {
-//   const _ = await db_main_get(id, db, 'collections')
-//   _.label = label
-//   await db_main_put([_], db, 'collections')
-// }
