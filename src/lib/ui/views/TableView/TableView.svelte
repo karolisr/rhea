@@ -1,8 +1,8 @@
 <script lang="ts">
 import { onMount, onDestroy, tick } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
-import { min, max, floor, ceil, seq } from '$lib'
-import { mean, standardDeviation } from 'simple-statistics'
+import { min, max, floor, ceil, seq, round } from '$lib'
+import { mean, median, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import type { IndexedUndefined } from '$lib/types'
 import type { Collection } from '$lib/types'
@@ -169,8 +169,9 @@ function calcColWidths(
       values.push(String(value).length)
     }
     if (values.length > 0) {
-      const w = ceil(mean(values) + 5 * standardDeviation(values)) * charW
-      colWs.push(max(minColW, min(minColW * 4, w)))
+      const w =
+        ceil(mean(values) + min(standardDeviation(values), minColW)) * charW
+      colWs.push(min(max(minColW, w), max(...values) * charW * 0.95) + 15)
     }
   }
   return colWs
@@ -188,7 +189,7 @@ function getRowHeight(): { rowH: number; chrW: number } {
   _table.className = 'table'
   _row.className = 'row-b'
   _cell.className = 'cell'
-  _cell.textContent = '_0123456789_'
+  _cell.textContent = '__13__ac__46__'
   _row.appendChild(_cell)
   _table.appendChild(_row)
   const _container = document.getElementById(
