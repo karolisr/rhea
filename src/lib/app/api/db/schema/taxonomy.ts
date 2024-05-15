@@ -50,7 +50,12 @@ export const schemaTaxonomy = sql`
     FOREIGN KEY (genetic_code_id) REFERENCES "tx_genetic_codes" (id),
     FOREIGN KEY (mitochondrial_genetic_code_id) REFERENCES "tx_genetic_codes" (id)
   );
-  CREATE INDEX IF NOT EXISTS ix_tx_nodes_parent_tax_id ON "tx_nodes" ("parent_tax_id");
+  CREATE INDEX IF NOT EXISTS ix_tx_nodes_tax_id ON "tx_nodes" ("tax_id" ASC);
+  CREATE INDEX IF NOT EXISTS ix_tx_nodes_parent_tax_id ON "tx_nodes" ("parent_tax_id" ASC);
+  CREATE INDEX IF NOT EXISTS ix_tx_nodes_tax_id_parent_tax_id ON "tx_nodes" (
+    "tax_id" ASC,
+    "parent_tax_id" ASC
+  );
   CREATE TABLE IF NOT EXISTS "tx_assoc_nodes_citations" (
     "tax_id" integer NOT NULL,
     "citation_id" integer NOT NULL,
@@ -73,12 +78,50 @@ export const schemaTaxonomy = sql`
     "name_class" varchar NOT NULL,
     FOREIGN KEY (tax_id) REFERENCES "tx_nodes" (tax_id)
   );
-  CREATE INDEX IF NOT EXISTS ix_tx_names_name ON "tx_names" ("name");
-  CREATE INDEX IF NOT EXISTS ix_tx_names_tax_id ON "tx_names" ("tax_id");
-  CREATE INDEX IF NOT EXISTS ix_tx_names_name_class ON "tx_names" ("name_class");
+  CREATE INDEX IF NOT EXISTS ix_tx_names_name_class ON "tx_names" ("name_class" ASC);
+  CREATE INDEX IF NOT EXISTS ix_tx_names_tax_id ON "tx_names" ("tax_id" ASC);
+  CREATE INDEX IF NOT EXISTS ix_tx_names_name ON "tx_names" ("name" ASC);
   CREATE TABLE IF NOT EXISTS "tx_merged_nodes" (
     "old_tax_id" integer PRIMARY KEY NOT NULL,
     "new_tax_id" integer NOT NULL,
     FOREIGN KEY (new_tax_id) REFERENCES "tx_nodes" (tax_id)
   );
+  ----------------------------------------------------------------------------
+  -- Views -------------------------------------------------------------------
+  ----------------------------------------------------------------------------
+  -- DROP VIEW IF EXISTS tree;
+  CREATE VIEW IF NOT EXISTS tree (id, parent_id, label, notes) AS
+  SELECT
+    tx_nodes.tax_id,
+    tx_nodes.parent_tax_id,
+    tx_names.name,
+    tx_nodes.rank
+  FROM
+    tx_nodes
+    LEFT JOIN tx_names USING (tax_id)
+  WHERE
+    -- tx_names.name_class IN (
+    --   "scientific name"
+    -- );
+    tx_names.name_class NOT IN (
+      "acronym",
+      "authority",
+      "blast name",
+      "common name",
+      "equivalent name",
+      "genbank acronym",
+      "genbank common name",
+      "in-part",
+      "includes",
+      "synonym",
+      "type material"
+    );
+  ----------------------------------------------------------------------------
+  -- DROP VIEW IF EXISTS name_classes;
+  CREATE VIEW IF NOT EXISTS name_classes (name_classe) AS
+  SELECT DISTINCT
+    tx_names.name_class
+  FROM
+    tx_names;
+  ----------------------------------------------------------------------------
 `
