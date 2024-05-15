@@ -82,7 +82,12 @@ export const schemaCollections = sql`
   VALUES
     (NULL, "ROOT", "ROOT", ""),
     ("ROOT", "DNA", "DNA", ""),
-    ("DNA", "GENOMES", "Genomes", ""),
+    (
+      "DNA",
+      "GENOMES",
+      "Genomes",
+      ""
+    ),
     ("ROOT", "RNA", "RNA", ""),
     ("ROOT", "AA", "AA", "")
   ON CONFLICT ("id") DO NOTHING;
