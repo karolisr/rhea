@@ -11,6 +11,8 @@ import databases from '$lib/app/svelte-stores/databases'
 let dbs: Awaited<typeof databases>
 
 let selectedColl: string | undefined = undefined
+let selectedSrch: string | undefined = undefined
+let selectedTaxon: string | undefined = undefined
 
 onMount(async () => {
   dbs = await databases
@@ -23,21 +25,52 @@ onMount(async () => {
   rowHs="{[-1]}"
   colWs="{[250, -1]}"
   minColW="{100}">
-  <ResizableGrid nRow="{1}" nCol="{1}" rowHs="{[-1]}" colWs="{[-1]}">
-    {#if $dbs}
+  {#if $dbs}
+    <ResizableGrid
+      nRow="{3}"
+      nCol="{1}"
+      rowHs="{[200, 100, -1]}"
+      colWs="{[-1]}">
       <TreeView
         uid="{'collections-tree'}"
         expanded="{true}"
         db="{$dbs.dbCollections}"
         tableName="collections"
+        rootLabel="Collections"
+        contextMenuEnabled="{true}"
+        createNodeEnabled="{true}"
+        deleteNodeEnabled="{true}"
+        relabelNodeEnabled="{true}"
         bind:selected="{selectedColl}"
         createNode="{createCollection}"
         deleteNode="{deleteCollection}"
         relabelNode="{relabelCollection}" />
-    {:else}
-      <div>Loading...</div>
-    {/if}
-  </ResizableGrid>
+      <TreeView
+        uid="{'search-results-tree'}"
+        expanded="{true}"
+        db="{$dbs.dbCollections}"
+        tableName="search_results"
+        rootLabel="Search Results"
+        bind:selected="{selectedSrch}"
+        createNode="{createCollection}"
+        deleteNode="{deleteCollection}"
+        relabelNode="{relabelCollection}" />
+      <TreeView
+        uid="{'taxonomy-tree'}"
+        expanded="{true}"
+        db="{$dbs.dbTaxonomy}"
+        tableName="tree"
+        rootLabel="Taxonomy"
+        parentId="{'1'}"
+        rootId="{'1'}"
+        bind:selected="{selectedTaxon}"
+        createNode="{createCollection}"
+        deleteNode="{deleteCollection}"
+        relabelNode="{relabelCollection}" />
+    </ResizableGrid>
+  {:else}
+    <div>Loading...</div>
+  {/if}
 
   <ResizableGrid
     nRow="{2}"

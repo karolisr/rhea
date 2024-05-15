@@ -1,16 +1,32 @@
 <script lang="ts">
 import NodeView from './NodeView.svelte'
 import { DB } from '$lib/app/api/db'
-import { buildTree } from '$lib'
+import { buildNode } from '$lib'
 
 export let uid: string
 export let expanded = true
 export let selected: string | undefined = undefined
+
 export let db: DB
 export let tableName: string
+let rebuild: number = 1
+export let rootLabel: string
+export let parentId: string = 'ROOT'
+export let rootId: string = 'ROOT'
+
+export let contextMenuEnabled = false
+export let createNodeEnabled = false
+export let deleteNodeEnabled = false
+export let relabelNodeEnabled = false
 
 let relabelId: string | undefined = undefined
-let rebuild: number = 1
+let expandedIds: Set<string> = new Set()
+// $: console.log(expandedIds)
+
+if (expanded) {
+  expandedIds.add(parentId)
+  expandedIds = expandedIds
+}
 
 export let createNode: (
   parentId: string,
@@ -19,11 +35,13 @@ export let createNode: (
   db: DB,
   tableName: string
 ) => Promise<string>
+
 export let deleteNode: (
   id: string,
   db: DB,
   tableName: string
 ) => Promise<string | null>
+
 export let relabelNode: (
   id: string,
   label: string,
@@ -42,14 +60,25 @@ const _relabelNode = async (id: string, label: string) => {
 }
 </script>
 
-{#await buildTree(db, tableName, rebuild) then collTree}
+{#await buildNode(db, tableName, rebuild, rootLabel, parentId, rootId)}
+  <div>Loading...</div>
+{:then collTree}
   <NodeView
     tree="{collTree}"
     bind:relabelId
     bind:selected
+    {db}
+    {tableName}
     bind:rebuild
+    {rootLabel}
+    {parentId}
+    {rootId}
     {uid}
-    {expanded}
+    {contextMenuEnabled}
+    {createNodeEnabled}
+    {deleteNodeEnabled}
+    {relabelNodeEnabled}
+    bind:expandedIds
     createNode="{_createNode}"
     deleteNode="{_deleteNode}"
     relabelNode="{_relabelNode}" />

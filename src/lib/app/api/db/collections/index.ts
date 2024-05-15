@@ -1,40 +1,89 @@
 import { v4 as uuid } from 'uuid'
 import type { Collection } from '$lib/types'
-import sql, { empty } from 'sql-template-tag'
+import sql, { empty, bulk, join } from 'sql-template-tag'
 import { DB } from '..'
 
-export const getCollections = async (
-  id: string,
+export const _getCollections = async (
+  ids: string[],
   idIsParentId: boolean,
   db: DB,
-  tableName: string
+  tableName: string,
+  count: boolean
 ) => {
   const _sql = sql`
     SELECT
-      "collection_id" AS "id",
-      "parent_id",
-      "label",
-      "notes"
+      ${count
+      ? sql`
+          parent_id AS id,
+          COUNT(parent_id) AS COUNT
+        `
+      : sql`
+          "id",
+          "parent_id",
+          "label",
+          "notes"
+        `}
     FROM
-      table_name ${id === ''
+      table_name ${ids.length === 0
       ? empty
       : sql`
           ${idIsParentId
             ? sql`
                 WHERE
-                  parent_id = ${id}
+                  parent_id IN (
+                    ${join(ids)}
+                  )
+                  AND NOT id = parent_id
               `
             : sql`
                 WHERE
-                  id = ${id}
-              `}
+                  id IN (
+                    ${join(ids)}
+                  )
+              `} ${count
+            ? sql`
+                GROUP BY
+                  parent_id
+              `
+            : empty}
         `};
   `
-  const result: Collection[] = await db.select(
+  const result = await db.select(
     _sql.text.replace('table_name', tableName),
     _sql.values
   )
+
   return result
+}
+
+export const getCollections = async (
+  ids: string[],
+  idIsParentId: boolean,
+  db: DB,
+  tableName: string
+) => {
+  const result = await _getCollections(ids, idIsParentId, db, tableName, false)
+  return result as Collection[]
+}
+
+export const getCollectionsCount = async (
+  ids: string[],
+  idIsParentId: boolean,
+  db: DB,
+  tableName: string
+) => {
+  const result = (await _getCollections(
+    ids,
+    idIsParentId,
+    db,
+    tableName,
+    true
+  )) as { id: string; count: number }[]
+  const rv: { [id: string]: number } = {}
+  result.forEach((x) => {
+    rv[x.id] = x.count
+  })
+  return rv
 }
 
 export const createCollection = async (
@@ -49,7 +98,7 @@ export const createCollection = async (
     INSERT INTO
       table_name (
         "parent_id",
-        "collection_id",
+        "id",
         "label",
         "notes"
       )
@@ -60,7 +109,7 @@ export const createCollection = async (
         ${label},
         ${notes}
       )
-    ON CONFLICT ("collection_id") DO NOTHING;
+    ON CONFLICT ("id") DO NOTHING;
   `
   await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
   return id
@@ -75,7 +124,7 @@ export const deleteCollection = async (
     const _sql = sql`
       DELETE FROM table_name
       WHERE
-        "collection_id" = ${id};
+        "id" = ${id};
     `
     await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
     return id
@@ -95,7 +144,7 @@ export const relabelCollection = async (
     SET
       label = ${label}
     WHERE
-      collection_id = ${id};
+      id = ${id};
   `
   await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
   return label

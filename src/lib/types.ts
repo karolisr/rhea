@@ -16,6 +16,7 @@ export interface Tree extends IndexedUndefined {
   id: string
   parent_id: Tree['id'] | null
   children: Tree[]
+  child_count: number
 }
 
 export interface Collection extends Tree {
