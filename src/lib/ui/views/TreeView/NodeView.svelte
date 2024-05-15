@@ -9,11 +9,8 @@ import { DB } from '$lib/app/api/db'
 import { buildNode } from '$lib'
 import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
 
-onMount(() => {
+onMount(async () => {
   addEventListener('mousedown', mousedownEvtListener, { capture: true })
-  if (expandedIds.has(tree.id)) {
-    toggleExpand()
-  }
 })
 
 onDestroy(() => {
@@ -25,11 +22,11 @@ export let uid: string
 export let selected: string | undefined = undefined
 export let relabelId: string | undefined = undefined
 export let expandedIds: Set<string>
-export let expanded: boolean = false
-export let rebuild: number
 export let createNode: (parentId: string, label: string) => Promise<string>
 export let deleteNode: (id: string) => Promise<string | null>
 export let relabelNode: (id: string, label: string) => Promise<string>
+
+export let rebuild: number
 
 export let db: DB
 export let tableName: string
@@ -37,28 +34,25 @@ export let rootLabel: string
 export let parentId: string = 'ROOT'
 export let rootId: string = 'ROOT'
 
-export let contextMenuEnabled
-export let createNodeEnabled
-export let deleteNodeEnabled
-export let relabelNodeEnabled
+export let contextMenuEnabled: boolean
+export let createNodeEnabled: boolean
+export let deleteNodeEnabled: boolean
+export let relabelNodeEnabled: boolean
 
-let _deleteNode: () => void = () => {
-  if (selected === tree.id)
+let _deleteNode: () => void = async () => {
+  if (selected === tree.id) {
     selected = tree.parent_id ? tree.parent_id : undefined
-  deleteNode(tree.id)
+  }
+  await deleteNode(tree.id)
   rebuild += 1
 }
 
 let _createNode: (label: string) => void = async (label) => {
   selected = await createNode(tree.id, label)
-  tree.children = (
-    await buildNode(db, tableName, rebuild, rootLabel, tree.id, rootId)
-  ).children
+  tree = await buildNode(db, tableName, rootLabel, tree.id, rootId)
   expandedIds.add(tree.id)
-  expanded = true
   expandedIds = expandedIds
   relabelId = selected
-  // rebuild += 1
 }
 
 function _relabelNodeInit() {
@@ -103,21 +97,14 @@ function select(e: MouseEvent) {
 }
 
 async function toggleExpand() {
-  if (!expanded) {
-    tree.children = (
-      await buildNode(db, tableName, rebuild, rootLabel, tree.id, rootId)
-    ).children
-    if (tree.children.length > 0) {
-      expanded = true
+  if (!expandedIds.has(tree.id)) {
+    if (tree.child_count > 0) {
       expandedIds.add(tree.id)
-      expandedIds = expandedIds
     }
   } else {
     expandedIds.delete(tree.id)
-    expandedIds = expandedIds
-    expanded = false
   }
-  // expanded = !expanded
+  expandedIds = expandedIds
 }
 
 function showContextMenu(e: MouseEvent) {
@@ -169,62 +156,65 @@ function elFocus(el: HTMLInputElement) {
 }
 </script>
 
-<div id="{uid}-tree-{tree.id}" class="tree">
-  <button
-    id="collection-{tree.id}"
-    class="tree-node{selected === tree.id ? ' selected' : ''}"
-    on:click="{select}"
-    on:dblclick="{toggleExpand}"
-    on:contextmenu="{showContextMenu}">
-    <!-- {#if expanded} -->
-    {#if expandedIds.has(tree.id)}
-      {#if tree.child_count === 0}
+{#if tree}
+  <div id="{uid}-tree-{tree.id}" class="tree">
+    <button
+      id="collection-{tree.id}"
+      class="tree-node{selected === tree.id ? ' selected' : ''}"
+      on:click="{select}"
+      on:dblclick="{toggleExpand}"
+      on:contextmenu="{showContextMenu}">
+      {#if expandedIds.has(tree.id)}
+        {#if tree.child_count === 0}
+          <IconFile />
+        {:else}
+          <IconFolderOpen />
+        {/if}
+      {:else if tree.child_count === 0}
         <IconFile />
       {:else}
-        <IconFolderOpen />
+        <IconFolderClosed />
       {/if}
-    {:else if tree.child_count === 0}
-      <IconFile />
-    {:else}
-      <IconFolderClosed />
+      {#if relabelId === tree.id}
+        <input
+          use:elFocus
+          id="collection-{tree.id}-label-text-input"
+          type="text"
+          value="{tree.label}"
+          spellcheck="false"
+          autocomplete="off"
+          on:change="{relabelNodeCompleteChange}"
+          on:keydown="{relabelNodeCompleteKeyboard}" />
+      {:else}
+        <span>{tree.label} ({String(tree.child_count)})</span>
+      {/if}
+    </button>
+    {#if expandedIds.has(tree.id)}
+      <div class="children">
+        {#each tree.children as _chld}
+          {#await buildNode(db, tableName, rootLabel, _chld.id, rootId) then chld}
+            <svelte:self
+              tree="{chld}"
+              bind:relabelId
+              bind:selected
+              bind:expandedIds
+              bind:rebuild
+              {db}
+              {tableName}
+              {rootLabel}
+              {parentId}
+              {rootId}
+              {uid}
+              {contextMenuEnabled}
+              {createNodeEnabled}
+              {deleteNodeEnabled}
+              {relabelNodeEnabled}
+              {createNode}
+              {deleteNode}
+              {relabelNode} />
+          {/await}
+        {/each}
+      </div>
     {/if}
-    {#if relabelId === tree.id}
-      <input
-        use:elFocus
-        id="collection-{tree.id}-label-text-input"
-        type="text"
-        value="{tree.label}"
-        spellcheck="false"
-        autocomplete="off"
-        on:change="{relabelNodeCompleteChange}"
-        on:keydown="{relabelNodeCompleteKeyboard}" />
-    {:else}
-      <span>{tree.label}</span>
-    {/if}
-  </button>
-  {#if expandedIds.has(tree.id) && tree.child_count > 0}
-    <div class="children">
-      {#each tree.children as chld}
-        <svelte:self
-          tree="{chld}"
-          bind:relabelId
-          bind:selected
-          {db}
-          {tableName}
-          {rootLabel}
-          {parentId}
-          {rootId}
-          bind:rebuild
-          {uid}
-          bind:expandedIds
-          {contextMenuEnabled}
-          {createNodeEnabled}
-          {deleteNodeEnabled}
-          {relabelNodeEnabled}
-          {createNode}
-          {deleteNode}
-          {relabelNode} />
-      {/each}
-    </div>
-  {/if}
-</div>
+  </div>
+{/if}

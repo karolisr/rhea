@@ -21,7 +21,6 @@ export let relabelNodeEnabled = false
 
 let relabelId: string | undefined = undefined
 let expandedIds: Set<string> = new Set()
-// $: console.log(expandedIds)
 
 if (expanded) {
   expandedIds.add(parentId)
@@ -60,16 +59,17 @@ const _relabelNode = async (id: string, label: string) => {
 }
 </script>
 
-{#await buildNode(db, tableName, rebuild, rootLabel, parentId, rootId)}
+{#await buildNode(db, tableName, rootLabel, parentId, rootId, rebuild)}
   <div>Loading...</div>
 {:then collTree}
   <NodeView
     tree="{collTree}"
     bind:relabelId
     bind:selected
+    bind:expandedIds
+    bind:rebuild
     {db}
     {tableName}
-    bind:rebuild
     {rootLabel}
     {parentId}
     {rootId}
@@ -78,7 +78,6 @@ const _relabelNode = async (id: string, label: string) => {
     {createNodeEnabled}
     {deleteNodeEnabled}
     {relabelNodeEnabled}
-    bind:expandedIds
     createNode="{_createNode}"
     deleteNode="{_deleteNode}"
     relabelNode="{_relabelNode}" />

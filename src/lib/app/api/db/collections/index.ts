@@ -15,7 +15,7 @@ export const _getCollections = async (
       ${count
       ? sql`
           parent_id AS id,
-          COUNT(parent_id) AS COUNT
+          COUNT(parent_id) AS row_count
         `
       : sql`
           "id",
@@ -78,10 +78,10 @@ export const getCollectionsCount = async (
     db,
     tableName,
     true
-  )) as { id: string; count: number }[]
+  )) as { id: string; row_count: number }[]
   const rv: { [id: string]: number } = {}
   result.forEach((x) => {
-    rv[x.id] = x.count
+    rv[x.id] = x.row_count
   })
   return rv
 }

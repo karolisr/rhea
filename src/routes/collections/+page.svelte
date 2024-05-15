@@ -13,6 +13,7 @@ let dbs: Awaited<typeof databases>
 let selectedColl: string | undefined = undefined
 let selectedSrch: string | undefined = undefined
 let selectedTaxon: string | undefined = undefined
+let selectedAll: string | undefined = undefined
 
 onMount(async () => {
   dbs = await databases
@@ -27,9 +28,9 @@ onMount(async () => {
   minColW="{100}">
   {#if $dbs}
     <ResizableGrid
-      nRow="{3}"
+      nRow="{4}"
       nCol="{1}"
-      rowHs="{[200, 100, -1]}"
+      rowHs="{[150, 150, 150, -1]}"
       colWs="{[-1]}">
       <TreeView
         uid="{'collections-tree'}"
@@ -52,6 +53,16 @@ onMount(async () => {
         tableName="search_results"
         rootLabel="Search Results"
         bind:selected="{selectedSrch}"
+        createNode="{createCollection}"
+        deleteNode="{deleteCollection}"
+        relabelNode="{relabelCollection}" />
+      <TreeView
+        uid="{'all-records-tree'}"
+        expanded="{true}"
+        db="{$dbs.dbCollections}"
+        tableName="all_records"
+        rootLabel="All Records"
+        bind:selected="{selectedAll}"
         createNode="{createCollection}"
         deleteNode="{deleteCollection}"
         relabelNode="{relabelCollection}" />
