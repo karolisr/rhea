@@ -51,7 +51,8 @@ let colWsStr: string
 .grid-container {
   display: grid;
   height: 100%;
-  overflow-y: scroll;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .grid-items {

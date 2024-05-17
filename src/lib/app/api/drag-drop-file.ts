@@ -8,7 +8,8 @@ import { getPropNames } from '$lib'
 import type { FileSignature } from 'file-type-checker/dist/core'
 import type { Unlistener } from '$lib/types'
 
-// import { insertGbSeqRecords } from './db/gbseq'
+import { insertGbSeqRecords } from './db/gbseq'
+import type { GBSet } from '$lib/ncbi/types/GBSet'
 
 export async function getFileType(path: string) {
   const fbin = await readFile(path).catch((error) => {
@@ -55,20 +56,20 @@ export async function getFileType(path: string) {
   return info
 }
 
+const otherParser = () => {
+  return async (path: string) => {
+    console.info(`Default parser. Doing nothing with: ${path}`)
+  }
+}
+
+const txtParser = async (f: (txt: string) => unknown) => {
+  return async (path: string) => {
+    const txt = await readTextFile(path)
+    return f(txt)
+  }
+}
+
 export async function getFileParser(path: string) {
-  const otherParser = () => {
-    return async (path: string) => {
-      console.info(`Default parser. Doing nothing with: ${path}`)
-    }
-  }
-
-  const txtParser = async (f: (txt: string) => unknown) => {
-    return async (path: string) => {
-      const txt = await readTextFile(path)
-      return f(txt)
-    }
-  }
-
   const info = await getFileType(path)
 
   if (info) {
@@ -120,16 +121,18 @@ export async function dragDropFileListener(): Promise<Unlistener> {
       // console.info('Hovering at:', event.payload.position)
     } else if (event.payload.type === 'dropped') {
       console.info('Dropped:', event.payload.paths)
-      // event.payload.paths.forEach(async (p) => {
-      //   const parser = await getFileParser(p)
-      //   const parsed = await parser(p).catch((reason) => {
-      //     throw new Error(reason)
-      //   })
-      //   console.log(getContentsType(parsed as object), parsed)
-      //   if (getContentsType(parsed as object) === 'GBSeq') {
-      //     insertGbSeqRecords(parsed)
-      //   }
-      // })
+      event.payload.paths.forEach(async (p) => {
+        // const parser = await getFileParser(p)
+        // const parsed = await parser(p).catch((reason) => {
+        //   throw new Error(reason)
+        // })
+        // console.log(getContentsType(parsed as object), parsed)
+        // if (getContentsType(parsed as object) === 'GBSeq') {
+        const parsed = await (await txtParser(parse_xml_txt))(p)
+        console.log('insertGbSeqRecords', (parsed as GBSet).length)
+        insertGbSeqRecords(parsed as GBSet)
+        // }
+      })
     } else {
       console.info('Drop Cancelled.')
     }

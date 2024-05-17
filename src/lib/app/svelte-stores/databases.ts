@@ -10,7 +10,6 @@ export interface Databases {
   dbTaxonomy: DB
   dbSequences: DB
   dbCollections: DB
-  // closeAll: () => Promise<void>
 }
 
 async function init(): Promise<Readable<Databases>> {
@@ -21,13 +20,6 @@ async function init(): Promise<Readable<Databases>> {
     dbTaxonomy,
     dbSequences,
     dbCollections
-    // closeAll: async () => {
-    //   console.log('closeAll begin')
-    //   await dbCollections.close()
-    //   await dbSequences.close()
-    //   await dbTaxonomy.close()
-    //   console.log('closeAll end')
-    // }
   }
   console.log('Databases Loaded.')
   return readable(dbs)
@@ -35,3 +27,26 @@ async function init(): Promise<Readable<Databases>> {
 
 const databases = init()
 export default databases
+
+// ----------------------------------------------------------------------------
+// Usage Template:
+
+// import databases from '$lib/app/svelte-stores/databases'
+// import { DB } from '$lib/app/api/db'
+// import type { IndexedUndefined } from '$lib/types'
+
+// export async function xyz() {
+//   let dbs: Awaited<typeof databases> = await databases
+//   let db: DB | undefined = undefined
+//   const unsubscribe = dbs.subscribe((_) => {
+//     db = _.dbSequences
+//   })
+//   let rv: IndexedUndefined[] = []
+//   if (db !== undefined) {
+//     db = db as DB
+//     // Do Stuff.
+//   }
+//   unsubscribe()
+//   return rv
+// }
+// ----------------------------------------------------------------------------

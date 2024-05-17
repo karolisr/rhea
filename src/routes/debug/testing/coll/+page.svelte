@@ -17,7 +17,7 @@ $: if (collectionsRL) {
 onMount(async () => {
   dbs = await databases
   collections = await getCollections(
-    '',
+    [],
     false,
     $dbs.dbCollections,
     'collections'

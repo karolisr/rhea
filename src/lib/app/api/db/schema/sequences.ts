@@ -354,65 +354,34 @@ export const schemaSequences = sql`
       "struc_comment_item_id"
     )
   );
-  ------------------------------------------------------------------------------
-  -- ======================================================================== --
-  ------------------------------------------------------------------------------
-  -- CREATE TABLE IF NOT EXISTS gb_assoc_records_features (
-  --   accession_version varchar NOT NULL,
-  --   feature_id integer NOT NULL,
-  --   PRIMARY KEY (accession_version, feature_id),
-  --   FOREIGN KEY (accession_version) REFERENCES gb_records (accession_version),
-  --   FOREIGN KEY (feature_id) REFERENCES gb_features (feature_id)
-  -- );
-  ------------------------------------------------------------------------------
-  -- CREATE TABLE IF NOT EXISTS gb_assoc_feature_sets_features (
-  --   feature_set_id integer NOT NULL,
-  --   feature_id integer NOT NULL,
-  --   PRIMARY KEY (feature_set_id, feature_id),
-  --   FOREIGN KEY (feature_set_id) REFERENCES gb_feature_sets (feature_set_id),
-  --   FOREIGN KEY (feature_id) REFERENCES gb_features (feature_id)
-  -- );
-  ------------------------------------------------------------------------------
-  -- CREATE TABLE IF NOT EXISTS gb_assoc_features_intervals (
-  --   feature_id integer NOT NULL,
-  --   interval_id integer NOT NULL,
-  --   PRIMARY KEY (feature_id, interval_id),
-  --   FOREIGN KEY (feature_id) REFERENCES gb_features (feature_id),
-  --   FOREIGN KEY (interval_id) REFERENCES gb_intervals (interval_id)
-  -- );
-  ------------------------------------------------------------------------------
-  -- CREATE TABLE IF NOT EXISTS gb_assoc_features_qualifiers (
-  --   feature_id integer NOT NULL,
-  --   qualifier_id integer NOT NULL,
-  --   PRIMARY KEY (feature_id, qualifier_id),
-  --   FOREIGN KEY (feature_id) REFERENCES gb_features (feature_id),
-  --   FOREIGN KEY (qualifier_id) REFERENCES gb_qualifiers (qualifier_id)
-  -- );
-  ------------------------------------------------------------------------------
-  -- CREATE TABLE IF NOT EXISTS gb_assoc_features_xrefs (
-  --   feature_id integer NOT NULL,
-  --   xref_id integer NOT NULL,
-  --   PRIMARY KEY (feature_id, xref_id),
-  --   FOREIGN KEY (feature_id) REFERENCES gb_features (feature_id),
-  --   FOREIGN KEY (xref_id) REFERENCES gb_xrefs (xref_id)
-  -- );
-  ------------------------------------------------------------------------------
-  -- CREATE TABLE IF NOT EXISTS gb_assoc_records_xrefs (
-  --   accession_version varchar NOT NULL,
-  --   xref_id integer NOT NULL,
-  --   PRIMARY KEY (accession_version, xref_id),
-  --   FOREIGN KEY (accession_version) REFERENCES gb_records (accession_version),
-  --   FOREIGN KEY (xref_id) REFERENCES gb_xrefs (xref_id)
-  -- );
-  ------------------------------------------------------------------------------
-  -- CREATE TABLE IF NOT EXISTS gb_assoc_references_xrefs (
-  --   reference_id integer NOT NULL,
-  --   xref_id integer NOT NULL,
-  --   PRIMARY KEY (reference_id, xref_id),
-  --   FOREIGN KEY (reference_id) REFERENCES gb_references (reference_id),
-  --   FOREIGN KEY (xref_id) REFERENCES gb_xrefs (xref_id)
-  -- );
-  ------------------------------------------------------------------------------
-  -- ======================================================================== --
-  ------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------
+  -- DROP TABLE IF EXISTS assoc_collections_records;
+  ----------------------------------------------------------------------------
+  CREATE TABLE IF NOT EXISTS "assoc_collections_records" (
+    "id" varchar NOT NULL,
+    "record_id" varchar NOT NULL,
+    PRIMARY KEY ("id", "record_id"),
+    FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version)
+    -- FOREIGN KEY (id) REFERENCES "collections" (id)
+  );
+  ----------------------------------------------------------------------------
+  -- Views -------------------------------------------------------------------
+  ----------------------------------------------------------------------------
+  -- DROP VIEW IF EXISTS record_list;
+  CREATE VIEW IF NOT EXISTS record_list (
+    "accession_version",
+    "tax_id",
+    "length",
+    "moltype",
+    "definition"
+  ) AS
+  SELECT
+    gb_records.accession_version,
+    gb_records.tax_id,
+    gb_records.length,
+    gb_records.moltype,
+    gb_records.definition
+  FROM
+    gb_records;
+  ----------------------------------------------------------------------------
 `

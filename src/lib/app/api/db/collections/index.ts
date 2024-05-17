@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid'
 import type { Collection } from '$lib/types'
-import sql, { empty, bulk, join } from 'sql-template-tag'
-import { DB } from '..'
+import sql, { empty, join } from 'sql-template-tag'
+import { DB } from '$lib/app/api/db'
 
 export const _getCollections = async (
   ids: string[],

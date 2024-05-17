@@ -2,7 +2,6 @@ import sql from 'sql-template-tag'
 
 export const schemaCollections = sql`
   ------------------------------------------------------------------------------
-  -- DROP TABLE IF EXISTS assoc_collections_records;
   -- DROP TABLE IF EXISTS collections;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "collections" (
@@ -11,12 +10,6 @@ export const schemaCollections = sql`
     "label" varchar NOT NULL,
     "notes" varchar,
     FOREIGN KEY (parent_id) REFERENCES "collections" (id) ON DELETE CASCADE
-  );
-  CREATE TABLE IF NOT EXISTS "assoc_collections_records" (
-    "id" varchar NOT NULL,
-    "record_id" varchar NOT NULL,
-    PRIMARY KEY ("id", "record_id"),
-    FOREIGN KEY (id) REFERENCES "collections" (id)
   );
   INSERT INTO
     collections (
@@ -29,8 +22,7 @@ export const schemaCollections = sql`
     (NULL, "ROOT", "ROOT", "")
   ON CONFLICT ("id") DO NOTHING;
   ------------------------------------------------------------------------------
-  -- DROP TABLE IF EXISTS assoc_search_results_records;
-  -- DROP TABLE IF EXISTS search_results;
+  DROP TABLE IF EXISTS search_results;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "search_results" (
     "parent_id" varchar,
@@ -39,12 +31,13 @@ export const schemaCollections = sql`
     "notes" varchar,
     FOREIGN KEY (parent_id) REFERENCES "search_results" (id) ON DELETE CASCADE
   );
-  CREATE TABLE IF NOT EXISTS "assoc_search_results_records" (
-    "id" varchar NOT NULL,
-    "record_id" varchar NOT NULL,
-    PRIMARY KEY ("id", "record_id"),
-    FOREIGN KEY (id) REFERENCES "search_results" (id)
-  );
+  -- DROP TABLE IF EXISTS assoc_search_results_records;
+  -- CREATE TABLE IF NOT EXISTS "assoc_search_results_records" (
+  --   "id" varchar NOT NULL,
+  --   "record_id" varchar NOT NULL,
+  --   PRIMARY KEY ("id", "record_id"),
+  --   FOREIGN KEY (id) REFERENCES "search_results" (id)
+  -- );
   INSERT INTO
     search_results (
       "parent_id",
@@ -56,24 +49,24 @@ export const schemaCollections = sql`
     (NULL, "ROOT", "ROOT", "")
   ON CONFLICT ("id") DO NOTHING;
   ------------------------------------------------------------------------------
-  DROP TABLE IF EXISTS assoc_all_records_records;
-  DROP TABLE IF EXISTS all_records;
+  DROP TABLE IF EXISTS seqtype;
   ------------------------------------------------------------------------------
-  CREATE TABLE IF NOT EXISTS "all_records" (
+  CREATE TABLE IF NOT EXISTS "seqtype" (
     "parent_id" varchar,
     "id" varchar PRIMARY KEY NOT NULL,
     "label" varchar NOT NULL,
     "notes" varchar,
-    FOREIGN KEY (parent_id) REFERENCES "all_records" (id) ON DELETE CASCADE
+    FOREIGN KEY (parent_id) REFERENCES "seqtype" (id) ON DELETE CASCADE
   );
-  CREATE TABLE IF NOT EXISTS "assoc_all_records_records" (
-    "id" varchar NOT NULL,
-    "record_id" varchar NOT NULL,
-    PRIMARY KEY ("id", "record_id"),
-    FOREIGN KEY (id) REFERENCES "all_records" (id)
-  );
+  -- DROP TABLE IF EXISTS assoc_seqtype_records;
+  -- CREATE TABLE IF NOT EXISTS "assoc_seqtype_records" (
+  --   "id" varchar NOT NULL,
+  --   "record_id" varchar NOT NULL,
+  --   PRIMARY KEY ("id", "record_id"),
+  --   FOREIGN KEY (id) REFERENCES "seqtype" (id)
+  -- );
   INSERT INTO
-    all_records (
+    seqtype (
       "parent_id",
       "id",
       "label",

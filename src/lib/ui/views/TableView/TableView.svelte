@@ -1,12 +1,13 @@
 <script lang="ts">
 import { onMount, onDestroy, tick } from 'svelte'
 import { RecordList } from '$lib/utils/record-list'
-import { min, max, floor, ceil, seq, round } from '$lib'
-import { mean, median, standardDeviation } from 'simple-statistics'
+import { min, max, floor, ceil, seq } from '$lib'
+import { mean, standardDeviation } from 'simple-statistics'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import type { IndexedUndefined } from '$lib/types'
 import type { Collection } from '$lib/types'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
+import { getPropNames } from '$lib'
 
 onMount(async () => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -73,7 +74,19 @@ let firstRowRequested: number
 let firstRow: number
 let lastRow: number
 
-let selectedRows: { [key: string]: boolean | null | undefined } = {}
+function processSelectedRowKeys(_selectedRowKeys: {
+  [key: string]: boolean | null | undefined
+}) {
+  const _ = getPropNames(_selectedRowKeys)
+  const ids: string[] = []
+  _.forEach((n) => {
+    if (_selectedRowKeys[n] === true) ids.push(n)
+  })
+  return ids
+}
+
+export let selectedRecordIds: string[] = []
+let _selectedRowKeys: { [key: string]: boolean | null | undefined } = {}
 let activeRow: number = 0
 
 $: nRow = maxRowsVis + nH + nF
@@ -88,6 +101,8 @@ $: firstRowRequested = rowH > 0 ? ceil(scrollTop / rowH) : 0
 $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
 $: rows = seq(firstRow, lastRow)
+
+$: selectedRecordIds = processSelectedRowKeys(_selectedRowKeys)
 
 let rowHs: number[] = []
 $: {
@@ -132,7 +147,7 @@ const _onkeydown = (ev: KeyboardEvent) => {
       break
     case 'Space':
       if (multiRowSelect && activeRowKey !== undefined) {
-        selectedRows[activeRowKey] = !selectedRows[activeRowKey]
+        _selectedRowKeys[activeRowKey] = !_selectedRowKeys[activeRowKey]
       }
       ev.preventDefault()
       break
@@ -171,10 +186,12 @@ function calcColWidths(
     if (values.length > 0) {
       const w =
         ceil(mean(values) + min(standardDeviation(values), minColW)) * charW
-      colWs.push(min(max(minColW, w), max(...values) * charW * 0.95) + 15)
+      colWs.push(max(max(minColW, w), max(...values) * charW * 0.95) + 15)
     }
   }
-  return colWs
+
+  // Set last column to auto-size
+  return [...colWs.slice(0, -1), -1]
 }
 
 function initColWs() {
@@ -329,7 +346,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                 style:grid-column="1/{nCol + 1}"
                 class="
                 row-b
-                {selectedRows[rl.stringValueByIndex(i, rl.keyField)]
+                {_selectedRowKeys[rl.stringValueByIndex(i, rl.keyField)]
                   ? 'selected-row'
                   : ''}
                 {activeRow === i ? 'active-row' : ''}
@@ -348,7 +365,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                         elc.focus()
                         e.preventDefault()
                       }}"
-                      bind:checked="{selectedRows[
+                      bind:checked="{_selectedRowKeys[
                         rl.stringValueByIndex(i, rl.keyField)
                       ]}" />
                   </div>

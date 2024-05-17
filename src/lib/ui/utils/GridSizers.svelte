@@ -3,6 +3,8 @@ import { onMount, onDestroy } from 'svelte'
 import { v4 as uuid } from 'uuid'
 import { max, min } from '$lib'
 
+const resizeEvt = new Event('resize')
+
 export let nRow: number = 0
 export let nCol: number = 0
 
@@ -136,6 +138,7 @@ function resizeCol(evt: MouseEvent) {
       max(minColW, (colPrevWidth as number) + d),
       colMaxW as number
     )
+    dispatchEvent(resizeEvt)
   }
 }
 
@@ -146,6 +149,7 @@ function resizeRow(evt: MouseEvent) {
       max(minRowH, (rowPrevHeight as number) + d),
       rowMaxH as number
     )
+    dispatchEvent(resizeEvt)
   }
 }
 
@@ -174,7 +178,7 @@ function resizeGridElementEnd(_: MouseEvent) {
   style:grid-column="1/{nCol + 1}">
   {#if rowsResizable}
     {#each rowHs as rowH, row}
-      {#if rowH !== -1}
+      {#if rowH !== -1 && !fixedHRows.includes(row)}
         <grid-sizer-h
           style:grid-row="{row + 1}/{row + 2}"
           style:grid-column="1/{nCol + 1}">

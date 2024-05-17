@@ -1,6 +1,8 @@
 <script lang="ts">
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import TreeView from '$lib/ui/views/TreeView'
+import TableView from '$lib/ui/views/TableView'
+import { RecordList } from '$lib/utils/record-list'
 import { onMount } from 'svelte'
 import {
   createCollection,
@@ -8,15 +10,46 @@ import {
   relabelCollection
 } from '$lib/app/api/db/collections'
 import databases from '$lib/app/svelte-stores/databases'
+import { getSeqRecList } from '$lib/app/api/db/gbseq'
+import type { IndexedUndefined } from '$lib/types'
+import { addSeqRecsToCollection } from '$lib/app/api/db/gbseq'
+
 let dbs: Awaited<typeof databases>
 
-let selectedColl: string | undefined = undefined
+let selectedColl: string | undefined = 'ROOT'
 let selectedSrch: string | undefined = undefined
 let selectedTaxon: string | undefined = undefined
 let selectedAll: string | undefined = undefined
+let activeRecordId: string | undefined = undefined
+let selectedRecordIds: string[] = []
+
+$: console.log(selectedRecordIds)
+$: xxx(selectedRecordIds)
+
+async function xxx(accs: string[]) {
+  if (selectedColl !== undefined) {
+    await addSeqRecsToCollection(accs, selectedColl)
+  }
+}
+
+let seqRecList: IndexedUndefined[]
+$: seqRecListRL = new RecordList<IndexedUndefined>(
+  seqRecList ?? [],
+  'accession_version'
+)
+$: if (seqRecListRL) {
+  seqRecListRL.fieldsToShow = [
+    'accession_version',
+    'tax_id',
+    'length',
+    'moltype',
+    'definition'
+  ]
+}
 
 onMount(async () => {
   dbs = await databases
+  seqRecList = await getSeqRecList()
 })
 </script>
 
@@ -60,7 +93,7 @@ onMount(async () => {
         uid="{'all-records-tree'}"
         expanded="{true}"
         db="{$dbs.dbCollections}"
-        tableName="all_records"
+        tableName="seqtype"
         rootLabel="All Records"
         bind:selected="{selectedAll}"
         createNode="{createCollection}"
@@ -89,8 +122,24 @@ onMount(async () => {
     rowHs="{[200, -1]}"
     colWs="{[-1]}"
     minRowH="{100}">
-    <div>{selectedColl ?? ''}</div>
-    <div>{selectedColl ? selectedColl + ': Selected Item' : ''}</div>
+    <div class="list-container">
+      <!-- <div>{selectedColl ?? ''}</div> -->
+      <!-- <div>{selectedTaxon ?? ''}</div> -->
+      <!-- <div>{selectedAll ?? ''}</div> -->
+      <TableView
+        uid="seq-rec-list"
+        rl="{seqRecListRL}"
+        bind:activeRowKey="{activeRecordId}"
+        bind:selectedRecordIds
+        showCheckBoxes
+        multiRowSelect
+        showHeaderRow />
+    </div>
+    <div>
+      {selectedColl
+        ? selectedColl + (activeRecordId ? `: ${activeRecordId}` : '')
+        : ''}
+    </div>
   </ResizableGrid>
 </ResizableGrid>
 
@@ -99,5 +148,14 @@ div {
   align-content: center;
   text-align: center;
   background-color: white;
+  // overflow-x: hidden;
+  // overflow-y: scroll;
+}
+
+.list-container {
+  align-content: unset;
+  text-align: unset;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 </style>

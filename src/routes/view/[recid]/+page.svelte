@@ -2,25 +2,25 @@
 import { onMount, onDestroy } from 'svelte'
 import type { PageData } from './$types'
 import type { Writable } from 'svelte/store'
-import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
+// import type { DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
 import type { GBSeq } from '$lib/ncbi/types/GBSet'
-import db_main from '$lib/app/svelte-stores/db/db-main'
+// import db_main from '$lib/app/svelte-stores/db/db-main'
 import status from '$lib/app/svelte-stores/status'
 import SeqView from '$lib/ui/views/SeqView'
 import ObjectTreeView from '$lib/ui/views/ObjectTreeView'
 
 export let data: PageData
 
-let _db_main: Writable<DBMainSvelteStore>
-let db: typeof $_db_main.db
+// let _db_main: Writable<DBMainSvelteStore>
+// let db: typeof $_db_main.db
 let rec: GBSeq | undefined
 
 $: $status.main = `${data.recid}`
 
 onMount(async () => {
-  _db_main = await db_main
-  db = $_db_main.db
-  rec = await db.get('gbseq', data.recid)
+  // _db_main = await db_main
+  // db = $_db_main.db
+  // rec = await db.get('gbseq', data.recid)
 })
 onDestroy(() => {
   $status.main = ''
