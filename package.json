@@ -13,9 +13,9 @@
     "tauri": "tauri"
   },
   "devDependencies": {
-    "@iconify/json": "^2.2.210",
+    "@iconify/json": "^2.2.211",
     "@sveltejs/adapter-static": "^3.0.1",
-    "@sveltejs/kit": "^2.5.8",
+    "@sveltejs/kit": "^2.5.9",
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@tauri-apps/cli": "^2.0.0-beta",
     "@types/d3": "^7.4.3",
@@ -30,7 +30,7 @@
     "prettier-plugin-embed": "^0.4.15",
     "prettier-plugin-sql": "^0.18.0",
     "prettier-plugin-svelte": "^3.2.3",
-    "sass": "^1.77.1",
+    "sass": "^1.77.2",
     "svelte": "^4.2.17",
     "svelte-check": "^3.7.1",
     "tslib": "^2.6.2",
