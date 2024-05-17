@@ -6,11 +6,15 @@ import { getSeqRecords, getTaxIds, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
 import { EutilParams } from '$lib/ncbi/eutils-params'
-
+import { type Collection } from '$lib/types'
+import databases from '$lib/app/svelte-stores/databases'
+import { getCollections, deleteCollection } from '$lib/app/api/db/collections'
+import { insertGbSeqRecords } from '$lib/app/api/db/gbseq'
 // import { type Readable } from 'svelte/store'
 // import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
 // import db_main from '$lib/app/svelte-stores/db/db-main'
 // let _db_main: Readable<DBMainSvelteStore>
+let dbs: Awaited<typeof databases>
 
 let searchTerm: string = ''
 let searchStatusMessage: string = 'No results yet.'
@@ -25,6 +29,7 @@ let gbseqRemaining: number = 0
 let esummaryResult: ESummaryNuccore[] = []
 import status from '$lib/app/svelte-stores/status'
 import type { TaxaSet } from '$lib/ncbi/types/TaxaSet'
+import type { GBSet } from '$lib/ncbi/types/GBSet'
 
 let errorMsg: string = ''
 $: error = errorMsg ? true : false
@@ -55,6 +60,7 @@ async function search(): Promise<void> {
       [...Object.values(EntrezFilters)],
       refSeqOnly
     )
+    // console.log(term)
     const esearchResult = await esearch(NCBIDatabase.nuccore, term, true)
     esummaryResult = (await esummary(esearchResult.params)) as ESummaryNuccore[]
     if (esummaryResult.length === 0) {
@@ -70,7 +76,8 @@ async function search(): Promise<void> {
       searching = false
       // ---------------------
       searchStatusMessage = `Downloading complete sequence records.`
-      const nBatches = Math.min(accs.length, 5)
+      const gbRecSets: GBSet[] = []
+      const nBatches = Math.min(accs.length, 10)
       const batchSize = Math.round(accs.length / nBatches)
       gbseqRemaining += accs.length
       searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
@@ -78,22 +85,32 @@ async function search(): Promise<void> {
         const batch = accs.slice(i, i + batchSize)
         setTimeout(async () => {
           const gbsp = await getSeqRecords('nuccore', batch)
+          gbRecSets.push(gbsp)
           // $_db_main.put(gbsp, 'gbseq')
+          // await insertGbSeqRecords(gbsp)
           gbseqRemaining -= gbsp.length
           searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
+          if (gbseqRemaining === 0) {
+            searchStatusMessage = `Storing complete sequence records.`
+            for (let i = 0; i < gbRecSets.length; i++) {
+              const gbRecSet = gbRecSets[i]
+              await insertGbSeqRecords(gbRecSet)
+            }
+            searchStatusMessage = `Storing complete sequence records: done.`
+          }
         }, Math.random() * 10000)
       }
       // ---------------------
-      searchStatusMessage = `Downloading taxonomy records.`
-      const p = new EutilParams()
-      p.db = 'taxonomy'
-      p.ids = taxids
-      p.retmode = 'xml'
-      const _ = (await efetch(p)) as TaxaSet[]
-      let taxa: TaxaSet = []
-      for (const taxaSet of _) {
-        taxa = [...taxa, ...taxaSet]
-      }
+      // searchStatusMessage = `Downloading taxonomy records.`
+      // const p = new EutilParams()
+      // p.db = 'taxonomy'
+      // p.ids = taxids
+      // p.retmode = 'xml'
+      // const _ = (await efetch(p)) as TaxaSet[]
+      // let taxa: TaxaSet = []
+      // for (const taxaSet of _) {
+      //   taxa = [...taxa, ...taxaSet]
+      // }
       // $_db_main.put(taxa, 'taxon')
       // ---------------------
     }
@@ -108,6 +125,7 @@ async function search(): Promise<void> {
 
 onMount(async () => {
   // _db_main = await db_main
+  dbs = await databases
   validateSearchTerm()
 })
 

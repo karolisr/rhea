@@ -188,8 +188,8 @@ export const schemaSequences = sql`
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_keywords" (
     "accession_version" varchar NOT NULL,
-    "keyword_id" integer PRIMARY KEY NOT NULL,
     "keyword" varchar NOT NULL,
+    "keyword_id" integer PRIMARY KEY NOT NULL,
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
   );
   ------------------------------------------------------------------------------
@@ -247,15 +247,15 @@ export const schemaSequences = sql`
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_seqids" (
     "accession_version" varchar NOT NULL,
-    "seqid_id" integer PRIMARY KEY NOT NULL,
     "seqid" varchar NOT NULL,
+    "seqid_id" integer PRIMARY KEY NOT NULL,
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
   );
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_secondary_accns" (
     "accession_version" varchar NOT NULL,
-    "accn_id" integer PRIMARY KEY NOT NULL,
     "accn" varchar NOT NULL,
+    "accn_id" integer PRIMARY KEY NOT NULL,
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
   );
   ------------------------------------------------------------------------------

@@ -53,15 +53,15 @@ async function eutil(util: Eutil, params: EutilParams): Promise<Response> {
 }
 
 function _batch(params: EutilParams): void {
-  if (!params.usehistory) {
+  if (params.usehistory === undefined) {
     params.last = true
   } else {
     params.last = false
   }
-  if (!params.retmax || Number.isNaN(params.retmax)) {
+  if (params.retmax === undefined || Number.isNaN(params.retmax)) {
     params.retmax = EutilsRetMax
   }
-  if (!params.retstart) {
+  if (params.retstart === undefined) {
     params.retstart = 0
   } else {
     params.retstart += params.retmax

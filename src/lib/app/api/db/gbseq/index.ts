@@ -1,27 +1,73 @@
-import Database from '@tauri-apps/plugin-sql'
 import type { GBFeatureSet, GBSeq } from '$lib/ncbi/types/GBSet'
-import { beginTransaction, commitTransaction, dbPathSequences } from '../'
+import { DB, beginTransaction, commitTransaction, vacuum } from '../'
 import { getTaxId } from '$lib/ncbi/utils'
-import sql, { Sql, bulk } from 'sql-template-tag'
+import sql, { Sql, bulk, empty } from 'sql-template-tag'
+import databases from '$lib/app/svelte-stores/databases'
+
+function nValsPerSqlInsertSet(sql: Sql) {
+  return sql.strings.slice(1, -1).join('').split('),(')[0].split(',').length
+}
 
 export async function insertGbSeqRecords(records: GBSeq[]) {
-  const db: Database = await Database.load(dbPathSequences)
-  try {
-    const _sqls: Sql[] = _prep(records)
-    await beginTransaction(db)
-    for (let i = 0; i < _sqls.length; i++) {
-      const _sql = _sqls[i]
-      await db.execute(_sql.text, _sql.values)
+  let dbs: Awaited<typeof databases> = await databases
+  let db: DB | undefined = undefined
+  const unsubscribe = dbs.subscribe(async (_) => {
+    db = _.dbSequences
+  })
+  if (db !== undefined) {
+    const nBatchesRec = 1
+    // const nBatchesRec = Math.floor(Math.min(records.length, records.length))
+    const batchSizeRec = Math.floor(records.length / nBatchesRec)
+    for (let i = 0; i < records.length; i += batchSizeRec) {
+      const batchRec = records.slice(i, i + batchSizeRec)
+      try {
+        const _sqls: Sql[] = _prep(batchRec)
+        await beginTransaction(db)
+        for (let j = 0; j < _sqls.length; j++) {
+          const _sql = _sqls[j]
+          const sqlValsCount = _sql.values.length
+          if (sqlValsCount > 0) {
+            // ----------------------------------------------------------------
+            const sqlSetSize = nValsPerSqlInsertSet(_sql)
+            const batchSizeVal = Math.floor(750 / sqlSetSize) * sqlSetSize
+            for (let k = 0; k < sqlValsCount; k += batchSizeVal) {
+              // console.log(`Adding records starting at: ${k + 1}`)
+              const valsStrPieces = []
+              const batchVal = _sql.values.slice(k, k + batchSizeVal)
+              for (let l = 0; l < batchVal.length; l += sqlSetSize) {
+                valsStrPieces.push(
+                  `${new Array(sqlSetSize)
+                    .fill(1)
+                    .map((v, z) => `$${l + z + 1}`)
+                    .join()}`
+                )
+              }
+              const sqlText =
+                _sql.strings[0] +
+                valsStrPieces.join('),(') +
+                '' +
+                _sql.strings[_sql.strings.length - 1]
+              await (db as DB).execute(sqlText, batchVal)
+            }
+            // ----------------------------------------------------------------
+          }
+        }
+        await commitTransaction(db)
+        console.log('insertGbSeqRecords: Done.')
+      } catch (error) {
+        await commitTransaction(db)
+        console.error('Error in insertGbSeqRecords:', error)
+      }
     }
-    await commitTransaction(db)
-    await db.close()
-  } catch (error) {
-    console.error('Error in insertGbSeqRecords:', error)
-    await db.close()
+    console.log('insertGbSeqRecords: Vacuuming Begin.')
+    await vacuum(db)
+    console.log('insertGbSeqRecords: Vacuuming Done.')
   }
+  unsubscribe()
 }
 
 function _struccommentitems(values: (string | number | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_struc_comment_items (
@@ -43,6 +89,7 @@ function _struccommentitems(values: (string | number | undefined)[][]) {
 }
 
 function _struccomments(values: (string | number | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_struc_comments (
@@ -60,6 +107,7 @@ function _struccomments(values: (string | number | undefined)[][]) {
 }
 
 function _commentparagraphs(values: (string | number)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_comment_paragraphs (
@@ -79,6 +127,7 @@ function _commentparagraphs(values: (string | number)[][]) {
 }
 
 function _comments(values: (string | number | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_comments (
@@ -96,6 +145,7 @@ function _comments(values: (string | number | undefined)[][]) {
 }
 
 function _altseqdataitems(values: (string | number | boolean | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_alt_seq_items (
@@ -125,6 +175,7 @@ function _altseqdataitems(values: (string | number | boolean | undefined)[][]) {
 }
 
 function _altseqdata(values: (string | number)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_alt_seq_data (
@@ -142,6 +193,7 @@ function _altseqdata(values: (string | number)[][]) {
 }
 
 function _secondaryaccns(values: string[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_secondary_accns ("accession_version", "accn")
@@ -152,6 +204,7 @@ function _secondaryaccns(values: string[][]) {
 }
 
 function _seqids(values: string[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_seqids ("accession_version", "seqid")
@@ -162,6 +215,7 @@ function _seqids(values: string[][]) {
 }
 
 function _keywords(values: string[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_keywords (
@@ -175,6 +229,7 @@ function _keywords(values: string[][]) {
 }
 
 function _authors(values: (string | number)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_authors (
@@ -194,6 +249,7 @@ function _authors(values: (string | number)[][]) {
 }
 
 function _xrefs(values: (string | number)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_xrefs (
@@ -218,6 +274,7 @@ function _xrefs(values: (string | number)[][]) {
 }
 
 function _references(values: (string | number | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_references (
@@ -241,6 +298,7 @@ function _references(values: (string | number | undefined)[][]) {
 }
 
 function _qualifiers(values: (string | number | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_qualifiers (
@@ -263,6 +321,7 @@ function _qualifiers(values: (string | number | undefined)[][]) {
 }
 
 function _intervals(values: (string | number | boolean | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_intervals (
@@ -289,6 +348,7 @@ function _intervals(values: (string | number | boolean | undefined)[][]) {
 }
 
 function _features(values: (string | number | boolean | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_features (
@@ -312,6 +372,7 @@ function _features(values: (string | number | boolean | undefined)[][]) {
 }
 
 function _featureSets(values: (string | number | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_feature_sets (
@@ -329,6 +390,7 @@ function _featureSets(values: (string | number | undefined)[][]) {
 }
 
 function _sequences(values: (string | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_sequences ("accession_version", sequence)
@@ -339,6 +401,7 @@ function _sequences(values: (string | undefined)[][]) {
 }
 
 function _metadata(values: (string | number | undefined)[][]) {
+  if (values.length === 0) return empty
   return sql`
     INSERT INTO
       gb_records (
@@ -655,7 +718,9 @@ function _prep(records: GBSeq[]): Sql[] {
       }
     }
 
-    sequenceVs.push([accVer, r.GBSeq_sequence])
+    if (r.GBSeq_sequence !== undefined) {
+      sequenceVs.push([accVer, r.GBSeq_sequence])
+    }
     metadataVs.push([
       accVer,
       taxid,
@@ -681,27 +746,27 @@ function _prep(records: GBSeq[]): Sql[] {
       r.GBSeq_update_release
     ])
   }
-  const sqlMetadata = _metadata(metadataVs)
-  const sqlSequences = _sequences(sequenceVs)
-  const sqlFeatureSets = _featureSets(featSetVs)
-  const sqlFeatures = _features(featVs)
 
-  const rv = [sqlMetadata, sqlSequences, sqlFeatureSets, sqlFeatures]
-
-  if (intervalVs.length > 0) rv.push(_intervals(intervalVs))
-  if (qualifierVs.length > 0) rv.push(_qualifiers(qualifierVs))
-  if (referenceVs.length > 0) rv.push(_references(referenceVs))
-  if (xRefVs.length > 0) rv.push(_xrefs(xRefVs))
-  if (authorVs.length > 0) rv.push(_authors(authorVs))
-  if (keywordVs.length > 0) rv.push(_keywords(keywordVs))
-  if (altSeqDataVs.length > 0) rv.push(_altseqdata(altSeqDataVs))
-  if (altSeqDataItemVs.length > 0) rv.push(_altseqdataitems(altSeqDataItemVs))
-  if (seqIdVs.length > 0) rv.push(_seqids(seqIdVs))
-  if (secondaryAccnVs.length > 0) rv.push(_secondaryaccns(secondaryAccnVs))
-  if (commVs.length > 0) rv.push(_comments(commVs))
-  if (commParaVs.length > 0) rv.push(_commentparagraphs(commParaVs))
-  if (strucCommVs.length > 0) rv.push(_struccomments(strucCommVs))
-  if (strucCommItemVs.length > 0) rv.push(_struccommentitems(strucCommItemVs))
+  const rv = [
+    _metadata(metadataVs),
+    _sequences(sequenceVs),
+    _featureSets(featSetVs),
+    _features(featVs),
+    _intervals(intervalVs),
+    _qualifiers(qualifierVs),
+    _references(referenceVs),
+    _xrefs(xRefVs),
+    _authors(authorVs),
+    _keywords(keywordVs),
+    _altseqdata(altSeqDataVs),
+    _altseqdataitems(altSeqDataItemVs),
+    _seqids(seqIdVs),
+    _secondaryaccns(secondaryAccnVs),
+    _comments(commVs),
+    _commentparagraphs(commParaVs),
+    _struccomments(strucCommVs),
+    _struccommentitems(strucCommItemVs)
+  ]
 
   return rv
 }
