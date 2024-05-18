@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount, onDestroy } from 'svelte'
+import { onMount, onDestroy, tick } from 'svelte'
 import { v4 as uuid } from 'uuid'
 import { max, min } from '$lib'
 
@@ -24,7 +24,9 @@ export let uid: string = uuid()
 export let minRowH: number
 export let minColW: number
 export let rowHs: number[]
+let rowHsPrev: number[] = []
 export let colWs: number[]
+let colWsPrev: number[] = []
 export let rowHsStr: string
 export let colWsStr: string
 export let sizerSize: number = 7
@@ -170,6 +172,44 @@ function resizeGridElementEnd(_: MouseEvent) {
 
   document.body.style.cursor = 'default'
 }
+
+async function collapseGridElement(evt: MouseEvent) {
+  resizeGridElementBegin(evt)
+
+  let elementIndex: number | null = null
+  let sizes: number[] | null = null
+  let prevSizes: number[] | null = null
+
+  if (colResizing !== null) {
+    elementIndex = colResizing as number
+    sizes = colWs
+    prevSizes = colWsPrev
+  } else if (rowResizing !== null) {
+    elementIndex = rowResizing as number
+    sizes = rowHs
+    prevSizes = rowHsPrev
+  }
+
+  if (elementIndex !== null && sizes !== null && prevSizes !== null) {
+    if (sizes[elementIndex] !== 0) {
+      prevSizes[elementIndex] = sizes[elementIndex]
+      sizes[elementIndex] = 0
+    } else {
+      sizes[elementIndex] = prevSizes[elementIndex]
+    }
+  }
+
+  if (colResizing !== null) {
+    colWs = sizes as number[]
+    colWsPrev = prevSizes as number[]
+  } else if (rowResizing !== null) {
+    rowHs = sizes as number[]
+    rowHsPrev = prevSizes as number[]
+  }
+  await tick()
+  dispatchEvent(resizeEvt)
+  resizeGridElementEnd(evt)
+}
 </script>
 
 <div
@@ -180,13 +220,17 @@ function resizeGridElementEnd(_: MouseEvent) {
     {#each rowHs as rowH, row}
       {#if rowH !== -1 && !fixedHRows.includes(row)}
         <grid-sizer-h
+          class="{rowHs[row] === 0 ? 'collapsed' : ''}"
           style:grid-row="{row + 1}/{row + 2}"
           style:grid-column="1/{nCol + 1}">
           <div
             id="{uid}-row-sizer-{row}"
-            on:mousedown="{resizeGridElementBegin}"
+            on:mousedown="{rowHs[row] === 0 ? null : resizeGridElementBegin}"
+            on:dblclick="{collapseGridElement}"
             role="none"
-            style:top="{rowHs[row] - 0.5 - sizerSize / 2}px"
+            style:top="{rowHs[row] === 0
+              ? rowHs[row]
+              : rowHs[row] - 0.5 - sizerSize / 2}px"
             style:height="{sizerSize}px">
           </div>
         </grid-sizer-h>
@@ -197,13 +241,17 @@ function resizeGridElementEnd(_: MouseEvent) {
     {#each colWs as colW, col}
       {#if colW !== -1 && !fixedWCols.includes(col)}
         <grid-sizer-v
+          class="{colWs[col] === 0 ? 'collapsed' : ''}"
           style:grid-row="1/{nRow + 1}"
           style:grid-column="{col + 1}/{col + 2}">
           <div
             id="{uid}-col-sizer-{col}"
-            on:mousedown="{resizeGridElementBegin}"
+            on:mousedown="{colWs[col] === 0 ? null : resizeGridElementBegin}"
+            on:dblclick="{collapseGridElement}"
             role="none"
-            style:left="{colWs[col] - 0.5 - sizerSize / 2}px"
+            style:left="{colWs[col] === 0
+              ? colWs[col]
+              : colWs[col] - 0.5 - sizerSize / 2}px"
             style:width="{sizerSize}px">
           </div>
         </grid-sizer-v>

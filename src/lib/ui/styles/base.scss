@@ -142,3 +142,18 @@ grid-sizer-v > div:hover,
 grid-sizer-v > div:active {
   background-color: rgba($color: $A400, $alpha: 0.35);
 }
+
+grid-sizer-h.collapsed {
+  border-block-end-style: none;
+}
+
+grid-sizer-v.collapsed{
+  border-inline-end-style: none;
+}
+
+grid-sizer-h.collapsed > div:hover,
+grid-sizer-h.collapsed > div:active,
+grid-sizer-v.collapsed > div:hover,
+grid-sizer-v.collapsed > div:active {
+  background-color: rgba($color: $B400, $alpha: 0.35);
+}
