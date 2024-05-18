@@ -298,7 +298,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
     {:else if rl.fieldsToShow.length === 0}
       <pre>No fields to display.</pre>
     {:else if maxRowsVis == 0}
-      <pre>Not enough space.</pre>
+      <div style="margin: auto;">Not enough space to display the table.</div>
     {:else}
       <!-- table-scroll-container BEG -->
       {initColWs()}

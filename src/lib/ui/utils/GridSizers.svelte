@@ -195,6 +195,7 @@ async function collapseGridElement(evt: MouseEvent) {
       prevSizes[elementIndex] = sizes[elementIndex]
       sizes[elementIndex] = 0
     } else {
+      if (prevSizes[elementIndex] === 0) prevSizes[elementIndex] = 34
       sizes[elementIndex] = prevSizes[elementIndex]
     }
   }
@@ -225,7 +226,9 @@ async function collapseGridElement(evt: MouseEvent) {
           style:grid-column="1/{nCol + 1}">
           <div
             id="{uid}-row-sizer-{row}"
-            on:mousedown="{rowHs[row] === 0 ? null : resizeGridElementBegin}"
+            on:mousedown="{rowHs[row] === 0 && minRowH !== 0
+              ? null
+              : resizeGridElementBegin}"
             on:dblclick="{collapseGridElement}"
             role="none"
             style:top="{rowHs[row] === 0
@@ -246,7 +249,9 @@ async function collapseGridElement(evt: MouseEvent) {
           style:grid-column="{col + 1}/{col + 2}">
           <div
             id="{uid}-col-sizer-{col}"
-            on:mousedown="{colWs[col] === 0 ? null : resizeGridElementBegin}"
+            on:mousedown="{colWs[col] === 0 && minColW !== 0
+              ? null
+              : resizeGridElementBegin}"
             on:dblclick="{collapseGridElement}"
             role="none"
             style:left="{colWs[col] === 0
