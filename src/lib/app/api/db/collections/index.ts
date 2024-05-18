@@ -46,7 +46,8 @@ export const _getCollections = async (
                   parent_id
               `
             : empty}
-        `};
+        `}
+    ;
   `
   const result = await db.select(
     _sql.text.replace('table_name', tableName),
@@ -109,7 +110,8 @@ export const createCollection = async (
         ${label},
         ${notes}
       )
-    ON CONFLICT ("id") DO NOTHING;
+    ON CONFLICT ("id") DO NOTHING
+    ;
   `
   await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
   return id
@@ -124,7 +126,8 @@ export const deleteCollection = async (
     const _sql = sql`
       DELETE FROM table_name
       WHERE
-        "id" = ${id};
+        "id" = ${id}
+      ;
     `
     await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
     return id
@@ -144,7 +147,8 @@ export const relabelCollection = async (
     SET
       label = ${label}
     WHERE
-      id = ${id};
+      id = ${id}
+    ;
   `
   await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
   return label

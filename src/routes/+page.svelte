@@ -153,8 +153,6 @@ div {
   align-content: center;
   text-align: center;
   background-color: white;
-  // overflow-x: hidden;
-  // overflow-y: scroll;
 }
 
 .list-container {

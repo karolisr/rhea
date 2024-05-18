@@ -20,7 +20,8 @@ onMount(async () => {
       INNER JOIN tx_names ON tx_names.tax_id = tx_assoc_nodes_images.tax_id
       INNER JOIN tx_images ON tx_images.id = tx_assoc_nodes_images.img_id
     WHERE
-      tx_names.name LIKE '%physalis%';
+      tx_names.name LIKE '%physalis%'
+    ;
   `.text)
 })
 </script>

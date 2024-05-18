@@ -20,7 +20,8 @@ export async function addSeqRecsToCollection(accs: string[], collId: string) {
         assoc_collections_records ("id", "record_id")
       VALUES
         ${bulk(values)}
-      ON CONFLICT ("id", "record_id") DO NOTHING;
+      ON CONFLICT ("id", "record_id") DO NOTHING
+      ;
     `
     await db.execute(_sql.text, _sql.values)
   }

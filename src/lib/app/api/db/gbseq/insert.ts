@@ -87,7 +87,8 @@ function _struccommentitems(values: (string | number | undefined)[][]) {
       "accession_version",
       "struc_comment_id",
       "struc_comment_item_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -105,7 +106,8 @@ function _struccomments(values: (string | number | undefined)[][]) {
     ON CONFLICT (
       "accession_version",
       "struc_comment_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -125,7 +127,8 @@ function _commentparagraphs(values: (string | number)[][]) {
       "accession_version",
       "comment_id",
       "paragraph_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -143,7 +146,8 @@ function _comments(values: (string | number | undefined)[][]) {
     ON CONFLICT (
       "accession_version",
       "comment_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -173,7 +177,8 @@ function _altseqdataitems(values: (string | number | boolean | undefined)[][]) {
       "accession_version",
       "alt_seq_data_id",
       "alt_seq_item_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -191,7 +196,8 @@ function _altseqdata(values: (string | number)[][]) {
     ON CONFLICT (
       "accession_version",
       "alt_seq_data_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -202,7 +208,8 @@ function _secondaryaccns(values: string[][]) {
       gb_secondary_accns ("accession_version", "accn")
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accn_id") DO NOTHING;
+    ON CONFLICT ("accn_id") DO NOTHING
+    ;
   `
 }
 
@@ -213,7 +220,8 @@ function _seqids(values: string[][]) {
       gb_seqids ("accession_version", "seqid")
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("seqid_id") DO NOTHING;
+    ON CONFLICT ("seqid_id") DO NOTHING
+    ;
   `
 }
 
@@ -227,7 +235,8 @@ function _keywords(values: string[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("keyword_id") DO NOTHING;
+    ON CONFLICT ("keyword_id") DO NOTHING
+    ;
   `
 }
 
@@ -247,7 +256,8 @@ function _authors(values: (string | number)[][]) {
       "accession_version",
       "reference_id",
       "author_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -272,7 +282,8 @@ function _xrefs(values: (string | number)[][]) {
       "feature_id",
       "reference_id",
       "xref_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -296,7 +307,8 @@ function _references(values: (string | number | undefined)[][]) {
     ON CONFLICT (
       "accession_version",
       "reference_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -319,7 +331,8 @@ function _qualifiers(values: (string | number | undefined)[][]) {
       "feature_set_id",
       "feature_id",
       "qualifier_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -346,7 +359,8 @@ function _intervals(values: (string | number | boolean | undefined)[][]) {
       "feature_set_id",
       "feature_id",
       "interval_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -370,7 +384,8 @@ function _features(values: (string | number | boolean | undefined)[][]) {
       "accession_version",
       "feature_set_id",
       "feature_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -388,7 +403,8 @@ function _featureSets(values: (string | number | undefined)[][]) {
     ON CONFLICT (
       "accession_version",
       "feature_set_id"
-    ) DO NOTHING;
+    ) DO NOTHING
+    ;
   `
 }
 
@@ -399,7 +415,8 @@ function _sequences(values: (string | undefined)[][]) {
       gb_sequences ("accession_version", sequence)
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version") DO NOTHING;
+    ON CONFLICT ("accession_version") DO NOTHING
+    ;
   `
 }
 
@@ -433,7 +450,8 @@ function _metadata(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version") DO NOTHING;
+    ON CONFLICT ("accession_version") DO NOTHING
+    ;
   `
 }
 

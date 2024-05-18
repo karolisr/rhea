@@ -16,7 +16,8 @@ export async function getSeqRecList() {
       SELECT
         *
       FROM
-        record_list;
+        record_list
+      ;
     `
     rv = await db.select(_sql.text)
   }

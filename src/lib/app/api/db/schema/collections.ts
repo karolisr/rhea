@@ -10,7 +10,8 @@ export const schemaCollections = sql`
     "label" varchar NOT NULL,
     "notes" varchar,
     FOREIGN KEY (parent_id) REFERENCES "collections" (id) ON DELETE CASCADE
-  );
+  )
+  ;
   INSERT INTO
     collections (
       "parent_id",
@@ -20,9 +21,11 @@ export const schemaCollections = sql`
     )
   VALUES
     (NULL, "ROOT", "ROOT", "")
-  ON CONFLICT ("id") DO NOTHING;
+  ON CONFLICT ("id") DO NOTHING
+  ;
   ------------------------------------------------------------------------------
-  DROP TABLE IF EXISTS search_results;
+  DROP TABLE IF EXISTS search_results
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "search_results" (
     "parent_id" varchar,
@@ -30,7 +33,8 @@ export const schemaCollections = sql`
     "label" varchar NOT NULL,
     "notes" varchar,
     FOREIGN KEY (parent_id) REFERENCES "search_results" (id) ON DELETE CASCADE
-  );
+  )
+  ;
   -- DROP TABLE IF EXISTS assoc_search_results_records;
   -- CREATE TABLE IF NOT EXISTS "assoc_search_results_records" (
   --   "id" varchar NOT NULL,
@@ -47,9 +51,11 @@ export const schemaCollections = sql`
     )
   VALUES
     (NULL, "ROOT", "ROOT", "")
-  ON CONFLICT ("id") DO NOTHING;
+  ON CONFLICT ("id") DO NOTHING
+  ;
   ------------------------------------------------------------------------------
-  DROP TABLE IF EXISTS seqtype;
+  DROP TABLE IF EXISTS seqtype
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "seqtype" (
     "parent_id" varchar,
@@ -57,7 +63,8 @@ export const schemaCollections = sql`
     "label" varchar NOT NULL,
     "notes" varchar,
     FOREIGN KEY (parent_id) REFERENCES "seqtype" (id) ON DELETE CASCADE
-  );
+  )
+  ;
   -- DROP TABLE IF EXISTS assoc_seqtype_records;
   -- CREATE TABLE IF NOT EXISTS "assoc_seqtype_records" (
   --   "id" varchar NOT NULL,
@@ -83,6 +90,7 @@ export const schemaCollections = sql`
     ),
     ("ROOT", "RNA", "RNA", ""),
     ("ROOT", "AA", "AA", "")
-  ON CONFLICT ("id") DO NOTHING;
+  ON CONFLICT ("id") DO NOTHING
+  ;
   ------------------------------------------------------------------------------
 `

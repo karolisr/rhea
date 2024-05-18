@@ -42,7 +42,8 @@ async function getSuggestions() {
         )
         AND name GLOB ${_query}
       LIMIT
-        10;
+        10
+      ;
     `
     results = await $dbs.dbTaxonomy.select<Indexed[]>(_sql.text, _sql.values)
     results = results

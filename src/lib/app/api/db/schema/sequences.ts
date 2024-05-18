@@ -55,13 +55,15 @@ export const schemaSequences = sql`
     -- + comment_set?: GBComment[]
     -- + struc_comments?: GBStrucComment[]
     -- FOREIGN KEY (tax_id) REFERENCES "tx_nodes" (tax_id)
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_sequences" (
     "accession_version" varchar PRIMARY KEY NOT NULL,
     "sequence" varchar NOT NULL,
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_feature_sets" (
     "accession_version" varchar NOT NULL,
@@ -73,7 +75,8 @@ export const schemaSequences = sql`
       "accession_version",
       "feature_set_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_features" (
     "accession_version" varchar NOT NULL,
@@ -99,7 +102,8 @@ export const schemaSequences = sql`
       "feature_set_id",
       "feature_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_intervals" (
     "accession_version" varchar NOT NULL,
@@ -127,7 +131,8 @@ export const schemaSequences = sql`
       "feature_id",
       "interval_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_qualifiers" (
     "accession_version" varchar NOT NULL,
@@ -151,7 +156,8 @@ export const schemaSequences = sql`
       "feature_id",
       "qualifier_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_xrefs" (
     "reference_id" integer NOT NULL,
@@ -184,14 +190,16 @@ export const schemaSequences = sql`
       "feature_id",
       "xref_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_keywords" (
     "accession_version" varchar NOT NULL,
     "keyword" varchar NOT NULL,
     "keyword_id" integer PRIMARY KEY NOT NULL,
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_alt_seq_data" (
     "accession_version" varchar NOT NULL,
@@ -203,7 +211,8 @@ export const schemaSequences = sql`
       "accession_version",
       "alt_seq_data_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_alt_seq_items" (
     "alt_seq_data_id" integer NOT NULL,
@@ -243,21 +252,24 @@ export const schemaSequences = sql`
       "accession_version",
       "alt_seq_item_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_seqids" (
     "accession_version" varchar NOT NULL,
     "seqid" varchar NOT NULL,
     "seqid_id" integer PRIMARY KEY NOT NULL,
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_secondary_accns" (
     "accession_version" varchar NOT NULL,
     "accn" varchar NOT NULL,
     "accn_id" integer PRIMARY KEY NOT NULL,
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_references" (
     "accession_version" varchar NOT NULL,
@@ -276,7 +288,8 @@ export const schemaSequences = sql`
       "accession_version",
       "reference_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_authors" (
     "accession_version" varchar NOT NULL,
@@ -295,7 +308,8 @@ export const schemaSequences = sql`
       "reference_id",
       "author_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_comments" (
     "accession_version" varchar NOT NULL,
@@ -307,7 +321,8 @@ export const schemaSequences = sql`
       "accession_version",
       "comment_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_comment_paragraphs" (
     "accession_version" varchar NOT NULL,
@@ -320,7 +335,8 @@ export const schemaSequences = sql`
       "comment_id",
       "paragraph_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_struc_comments" (
     "accession_version" varchar NOT NULL,
@@ -332,7 +348,8 @@ export const schemaSequences = sql`
       "accession_version",
       "struc_comment_id"
     )
-  );
+  )
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "gb_struc_comment_items" (
     "accession_version" varchar NOT NULL,
@@ -353,7 +370,8 @@ export const schemaSequences = sql`
       "struc_comment_id",
       "struc_comment_item_id"
     )
-  );
+  )
+  ;
   ----------------------------------------------------------------------------
   -- DROP TABLE IF EXISTS assoc_collections_records;
   ----------------------------------------------------------------------------
@@ -363,7 +381,8 @@ export const schemaSequences = sql`
     PRIMARY KEY ("id", "record_id"),
     FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version)
     -- FOREIGN KEY (id) REFERENCES "collections" (id)
-  );
+  )
+  ;
   ----------------------------------------------------------------------------
   -- Views -------------------------------------------------------------------
   ----------------------------------------------------------------------------
@@ -382,6 +401,7 @@ export const schemaSequences = sql`
     gb_records.moltype,
     gb_records.definition
   FROM
-    gb_records;
+    gb_records
+  ;
   ----------------------------------------------------------------------------
 `
