@@ -12,6 +12,7 @@ onMount(() => {
   addEventListener('mousemove', resizeCol, { capture: true })
   addEventListener('mouseup', resizeGridElementEnd, { capture: true })
   addEventListener('mousemove', resizeRow, { capture: true })
+  dispatchEvent(resizeEvt)
 })
 
 onDestroy(() => {
@@ -136,10 +137,12 @@ function resizeGridElementBegin(evt: MouseEvent) {
 function resizeCol(evt: MouseEvent) {
   if (colResizing !== null) {
     const d = evt.x - (colPrevX as number)
-    colWs[colResizing as number] = min(
+    let newColW = min(
       max(minColW, (colPrevWidth as number) + d),
       colMaxW as number
     )
+    if (newColW < sizerSize * 2) newColW = 0
+    colWs[colResizing as number] = newColW
     dispatchEvent(resizeEvt)
   }
 }
@@ -147,10 +150,12 @@ function resizeCol(evt: MouseEvent) {
 function resizeRow(evt: MouseEvent) {
   if (rowResizing !== null) {
     const d = evt.y - (rowPrevY as number)
-    rowHs[rowResizing as number] = min(
+    let newRowH = min(
       max(minRowH, (rowPrevHeight as number) + d),
       rowMaxH as number
     )
+    if (newRowH < sizerSize * 2) newRowH = 0
+    rowHs[rowResizing as number] = newRowH
     dispatchEvent(resizeEvt)
   }
 }
