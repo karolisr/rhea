@@ -386,13 +386,14 @@ export const schemaSequences = sql`
   ----------------------------------------------------------------------------
   -- Views -------------------------------------------------------------------
   ----------------------------------------------------------------------------
-  -- DROP VIEW IF EXISTS record_list;
+  -- DROP VIEW IF EXISTS record_list
+  -- ;
   CREATE VIEW IF NOT EXISTS record_list (
-    "accession_version",
-    "tax_id",
-    "length",
-    "moltype",
-    "definition"
+    "Accession",
+    "TaxID",
+    "Length",
+    "Type",
+    "Definition"
   ) AS
   SELECT
     gb_records.accession_version,
@@ -402,6 +403,16 @@ export const schemaSequences = sql`
     gb_records.definition
   FROM
     gb_records
+  ;
+  ----------------------------------------------------------------------------
+  -- DROP VIEW IF EXISTS records_in_collection_list
+  -- ;
+  CREATE VIEW IF NOT EXISTS records_in_collection_list AS
+  SELECT
+    *
+  FROM
+    assoc_collections_records
+    INNER JOIN record_list ON record_list.accession = assoc_collections_records.record_id
   ;
   ----------------------------------------------------------------------------
 `

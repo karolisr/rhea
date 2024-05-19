@@ -19,12 +19,10 @@ onDestroy(() => {
 
 export let tree: Tree
 export let uid: string
+export let selectedGroupUid: string | undefined = undefined
 export let selected: string | undefined = undefined
 export let relabelId: string | undefined = undefined
 export let expandedIds: Set<string>
-export let createNode: (parentId: string, label: string) => Promise<string>
-export let deleteNode: (id: string) => Promise<string | null>
-export let relabelNode: (id: string, label: string) => Promise<string>
 
 export let rebuild: number
 
@@ -39,9 +37,20 @@ export let createNodeEnabled: boolean
 export let deleteNodeEnabled: boolean
 export let relabelNodeEnabled: boolean
 
+export let createNode: (
+  parentId: string,
+  label: string
+) => Promise<string> = async () => ''
+export let deleteNode: (id: string) => Promise<string | null> = async () => null
+export let relabelNode: (
+  id: string,
+  label: string
+) => Promise<string> = async () => ''
+
 let _deleteNode: () => void = async () => {
   if (selected === tree.id) {
     selected = tree.parent_id ? tree.parent_id : undefined
+    selectedGroupUid = uid
   }
   await deleteNode(tree.id)
   rebuild += 1
@@ -49,6 +58,7 @@ let _deleteNode: () => void = async () => {
 
 let _createNode: (label: string) => void = async (label) => {
   selected = await createNode(tree.id, label)
+  selectedGroupUid = uid
   tree = await buildNode(db, tableName, rootLabel, tree.id, rootId)
   expandedIds.add(tree.id)
   expandedIds = expandedIds
@@ -89,11 +99,13 @@ const mousedownEvtListener = (e: MouseEvent) => {
     e.target.id === `${uid}-tree-${tree.id}`
   ) {
     selected = undefined
+    selectedGroupUid = undefined
   }
 }
 
 function select(e: MouseEvent) {
   selected = tree.id
+  selectedGroupUid = uid
 }
 
 async function toggleExpand() {
@@ -150,6 +162,7 @@ function showContextMenu(e: MouseEvent) {
 
 function elFocus(el: HTMLInputElement) {
   selected = tree.id
+  selectedGroupUid = uid
   el.focus()
   el.select()
   el.click()
@@ -160,7 +173,9 @@ function elFocus(el: HTMLInputElement) {
   <div id="{uid}-tree-{tree.id}" class="tree">
     <button
       id="collection-{tree.id}"
-      class="tree-node{selected === tree.id ? ' selected' : ''}"
+      class="tree-node{selected === tree.id && selectedGroupUid === uid
+        ? ' selected'
+        : ''}"
       on:click="{select}"
       on:dblclick="{toggleExpand}"
       on:contextmenu="{showContextMenu}">
@@ -197,6 +212,7 @@ function elFocus(el: HTMLInputElement) {
               tree="{chld}"
               bind:relabelId
               bind:selected
+              bind:selectedGroupUid
               bind:expandedIds
               bind:rebuild
               {db}

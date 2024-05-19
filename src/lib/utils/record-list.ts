@@ -15,9 +15,13 @@ export class RecordList<T> {
   private _filterField: keyof T
   private _filterQuery: T[typeof this._filterField] | undefined
 
-  constructor(items: T[], keyField: KnownKeys<T>) {
+  constructor(items: T[], keyField?: KnownKeys<T>) {
     this._allItems = items
-    this._keyField = keyField as keyof T
+    if (keyField !== undefined) {
+      this._keyField = keyField as keyof T
+    } else {
+      this._keyField = this.fields[0] as keyof T
+    }
     this._filterField = this.keyField
     this._sortFields = []
     this._sortDirections = []
@@ -65,8 +69,8 @@ export class RecordList<T> {
     if (this._fieldsToShow.length > 0) {
       return this._fieldsToShow as KnownKeys<T>[]
     } else {
-      // return this.fields as KnownKeys<T>[]
-      return [this.keyField] as KnownKeys<T>[]
+      return this.fields as KnownKeys<T>[]
+      // return [this.keyField] as KnownKeys<T>[]
     }
   }
 

@@ -6,6 +6,7 @@ import { buildNode } from '$lib'
 export let uid: string
 export let expanded = true
 export let selected: string | undefined = undefined
+export let selectedGroupUid: string | undefined = undefined
 
 export let db: DB
 export let tableName: string
@@ -33,20 +34,20 @@ export let createNode: (
   notes: string,
   db: DB,
   tableName: string
-) => Promise<string>
+) => Promise<string> = async () => ''
 
 export let deleteNode: (
   id: string,
   db: DB,
   tableName: string
-) => Promise<string | null>
+) => Promise<string | null> = async () => null
 
 export let relabelNode: (
   id: string,
   label: string,
   db: DB,
   tableName: string
-) => Promise<string>
+) => Promise<string> = async () => ''
 
 const _createNode = async (parentId: string, label: string) => {
   return createNode(parentId, label, '', db, tableName)
@@ -66,6 +67,7 @@ const _relabelNode = async (id: string, label: string) => {
     tree="{collTree}"
     bind:relabelId
     bind:selected
+    bind:selectedGroupUid
     bind:expandedIds
     bind:rebuild
     {db}

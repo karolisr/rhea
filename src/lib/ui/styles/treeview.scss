@@ -1,7 +1,7 @@
 .tree {
-  // background-color: $X050;
   overflow-x: hidden;
   overflow-y: scroll;
+  flex-grow: 0;
 }
 .tree > button.tree-node {
   background-color: $X100;

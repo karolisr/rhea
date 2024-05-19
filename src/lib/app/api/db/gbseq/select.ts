@@ -3,7 +3,7 @@ import type { IndexedUndefined } from '$lib/types'
 import databases from '$lib/app/svelte-stores/databases'
 import { DB } from '$lib/app/api/db'
 
-export async function getSeqRecList() {
+export async function getSeqRecList(collection: string) {
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | undefined = undefined
   const unsubscribe = dbs.subscribe((_) => {
@@ -16,10 +16,12 @@ export async function getSeqRecList() {
       SELECT
         *
       FROM
-        record_list
+        records_in_collection_list
+      WHERE
+        id = ${collection}
       ;
     `
-    rv = await db.select(_sql.text)
+    rv = await db.select(_sql.text, _sql.values)
   }
   unsubscribe()
   return rv

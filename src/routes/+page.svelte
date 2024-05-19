@@ -16,40 +16,52 @@ import { addSeqRecsToCollection } from '$lib/app/api/db/gbseq'
 
 let dbs: Awaited<typeof databases>
 
+let selectedGroupUid: string | undefined = 'collections-tree'
 let selectedColl: string | undefined = 'ROOT'
-let selectedAll: string | undefined = 'ROOT'
-let selectedTaxon: string | undefined = '1'
-let selectedSrch: string | undefined = undefined
+
+let selectedTaxon: string | undefined = undefined
+
 let activeRecordId: string | undefined = undefined
 let selectedRecordIds: string[] = []
 
-$: console.log(selectedRecordIds)
-$: xxx(selectedRecordIds)
-
-async function xxx(accs: string[]) {
+async function _addToCollection(accs: string[]) {
   if (selectedColl !== undefined) {
     await addSeqRecsToCollection(accs, selectedColl)
   }
 }
 
+async function _getSeqRecList(
+  collUid: string | undefined,
+  collection: string | undefined
+) {
+  if (collUid !== undefined && collection !== undefined) {
+    if (collUid.startsWith('collections-tree')) {
+      seqRecList = await getSeqRecList(collection)
+    } else {
+      seqRecList = []
+    }
+  } else {
+    seqRecList = []
+  }
+}
+
 let seqRecList: IndexedUndefined[]
-$: seqRecListRL = new RecordList<IndexedUndefined>(
-  seqRecList ?? [],
-  'accession_version'
-)
+
+$: _getSeqRecList(selectedGroupUid, selectedColl)
+
+$: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
 $: if (seqRecListRL) {
   seqRecListRL.fieldsToShow = [
-    'accession_version',
-    'tax_id',
-    'length',
-    'moltype',
-    'definition'
+    'Accession',
+    'TaxID',
+    'Length',
+    'Type',
+    'Definition'
   ]
 }
 
 onMount(async () => {
   dbs = await databases
-  seqRecList = await getSeqRecList()
 })
 </script>
 
@@ -61,61 +73,61 @@ onMount(async () => {
   minColW="{0}">
   {#if $dbs}
     <ResizableGrid
-      nRow="{4}"
+      nRow="{2}"
       nCol="{1}"
-      rowHs="{[150, 150, 150, 150]}"
+      rowHs="{[300, -1]}"
       colWs="{[-1]}"
       minRowH="{0}"
       enforceMaxSize="{false}">
-      <TreeView
-        uid="{'collections-tree'}"
-        expanded="{true}"
-        db="{$dbs.dbCollections}"
-        tableName="collections"
-        rootLabel="Collections"
-        contextMenuEnabled="{true}"
-        createNodeEnabled="{true}"
-        deleteNodeEnabled="{true}"
-        relabelNodeEnabled="{true}"
-        bind:selected="{selectedColl}"
-        createNode="{createCollection}"
-        deleteNode="{deleteCollection}"
-        relabelNode="{relabelCollection}" />
+      <div class="tree-container">
+        <TreeView
+          uid="{'collections-tree'}"
+          expanded="{true}"
+          db="{$dbs.dbCollections}"
+          tableName="collections"
+          rootLabel="Collections"
+          contextMenuEnabled="{true}"
+          createNodeEnabled="{true}"
+          deleteNodeEnabled="{true}"
+          relabelNodeEnabled="{true}"
+          bind:selected="{selectedColl}"
+          bind:selectedGroupUid
+          createNode="{createCollection}"
+          deleteNode="{deleteCollection}"
+          relabelNode="{relabelCollection}" />
 
-      <TreeView
-        uid="{'all-records-tree'}"
-        expanded="{true}"
-        db="{$dbs.dbCollections}"
-        tableName="seqtype"
-        rootLabel="All Records"
-        bind:selected="{selectedAll}"
-        createNode="{createCollection}"
-        deleteNode="{deleteCollection}"
-        relabelNode="{relabelCollection}" />
+        <TreeView
+          uid="{'all-records-tree'}"
+          expanded="{true}"
+          db="{$dbs.dbCollections}"
+          tableName="seqtype"
+          rootLabel="All Records"
+          bind:selected="{selectedColl}"
+          bind:selectedGroupUid />
 
-      <TreeView
-        uid="{'taxonomy-tree'}"
-        expanded="{true}"
-        db="{$dbs.dbTaxonomy}"
-        tableName="tree"
-        rootLabel="Taxonomy"
-        parentId="{'1'}"
-        rootId="{'1'}"
-        bind:selected="{selectedTaxon}"
-        createNode="{createCollection}"
-        deleteNode="{deleteCollection}"
-        relabelNode="{relabelCollection}" />
-
-      <TreeView
-        uid="{'search-results-tree'}"
-        expanded="{true}"
-        db="{$dbs.dbCollections}"
-        tableName="search_results"
-        rootLabel="Search Results"
-        bind:selected="{selectedSrch}"
-        createNode="{createCollection}"
-        deleteNode="{deleteCollection}"
-        relabelNode="{relabelCollection}" />
+        <TreeView
+          uid="{'search-results-tree'}"
+          expanded="{true}"
+          db="{$dbs.dbCollections}"
+          tableName="search_results"
+          rootLabel="Search Results"
+          bind:selected="{selectedColl}"
+          bind:selectedGroupUid
+          createNode="{createCollection}"
+          deleteNode="{deleteCollection}"
+          relabelNode="{relabelCollection}" />
+      </div>
+      <div class="tree-container">
+        <TreeView
+          uid="{'taxonomy-tree'}"
+          expanded="{true}"
+          db="{$dbs.dbTaxonomy}"
+          tableName="tree"
+          rootLabel="Taxonomy"
+          parentId="{'1'}"
+          rootId="{'1'}"
+          bind:selected="{selectedTaxon}" />
+      </div>
     </ResizableGrid>
   {:else}
     <div>Loading...</div>
@@ -128,9 +140,6 @@ onMount(async () => {
     colWs="{[-1]}"
     minRowH="{0}">
     <div class="list-container">
-      <!-- <div>{selectedColl ?? ''}</div> -->
-      <!-- <div>{selectedTaxon ?? ''}</div> -->
-      <!-- <div>{selectedAll ?? ''}</div> -->
       <TableView
         uid="seq-rec-list"
         rl="{seqRecListRL}"
@@ -142,7 +151,10 @@ onMount(async () => {
     </div>
     <div>
       {selectedColl
-        ? selectedColl + (activeRecordId ? `: ${activeRecordId}` : '')
+        ? selectedGroupUid +
+          ' : ' +
+          selectedColl +
+          (activeRecordId ? ` : ${activeRecordId}` : '')
         : ''}
     </div>
   </ResizableGrid>
@@ -160,5 +172,14 @@ div {
   text-align: unset;
   overflow-x: hidden;
   overflow-y: hidden;
+}
+
+.tree-container {
+  display: flex;
+  flex-direction: column;
+  align-content: unset;
+  text-align: unset;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 </style>
