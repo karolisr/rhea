@@ -201,7 +201,8 @@ function elFocus(el: HTMLInputElement) {
           on:change="{relabelNodeCompleteChange}"
           on:keydown="{relabelNodeCompleteKeyboard}" />
       {:else}
-        <span>{tree.label} ({String(tree.child_count)})</span>
+        <span>{tree.label}</span>
+        <!-- <span>{tree.label} ({String(tree.child_count)})</span> -->
       {/if}
     </button>
     {#if expandedIds.has(tree.id)}

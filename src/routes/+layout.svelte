@@ -29,7 +29,6 @@ onMount(async () => {
 onDestroy(async () => {
   themeChangeUnListener()
   fileDropUnListener()
-  // await $dbs.closeAll()
 })
 </script>
 
