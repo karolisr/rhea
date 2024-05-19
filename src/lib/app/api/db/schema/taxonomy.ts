@@ -15,9 +15,7 @@ export const schemaTaxonomy = sql`
     "start_stop" varchar(64) NOT NULL
   )
   ;
-  CREATE TABLE IF NOT EXISTS "tx_deleted_nodes" (
-    "tax_id" integer PRIMARY KEY NOT NULL
-  )
+  CREATE TABLE IF NOT EXISTS "tx_deleted_nodes" ("tax_id" integer PRIMARY KEY NOT NULL)
   ;
   CREATE TABLE IF NOT EXISTS "tx_citations" (
     "id" integer PRIMARY KEY NOT NULL,
@@ -61,10 +59,7 @@ export const schemaTaxonomy = sql`
   ;
   CREATE INDEX IF NOT EXISTS ix_tx_nodes_parent_tax_id ON "tx_nodes" ("parent_tax_id" ASC)
   ;
-  CREATE INDEX IF NOT EXISTS ix_tx_nodes_tax_id_parent_tax_id ON "tx_nodes" (
-    "tax_id" ASC,
-    "parent_tax_id" ASC
-  )
+  CREATE INDEX IF NOT EXISTS ix_tx_nodes_tax_id_parent_tax_id ON "tx_nodes" ("tax_id" ASC, "parent_tax_id" ASC)
   ;
   CREATE TABLE IF NOT EXISTS "tx_assoc_nodes_citations" (
     "tax_id" integer NOT NULL,

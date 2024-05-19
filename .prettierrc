@@ -24,7 +24,7 @@
   "functionCase": "upper",
   "identifierCase": "lower",
   "language": "sqlite",
-  "expressionWidth": 30,
+  "expressionWidth": 40,
   "linesBetweenQueries": 0,
 
   "printWidth": 80,

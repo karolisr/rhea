@@ -103,10 +103,7 @@ function _struccomments(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "struc_comment_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "struc_comment_id") DO NOTHING
     ;
   `
 }
@@ -143,10 +140,7 @@ function _comments(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "comment_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "comment_id") DO NOTHING
     ;
   `
 }
@@ -193,10 +187,7 @@ function _altseqdata(values: (string | number)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "alt_seq_data_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "alt_seq_data_id") DO NOTHING
     ;
   `
 }
@@ -229,10 +220,7 @@ function _keywords(values: string[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_keywords (
-        "accession_version",
-        "keyword"
-      )
+      gb_keywords ("accession_version", "keyword")
     VALUES
       ${bulk(values)}
     ON CONFLICT ("keyword_id") DO NOTHING
@@ -304,10 +292,7 @@ function _references(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "reference_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "reference_id") DO NOTHING
     ;
   `
 }
@@ -400,10 +385,7 @@ function _featureSets(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "feature_set_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "feature_set_id") DO NOTHING
     ;
   `
 }

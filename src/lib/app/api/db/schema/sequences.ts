@@ -71,10 +71,7 @@ export const schemaSequences = sql`
     "annot_source" varchar,
     -- + features: GBFeature[]
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-    PRIMARY KEY (
-      "accession_version",
-      "feature_set_id"
-    )
+    PRIMARY KEY ("accession_version", "feature_set_id")
   )
   ;
   ------------------------------------------------------------------------------
@@ -90,13 +87,7 @@ export const schemaSequences = sql`
     -- + intervals?: GBInterval[]
     -- + quals?: GBQualifier[]
     -- + xrefs?: GBXref[]
-    FOREIGN KEY (
-      accession_version,
-      feature_set_id
-    ) REFERENCES "gb_feature_sets" (
-      accession_version,
-      feature_set_id
-    ),
+    FOREIGN KEY (accession_version, feature_set_id) REFERENCES "gb_feature_sets" (accession_version, feature_set_id),
     PRIMARY KEY (
       "accession_version",
       "feature_set_id",
@@ -176,13 +167,7 @@ export const schemaSequences = sql`
       feature_set_id,
       feature_id
     ),
-    FOREIGN KEY (
-      accession_version,
-      reference_id
-    ) REFERENCES "gb_references" (
-      accession_version,
-      reference_id
-    ),
+    FOREIGN KEY (accession_version, reference_id) REFERENCES "gb_references" (accession_version, reference_id),
     PRIMARY KEY (
       "reference_id",
       "accession_version",
@@ -207,10 +192,7 @@ export const schemaSequences = sql`
     "name" varchar NOT NULL,
     -- + items?: GBAltSeqItem[]
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-    PRIMARY KEY (
-      "accession_version",
-      "alt_seq_data_id"
-    )
+    PRIMARY KEY ("accession_version", "alt_seq_data_id")
   )
   ;
   ------------------------------------------------------------------------------
@@ -229,13 +211,7 @@ export const schemaSequences = sql`
     "isgap" boolean,
     "last_accn" varchar,
     "value" varchar,
-    FOREIGN KEY (
-      accession_version,
-      alt_seq_data_id
-    ) REFERENCES "gb_alt_seq_data" (
-      accession_version,
-      alt_seq_data_id
-    ),
+    FOREIGN KEY (accession_version, alt_seq_data_id) REFERENCES "gb_alt_seq_data" (accession_version, alt_seq_data_id),
     FOREIGN KEY (
       accession_version,
       feature_set_id,
@@ -284,10 +260,7 @@ export const schemaSequences = sql`
     -- + authors?: GBAuthor[]
     -- + xref?: GBXref[]
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-    PRIMARY KEY (
-      "accession_version",
-      "reference_id"
-    )
+    PRIMARY KEY ("accession_version", "reference_id")
   )
   ;
   ------------------------------------------------------------------------------
@@ -296,13 +269,7 @@ export const schemaSequences = sql`
     "reference_id" integer NOT NULL,
     "author_id" integer NOT NULL,
     "author" varchar NOT NULL,
-    FOREIGN KEY (
-      accession_version,
-      reference_id
-    ) REFERENCES "gb_references" (
-      accession_version,
-      reference_id
-    ),
+    FOREIGN KEY (accession_version, reference_id) REFERENCES "gb_references" (accession_version, reference_id),
     PRIMARY KEY (
       "accession_version",
       "reference_id",
@@ -317,10 +284,7 @@ export const schemaSequences = sql`
     "type" varchar,
     -- + paragraphs: GBCommentParagraph[]
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-    PRIMARY KEY (
-      "accession_version",
-      "comment_id"
-    )
+    PRIMARY KEY ("accession_version", "comment_id")
   )
   ;
   ------------------------------------------------------------------------------
@@ -344,10 +308,7 @@ export const schemaSequences = sql`
     "name" varchar,
     -- + items: GBStrucCommentItem[]
     FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-    PRIMARY KEY (
-      "accession_version",
-      "struc_comment_id"
-    )
+    PRIMARY KEY ("accession_version", "struc_comment_id")
   )
   ;
   ------------------------------------------------------------------------------
@@ -358,13 +319,7 @@ export const schemaSequences = sql`
     "tag" varchar,
     "url" varchar,
     "value" varchar,
-    FOREIGN KEY (
-      accession_version,
-      struc_comment_id
-    ) REFERENCES "gb_struc_comments" (
-      accession_version,
-      struc_comment_id
-    ),
+    FOREIGN KEY (accession_version, struc_comment_id) REFERENCES "gb_struc_comments" (accession_version, struc_comment_id),
     PRIMARY KEY (
       "accession_version",
       "struc_comment_id",

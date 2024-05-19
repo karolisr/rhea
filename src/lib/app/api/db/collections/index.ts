@@ -30,16 +30,12 @@ export const _getCollections = async (
           ${idIsParentId
             ? sql`
                 WHERE
-                  parent_id IN (
-                    ${join(ids)}
-                  )
+                  parent_id IN (${join(ids)})
                   AND NOT id = parent_id
               `
             : sql`
                 WHERE
-                  id IN (
-                    ${join(ids)}
-                  )
+                  id IN (${join(ids)})
               `} ${count
             ? sql`
                 GROUP BY
@@ -97,12 +93,7 @@ export const createCollection = async (
   const id = uuid()
   const _sql = sql`
     INSERT INTO
-      table_name (
-        "parent_id",
-        "id",
-        "label",
-        "notes"
-      )
+      table_name ("parent_id", "id", "label", "notes")
     VALUES
       (
         ${parentId},

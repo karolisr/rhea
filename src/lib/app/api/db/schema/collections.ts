@@ -13,12 +13,7 @@ export const schemaCollections = sql`
   )
   ;
   INSERT INTO
-    collections (
-      "parent_id",
-      "id",
-      "label",
-      "notes"
-    )
+    collections ("parent_id", "id", "label", "notes")
   VALUES
     (NULL, "ROOT", "ROOT", "")
   ON CONFLICT ("id") DO NOTHING
@@ -43,12 +38,7 @@ export const schemaCollections = sql`
   --   FOREIGN KEY (id) REFERENCES "search_results" (id)
   -- );
   INSERT INTO
-    search_results (
-      "parent_id",
-      "id",
-      "label",
-      "notes"
-    )
+    search_results ("parent_id", "id", "label", "notes")
   VALUES
     (NULL, "ROOT", "ROOT", "")
   ON CONFLICT ("id") DO NOTHING
@@ -73,21 +63,11 @@ export const schemaCollections = sql`
   --   FOREIGN KEY (id) REFERENCES "seqtype" (id)
   -- );
   INSERT INTO
-    seqtype (
-      "parent_id",
-      "id",
-      "label",
-      "notes"
-    )
+    seqtype ("parent_id", "id", "label", "notes")
   VALUES
     (NULL, "ROOT", "ROOT", ""),
     ("ROOT", "DNA", "DNA", ""),
-    (
-      "DNA",
-      "GENOMES",
-      "Genomes",
-      ""
-    ),
+    ("DNA", "GENOMES", "Genomes", ""),
     ("ROOT", "RNA", "RNA", ""),
     ("ROOT", "AA", "AA", "")
   ON CONFLICT ("id") DO NOTHING
