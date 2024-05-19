@@ -66,10 +66,16 @@ export const schemaCollections = sql`
     seqtype ("parent_id", "id", "label", "notes")
   VALUES
     (NULL, "ROOT", "ROOT", ""),
-    ("ROOT", "DNA", "DNA", ""),
+    ("ROOT", "NUCLEO", "NT", ""),
+    ("NUCLEO", "DNA", "DNA", ""),
+    ("NUCLEO", "RNA", "RNA", ""),
+    ("ROOT", "AA", "AA", ""),
     ("DNA", "GENOMES", "Genomes", ""),
-    ("ROOT", "RNA", "RNA", ""),
-    ("ROOT", "AA", "AA", "")
+    ("GENOMES", "NUC", "Nuclear", ""),
+    ("GENOMES", "ORGN", "Organelles", ""),
+    ("ORGN", "PLAST", "Plastids", ""),
+    ("PLAST", "CP", "Chloroplasts", ""),
+    ("ORGN", "MT", "Mitochondria", "")
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------
