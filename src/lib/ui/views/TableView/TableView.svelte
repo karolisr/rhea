@@ -22,6 +22,7 @@ onMount(async () => {
 
   const _ = getRowHeight()
   rowH = _.rowH
+  rowHeight = rowH
   charW = _.chrW
   visH = elh.clientHeight
 
@@ -56,6 +57,7 @@ export let minColW: number = 50
 export let uid: string
 export let activeRowKey: string | number | undefined = undefined
 export let activeRowRecord: object | undefined = undefined
+export let rowHeight: number | undefined = undefined
 
 $: nH = showHeaderRow ? 1 : 0
 $: nF = showFooterRow ? 1 : 0
@@ -294,9 +296,9 @@ function sort(field: string | undefined, direction: boolean | undefined) {
     class="table-container"
     style:height="{nRow * rowH}px">
     {#if rl.length === 0}
-      <pre>No records.</pre>
+      <div style="margin: auto;">No records.</div>
     {:else if rl.fieldsToShow.length === 0}
-      <pre>No fields to display.</pre>
+      <div style="margin: auto;">No fields to display.</div>
     {:else if maxRowsVis == 0}
       <div style="margin: auto;">Not enough space to display the table.</div>
     {:else}

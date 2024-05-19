@@ -24,6 +24,9 @@ let selectedTaxon: string | undefined = undefined
 let activeRecordId: string | undefined = undefined
 let selectedRecordIds: string[] = []
 
+let rowHeight: number | undefined = undefined
+const nRowsToShow: number = 15
+
 async function _addToCollection(accs: string[]) {
   if (selectedColl !== undefined) {
     await addSeqRecsToCollection(accs, selectedColl)
@@ -75,7 +78,7 @@ onMount(async () => {
     <ResizableGrid
       nRow="{2}"
       nCol="{1}"
-      rowHs="{[300, -1]}"
+      rowHs="{[400, -1]}"
       colWs="{[-1]}"
       minRowH="{0}"
       enforceMaxSize="{false}">
@@ -136,7 +139,7 @@ onMount(async () => {
   <ResizableGrid
     nRow="{2}"
     nCol="{1}"
-    rowHs="{[34 + 1 + 17 * 10, -1]}"
+    rowHs="{[34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]}"
     colWs="{[-1]}"
     minRowH="{0}">
     <div class="list-container">
@@ -145,6 +148,7 @@ onMount(async () => {
         rl="{seqRecListRL}"
         bind:activeRowKey="{activeRecordId}"
         bind:selectedRecordIds
+        bind:rowHeight
         showCheckBoxes
         multiRowSelect
         showHeaderRow />
