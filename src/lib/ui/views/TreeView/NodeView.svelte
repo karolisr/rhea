@@ -9,7 +9,7 @@ import { DB } from '$lib/app/api/db'
 import { buildNode } from '$lib'
 import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
 
-onMount(async () => {
+onMount(() => {
   addEventListener('mousedown', mousedownEvtListener, { capture: true })
 })
 
@@ -101,6 +101,19 @@ const mousedownEvtListener = (e: MouseEvent) => {
     selected = undefined
     selectedGroupUid = undefined
   }
+
+  const inputElement = document.getElementById(
+    `collection-${tree.id}-label-text-input`
+  ) as HTMLInputElement
+
+  if (
+    inputElement &&
+    e.target instanceof HTMLElement &&
+    e.target !== inputElement
+  ) {
+    relabelNodeComplete(inputElement)
+    relabelId = undefined
+  }
 }
 
 function select(e: MouseEvent) {
@@ -125,7 +138,7 @@ function showContextMenu(e: MouseEvent) {
 
     if (createNodeEnabled) {
       contextMenuItems.push({
-        label: 'New Collection',
+        label: 'Create collection in "' + tree.label + '"',
         hotKey: '',
         disabled: false,
         action() {
@@ -136,9 +149,9 @@ function showContextMenu(e: MouseEvent) {
 
     if (deleteNodeEnabled) {
       contextMenuItems.push({
-        label: 'Delete Collection',
+        label: 'Delete "' + tree.label + '"',
         hotKey: '',
-        disabled: tree.id === 'ROOT',
+        disabled: tree.id === 'ROOT' || tree.id === '1',
         action() {
           _deleteNode()
         }
@@ -147,9 +160,9 @@ function showContextMenu(e: MouseEvent) {
 
     if (relabelNodeEnabled) {
       contextMenuItems.push({
-        label: 'Rename Collection',
+        label: 'Rename "' + tree.label + '"',
         hotKey: '',
-        disabled: tree.id === 'ROOT',
+        disabled: tree.id === 'ROOT' || tree.id === '1',
         action() {
           _relabelNodeInit()
         }
