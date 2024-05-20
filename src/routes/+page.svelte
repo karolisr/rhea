@@ -10,13 +10,13 @@ import {
   relabelCollection
 } from '$lib/app/api/db/collections'
 import databases from '$lib/app/svelte-stores/databases'
-import { getSeqRecList } from '$lib/app/api/db/gbseq'
+import { getSeqRecs, getAllSeqRecs } from '$lib/app/api/db/gbseq'
 import type { IndexedUndefined } from '$lib/types'
 import { addSeqRecsToCollection } from '$lib/app/api/db/gbseq'
 
 let dbs: Awaited<typeof databases>
 
-let selectedGroupUid: string | undefined = 'collections-tree'
+let selectedGroupUid: string | undefined = 'user-tree'
 let selectedColl: string | undefined = 'ROOT'
 
 let selectedTaxon: string | undefined = undefined
@@ -27,19 +27,25 @@ let selectedRecordIds: string[] = []
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
 
-async function _addToCollection(accs: string[]) {
+async function _addToCollection(ids: string[]) {
   if (selectedColl !== undefined) {
-    await addSeqRecsToCollection(accs, selectedColl)
+    await addSeqRecsToCollection(ids, selectedColl)
   }
 }
 
-async function _getSeqRecList(
+async function _getSeqRecs(
   collUid: string | undefined,
-  collection: string | undefined
+  collectionId: string | undefined
 ) {
-  if (collUid !== undefined && collection !== undefined) {
-    if (collUid.startsWith('collections-tree')) {
-      seqRecList = await getSeqRecList(collection)
+  if (collUid !== undefined && collectionId !== undefined) {
+    if (collUid === 'user-tree') {
+      seqRecList = await getSeqRecs('user', collectionId)
+    } else if (collUid === 'sequence-type-tree') {
+      if (collectionId === 'ROOT') {
+        seqRecList = await getAllSeqRecs()
+      } else {
+        seqRecList = []
+      }
     } else {
       seqRecList = []
     }
@@ -50,7 +56,7 @@ async function _getSeqRecList(
 
 let seqRecList: IndexedUndefined[]
 
-$: _getSeqRecList(selectedGroupUid, selectedColl)
+$: _getSeqRecs(selectedGroupUid, selectedColl)
 
 $: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
 $: if (seqRecListRL) {
@@ -84,10 +90,10 @@ onMount(async () => {
       enforceMaxSize="{false}">
       <div class="tree-container">
         <TreeView
-          uid="{'collections-tree'}"
+          uid="{'user-tree'}"
           expanded="{true}"
           db="{$dbs.dbCollections}"
-          tableName="collections"
+          tableName="user"
           rootLabel="Collections"
           contextMenuEnabled="{true}"
           createNodeEnabled="{true}"
@@ -100,10 +106,10 @@ onMount(async () => {
           relabelNode="{relabelCollection}" />
 
         <TreeView
-          uid="{'all-records-tree'}"
+          uid="{'sequence-type-tree'}"
           expanded="{true}"
           db="{$dbs.dbCollections}"
-          tableName="seqtype"
+          tableName="sequence_type"
           rootLabel="All Records"
           bind:selected="{selectedColl}"
           bind:selectedGroupUid />
@@ -144,7 +150,7 @@ onMount(async () => {
     minRowH="{0}">
     <div class="list-container">
       <TableView
-        uid="seq-rec-list"
+        uid="seq-rec-table"
         rl="{seqRecListRL}"
         bind:activeRowKey="{activeRecordId}"
         bind:selectedRecordIds

@@ -328,22 +328,33 @@ export const schemaSequences = sql`
   )
   ;
   ----------------------------------------------------------------------------
-  -- DROP TABLE IF EXISTS assoc_collections_records;
-  ----------------------------------------------------------------------------
-  CREATE TABLE IF NOT EXISTS "assoc_collections_records" (
+  -- DROP TABLE IF EXISTS assoc_records_user
+  -- ;
+  CREATE TABLE IF NOT EXISTS "assoc_records_user" (
     "id" varchar NOT NULL,
     "record_id" varchar NOT NULL,
     PRIMARY KEY ("id", "record_id"),
     FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version)
-    -- FOREIGN KEY (id) REFERENCES "collections" (id)
+    -- FOREIGN KEY (id) REFERENCES "collections.user" (id)
   )
   ;
   ----------------------------------------------------------------------------
+  -- DROP TABLE IF EXISTS assoc_records_sequence_type
+  -- ;
+  -- CREATE TABLE IF NOT EXISTS "assoc_records_sequence_type" (
+  --   "id" varchar NOT NULL,
+  --   "record_id" varchar NOT NULL,
+  --   PRIMARY KEY ("id", "record_id"),
+  --   FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version)
+  --   -- FOREIGN KEY (id) REFERENCES "collections.sequence_type" (id)
+  -- )
+  -- ;
+  ----------------------------------------------------------------------------
   -- Views -------------------------------------------------------------------
   ----------------------------------------------------------------------------
-  -- DROP VIEW IF EXISTS record_list
+  -- DROP VIEW IF EXISTS records
   -- ;
-  CREATE VIEW IF NOT EXISTS record_list (
+  CREATE VIEW IF NOT EXISTS records (
     "Accession",
     "TaxID",
     "Length",
@@ -360,14 +371,24 @@ export const schemaSequences = sql`
     gb_records
   ;
   ----------------------------------------------------------------------------
-  -- DROP VIEW IF EXISTS records_in_collection_list
+  -- DROP VIEW IF EXISTS records_user
   -- ;
-  CREATE VIEW IF NOT EXISTS records_in_collection_list AS
+  CREATE VIEW IF NOT EXISTS records_user AS
   SELECT
     *
   FROM
-    assoc_collections_records
-    INNER JOIN record_list ON record_list.accession = assoc_collections_records.record_id
+    assoc_records_user
+    INNER JOIN records ON records.accession = assoc_records_user.record_id
   ;
+  ----------------------------------------------------------------------------
+  -- DROP VIEW IF EXISTS records_sequence_type
+  -- ;
+  -- CREATE VIEW IF NOT EXISTS records_sequence_type AS
+  -- SELECT
+  --   *
+  -- FROM
+  --   assoc_records_sequence_type
+  --   INNER JOIN records ON records.accession = assoc_records_sequence_type.record_id
+  -- ;
   ----------------------------------------------------------------------------
 `

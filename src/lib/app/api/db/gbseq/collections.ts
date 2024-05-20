@@ -17,7 +17,7 @@ export async function addSeqRecsToCollection(accs: string[], collId: string) {
 
     const _sql = sql`
       INSERT INTO
-        assoc_collections_records ("id", "record_id")
+        assoc_records_user ("id", "record_id")
       VALUES
         ${bulk(values)}
       ON CONFLICT ("id", "record_id") DO NOTHING
