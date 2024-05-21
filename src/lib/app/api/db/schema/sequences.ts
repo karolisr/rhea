@@ -352,9 +352,9 @@ export const schemaSequences = sql`
   ----------------------------------------------------------------------------
   -- Views -------------------------------------------------------------------
   ----------------------------------------------------------------------------
-  -- DROP VIEW IF EXISTS records
-  -- ;
-  CREATE VIEW IF NOT EXISTS records (
+  DROP VIEW IF EXISTS records_simple
+  ;
+  CREATE VIEW IF NOT EXISTS records_simple (
     "Accession",
     "TaxID",
     "Length",
@@ -371,8 +371,58 @@ export const schemaSequences = sql`
     gb_records
   ;
   ----------------------------------------------------------------------------
-  -- DROP VIEW IF EXISTS records_user
-  -- ;
+  DROP VIEW IF EXISTS records
+  ;
+  CREATE VIEW IF NOT EXISTS records AS
+  SELECT
+    records_simple."Accession",
+    records_simple."Length",
+    COALESCE(
+      (
+        SELECT
+          q1."value"
+        FROM
+          gb_qualifiers AS q1
+        WHERE
+          q1.name = "organelle"
+          AND q1.accession_version = records_simple."Accession"
+          AND q1.feature_id = 1
+      ),
+      "nucleus"
+    ) AS "Genetic Compartment",
+    COALESCE(
+      (
+        SELECT
+          q3."value"
+        FROM
+          gb_qualifiers AS q3
+        WHERE
+          q3.name = "mol_type"
+          AND q3.accession_version = records_simple."Accession"
+          AND q3.feature_id = 1
+      ),
+      records_simple."Type"
+    ) AS "Molecule Type",
+    records_simple."TaxID",
+    (
+      SELECT
+        q2."value"
+      FROM
+        gb_qualifiers AS q2
+      WHERE
+        q2.name = "organism"
+        AND q2.accession_version = records_simple."Accession"
+        AND q2.feature_id = 1
+    ) AS "Organism",
+    records_simple."Definition"
+  FROM
+    records_simple
+  GROUP BY
+    records_simple."Accession"
+  ;
+  ----------------------------------------------------------------------------
+  DROP VIEW IF EXISTS records_user
+  ;
   CREATE VIEW IF NOT EXISTS records_user AS
   SELECT
     *

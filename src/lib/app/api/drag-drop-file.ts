@@ -113,6 +113,21 @@ export function getContentsType(obj: object) {
   return rv
 }
 
+async function tmp(paths: string[]) {
+  for (let i = 0; i < paths.length; i++) {
+    const p = paths[i]
+    // const parser = await getFileParser(p)
+    // const parsed = await parser(p).catch((reason) => {
+    //   throw new Error(reason)
+    // })
+    // console.log(getContentsType(parsed as object), parsed)
+    // if (getContentsType(parsed as object) === 'GBSeq') {
+    const parsed = await (await txtParser(parse_xml_txt))(p)
+    console.log('insertGbSeqRecords', (parsed as GBSet).length)
+    await insertGbSeqRecords(parsed as GBSet)
+  }
+}
+
 export async function dragDropFileListener(): Promise<Unlistener> {
   const retFun = await getCurrent().onDragDropEvent((event) => {
     if (event.payload.type === 'dragged') {
@@ -120,19 +135,9 @@ export async function dragDropFileListener(): Promise<Unlistener> {
     } else if (event.payload.type === 'dragOver') {
       // console.info('Hovering at:', event.payload.position)
     } else if (event.payload.type === 'dropped') {
-      console.info('Dropped:', event.payload.paths)
-      event.payload.paths.forEach(async (p) => {
-        // const parser = await getFileParser(p)
-        // const parsed = await parser(p).catch((reason) => {
-        //   throw new Error(reason)
-        // })
-        // console.log(getContentsType(parsed as object), parsed)
-        // if (getContentsType(parsed as object) === 'GBSeq') {
-        const parsed = await (await txtParser(parse_xml_txt))(p)
-        console.log('insertGbSeqRecords', (parsed as GBSet).length)
-        insertGbSeqRecords(parsed as GBSet)
-        // }
-      })
+      const paths = event.payload.paths
+      console.info('Dropped:', paths)
+      tmp(paths)
     } else {
       console.info('Drop Cancelled.')
     }

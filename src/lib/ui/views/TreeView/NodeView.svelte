@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onDestroy, onMount } from 'svelte'
+import { onDestroy, onMount, tick } from 'svelte'
 import IconFolderClosed from '~icons/fa6-solid/folder-closed'
 import IconFolderOpen from '~icons/fa6-solid/folder-open'
 import IconFile from '~icons/fa6-solid/file'
@@ -9,8 +9,9 @@ import { DB } from '$lib/app/api/db'
 import { buildNode } from '$lib'
 import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
 
-onMount(() => {
+onMount(async () => {
   addEventListener('mousedown', mousedownEvtListener, { capture: true })
+  if (selected === tree.id) await _scrollIntoView()
 })
 
 onDestroy(() => {
@@ -180,6 +181,13 @@ function elFocus(el: HTMLInputElement) {
   el.select()
   el.click()
 }
+
+async function _scrollIntoView() {
+  const _ = document.getElementById(`${uid}-tree-${tree.id}`) as HTMLElement
+  if (_) _.scrollIntoView()
+}
+
+// $: console.log(tree.label, tree.id, tree.lineage)
 </script>
 
 {#if tree}
@@ -221,7 +229,7 @@ function elFocus(el: HTMLInputElement) {
     {#if expandedIds.has(tree.id)}
       <div class="children">
         {#each tree.children as _chld}
-          {#await buildNode(db, tableName, rootLabel, _chld.id, rootId) then chld}
+          {#await buildNode(db, tableName, rootLabel, _chld.id, rootId, 1, tree.lineage) then chld}
             <svelte:self
               tree="{chld}"
               bind:relabelId

@@ -11,7 +11,8 @@ export async function buildNode(
   rootLabel: string = 'Collections',
   parentId: string = 'ROOT',
   rootId: string = 'ROOT',
-  rebuild: number = 1
+  rebuild: number = 1,
+  lineage: string[] = []
 ) {
   const p = (await getCollections([parentId], false, db, tableName))[0]
   const nodes = await getCollections([parentId], true, db, tableName)
@@ -22,7 +23,8 @@ export async function buildNode(
     label: p.label,
     id: String(p.id),
     parent_id: '',
-    notes: p.notes
+    notes: p.notes,
+    lineage: [...lineage, String(p.id)]
   }
   const rvp = rv['children'] as object[]
   if (nodes.length > 0) {
@@ -42,7 +44,8 @@ export async function buildNode(
         label: n.label,
         id: childId,
         parent_id: parentId,
-        notes: n.notes
+        notes: n.notes,
+        lineage: [...rv.lineage, childId]
       }
       rvp.push(c)
     }

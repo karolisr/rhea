@@ -17,12 +17,12 @@ export interface Tree extends IndexedUndefined {
   parent_id: Tree['id'] | null
   children: Tree[]
   child_count: number
-}
-
-export interface Collection extends Tree {
+  lineage: Tree['id'][]
   label: string
   notes: string
 }
+
+export interface Collection extends Tree {}
 
 export interface CollectionRecordMap extends IndexedUndefined {
   collection_id: Collection['id']

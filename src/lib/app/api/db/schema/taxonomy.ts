@@ -101,8 +101,8 @@ export const schemaTaxonomy = sql`
   ----------------------------------------------------------------------------
   -- Views -------------------------------------------------------------------
   ----------------------------------------------------------------------------
-  DROP VIEW IF EXISTS tree
-  ;
+  -- DROP VIEW IF EXISTS tree
+  -- ;
   CREATE VIEW IF NOT EXISTS tree (id, parent_id, label, notes) AS
   SELECT
     tx_nodes.tax_id,
@@ -131,8 +131,8 @@ export const schemaTaxonomy = sql`
     -- )
   ;
   ----------------------------------------------------------------------------
-  DROP VIEW IF EXISTS name_classes
-  ;
+  -- DROP VIEW IF EXISTS name_classes
+  -- ;
   CREATE VIEW IF NOT EXISTS name_classes ("name_class") AS
   SELECT DISTINCT
     tx_names.name_class
@@ -142,8 +142,8 @@ export const schemaTaxonomy = sql`
     "name_class" ASC
   ;
   ----------------------------------------------------------------------------
-  DROP VIEW IF EXISTS ranks
-  ;
+  -- DROP VIEW IF EXISTS ranks
+  -- ;
   CREATE VIEW IF NOT EXISTS ranks ("rank") AS
   SELECT DISTINCT
     tx_nodes.rank

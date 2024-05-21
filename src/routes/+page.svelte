@@ -39,13 +39,14 @@ async function _getSeqRecs(
 ) {
   if (collUid !== undefined && collectionId !== undefined) {
     if (collUid === 'user-tree') {
-      seqRecList = await getSeqRecs('user', collectionId)
+      seqRecList = await getSeqRecs('user', [collectionId])
     } else if (collUid === 'sequence-type-tree') {
       if (collectionId === 'ROOT') {
         seqRecList = await getAllSeqRecs()
       } else {
         seqRecList = []
       }
+      // seqRecList = await getSeqRecs('sequence_type', [collectionId])
     } else {
       seqRecList = []
     }
@@ -61,11 +62,13 @@ $: _getSeqRecs(selectedGroupUid, selectedColl)
 $: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
 $: if (seqRecListRL) {
   seqRecListRL.fieldsToShow = [
-    'Accession',
-    'TaxID',
-    'Length',
-    'Type',
-    'Definition'
+    // 'Accession',
+    // 'TaxID',
+    'Organism',
+    // 'Length',
+    'Genetic Compartment'
+    // 'Molecule Type',
+    // 'Definition'
   ]
 }
 
@@ -78,7 +81,7 @@ onMount(async () => {
   nRow="{1}"
   nCol="{2}"
   rowHs="{[-1]}"
-  colWs="{[200, -1]}"
+  colWs="{[300, -1]}"
   minColW="{0}">
   {#if $dbs}
     <ResizableGrid
@@ -104,16 +107,6 @@ onMount(async () => {
           createNode="{createCollection}"
           deleteNode="{deleteCollection}"
           relabelNode="{relabelCollection}" />
-
-        <TreeView
-          uid="{'sequence-type-tree'}"
-          expanded="{true}"
-          db="{$dbs.dbCollections}"
-          tableName="sequence_type"
-          rootLabel="All Records"
-          bind:selected="{selectedColl}"
-          bind:selectedGroupUid />
-
         <TreeView
           uid="{'search-results-tree'}"
           expanded="{true}"
@@ -125,6 +118,14 @@ onMount(async () => {
           createNode="{createCollection}"
           deleteNode="{deleteCollection}"
           relabelNode="{relabelCollection}" />
+        <TreeView
+          uid="{'sequence-type-tree'}"
+          expanded="{true}"
+          db="{$dbs.dbCollections}"
+          tableName="sequence_type"
+          rootLabel="All Records"
+          bind:selected="{selectedColl}"
+          bind:selectedGroupUid />
       </div>
       <div class="tree-container">
         <TreeView

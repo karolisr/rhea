@@ -16,12 +16,7 @@ $: if (collectionsRL) {
 
 onMount(async () => {
   dbs = await databases
-  collections = await getCollections(
-    [],
-    false,
-    $dbs.dbCollections,
-    'collections'
-  )
+  collections = await getCollections([], false, $dbs.dbCollections, 'user')
 })
 
 onDestroy(() => {})
@@ -34,7 +29,7 @@ onDestroy(() => {})
     minColW="{50}"
     bind:activeRowKey="{colId}"
     onDeleteRow="{(id) => {
-      deleteCollection(String(id), $dbs.dbCollections, 'collections')
+      deleteCollection(String(id), $dbs.dbCollections, 'user')
     }}"
     showHeaderRow />
 {/if}

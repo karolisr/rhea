@@ -38,8 +38,8 @@ export const schemaCollections = sql`
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------
-  -- DROP TABLE IF EXISTS sequence_type
-  -- ;
+  DROP TABLE IF EXISTS sequence_type
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "sequence_type" (
     "parent_id" varchar,
@@ -53,16 +53,51 @@ export const schemaCollections = sql`
     sequence_type ("parent_id", "id", "label", "notes")
   VALUES
     (NULL, "ROOT", "ROOT", ""),
-    ("ROOT", "NUCLEO", "NT", ""),
-    ("NUCLEO", "DNA", "DNA", ""),
-    ("NUCLEO", "RNA", "RNA", ""),
     ("ROOT", "AA", "AA", ""),
-    ("DNA", "GENOMES", "Genomes", ""),
-    ("GENOMES", "NUC", "Nuclear", ""),
-    ("GENOMES", "ORGN", "Organelles", ""),
-    ("ORGN", "PLAST", "Plastids", ""),
-    ("PLAST", "CP", "Chloroplasts", ""),
-    ("ORGN", "MT", "Mitochondria", "")
+    ("ROOT", "NT", "NT", ""),
+    ("NT", "DNA", "DNA", ""),
+    ("NT", "RNA", "RNA", ""),
+    ("RNA", "cRNA", "cRNA", ""),
+    ("RNA", "lncRNA", "lncRNA", ""),
+    ("RNA", "mRNA", "mRNA", ""),
+    ("RNA", "miRNA", "miRNA", ""),
+    ("RNA", "ncRNA", "ncRNA", ""),
+    ("RNA", "rRNA", "rRNA", ""),
+    ("RNA", "snRNA", "snRNA", ""),
+    ("RNA", "tRNA", "tRNA", ""),
+    (
+      "RNA",
+      "transcribed-RNA",
+      "transcribed-RNA",
+      ""
+    ),
+    ("DNA", "Genomes", "Genomes", ""),
+    ("Genomes", "Plasmids", "Plasmids", ""),
+    ("Genomes", "Nuclear", "Nuclear", ""),
+    (
+      "Genomes",
+      "Organelles",
+      "Organelles",
+      ""
+    ),
+    (
+      "Organelles",
+      "Plastids",
+      "Plastids",
+      ""
+    ),
+    (
+      "Organelles",
+      "Mitochondria",
+      "Mitochondria",
+      ""
+    ),
+    (
+      "Plastids",
+      "Chloroplasts",
+      "Chloroplasts",
+      ""
+    )
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------
