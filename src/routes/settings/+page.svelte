@@ -4,6 +4,7 @@ import Radio from '$lib/ui/components/Radio.svelte'
 import settings from '$lib/app/svelte-stores/settings'
 import { saveSettings } from '$lib/app/svelte-stores/settings'
 import { getCurentTheme } from '$lib/app/api/darkmode'
+import { BROWSER } from '$lib/app/api'
 
 let currentOsThemeSetting: string
 
@@ -21,14 +22,15 @@ onDestroy(() => {})
     <div id="settings-theme" class="padded">
       <fieldset>
         <legend>Theme</legend>
-        <Radio
-          label="Follow OS Setting ({currentOsThemeSetting})"
-          id="os"
-          name="theme"
-          value="os"
-          bind:group="{$settings.theme}"
-          on:change="{saveSettings}" />
-
+        {#if BROWSER === 'Tauri'}
+          <Radio
+            label="Follow OS Setting ({currentOsThemeSetting})"
+            id="os"
+            name="theme"
+            value="os"
+            bind:group="{$settings.theme}"
+            on:change="{saveSettings}" />
+        {/if}
         <Radio
           label="Light"
           id="light"

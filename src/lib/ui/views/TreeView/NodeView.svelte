@@ -41,12 +41,12 @@ export let relabelNodeEnabled: boolean
 export let createNode: (
   parentId: string,
   label: string
-) => Promise<string> = async () => ''
+) => Promise<string | null> = async () => ''
 export let deleteNode: (id: string) => Promise<string | null> = async () => null
 export let relabelNode: (
   id: string,
   label: string
-) => Promise<string> = async () => ''
+) => Promise<string | null> = async () => ''
 
 let _deleteNode: () => void = async () => {
   if (selected === tree.id) {
@@ -58,12 +58,15 @@ let _deleteNode: () => void = async () => {
 }
 
 let _createNode: (label: string) => void = async (label) => {
-  selected = await createNode(tree.id, label)
-  selectedGroupUid = uid
-  tree = await buildNode(db, tableName, rootLabel, tree.id, rootId)
-  expandedIds.add(tree.id)
-  expandedIds = expandedIds
-  relabelId = selected
+  const _ = await createNode(tree.id, label)
+  if (_ !== null) {
+    selected = _
+    selectedGroupUid = uid
+    tree = await buildNode(db, tableName, rootLabel, tree.id, rootId)
+    expandedIds.add(tree.id)
+    expandedIds = expandedIds
+    relabelId = selected
+  }
 }
 
 function _relabelNodeInit() {

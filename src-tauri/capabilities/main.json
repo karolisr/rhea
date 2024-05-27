@@ -16,8 +16,15 @@
     "sql:allow-load",
     "sql:allow-select",
     "tray:default",
-    "window:allow-start-dragging",
     "window:default",
+    "window:allow-start-dragging",
+    "window:allow-center",
+    "window:allow-set-title",
+    "window:allow-set-cursor-grab",
+    "window:allow-set-cursor-icon",
+    "window:allow-set-cursor-position",
+    "window:allow-set-cursor-visible",
+    "window:allow-set-ignore-cursor-events",
 
     {
       "identifier": "http:default",

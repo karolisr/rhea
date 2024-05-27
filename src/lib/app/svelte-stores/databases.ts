@@ -1,4 +1,5 @@
 import { readable, type Readable } from 'svelte/store'
+import { BROWSER } from '$lib/app/api'
 import {
   DB,
   initDBTaxonomy,
@@ -7,21 +8,37 @@ import {
 } from '$lib/app/api/db'
 
 export interface Databases {
-  dbTaxonomy: DB
-  dbSequences: DB
-  dbCollections: DB
+  dbsOK: boolean
+  dbTaxonomy: DB | null
+  dbSequences: DB | null
+  dbCollections: DB | null
 }
 
 async function init(): Promise<Readable<Databases>> {
-  const dbCollections = await initDBCollections()
-  const dbSequences = await initDBSequences()
-  const dbTaxonomy = await initDBTaxonomy()
+  let dbsOK = false
+  let dbCollections = null
+  let dbSequences = null
+  let dbTaxonomy = null
+
+  if (BROWSER === 'Tauri') {
+    dbsOK = true
+    dbCollections = await initDBCollections()
+    dbSequences = await initDBSequences()
+    dbTaxonomy = await initDBTaxonomy()
+  }
+
   let dbs: Databases = {
+    dbsOK,
     dbTaxonomy,
     dbSequences,
     dbCollections
   }
-  console.log('Databases Loaded.')
+
+  if (BROWSER === 'Tauri') {
+    console.log('Databases loaded.')
+  } else {
+    console.log('Databases were not loaded:', BROWSER)
+  }
   return readable(dbs)
 }
 

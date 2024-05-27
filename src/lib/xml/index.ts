@@ -107,21 +107,22 @@ export async function parse_xml_txt(
   txt: string,
   create_parent_object_for_arrays: boolean = false
 ) {
-  let dtd = await parse_dtd_txt(txt)
+  let dtd: { [element_name: string]: _dtd_element } | null
+
   const dp = new DOMParser()
   const doc: Document = dp.parseFromString(txt, 'text/xml')
 
   const doc_element = doc.children[0]
   const doc_element_name = doc_element.nodeName
 
-  if (!dtd) {
-    if (doc_element_name in DTD_MAP) {
-      dtd = await parse_dtd_at_url(DTD_MAP[doc_element_name])
-    }
+  if (doc_element_name in DTD_MAP) {
+    dtd = await parse_dtd_at_url(DTD_MAP[doc_element_name])
+  } else {
+    dtd = await parse_dtd_txt(txt)
+  }
 
-    if (!dtd) {
-      throw new Error(`No DTD for: ${doc_element_name}`)
-    }
+  if (!dtd) {
+    throw new Error(`No DTD for: ${doc_element_name}`)
   }
 
   let ret_val = _parse_xml(

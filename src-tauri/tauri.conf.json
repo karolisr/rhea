@@ -49,21 +49,25 @@
         "label": "main",
         "title": "CDSDB",
         "center": false,
+        "dragDropEnabled": true,
         "width": 560,
         "minWidth": 0,
-        "height": 540,
+        "height": 500,
         "minHeight": 0,
         "resizable": true,
         "fullscreen": false,
         "titleBarStyle": "Overlay",
         "acceptFirstMouse": true,
-        "dragDropEnabled": true,
         "hiddenTitle": true,
-        "alwaysOnTop": false
+        "alwaysOnTop": false,
+        "x": 20,
+        "y": 45
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "connect-src": "ipc:"
+      }
     }
   }
 }

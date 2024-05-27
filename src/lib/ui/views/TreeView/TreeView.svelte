@@ -32,22 +32,22 @@ export let createNode: (
   parentId: string,
   label: string,
   notes: string,
-  db: DB,
+  db: DB | null,
   tableName: string
-) => Promise<string> = async () => ''
+) => Promise<string | null> = async () => ''
 
 export let deleteNode: (
   id: string,
-  db: DB,
+  db: DB | null,
   tableName: string
 ) => Promise<string | null> = async () => null
 
 export let relabelNode: (
   id: string,
   label: string,
-  db: DB,
+  db: DB | null,
   tableName: string
-) => Promise<string> = async () => ''
+) => Promise<string | null> = async () => ''
 
 const _createNode = async (parentId: string, label: string) => {
   return createNode(parentId, label, '', db, tableName)

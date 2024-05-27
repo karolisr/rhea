@@ -1,4 +1,3 @@
-import { getCurrent } from '@tauri-apps/api/webviewWindow'
 import { readTextFile, readFile } from '@tauri-apps/plugin-fs'
 import { parse_dtd_txt } from '$lib/xml/dtd'
 import { parse_xml_txt } from '$lib/xml'
@@ -6,12 +5,11 @@ import { parse_xml_txt } from '$lib/xml'
 import fileTypeChecker from 'file-type-checker'
 import { getPropNames } from '$lib'
 import type { FileSignature } from 'file-type-checker/dist/core'
-import type { Unlistener } from '$lib/types'
 
 import { insertGbSeqRecords } from './db/gbseq'
 import type { GBSet } from '$lib/ncbi/types/GBSet'
 
-export async function getFileType(path: string) {
+async function getFileType(path: string) {
   const fbin = await readFile(path).catch((error) => {
     console.warn(error)
   })
@@ -69,7 +67,7 @@ const txtParser = async (f: (txt: string) => unknown) => {
   }
 }
 
-export async function getFileParser(path: string) {
+async function getFileParser(path: string) {
   const info = await getFileType(path)
 
   if (info) {
@@ -85,7 +83,7 @@ export async function getFileParser(path: string) {
   return otherParser()
 }
 
-export function getContentsType(obj: object) {
+function getContentsType(obj: object) {
   let rv: string = '?'
   let propNames: string[] = []
   try {
@@ -113,7 +111,7 @@ export function getContentsType(obj: object) {
   return rv
 }
 
-async function tmp(paths: string[]) {
+export async function tmp(paths: string[]) {
   for (let i = 0; i < paths.length; i++) {
     const p = paths[i]
     // const parser = await getFileParser(p)
@@ -126,21 +124,4 @@ async function tmp(paths: string[]) {
     console.log('insertGbSeqRecords', (parsed as GBSet).length)
     await insertGbSeqRecords(parsed as GBSet)
   }
-}
-
-export async function dragDropFileListener(): Promise<Unlistener> {
-  const retFun = await getCurrent().onDragDropEvent((event) => {
-    if (event.payload.type === 'dragged') {
-      console.info('Hovering:', event.payload.paths)
-    } else if (event.payload.type === 'dragOver') {
-      // console.info('Hovering at:', event.payload.position)
-    } else if (event.payload.type === 'dropped') {
-      const paths = event.payload.paths
-      console.info('Dropped:', paths)
-      tmp(paths)
-    } else {
-      console.info('Drop Cancelled.')
-    }
-  })
-  return retFun
 }

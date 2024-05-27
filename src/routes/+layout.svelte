@@ -1,34 +1,49 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
+import { BROWSER, ENGINE } from '$lib/app/api'
 import { themeChangeListener } from '$lib/app/api/darkmode'
+import { dragDropFileListener } from '$lib/app/api/drag-and-drop'
+import type { Unlistener } from '$lib/types'
 import settings from '$lib/app/svelte-stores/settings'
 import { setScale } from '$lib/app/api'
-import { disableDefault } from '$lib/ui'
+import { preventDefault } from '$lib/ui'
 import Layout from '$lib/ui/chrome/layout/Layout.svelte'
 import NavMain from './nav.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
-import { dragDropFileListener } from '$lib/app/api/drag-drop-file'
-import type { Unlistener } from '$lib/types'
-import databases from '$lib/app/svelte-stores/databases'
 
-let themeChangeUnListener: Unlistener
-let fileDropUnListener: Unlistener
+// import databases from '$lib/app/svelte-stores/databases'
+// let dbs: Awaited<typeof databases>
 
-let dbs: Awaited<typeof databases>
+let unlisteners: Unlistener[] = []
 
 $: setScale($settings.scale)
 
 onMount(async () => {
-  themeChangeUnListener = await themeChangeListener()
-  fileDropUnListener = await dragDropFileListener()
-  disableDefault('contextmenu')
-  dbs = await databases
+  console.log(BROWSER, ENGINE)
+  unlisteners.push(await themeChangeListener())
+  unlisteners.push(await dragDropFileListener())
+
+  unlisteners.push(preventDefault('contextmenu'))
+
+  // source -----------------------------------------------------------------
+  unlisteners.push(preventDefault('dragstart'))
+  unlisteners.push(preventDefault('drag'))
+  unlisteners.push(preventDefault('dragend'))
+
+  // target -----------------------------------------------------------------
+  unlisteners.push(preventDefault('dragenter'))
+  unlisteners.push(preventDefault('dragover'))
+  unlisteners.push(preventDefault('dragleave'))
+  unlisteners.push(preventDefault('drop'))
+
+  // dbs = await databases
 })
 
-onDestroy(async () => {
-  themeChangeUnListener()
-  fileDropUnListener()
+onDestroy(() => {
+  unlisteners.forEach((f) => {
+    f()
+  })
 })
 </script>
 

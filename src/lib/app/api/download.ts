@@ -1,10 +1,27 @@
-import { fetch } from '@tauri-apps/plugin-http'
+import { BROWSER } from '.'
+
+let _fetch: typeof fetch
+
+async function dynamicImports() {
+  if (BROWSER === 'Tauri') {
+    await import('@tauri-apps/plugin-http')
+      .then((_) => {
+        _fetch = _.fetch
+      })
+      .catch(() => {
+        _fetch = fetch
+      })
+  } else {
+    _fetch = fetch
+  }
+}
 
 export async function download(
   url: string,
   rt: 'text' | 'blob'
 ): Promise<{ url: string; data: string | Blob }> {
-  return await fetch(url).then(async (r) => {
+  await dynamicImports()
+  return await _fetch(url).then(async (r) => {
     if (!r.ok) throw new Error(`Error downloading: ${r.url} (${r.status})`)
     const rv = {
       url: r.url,

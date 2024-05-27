@@ -50,6 +50,7 @@
     "@tauri-apps/plugin-sql": "^2.0.0-beta.3",
     "d3": "^7.9.0",
     "d3-scale": "^4.0.2",
+    "detector-js": "^2.0.11",
     "file-type-checker": "^1.0.9",
     "idb": "^8.0.0",
     "simple-statistics": "^7.8.3",

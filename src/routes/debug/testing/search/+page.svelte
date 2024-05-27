@@ -10,6 +10,7 @@ import { type Collection } from '$lib/types'
 import databases from '$lib/app/svelte-stores/databases'
 import { getCollections, deleteCollection } from '$lib/app/api/db/collections'
 import { insertGbSeqRecords } from '$lib/app/api/db/gbseq'
+import { BROWSER } from '$lib/app/api'
 // import { type Readable } from 'svelte/store'
 // import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
 // import db_main from '$lib/app/svelte-stores/db/db-main'
@@ -75,46 +76,49 @@ async function search(): Promise<void> {
       // ---------------------
       searching = false
       // ---------------------
-      searchStatusMessage = `Downloading complete sequence records.`
-      const gbRecSets: GBSet[] = []
-      const nBatches = Math.min(accs.length, 10)
-      const batchSize = Math.round(accs.length / nBatches)
-      gbseqRemaining += accs.length
-      searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
-      for (let i = 0; i < accs.length; i += batchSize) {
-        const batch = accs.slice(i, i + batchSize)
-        setTimeout(async () => {
-          const gbsp = await getSeqRecords('nuccore', batch)
-          gbRecSets.push(gbsp)
-          // $_db_main.put(gbsp, 'gbseq')
-          // await insertGbSeqRecords(gbsp)
-          gbseqRemaining -= gbsp.length
-          searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
-          if (gbseqRemaining === 0) {
-            searchStatusMessage = `Storing complete sequence records.`
-            for (let i = 0; i < gbRecSets.length; i++) {
-              const gbRecSet = gbRecSets[i]
-              await insertGbSeqRecords(gbRecSet)
+
+      if (BROWSER === 'Tauri') {
+        searchStatusMessage = `Downloading complete sequence records.`
+        const gbRecSets: GBSet[] = []
+        const nBatches = Math.min(accs.length, 10)
+        const batchSize = Math.round(accs.length / nBatches)
+        gbseqRemaining += accs.length
+        searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
+        for (let i = 0; i < accs.length; i += batchSize) {
+          const batch = accs.slice(i, i + batchSize)
+          setTimeout(async () => {
+            const gbsp = await getSeqRecords('nuccore', batch)
+            gbRecSets.push(gbsp)
+            // $_db_main.put(gbsp, 'gbseq')
+            // await insertGbSeqRecords(gbsp)
+            gbseqRemaining -= gbsp.length
+            searchStatusMessage = `Downloading complete sequence records. ${gbseqRemaining} remaining.`
+            if (gbseqRemaining === 0) {
+              searchStatusMessage = `Storing complete sequence records.`
+              for (let i = 0; i < gbRecSets.length; i++) {
+                const gbRecSet = gbRecSets[i]
+                await insertGbSeqRecords(gbRecSet)
+              }
+              searchStatusMessage = `Storing complete sequence records: done.`
             }
-            searchStatusMessage = `Storing complete sequence records: done.`
-          }
-        }, Math.random() * 10000)
+          }, Math.random() * 10000)
+        }
+        // ---------------------
+        // searchStatusMessage = `Downloading taxonomy records.`
+        // const p = new EutilParams()
+        // p.db = 'taxonomy'
+        // p.ids = taxids
+        // p.retmode = 'xml'
+        // const _ = (await efetch(p)) as TaxaSet[]
+        // let taxa: TaxaSet = []
+        // for (const taxaSet of _) {
+        //   taxa = [...taxa, ...taxaSet]
+        // }
+        // $_db_main.put(taxa, 'taxon')
+        // ---------------------
       }
-      // ---------------------
-      // searchStatusMessage = `Downloading taxonomy records.`
-      // const p = new EutilParams()
-      // p.db = 'taxonomy'
-      // p.ids = taxids
-      // p.retmode = 'xml'
-      // const _ = (await efetch(p)) as TaxaSet[]
-      // let taxa: TaxaSet = []
-      // for (const taxaSet of _) {
-      //   taxa = [...taxa, ...taxaSet]
-      // }
-      // $_db_main.put(taxa, 'taxon')
-      // ---------------------
     }
-    searchStatusMessage = `${esummaryResult.length.toLocaleString()} results`
+    searchStatusMessage = `${esummaryResult.length.toLocaleString()} result${esummaryResult.length !== 1 ? 's' : ''}`
     // $_db_main.put(esummaryResult, 'seq_nt_summ')
     searching = false
   } else {

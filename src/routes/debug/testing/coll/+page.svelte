@@ -22,7 +22,7 @@ onMount(async () => {
 onDestroy(() => {})
 </script>
 
-{#if dbs}
+{#if dbs && $dbs.dbCollections}
   <TableView
     uid="col"
     rl="{collectionsRL}"
@@ -32,4 +32,6 @@ onDestroy(() => {})
       deleteCollection(String(id), $dbs.dbCollections, 'user')
     }}"
     showHeaderRow />
+{:else}
+  <div style="margin: auto;">Database functionality not supported.</div>
 {/if}

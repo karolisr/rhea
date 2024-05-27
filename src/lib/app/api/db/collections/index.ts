@@ -6,7 +6,7 @@ import { DB } from '$lib/app/api/db'
 export const _getCollections = async (
   ids: string[],
   idIsParentId: boolean,
-  db: DB,
+  db: DB | null,
   tableName: string,
   count: boolean
 ) => {
@@ -45,18 +45,21 @@ export const _getCollections = async (
         `}
     ;
   `
-  const result = await db.select(
-    _sql.text.replace('table_name', tableName),
-    _sql.values
-  )
-
-  return result
+  if (db !== null) {
+    const result = await db.select(
+      _sql.text.replace('table_name', tableName),
+      _sql.values
+    )
+    return result
+  } else {
+    return []
+  }
 }
 
 export const getCollections = async (
   ids: string[],
   idIsParentId: boolean,
-  db: DB,
+  db: DB | null,
   tableName: string
 ) => {
   const result = await _getCollections(ids, idIsParentId, db, tableName, false)
@@ -66,7 +69,7 @@ export const getCollections = async (
 export const getCollectionsCount = async (
   ids: string[],
   idIsParentId: boolean,
-  db: DB,
+  db: DB | null,
   tableName: string
 ) => {
   const result = (await _getCollections(
@@ -87,7 +90,7 @@ export const createCollection = async (
   parentId: string,
   label: string,
   notes: string,
-  db: DB,
+  db: DB | null,
   tableName: string
 ) => {
   const id = uuid()
@@ -104,13 +107,17 @@ export const createCollection = async (
     ON CONFLICT ("id") DO NOTHING
     ;
   `
-  await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
-  return id
+  if (db !== null) {
+    await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
+    return id
+  } else {
+    return null
+  }
 }
 
 export const deleteCollection = async (
   id: string,
-  db: DB,
+  db: DB | null,
   tableName: string
 ) => {
   if (id !== 'ROOT') {
@@ -120,8 +127,12 @@ export const deleteCollection = async (
         "id" = ${id}
       ;
     `
-    await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
-    return id
+    if (db !== null) {
+      await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
+      return id
+    } else {
+      return null
+    }
   } else {
     return null
   }
@@ -130,7 +141,7 @@ export const deleteCollection = async (
 export const relabelCollection = async (
   id: string,
   label: string,
-  db: DB,
+  db: DB | null,
   tableName: string
 ) => {
   const _sql = sql`
@@ -141,6 +152,10 @@ export const relabelCollection = async (
       id = ${id}
     ;
   `
-  await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
-  return label
+  if (db !== null) {
+    await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
+    return label
+  } else {
+    return null
+  }
 }
