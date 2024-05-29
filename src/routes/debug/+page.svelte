@@ -8,10 +8,16 @@ let draggingEnded: boolean = false
 
 let drgSourceEl: HTMLElement | null = null
 let drgTargetEl: HTMLElement | null = null
+let drgTargetElPrev: HTMLElement | null = null
+drgTargetElPrev
 
-let drgSourceElXstart: number = 0
-let drgSourceElYstart: number = 0
-let drgZ: number = 0
+// let drgZ: number = 0
+// let drgSourceElXstart: number = 0
+// let drgSourceElYstart: number = 0
+// let drgSourceElXoffset: number = 0
+// let drgSourceElYoffset: number = 0
+
+// $: console.log(drgSourceEl?.id, drgTargetEl?.id)
 
 function prepDrgEl(el: HTMLElement | null) {
   if (el) el.addEventListener('mousedown', customDragStartListener, true)
@@ -46,8 +52,14 @@ function mouseOverEventListener(e: MouseEvent) {
     drgEl2 = null
   }
 
-  if (e.target instanceof HTMLElement || e.target === null) {
+  if (dragging && (e.target instanceof HTMLElement || e.target === null)) {
+    drgTargetElPrev = drgTargetEl
     drgTargetEl = e.target
+    if (drgTargetEl && drgTargetEl.classList.contains('drag-target')) {
+      drgTargetEl.classList.add('drag-item-hovering')
+    } else if (drgTargetElPrev) {
+      drgTargetElPrev.classList.remove('drag-item-hovering')
+    }
   }
 }
 
@@ -57,21 +69,31 @@ function customDragStartListener(e: MouseEvent) {
   dragging = true
   drgEl2 = drgEl1
   if (drgSourceEl) {
-    drgZ += 2
-    drgSourceEl.style.pointerEvents = 'none'
-    drgSourceEl.style.zIndex = `${drgZ}`
-    drgSourceElXstart = e.clientX - drgSourceEl?.getBoundingClientRect().left
-    drgSourceElYstart = e.clientY - drgSourceEl?.getBoundingClientRect().top
+    // drgZ += 2
+    // drgSourceEl.style.pointerEvents = 'none'
+    // drgSourceEl.style.zIndex = `${drgZ}`
+    // drgSourceElXstart = drgSourceEl?.getBoundingClientRect().left
+    // drgSourceElYstart = drgSourceEl?.getBoundingClientRect().top
+    // drgSourceElXoffset = e.clientX - drgSourceElXstart
+    // drgSourceElYoffset = e.clientY - drgSourceElYstart
   }
-  // console.log(`Dragging ${drgSourceEl?.id}`)
+  console.log(`Dragging: ${drgSourceEl?.id}`)
+}
+
+function mouseMoveEventListener(e: MouseEvent) {
+  if (dragging && drgSourceEl) {
+    // drgSourceEl.style.position = 'absolute'
+    // drgSourceEl.style.left = `${e.x - drgSourceElXoffset}px`
+    // drgSourceEl.style.top = `${e.y - drgSourceElYoffset}px`
+  }
 }
 
 function customDragStopListener(e: MouseEvent) {
   if (dragging) {
     if (drgSourceEl) {
-      drgZ -= 1
-      drgSourceEl.style.pointerEvents = 'auto'
-      drgSourceEl.style.zIndex = `${drgZ}`
+      // drgZ -= 1
+      // drgSourceEl.style.pointerEvents = 'auto'
+      // drgSourceEl.style.zIndex = `${drgZ}`
     }
     let flag = true
     if (drgEl1 === drgEl2) flag = false
@@ -80,34 +102,46 @@ function customDragStopListener(e: MouseEvent) {
     prepDrgEl(drgEl1)
     drgEl2 = null
     dragging = false
-    drgSourceElXstart = 0
-    drgSourceElYstart = 0
+
     if (drgEl1) {
       document.body.style.cursor = 'grab'
       if (flag) draggingEnded = true
     } else {
       document.body.style.cursor = 'default'
     }
-    if (drgTargetEl && drgTargetEl.id && drgSourceEl !== drgTargetEl) {
-      // console.log(`Dropped ${drgSourceEl?.id} on ${drgTargetEl?.id}`)
+    if (
+      drgTargetEl &&
+      drgTargetEl.id &&
+      drgTargetEl.classList.contains('drag-target') &&
+      drgSourceEl !== drgTargetEl
+    ) {
+      console.log(`Dropped: ${drgSourceEl?.id} / ${drgTargetEl?.id}`)
+      if (drgTargetEl) drgTargetEl.classList.remove('drag-item-hovering')
+      drgSourceEl = null
+      drgTargetEl = null
     } else {
-      // console.log(`Dragging ${drgSourceEl?.id} was canceled.`)
+      console.log(`Dragging cancelled: ${drgSourceEl?.id}`)
+      if (drgTargetEl) drgTargetEl.classList.remove('drag-item-hovering')
       if (drgSourceEl) {
-        drgSourceEl.style.position = 'unset'
-        drgSourceEl.style.left = 'unset'
-        drgSourceEl.style.top = 'unset'
+        drgSourceEl = null
+        drgTargetEl = null
+        // drgSourceEl.style.transition = 'all 150ms ease'
+        // drgSourceEl.style.left = `${drgSourceElXstart}px`
+        // drgSourceEl.style.top = `${drgSourceElYstart}px`
+        // setTimeout(() => {
+        //   if (drgSourceEl) {
+        //     drgSourceEl.style.position = 'unset'
+        //     drgSourceEl.style.left = 'unset'
+        //     drgSourceEl.style.top = 'unset'
+        //     drgSourceEl.style.transition = 'unset'
+        //     drgSourceEl = null
+        //     drgTargetEl = null
+        //   }
+        // }, 130)
       }
     }
   } else {
     draggingEnded = true
-  }
-}
-
-function mouseMoveEventListener(e: MouseEvent) {
-  if (dragging && drgSourceEl) {
-    drgSourceEl.style.position = 'absolute'
-    drgSourceEl.style.left = `${e.x - drgSourceElXstart}px`
-    drgSourceEl.style.top = `${e.y - drgSourceElYstart}px`
   }
 }
 
@@ -130,7 +164,7 @@ onDestroy(() => {
     <div id="item3" class="item draggable">Item 3</div>
     <div id="item4" class="item draggable">Item 4</div>
   </div>
-  <div id="target"></div>
+  <div id="target" class="drag-target"></div>
 </div>
 
 <style>
@@ -139,6 +173,7 @@ onDestroy(() => {
   flex-direction: row;
   margin: auto;
   gap: 20px;
+  transition: all 1000ms ease;
 }
 
 #target {

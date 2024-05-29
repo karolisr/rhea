@@ -6,14 +6,14 @@ export async function dragDropFileListener(): Promise<Unlistener> {
   if (BROWSER === 'Tauri') {
     const retFun = getCurrent().onDragDropEvent((event) => {
       if (event.payload.type === 'dragged') {
-        console.info('Hovering:', event.payload.paths)
+        console.info('File(s) dragging:', event.payload.paths)
       } else if (event.payload.type === 'dragOver') {
-        // console.info('Hovering at:', event.payload.position)
+        console.info('File(s) hovering at:', event.payload.position)
       } else if (event.payload.type === 'dropped') {
         const paths = event.payload.paths
-        console.info('Dropped:', paths)
+        console.info('File(s) dropped:', paths)
       } else {
-        console.info('Drop Cancelled.')
+        console.info('File(s) drop was cancelled.')
       }
     })
     return retFun
