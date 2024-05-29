@@ -2,7 +2,7 @@
 import { onMount, onDestroy } from 'svelte'
 import { BROWSER, ENGINE } from '$lib/app/api'
 import { themeChangeListener } from '$lib/app/api/darkmode'
-import { dragDropFileListener } from '$lib/app/api/drag-and-drop'
+import { FileDragDrop } from '$lib/app/api/file-drag-drop'
 import type { Unlistener } from '$lib/types'
 import settings from '$lib/app/svelte-stores/settings'
 import { setScale } from '$lib/app/api'
@@ -22,7 +22,7 @@ $: setScale($settings.scale)
 onMount(async () => {
   console.log(BROWSER, ENGINE)
   unlisteners.push(await themeChangeListener())
-  unlisteners.push(await dragDropFileListener())
+  unlisteners.push(await new FileDragDrop().unlisten)
 
   unlisteners.push(preventDefault('contextmenu'))
 
