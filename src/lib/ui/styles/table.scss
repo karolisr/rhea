@@ -9,6 +9,11 @@
 
 .cell {
   padding-inline-start: calc(var(--pad) * 1);
+  pointer-events: none;
+}
+
+.cell input {
+  pointer-events: auto;
 }
 
 .cell-corner {

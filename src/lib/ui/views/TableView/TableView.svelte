@@ -352,6 +352,7 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                   ? 'selected-row'
                   : ''}
                 {activeRow === i ? 'active-row' : ''}
+                draggable
               "
                 role="none"
                 on:mousedown="{() => {

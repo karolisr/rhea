@@ -11,6 +11,7 @@ import Layout from '$lib/ui/chrome/layout/Layout.svelte'
 import NavMain from './nav.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
+import { DragDrop } from '$lib/app/api/drag-drop'
 
 // import databases from '$lib/app/svelte-stores/databases'
 // let dbs: Awaited<typeof databases>
@@ -23,6 +24,7 @@ onMount(async () => {
   console.log(BROWSER, ENGINE)
   unlisteners.push(await themeChangeListener())
   unlisteners.push(await new FileDragDrop().unlisten)
+  unlisteners.push(new DragDrop().unlisten)
 
   unlisteners.push(preventDefault('contextmenu'))
 
