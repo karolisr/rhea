@@ -37,10 +37,7 @@ onDestroy(() => {
     </span>
     <SeqView {rec} />
     <div>
-      <ObjectTreeView
-        hideName
-        name="{rec.GBSeq_accession_version}"
-        obj="{rec}" />
+      <ObjectTreeView hideName name="{rec.GBSeq_accession_version}" obj="{rec}" />
     </div>
   {/if}
 </div>

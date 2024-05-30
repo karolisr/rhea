@@ -36,11 +36,7 @@ export let createNode: (
   tableName: string
 ) => Promise<string | null> = async () => ''
 
-export let deleteNode: (
-  id: string,
-  db: DB | null,
-  tableName: string
-) => Promise<string | null> = async () => null
+export let deleteNode: (id: string, db: DB | null, tableName: string) => Promise<string | null> = async () => null
 
 export let relabelNode: (
   id: string,

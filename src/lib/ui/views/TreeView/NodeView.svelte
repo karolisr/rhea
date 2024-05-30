@@ -38,15 +38,9 @@ export let createNodeEnabled: boolean
 export let deleteNodeEnabled: boolean
 export let relabelNodeEnabled: boolean
 
-export let createNode: (
-  parentId: string,
-  label: string
-) => Promise<string | null> = async () => ''
+export let createNode: (parentId: string, label: string) => Promise<string | null> = async () => ''
 export let deleteNode: (id: string) => Promise<string | null> = async () => null
-export let relabelNode: (
-  id: string,
-  label: string
-) => Promise<string | null> = async () => ''
+export let relabelNode: (id: string, label: string) => Promise<string | null> = async () => ''
 
 let _deleteNode: () => void = async () => {
   if (selected === tree.id) {
@@ -73,9 +67,7 @@ function _relabelNodeInit() {
   relabelId = tree.id
 }
 
-function relabelNodeCompleteChange(
-  e: Event & { currentTarget: EventTarget & HTMLInputElement }
-) {
+function relabelNodeCompleteChange(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
   const target = e.target as HTMLInputElement
   relabelNodeComplete(target)
 }
@@ -97,24 +89,14 @@ function relabelNodeComplete(target: HTMLInputElement) {
 }
 
 const mousedownEvtListener = (e: MouseEvent) => {
-  if (
-    e.button === 0 &&
-    e.target instanceof HTMLElement &&
-    e.target.id === `${uid}-tree-${tree.id}`
-  ) {
+  if (e.button === 0 && e.target instanceof HTMLElement && e.target.id === `${uid}-tree-${tree.id}`) {
     selected = undefined
     selectedGroupUid = undefined
   }
 
-  const inputElement = document.getElementById(
-    `collection-${tree.id}-label-text-input`
-  ) as HTMLInputElement
+  const inputElement = document.getElementById(`collection-${tree.id}-label-text-input`) as HTMLInputElement
 
-  if (
-    inputElement &&
-    e.target instanceof HTMLElement &&
-    e.target !== inputElement
-  ) {
+  if (inputElement && e.target instanceof HTMLElement && e.target !== inputElement) {
     relabelNodeComplete(inputElement)
     relabelId = undefined
   }
@@ -197,9 +179,7 @@ async function _scrollIntoView() {
   <div id="{uid}-tree-{tree.id}" class="tree">
     <button
       id="collection-{tree.id}"
-      class="tree-node{selected === tree.id && selectedGroupUid === uid
-        ? ' selected'
-        : ''}"
+      class="tree-node{selected === tree.id && selectedGroupUid === uid ? ' selected' : ''}"
       on:click="{select}"
       on:dblclick="{toggleExpand}"
       on:contextmenu="{showContextMenu}">

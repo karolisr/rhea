@@ -41,16 +41,12 @@ const mousedownEvtListener = (e: MouseEvent) => {
   style:top="{y}px">
   {#each items as item, i}
     {#if item.label !== undefined}
-      <div
-        id="context-menu-item-{i}"
-        class="context-menu-item{item.disabled ? ' disabled' : ''}"
-        role="menuitem">
+      <div id="context-menu-item-{i}" class="context-menu-item{item.disabled ? ' disabled' : ''}" role="menuitem">
         <div class="context-menu-item-label">{item.label}</div>
         <div class="context-menu-item-right">{item.hotKey}</div>
       </div>
     {:else}
-      <div id="context-menu-item-separator" class="context-menu-item-separator">
-      </div>
+      <div id="context-menu-item-separator" class="context-menu-item-separator"></div>
     {/if}
   {/each}
 </div>

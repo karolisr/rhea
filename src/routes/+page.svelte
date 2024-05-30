@@ -4,11 +4,7 @@ import TreeView from '$lib/ui/views/TreeView'
 import TableView from '$lib/ui/views/TableView'
 import { RecordList } from '$lib/utils/record-list'
 import { onMount } from 'svelte'
-import {
-  createCollection,
-  deleteCollection,
-  relabelCollection
-} from '$lib/app/api/db/collections'
+import { createCollection, deleteCollection, relabelCollection } from '$lib/app/api/db/collections'
 import databases from '$lib/app/svelte-stores/databases'
 import { getSeqRecs, getAllSeqRecs } from '$lib/app/api/db/gbseq'
 import type { IndexedUndefined } from '$lib/types'
@@ -33,16 +29,8 @@ async function _addToCollection(ids: string[]) {
   }
 }
 
-async function _getSeqRecs(
-  collUid: string | undefined,
-  collectionId: string | undefined
-) {
-  if (
-    $dbs &&
-    $dbs.dbsOK &&
-    collUid !== undefined &&
-    collectionId !== undefined
-  ) {
+async function _getSeqRecs(collUid: string | undefined, collectionId: string | undefined) {
+  if ($dbs && $dbs.dbsOK && collUid !== undefined && collectionId !== undefined) {
     if (collUid === 'user-tree') {
       seqRecList = await getSeqRecs('user', [collectionId])
     } else if (collUid === 'sequence-type-tree') {
@@ -83,20 +71,9 @@ onMount(async () => {
 </script>
 
 {#if $dbs && $dbs.dbsOK}
-  <ResizableGrid
-    nRow="{1}"
-    nCol="{2}"
-    rowHs="{[-1]}"
-    colWs="{[300, -1]}"
-    minColW="{0}">
+  <ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[300, -1]}" minColW="{0}">
     {#if $dbs.dbCollections && $dbs.dbSequences && $dbs.dbTaxonomy}
-      <ResizableGrid
-        nRow="{2}"
-        nCol="{1}"
-        rowHs="{[400, -1]}"
-        colWs="{[-1]}"
-        minRowH="{0}"
-        enforceMaxSize="{false}">
+      <ResizableGrid nRow="{2}" nCol="{1}" rowHs="{[400, -1]}" colWs="{[-1]}" minRowH="{0}" enforceMaxSize="{false}">
         <div class="tree-container">
           <TreeView
             uid="{'user-tree'}"
@@ -167,12 +144,7 @@ onMount(async () => {
           showHeaderRow />
       </div>
       <div>
-        {selectedColl
-          ? selectedGroupUid +
-            ' : ' +
-            selectedColl +
-            (activeRecordId ? ` : ${activeRecordId}` : '')
-          : ''}
+        {selectedColl ? selectedGroupUid + ' : ' + selectedColl + (activeRecordId ? ` : ${activeRecordId}` : '') : ''}
       </div>
     </ResizableGrid>
   </ResizableGrid>

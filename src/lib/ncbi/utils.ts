@@ -24,8 +24,7 @@ export function makeESearchTerm(
   len_min = Math.max(len_min, 0)
   len_max = Math.min(len_max, 1e10)
 
-  const taxn_term: string =
-    '(txid' + taxids.join('[PORGN] OR txid') + '[PORGN])'
+  const taxn_term: string = '(txid' + taxids.join('[PORGN] OR txid') + '[PORGN])'
   const filter_term: string = '(' + filters.join('[filter] OR ') + '[filter])'
   const slen_term: string = `${len_min}[SLEN] : ${len_max}[SLEN]`
   const bmol_term = 'biomol_genomic[PROP]'
@@ -40,10 +39,7 @@ export function makeESearchTerm(
   return terms.join(' AND ')
 }
 
-export async function getSeqRecords(
-  db: keyof typeof NCBIDatabase,
-  accs: string[]
-): Promise<GBSet> {
+export async function getSeqRecords(db: keyof typeof NCBIDatabase, accs: string[]): Promise<GBSet> {
   const p = new EutilParams()
   p.db = db
   p.ids = accs
@@ -70,10 +66,7 @@ export function getTaxId(gbseq: GBSeq): number | undefined {
       if (qualifiers) {
         qualifiers.forEach((q) => {
           if (q.GBQualifier_name === 'db_xref') {
-            if (
-              q.GBQualifier_value &&
-              q.GBQualifier_value.startsWith('taxon')
-            ) {
+            if (q.GBQualifier_value && q.GBQualifier_value.startsWith('taxon')) {
               taxid = Number(q.GBQualifier_value.split('taxon:')[1])
             }
           }

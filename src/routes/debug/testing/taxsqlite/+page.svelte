@@ -33,16 +33,12 @@ onMount(async () => {
     {#each results as r}
       <div>
         {#each getPropNames(r) as pn}
-          <pre style="user-select: text; -webkit-user-select: text;">{pn}: {r[
-              pn
-            ]}</pre>
+          <pre style="user-select: text; -webkit-user-select: text;">{pn}: {r[pn]}</pre>
           {#if pn === 'url'}
             <img
               draggable="false"
               style="width: 300px; aspect-ratio: auto;"
-              src="{String(r[pn])
-                .replace('http', 'https')
-                .replace('httpss', 'https')}"
+              src="{String(r[pn]).replace('http', 'https').replace('httpss', 'https')}"
               alt="" />
           {/if}
         {/each}

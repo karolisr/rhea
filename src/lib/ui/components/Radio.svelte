@@ -16,16 +16,7 @@ style = style.trim()
 </script>
 
 <radio-grid {style}>
-  <input
-    {id}
-    {name}
-    {value}
-    {checked}
-    {tabindex}
-    bind:group
-    on:change
-    on:click
-    type="radio" />
+  <input {id} {name} {value} {checked} {tabindex} bind:group on:change on:click type="radio" />
   {#if label}
     <label for="{id}">{label}</label>
   {/if}

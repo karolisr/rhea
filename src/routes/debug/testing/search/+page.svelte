@@ -56,11 +56,7 @@ async function search(): Promise<void> {
     return []
   })
   if (taxids.length > 0) {
-    const term = makeESearchTerm(
-      taxids,
-      [...Object.values(EntrezFilters)],
-      refSeqOnly
-    )
+    const term = makeESearchTerm(taxids, [...Object.values(EntrezFilters)], refSeqOnly)
     // console.log(term)
     const esearchResult = await esearch(NCBIDatabase.nuccore, term, true)
     esummaryResult = (await esummary(esearchResult.params)) as ESummaryNuccore[]
@@ -150,16 +146,10 @@ onDestroy(() => {
       bind:value="{searchTerm}"
       on:input="{validateSearchTerm}"
       disabled="{searching}" />
-    <input
-      type="submit"
-      value="{searching ? 'Searching' : 'Search'}"
-      disabled="{searchButtonDisabled || searching}" />
+    <input type="submit" value="{searching ? 'Searching' : 'Search'}" disabled="{searchButtonDisabled || searching}" />
   </form>
   <div>
-    <CheckBox
-      id="refseq-only"
-      bind:checked="{refSeqOnly}"
-      label="RefSeq Only?" />
+    <CheckBox id="refseq-only" bind:checked="{refSeqOnly}" label="RefSeq Only?" />
   </div>
   {#if error}
     <div><IconError />{errorMsg}</div>

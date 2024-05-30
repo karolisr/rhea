@@ -28,10 +28,7 @@ const _oncontextmenu: typeof oncontextmenu = (event) => {
 }
 
 function isPrimitiveArray(array: Array<unknown>): boolean {
-  return array.every(
-    (i) =>
-      typeof i === 'string' || typeof i === 'number' || typeof i === 'boolean'
-  )
+  return array.every((i) => typeof i === 'string' || typeof i === 'number' || typeof i === 'boolean')
 }
 
 let objectIsPrimitiveArray = false
@@ -45,15 +42,12 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
 </script>
 
 {#if !hideName}
-  <button
-    on:click="{toggleExpand}"
-    on:contextmenu="{_oncontextmenu}"
-    type="button"><span class="node-name">{name}</span></button>
+  <button on:click="{toggleExpand}" on:contextmenu="{_oncontextmenu}" type="button"
+    ><span class="node-name">{name}</span></button>
 {/if}
 {#if obj instanceof Array}
   {#if objectIsPrimitiveArray}
-    <span class="node-name">{name}</span>:&nbsp;<span class="node-value"
-      >{obj.toString().replaceAll(',', ', ')}</span>
+    <span class="node-name">{name}</span>:&nbsp;<span class="node-value">{obj.toString().replaceAll(',', ', ')}</span>
   {:else if expanded}
     {#each obj as item, i}
       <ul class:no-indent="{hideName}">
@@ -84,8 +78,7 @@ if (obj instanceof Array && isPrimitiveArray(obj)) {
         </li>
       {:else}
         <li>
-          <span class="node-name">{leafName}</span>:&nbsp;<span
-            class="node-value">
+          <span class="node-name">{leafName}</span>:&nbsp;<span class="node-value">
             {#if obj[leafName]}
               {obj[leafName]?.toString().substring(0, 1000)}
             {:else}

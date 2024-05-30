@@ -43,23 +43,13 @@ function _parse_xml(
           if (c.required === 'ARRAY') {
             if (create_parent_object_for_arrays) {
               obj_local[den] = {}
-              obj_local[den][
-                child_element_spec_name
-                  .replaceAll('-', '_')
-                  .replaceAll('INSD', 'GB')
-              ] = []
+              obj_local[den][child_element_spec_name.replaceAll('-', '_').replaceAll('INSD', 'GB')] = []
             } else {
               obj_local[den] = []
             }
           }
         }
-        _parse_xml(
-          doc_element,
-          dtd,
-          obj_local,
-          doc_element_name,
-          create_parent_object_for_arrays
-        )
+        _parse_xml(doc_element, dtd, obj_local, doc_element_name, create_parent_object_for_arrays)
       } else if (element_spec.value) {
         let value: string | null | number = doc_element.textContent
         if (element_spec.value.type in element_value_type) {
@@ -103,10 +93,7 @@ const DTD_MAP: { [element_name: string]: string } = {
   'INSDSet': 'INSD_INSDSeq.dtd'
 }
 
-export async function parse_xml_txt(
-  txt: string,
-  create_parent_object_for_arrays: boolean = false
-) {
+export async function parse_xml_txt(txt: string, create_parent_object_for_arrays: boolean = false) {
   let dtd: { [element_name: string]: _dtd_element } | null
 
   const dp = new DOMParser()
@@ -125,17 +112,9 @@ export async function parse_xml_txt(
     throw new Error(`No DTD for: ${doc_element_name}`)
   }
 
-  let ret_val = _parse_xml(
-    doc,
-    dtd,
-    {},
-    undefined,
-    create_parent_object_for_arrays
-  ) as Indexed
+  let ret_val = _parse_xml(doc, dtd, {}, undefined, create_parent_object_for_arrays) as Indexed
 
-  const root_element_name = doc_element_name
-    .replaceAll('-', '_')
-    .replaceAll('INSD', 'GB')
+  const root_element_name = doc_element_name.replaceAll('-', '_').replaceAll('INSD', 'GB')
 
   if (!(root_element_name in ret_val)) {
     let _ = {} as { [key: string]: unknown }

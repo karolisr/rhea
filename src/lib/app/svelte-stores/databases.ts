@@ -1,11 +1,6 @@
 import { readable, type Readable } from 'svelte/store'
 import { BROWSER } from '$lib/app/api'
-import {
-  DB,
-  initDBTaxonomy,
-  initDBSequences,
-  initDBCollections
-} from '$lib/app/api/db'
+import { DB, initDBTaxonomy, initDBSequences, initDBCollections } from '$lib/app/api/db'
 
 export interface Databases {
   dbsOK: boolean

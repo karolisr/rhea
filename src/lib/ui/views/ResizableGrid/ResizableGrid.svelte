@@ -19,14 +19,8 @@ let rowHsStr: string
 let colWsStr: string
 </script>
 
-<div
-  class="grid-container"
-  style:grid-template-rows="{rowHsStr}"
-  style:grid-template-columns="{colWsStr}">
-  <div
-    class="grid-items"
-    style:grid-row="1/{nRow + 1}"
-    style:grid-column="1/{nCol + 1}">
+<div class="grid-container" style:grid-template-rows="{rowHsStr}" style:grid-template-columns="{colWsStr}">
+  <div class="grid-items" style:grid-row="1/{nRow + 1}" style:grid-column="1/{nCol + 1}">
     <slot />
   </div>
 

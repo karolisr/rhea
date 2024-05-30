@@ -29,8 +29,12 @@
     {
       "identifier": "http:default",
       "allow": [
-        { "url": "https://*.nih.gov/*" },
-        { "url": "https://*.wikimedia.org/*" }
+        {
+          "url": "https://*.nih.gov/*"
+        },
+        {
+          "url": "https://*.wikimedia.org/*"
+        }
       ],
       "deny": []
     },

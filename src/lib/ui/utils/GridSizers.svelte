@@ -103,9 +103,7 @@ function resizeGridElementBegin(evt: MouseEvent) {
     maxSizeOffset = 20000
   } else {
     for (let i = 0; i < n; i++) {
-      const elOther = document.getElementById(
-        `${uid}-${elType}-sizer-${i}`
-      ) as HTMLElement
+      const elOther = document.getElementById(`${uid}-${elType}-sizer-${i}`) as HTMLElement
       if (elOther) {
         if (sizes[i] === -1) {
           maxSize += minSize
@@ -137,10 +135,7 @@ function resizeGridElementBegin(evt: MouseEvent) {
 function resizeCol(evt: MouseEvent) {
   if (colResizing !== null) {
     const d = evt.x - (colPrevX as number)
-    let newColW = min(
-      max(minColW, (colPrevWidth as number) + d),
-      colMaxW as number
-    )
+    let newColW = min(max(minColW, (colPrevWidth as number) + d), colMaxW as number)
     if (newColW < sizerSize * 2) newColW = 0
     colWs[colResizing as number] = newColW
     dispatchEvent(resizeEvt)
@@ -150,10 +145,7 @@ function resizeCol(evt: MouseEvent) {
 function resizeRow(evt: MouseEvent) {
   if (rowResizing !== null) {
     const d = evt.y - (rowPrevY as number)
-    let newRowH = min(
-      max(minRowH, (rowPrevHeight as number) + d),
-      rowMaxH as number
-    )
+    let newRowH = min(max(minRowH, (rowPrevHeight as number) + d), rowMaxH as number)
     if (newRowH < sizerSize * 2) newRowH = 0
     rowHs[rowResizing as number] = newRowH
     dispatchEvent(resizeEvt)
@@ -218,10 +210,7 @@ async function collapseGridElement(evt: MouseEvent) {
 }
 </script>
 
-<div
-  class="grid-sizers"
-  style:grid-row="1/{nRow + 1}"
-  style:grid-column="1/{nCol + 1}">
+<div class="grid-sizers" style:grid-row="1/{nRow + 1}" style:grid-column="1/{nCol + 1}">
   {#if rowsResizable}
     {#each rowHs as rowH, row}
       {#if rowH !== -1 && !fixedHRows.includes(row)}
@@ -231,14 +220,10 @@ async function collapseGridElement(evt: MouseEvent) {
           style:grid-column="1/{nCol + 1}">
           <div
             id="{uid}-row-sizer-{row}"
-            on:mousedown="{rowHs[row] === 0 && minRowH !== 0
-              ? null
-              : resizeGridElementBegin}"
+            on:mousedown="{rowHs[row] === 0 && minRowH !== 0 ? null : resizeGridElementBegin}"
             on:dblclick="{collapseGridElement}"
             role="none"
-            style:top="{rowHs[row] === 0
-              ? rowHs[row]
-              : rowHs[row] - 0.5 - sizerSize / 2}px"
+            style:top="{rowHs[row] === 0 ? rowHs[row] : rowHs[row] - 0.5 - sizerSize / 2}px"
             style:height="{sizerSize}px">
           </div>
         </grid-sizer-h>
@@ -254,14 +239,10 @@ async function collapseGridElement(evt: MouseEvent) {
           style:grid-column="{col + 1}/{col + 2}">
           <div
             id="{uid}-col-sizer-{col}"
-            on:mousedown="{colWs[col] === 0 && minColW !== 0
-              ? null
-              : resizeGridElementBegin}"
+            on:mousedown="{colWs[col] === 0 && minColW !== 0 ? null : resizeGridElementBegin}"
             on:dblclick="{collapseGridElement}"
             role="none"
-            style:left="{colWs[col] === 0
-              ? colWs[col]
-              : colWs[col] - 0.5 - sizerSize / 2}px"
+            style:left="{colWs[col] === 0 ? colWs[col] : colWs[col] - 0.5 - sizerSize / 2}px"
             style:width="{sizerSize}px">
           </div>
         </grid-sizer-v>

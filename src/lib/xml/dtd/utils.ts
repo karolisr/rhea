@@ -43,9 +43,7 @@ export function elements_to_json(
   return removeCycle(_elements_to_json(_els)) as Indexed
 }
 
-export function _never_children(elements: {
-  [element_name: string]: _dtd_element
-}): Set<string> {
+export function _never_children(elements: { [element_name: string]: _dtd_element }): Set<string> {
   const ns: Set<string> = new Set(getPropNames(elements))
   const ncs: Set<string> = new Set()
   for (const n of ns) {
@@ -67,11 +65,7 @@ export function _never_children(elements: {
   return rv
 }
 
-function _build_object(
-  rootName: string,
-  parts: Indexed,
-  done: Indexed = {}
-): { _obj: Indexed; _done: Indexed } {
+function _build_object(rootName: string, parts: Indexed, done: Indexed = {}): { _obj: Indexed; _done: Indexed } {
   const obj: Indexed = parts[rootName] as Indexed
   const cns = getPropNames(obj)
   for (const cn of cns) {

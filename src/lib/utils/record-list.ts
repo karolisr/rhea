@@ -83,16 +83,7 @@ export class RecordList<T> {
   }
 
   fieldsByType(
-    types: (
-      | 'string'
-      | 'number'
-      | 'boolean'
-      | 'object'
-      | 'bigint'
-      | 'symbol'
-      | 'undefined'
-      | 'function'
-    )[]
+    types: ('string' | 'number' | 'boolean' | 'object' | 'bigint' | 'symbol' | 'undefined' | 'function')[]
   ): KnownKeys<T>[] | string[] {
     const rv: KnownKeys<T>[] = []
     if (this.length > 0) {

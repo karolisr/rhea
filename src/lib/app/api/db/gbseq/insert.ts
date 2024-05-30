@@ -1,10 +1,5 @@
 import type { GBFeatureSet, GBSeq } from '$lib/ncbi/types/GBSet'
-import {
-  DB,
-  beginTransaction,
-  commitTransaction,
-  vacuum
-} from '$lib/app/api/db'
+import { DB, beginTransaction, commitTransaction, vacuum } from '$lib/app/api/db'
 import { getTaxId } from '$lib/ncbi/utils'
 import sql, { Sql, bulk, empty } from 'sql-template-tag'
 import databases from '$lib/app/svelte-stores/databases'
@@ -45,11 +40,7 @@ export async function insertSeqRecs(records: GBSeq[]) {
                     .join()}`
                 )
               }
-              const sqlText =
-                _sql.strings[0] +
-                valsStrPieces.join('),(') +
-                '' +
-                _sql.strings[_sql.strings.length - 1]
+              const sqlText = _sql.strings[0] + valsStrPieces.join('),(') + '' + _sql.strings[_sql.strings.length - 1]
               await (db as DB).execute(sqlText, batchVal)
             }
             // ----------------------------------------------------------------
@@ -516,14 +507,7 @@ function _prep(records: GBSeq[]): Sql[] {
         if (qualifiers) {
           for (let x = 0; x < qualifiers.length; x++) {
             const qual = qualifiers[x]
-            qualifierVs.push([
-              accVer,
-              j,
-              k + 1,
-              x + 1,
-              qual.GBQualifier_name,
-              qual.GBQualifier_value
-            ])
+            qualifierVs.push([accVer, j, k + 1, x + 1, qual.GBQualifier_name, qual.GBQualifier_value])
           }
         }
 
@@ -531,31 +515,13 @@ function _prep(records: GBSeq[]): Sql[] {
         if (featXRefs) {
           for (let x = 0; x < featXRefs.length; x++) {
             const xref = featXRefs[x]
-            xRefVs.push([
-              accVer,
-              j,
-              k + 1,
-              0,
-              x + 1,
-              xref.GBXref_dbname,
-              xref.GBXref_id
-            ])
+            xRefVs.push([accVer, j, k + 1, 0, x + 1, xref.GBXref_dbname, xref.GBXref_id])
           }
         }
       }
     }
 
-    referenceVs.push([
-      accVer,
-      0,
-      '',
-      '',
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined
-    ]) // Default Reference
+    referenceVs.push([accVer, 0, '', '', undefined, undefined, undefined, undefined, undefined]) // Default Reference
     const recReferences = r.GBSeq_references
     if (recReferences) {
       for (let y = 0; y < recReferences.length; y++) {
@@ -576,15 +542,7 @@ function _prep(records: GBSeq[]): Sql[] {
         if (refXRefs) {
           for (let x = 0; x < refXRefs.length; x++) {
             const xref = refXRefs[x]
-            xRefVs.push([
-              accVer,
-              0,
-              0,
-              y + 1,
-              x + 1,
-              xref.GBXref_dbname,
-              xref.GBXref_id
-            ])
+            xRefVs.push([accVer, 0, 0, y + 1, x + 1, xref.GBXref_dbname, xref.GBXref_id])
           }
         }
 
@@ -602,15 +560,7 @@ function _prep(records: GBSeq[]): Sql[] {
     if (recXRefs) {
       for (let x = 0; x < recXRefs.length; x++) {
         const xref = recXRefs[x]
-        xRefVs.push([
-          accVer,
-          0,
-          0,
-          0,
-          x + 1,
-          xref.GBXref_dbname,
-          xref.GBXref_id
-        ])
+        xRefVs.push([accVer, 0, 0, 0, x + 1, xref.GBXref_dbname, xref.GBXref_id])
       }
     }
 
