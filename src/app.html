@@ -19,7 +19,7 @@
         style-src 'self'                 data: 'self' 'unsafe-inline'                          ;
          font-src 'self'                 data: 'self'                                          ;
           img-src 'self'                 data: 'self' https://*.nih.gov https://*.wikimedia.org;
-      connect-src 'self' ipc:            data: 'self' https://*.nih.gov https://*.wikimedia.org;
+      connect-src 'self' ipc: https:     data: 'self' https://*.nih.gov https://*.wikimedia.org;
       " />
     <!-- ----------------------------------------------------- -->
     %sveltekit.head%

@@ -60,7 +60,7 @@
     ],
     "security": {
       "csp": {
-        "connect-src": "ipc:"
+        "connect-src": "ipc: https:"
       }
     }
   }
