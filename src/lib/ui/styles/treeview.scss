@@ -32,6 +32,10 @@
   color: $A050;
 }
 
+.tree > button.tree-node.drag-item-hovering {
+  background-color: $B300;
+}
+
 .tree > .children {
   margin-inline-start: 1rem;
 }

@@ -8,6 +8,8 @@ export let expanded = true
 export let selected: string | undefined = undefined
 export let selectedGroupUid: string | undefined = undefined
 
+export let acceptedDropTypes: string[] = []
+
 export let db: DB
 export let tableName: string
 let rebuild: number = 1
@@ -66,6 +68,7 @@ const _relabelNode = async (id: string, label: string) => {
     bind:selectedGroupUid
     bind:expandedIds
     bind:rebuild
+    bind:acceptedDropTypes
     {db}
     {tableName}
     {rootLabel}

@@ -8,6 +8,7 @@ import type { IndexedUndefined } from '$lib/types'
 import type { Collection } from '$lib/types'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import { getPropNames } from '$lib'
+import type { DragStartEvent } from '$lib/app/api/types'
 
 onMount(async () => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -114,6 +115,18 @@ $: {
 $: if (activeRow !== undefined) {
   activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
   activeRowRecord = rl.items[activeRow]
+}
+
+function onDragStart(e: Event) {
+  const ev = e as DragStartEvent
+  const ark = activeRowKey as string
+  ev.payload.type = 'acc-ver-array'
+  if (selectedRecordIds.includes(ark)) {
+    ev.payload.data = selectedRecordIds
+  } else {
+    ev.payload.data = [ark]
+  }
+  // console.log('onDragStart:', ev.payload)
 }
 
 const _onscroll = (_: Event) => {
@@ -337,7 +350,8 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                 role="none"
                 on:mousedown="{() => {
                   activeRow = i
-                }}">
+                }}"
+                on:dragstart="{onDragStart}">
                 {#if showCheckBoxes}
                   <div id="{uid}-cell-{i}-checkbox" class="cell">
                     <CheckBox

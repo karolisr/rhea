@@ -87,6 +87,7 @@ onMount(async () => {
             relabelNodeEnabled="{true}"
             bind:selected="{selectedColl}"
             bind:selectedGroupUid
+            acceptedDropTypes="{['acc-ver-array']}"
             createNode="{createCollection}"
             deleteNode="{deleteCollection}"
             relabelNode="{relabelCollection}" />

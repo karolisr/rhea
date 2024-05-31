@@ -8,6 +8,7 @@ import contextMenu from '$lib/app/svelte-stores/context-menu'
 import { DB } from '$lib/app/api/db'
 import { buildNode } from '$lib'
 import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
+import type { DragOverEvent, DropEvent } from '$lib/app/api/types'
 
 onMount(async () => {
   addEventListener('mousedown', mousedownEvtListener, { capture: true })
@@ -24,6 +25,8 @@ export let selectedGroupUid: string | undefined = undefined
 export let selected: string | undefined = undefined
 export let relabelId: string | undefined = undefined
 export let expandedIds: Set<string>
+
+export let acceptedDropTypes: string[]
 
 export let rebuild: number
 
@@ -172,17 +175,35 @@ async function _scrollIntoView() {
   if (_) _.scrollIntoView()
 }
 
-// $: console.log(tree.label, tree.id, tree.lineage)
+function onDragOver(e: Event) {
+  const ev = e as DragOverEvent
+  if (acceptedDropTypes.includes(ev.payload.type)) {
+    ev.payload.targetCanAccept = true
+  } else {
+    ev.payload.targetCanAccept = false
+  }
+}
+
+function onDrop(e: Event) {
+  const ev = e as DropEvent
+  if (acceptedDropTypes.includes(ev.payload.type)) {
+    const droppedData = ev.payload.data as string[]
+    console.log(`"${tree.label}" received: ${droppedData.join(', ')}.`)
+  }
+}
 </script>
 
 {#if tree}
-  <div id="{uid}-tree-{tree.id}" class="tree">
+  <div id="{uid}-tree-{tree.id}" class="tree" style="pointer-events: none;">
     <button
       id="collection-{tree.id}"
-      class="tree-node{selected === tree.id && selectedGroupUid === uid ? ' selected' : ''}"
+      class="drag-target tree-node{selected === tree.id && selectedGroupUid === uid ? ' selected' : ''}"
+      style="pointer-events: auto;"
       on:click="{select}"
       on:dblclick="{toggleExpand}"
-      on:contextmenu="{showContextMenu}">
+      on:contextmenu="{showContextMenu}"
+      on:dragenter="{onDragOver}"
+      on:drop="{onDrop}">
       {#if expandedIds.has(tree.id)}
         {#if tree.child_count === 0}
           <IconFile />
@@ -205,7 +226,7 @@ async function _scrollIntoView() {
           on:change="{relabelNodeCompleteChange}"
           on:keydown="{relabelNodeCompleteKeyboard}" />
       {:else}
-        <span>{tree.label}</span>
+        <span style="pointer-events: none;">{tree.label}</span>
         <!-- <span>{tree.label} ({String(tree.child_count)})</span> -->
       {/if}
     </button>
@@ -220,6 +241,7 @@ async function _scrollIntoView() {
               bind:selectedGroupUid
               bind:expandedIds
               bind:rebuild
+              bind:acceptedDropTypes
               {db}
               {tableName}
               {rootLabel}

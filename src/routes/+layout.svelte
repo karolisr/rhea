@@ -17,6 +17,7 @@ import { DragDrop } from '$lib/app/api/drag-drop'
 // let dbs: Awaited<typeof databases>
 
 let unlisteners: Unlistener[] = []
+let dragDropConductor: DragDrop = new DragDrop()
 
 $: setScale($settings.scale)
 
@@ -24,7 +25,6 @@ onMount(async () => {
   console.log(BROWSER, ENGINE)
   unlisteners.push(await themeChangeListener())
   unlisteners.push(await new FileDragDrop().unlisten)
-  unlisteners.push(new DragDrop().unlisten)
 
   unlisteners.push(preventDefault('contextmenu'))
 
@@ -43,6 +43,7 @@ onMount(async () => {
 })
 
 onDestroy(() => {
+  dragDropConductor.unlisten()
   unlisteners.forEach((f) => {
     f()
   })
