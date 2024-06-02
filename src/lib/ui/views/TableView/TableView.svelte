@@ -121,10 +121,17 @@ function onDragStart(e: Event) {
   const ev = e as DragStartEvent
   const ark = activeRowKey as string
   ev.payload.type = 'acc-ver-array'
+
+  const el = ev.payload.showWhileDraggingEl as HTMLElement
+  el.style.borderStyle = 'solid'
+  el.style.backgroundColor = 'yellow'
+
   if (selectedRecordIds.includes(ark)) {
     ev.payload.data = selectedRecordIds
+    el.innerText = `${selectedRecordIds.length} records`
   } else {
     ev.payload.data = [ark]
+    el.innerText = ark
   }
   // console.log('onDragStart:', ev.payload)
 }

@@ -2,6 +2,7 @@ export interface DragDropPayload {
   type: string
   data: unknown
   targetCanAccept: boolean
+  showWhileDraggingEl: HTMLElement | null
 }
 
 export interface DragStartEvent extends Event {

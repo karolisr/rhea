@@ -12,14 +12,20 @@ export class DragDrop {
   private drgTargetEl: HTMLElement | null = null
   private drgTargetElPrev: HTMLElement | null = null
 
-  private defaultPayload: DragDropPayload = { type: 'type.default', data: 'data.default', targetCanAccept: false }
+  private defaultPayload: DragDropPayload = {
+    type: 'type.default',
+    data: 'data.default',
+    targetCanAccept: false,
+    showWhileDraggingEl: null
+  }
   private payload: DragDropPayload = this.defaultPayload
+  // private showWhileDraggingEl: HTMLElement | null = null
 
   // private drgZ: number = 0
-  // private drgSourceElXstart: number = 0
-  // private drgSourceElYstart: number = 0
-  // private drgSourceElXoffset: number = 0
-  // private drgSourceElYoffset: number = 0
+  private drgSourceElXstart: number = 0
+  private drgSourceElYstart: number = 0
+  private drgSourceElXoffset: number = 0
+  private drgSourceElYoffset: number = 0
 
   constructor() {
     addEventListener('mousemove', this.#mMoveL)
@@ -97,7 +103,8 @@ export class DragDrop {
       } else if (this.drgTargetElPrev) {
         this.drgTargetElPrev.classList.remove('drag-item-hovering')
         this.payload.targetCanAccept = false
-        document.body.style.cursor = 'grabbing'
+        // document.body.style.cursor = 'grabbing'
+        document.body.style.cursor = 'default'
       }
     }
   }
@@ -107,40 +114,76 @@ export class DragDrop {
       this.drgSourceEl = this.drgEl1
       this.beforeDrag = 0
       this.drgEl2 = this.drgEl1
-      // if (this.drgSourceEl) {
-      //   this.drgZ += 2
-      //   this.drgSourceEl.style.pointerEvents = 'none'
-      //   this.drgSourceEl.style.zIndex = `${this.drgZ}`
-      //   this.drgSourceElXstart = this.drgSourceEl?.getBoundingClientRect().left
-      //   this.drgSourceElYstart = this.drgSourceEl?.getBoundingClientRect().top
-      //   this.drgSourceElXoffset = e.clientX - this.drgSourceElXstart
-      //   this.drgSourceElYoffset = e.clientY - this.drgSourceElYstart
-      // }
+      if (this.drgSourceEl) {
+        //   this.drgZ += 2
+        //   this.drgSourceEl.style.pointerEvents = 'none'
+        //   this.drgSourceEl.style.zIndex = `${this.drgZ}`
+        this.drgSourceElXstart = this.drgSourceEl?.getBoundingClientRect().left
+        this.drgSourceElYstart = this.drgSourceEl?.getBoundingClientRect().top
+        this.drgSourceElXoffset = e.clientX - this.drgSourceElXstart
+        this.drgSourceElYoffset = e.clientY - this.drgSourceElYstart
+      }
     }
   }
 
   #mouseMoveEventListener(e: MouseEvent) {
+    const drgOffsetX = -1
+    const drgOffsetY = -25
     if (this.beforeDrag >= 0) this.beforeDrag += 1
     if (this.beforeDrag > 5 && this.drgSourceEl) {
-      document.body.style.cursor = 'grabbing'
+      // document.body.style.cursor = 'grabbing'
+      document.body.style.cursor = 'default'
       this.beforeDrag = -1
       this.dragging = true
       console.log(`Dragging: ${this.drgSourceEl?.id}`)
       const dragStartEv = new Event('dragstart') as DragStartEvent
-      this.payload = { type: 'TYPE', data: this.drgSourceEl?.id, targetCanAccept: false }
+
+      const el = document.createElement('div')
+      el.style.transition = 'opacity 250ms'
+      el.style.opacity = '0'
+      el.style.pointerEvents = 'none'
+      el.style.paddingBlock = '5px'
+      el.style.paddingInline = '5px'
+      el.style.position = 'absolute'
+      el.style.left = `${e.x + drgOffsetX}px`
+      el.style.top = `${e.y + drgOffsetY}px`
+      el.style.zIndex = '1000'
+      const pEl = document.body
+      pEl.appendChild(el)
+
+      this.payload = {
+        type: 'TYPE',
+        data: this.drgSourceEl?.id,
+        targetCanAccept: false,
+        showWhileDraggingEl: el
+      }
+
       dragStartEv.payload = this.payload
       this.drgSourceEl.dispatchEvent(dragStartEv)
-    } else if (this.dragging && this.drgTargetEl) {
-      // if (!this.payload.targetCanAccept) document.body.style.cursor = 'no-drop'
+      // } else if (this.dragging && this.drgTargetEl) {
+      //   if (!this.payload.targetCanAccept) document.body.style.cursor = 'no-drop'
+    } else if (this.payload.showWhileDraggingEl !== null) {
+      const el = this.payload.showWhileDraggingEl
+      el.style.opacity = '1'
+      el.style.left = `${e.x + drgOffsetX}px`
+      el.style.top = `${e.y + drgOffsetY}px`
+      // el.style.left = `${e.x - this.drgSourceElXoffset}px`
+      // el.style.top = `${e.y - this.drgSourceElYoffset}px`
     } else {
-      // this.drgSourceEl.style.position = 'absolute'
-      // this.drgSourceEl.style.left = `${e.x - this.drgSourceElXoffset}px`
-      // this.drgSourceEl.style.top = `${e.y - this.drgSourceElYoffset}px`
+      //
     }
   }
 
   #dragStopListener(e: MouseEvent) {
     this.beforeDrag = -1
+
+    if (this.payload.showWhileDraggingEl !== null) {
+      const el = this.payload.showWhileDraggingEl
+      el.style.opacity = '0'
+      setTimeout(() => {
+        document.body.removeChild(el)
+      }, 250)
+    }
 
     if (this.drgEl1) {
       // document.body.style.cursor = 'grab'
