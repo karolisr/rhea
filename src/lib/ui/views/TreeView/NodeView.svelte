@@ -41,9 +41,11 @@ export let createNodeEnabled: boolean
 export let deleteNodeEnabled: boolean
 export let relabelNodeEnabled: boolean
 
-export let createNode: (parentId: string, label: string) => Promise<string | null> = async () => ''
-export let deleteNode: (id: string) => Promise<string | null> = async () => null
-export let relabelNode: (id: string, label: string) => Promise<string | null> = async () => ''
+export let createNode: (parentId: string, label: string) => Promise<string | null>
+export let deleteNode: (id: string) => Promise<string | null>
+export let relabelNode: (id: string, label: string) => Promise<string | null>
+export let addRecords: (ids: string[], collId: string) => Promise<void>
+export let removeRecords: (ids: string[], collId: string) => Promise<void>
 
 let _deleteNode: () => void = async () => {
   if (selected === tree.id) {
@@ -177,18 +179,19 @@ async function _scrollIntoView() {
 
 function onDragOver(e: Event) {
   const ev = e as DragOverEvent
-  if (acceptedDropTypes.includes(ev.payload.type)) {
+  if (!(selected === tree.id && selectedGroupUid === uid) && acceptedDropTypes.includes(ev.payload.type)) {
     ev.payload.targetCanAccept = true
   } else {
     ev.payload.targetCanAccept = false
   }
 }
 
-function onDrop(e: Event) {
+async function onDrop(e: Event) {
   const ev = e as DropEvent
-  if (acceptedDropTypes.includes(ev.payload.type)) {
+  if (!(selected === tree.id && selectedGroupUid === uid) && acceptedDropTypes.includes(ev.payload.type)) {
     const droppedData = ev.payload.data as string[]
-    console.log(`"${tree.label}" received: ${droppedData.join(', ')}.`)
+    await addRecords(droppedData, tree.id)
+    // console.log(`"${tree.label}" received: ${droppedData.join(', ')}.`)
   }
 }
 </script>
@@ -254,7 +257,9 @@ function onDrop(e: Event) {
               {relabelNodeEnabled}
               {createNode}
               {deleteNode}
-              {relabelNode} />
+              {relabelNode}
+              {addRecords}
+              {removeRecords} />
           {/await}
         {/each}
       </div>

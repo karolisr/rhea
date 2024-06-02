@@ -352,8 +352,8 @@ export const schemaSequences = sql`
   ----------------------------------------------------------------------------
   -- Views -------------------------------------------------------------------
   ----------------------------------------------------------------------------
-  DROP VIEW IF EXISTS records_simple
-  ;
+  -- DROP VIEW IF EXISTS records_simple
+  -- ;
   CREATE VIEW IF NOT EXISTS records_simple (
     "Accession",
     "TaxID",
@@ -371,8 +371,8 @@ export const schemaSequences = sql`
     gb_records
   ;
   ----------------------------------------------------------------------------
-  DROP VIEW IF EXISTS records
-  ;
+  -- DROP VIEW IF EXISTS records
+  -- ;
   CREATE VIEW IF NOT EXISTS records AS
   SELECT
     records_simple."Accession",
@@ -421,8 +421,8 @@ export const schemaSequences = sql`
     records_simple."Accession"
   ;
   ----------------------------------------------------------------------------
-  DROP VIEW IF EXISTS records_user
-  ;
+  -- DROP VIEW IF EXISTS records_user
+  -- ;
   CREATE VIEW IF NOT EXISTS records_user AS
   SELECT
     *

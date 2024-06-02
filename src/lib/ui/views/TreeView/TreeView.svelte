@@ -12,7 +12,7 @@ export let acceptedDropTypes: string[] = []
 
 export let db: DB
 export let tableName: string
-let rebuild: number = 1
+export let rebuild: number = 1
 export let rootLabel: string
 export let parentId: string = 'ROOT'
 export let rootId: string = 'ROOT'
@@ -47,6 +47,9 @@ export let relabelNode: (
   tableName: string
 ) => Promise<string | null> = async () => ''
 
+export let addRecords: (ids: string[], collId: string) => Promise<void> = async () => {}
+export let removeRecords: (ids: string[], collId: string) => Promise<void> = async () => {}
+
 const _createNode = async (parentId: string, label: string) => {
   return createNode(parentId, label, '', db, tableName)
 }
@@ -55,6 +58,13 @@ const _deleteNode = async (id: string) => {
 }
 const _relabelNode = async (id: string, label: string) => {
   return relabelNode(id, label, db, tableName)
+}
+const _addRecords = async (ids: string[], collId: string) => {
+  return addRecords(ids, collId)
+}
+
+const _removeRecords = async (ids: string[], collId: string) => {
+  return removeRecords(ids, collId)
 }
 </script>
 
@@ -81,5 +91,7 @@ const _relabelNode = async (id: string, label: string) => {
     {relabelNodeEnabled}
     createNode="{_createNode}"
     deleteNode="{_deleteNode}"
-    relabelNode="{_relabelNode}" />
+    relabelNode="{_relabelNode}"
+    addRecords="{_addRecords}"
+    removeRecords="{_removeRecords}" />
 {/await}

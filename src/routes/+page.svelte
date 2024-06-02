@@ -3,14 +3,16 @@ import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import TreeView from '$lib/ui/views/TreeView'
 import TableView from '$lib/ui/views/TableView'
 import { RecordList } from '$lib/utils/record-list'
-import { onMount } from 'svelte'
+import { onMount, tick } from 'svelte'
 import { createCollection, deleteCollection, relabelCollection } from '$lib/app/api/db/collections'
 import databases from '$lib/app/svelte-stores/databases'
 import { getSeqRecs, getAllSeqRecs } from '$lib/app/api/db/gbseq'
 import type { IndexedUndefined } from '$lib/types'
-import { addSeqRecsToCollection } from '$lib/app/api/db/gbseq'
+import { addSeqRecsToCollection, removeSeqRecsFromCollection } from '$lib/app/api/db/gbseq'
 
 let dbs: Awaited<typeof databases>
+
+let rebuild: number
 
 let selectedGroupUid: string | undefined = 'user-tree'
 let selectedColl: string | undefined = 'ROOT'
@@ -23,13 +25,7 @@ let selectedRecordIds: string[] = []
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
 
-async function _addToCollection(ids: string[]) {
-  if (selectedColl !== undefined) {
-    await addSeqRecsToCollection(ids, selectedColl)
-  }
-}
-
-async function _getSeqRecs(collUid: string | undefined, collectionId: string | undefined) {
+async function _getSeqRecs(collUid: string | undefined, collectionId: string | undefined, rebuild: number) {
   if ($dbs && $dbs.dbsOK && collUid !== undefined && collectionId !== undefined) {
     if (collUid === 'user-tree') {
       seqRecList = await getSeqRecs('user', [collectionId])
@@ -48,9 +44,19 @@ async function _getSeqRecs(collUid: string | undefined, collectionId: string | u
   }
 }
 
+async function _removeSeqRec(id: unknown) {
+  if (selectedGroupUid === 'user-tree' && selectedColl !== undefined) {
+    await removeSeqRecsFromCollection([id as string], selectedColl)
+    rebuild += 1
+    await tick()
+  } else {
+    console.log('_removeSeqRec: doing nothing.')
+  }
+}
+
 let seqRecList: IndexedUndefined[]
 
-$: _getSeqRecs(selectedGroupUid, selectedColl)
+$: if ($dbs && $dbs.dbsOK) _getSeqRecs(selectedGroupUid, selectedColl, rebuild)
 
 $: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
 $: if (seqRecListRL) {
@@ -73,7 +79,7 @@ onMount(async () => {
 {#if $dbs && $dbs.dbsOK}
   <ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[300, -1]}" minColW="{0}">
     {#if $dbs.dbCollections && $dbs.dbSequences && $dbs.dbTaxonomy}
-      <ResizableGrid nRow="{2}" nCol="{1}" rowHs="{[400, -1]}" colWs="{[-1]}" minRowH="{0}" enforceMaxSize="{false}">
+      <ResizableGrid nRow="{1}" nCol="{1}" rowHs="{[-1]}" colWs="{[-1]}" minRowH="{0}" enforceMaxSize="{false}">
         <div class="tree-container">
           <TreeView
             uid="{'user-tree'}"
@@ -87,10 +93,12 @@ onMount(async () => {
             relabelNodeEnabled="{true}"
             bind:selected="{selectedColl}"
             bind:selectedGroupUid
+            bind:rebuild
             acceptedDropTypes="{['acc-ver-array']}"
             createNode="{createCollection}"
             deleteNode="{deleteCollection}"
-            relabelNode="{relabelCollection}" />
+            relabelNode="{relabelCollection}"
+            addRecords="{addSeqRecsToCollection}" />
           <TreeView
             uid="{'search-results-tree'}"
             expanded="{true}"
@@ -111,7 +119,7 @@ onMount(async () => {
             bind:selected="{selectedColl}"
             bind:selectedGroupUid />
         </div>
-        <div class="tree-container">
+        <!-- <div class="tree-container">
           <TreeView
             uid="{'taxonomy-tree'}"
             expanded="{true}"
@@ -121,7 +129,7 @@ onMount(async () => {
             parentId="{'1'}"
             rootId="{'1'}"
             bind:selected="{selectedTaxon}" />
-        </div>
+        </div> -->
       </ResizableGrid>
     {:else}
       <div>Loading...</div>
@@ -140,6 +148,7 @@ onMount(async () => {
           bind:activeRowKey="{activeRecordId}"
           bind:selectedRecordIds
           bind:rowHeight
+          onDeleteRow="{_removeSeqRec}"
           showCheckBoxes
           multiRowSelect
           showHeaderRow />

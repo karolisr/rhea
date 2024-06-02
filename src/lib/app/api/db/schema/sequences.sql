@@ -349,8 +349,8 @@ CREATE TABLE IF NOT EXISTS "assoc_records_user" (
 ----------------------------------------------------------------------------
 -- Views -------------------------------------------------------------------
 ----------------------------------------------------------------------------
-DROP VIEW IF EXISTS records_simple
-;
+-- DROP VIEW IF EXISTS records_simple
+-- ;
 CREATE VIEW IF NOT EXISTS records_simple (
   "Accession",
   "TaxID",
@@ -368,8 +368,8 @@ FROM
   gb_records
 ;
 ----------------------------------------------------------------------------
-DROP VIEW IF EXISTS records
-;
+-- DROP VIEW IF EXISTS records
+-- ;
 CREATE VIEW IF NOT EXISTS records AS
 SELECT
   records_simple."Accession",
@@ -418,8 +418,8 @@ GROUP BY
   records_simple."Accession"
 ;
 ----------------------------------------------------------------------------
-DROP VIEW IF EXISTS records_user
-;
+-- DROP VIEW IF EXISTS records_user
+-- ;
 CREATE VIEW IF NOT EXISTS records_user AS
 SELECT
   *

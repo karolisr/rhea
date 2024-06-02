@@ -4,7 +4,7 @@ export class DragDrop {
   private drgEl1: HTMLElement | null = null
   private drgEl2: HTMLElement | null = null
 
-  private beforeDrag: boolean = false
+  private beforeDrag: number = -1
   private dragging: boolean = false
   private draggingEnded: boolean = false
 
@@ -46,14 +46,12 @@ export class DragDrop {
     if (el) {
       this.#clearDrgEl(el)
       el.addEventListener('mousedown', this.#dStrtL)
-      // console.log('+', el.id)
     }
   }
 
   #clearDrgEl(el: HTMLElement | null) {
     if (el) {
       el.removeEventListener('mousedown', this.#dStrtL)
-      // console.log('-', el.id)
     }
   }
 
@@ -63,7 +61,7 @@ export class DragDrop {
       if (!this.dragging) {
         this.drgEl1 = e.target
         this.#prepDrgEl(this.drgEl1)
-        document.body.style.cursor = 'grab'
+        // document.body.style.cursor = 'grab'
       } else {
         this.drgEl2 = e.target
       }
@@ -107,8 +105,7 @@ export class DragDrop {
   #dragStartListener(e: MouseEvent) {
     if (e.target === this.drgEl1) {
       this.drgSourceEl = this.drgEl1
-      document.body.style.cursor = 'grabbing'
-      this.beforeDrag = true
+      this.beforeDrag = 0
       this.drgEl2 = this.drgEl1
       // if (this.drgSourceEl) {
       //   this.drgZ += 2
@@ -123,11 +120,12 @@ export class DragDrop {
   }
 
   #mouseMoveEventListener(e: MouseEvent) {
-    if (this.beforeDrag && this.drgSourceEl) {
-      this.beforeDrag = false
+    if (this.beforeDrag >= 0) this.beforeDrag += 1
+    if (this.beforeDrag > 5 && this.drgSourceEl) {
+      document.body.style.cursor = 'grabbing'
+      this.beforeDrag = -1
       this.dragging = true
-      // console.log(`Dragging: ${this.drgSourceEl?.id}`)
-
+      console.log(`Dragging: ${this.drgSourceEl?.id}`)
       const dragStartEv = new Event('dragstart') as DragStartEvent
       this.payload = { type: 'TYPE', data: this.drgSourceEl?.id, targetCanAccept: false }
       dragStartEv.payload = this.payload
@@ -142,10 +140,11 @@ export class DragDrop {
   }
 
   #dragStopListener(e: MouseEvent) {
-    this.beforeDrag = false
+    this.beforeDrag = -1
 
     if (this.drgEl1) {
-      document.body.style.cursor = 'grab'
+      // document.body.style.cursor = 'grab'
+      document.body.style.cursor = 'default'
     } else {
       document.body.style.cursor = 'default'
     }
@@ -164,10 +163,7 @@ export class DragDrop {
       this.dragging = false
 
       if (this.drgEl1) {
-        // document.body.style.cursor = 'grab'
         if (flag) this.draggingEnded = true
-      } else {
-        // document.body.style.cursor = 'default'
       }
       if (
         this.drgTargetEl &&
@@ -176,7 +172,7 @@ export class DragDrop {
         this.drgSourceEl !== this.drgTargetEl &&
         this.payload.targetCanAccept
       ) {
-        // console.log(`Dropped: ${this.drgSourceEl?.id} / ${this.drgTargetEl?.id}`)
+        console.log(`Dropped: ${this.drgSourceEl?.id} / ${this.drgTargetEl?.id}`)
 
         const dropEv = new Event('drop') as DropEvent
         dropEv.payload = this.payload

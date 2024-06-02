@@ -5,11 +5,11 @@ import { DB } from '$lib/app/api/db'
 export async function addSeqRecsToCollection(accs: string[], collId: string) {
   if (accs.length === 0) return
   let dbs: Awaited<typeof databases> = await databases
-  let db: DB | undefined = undefined
+  let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
     db = _.dbSequences
   })
-  if (db !== undefined) {
+  if (db !== null) {
     db = db as DB
 
     const values: string[][] = []
@@ -21,6 +21,28 @@ export async function addSeqRecsToCollection(accs: string[], collId: string) {
       VALUES
         ${bulk(values)}
       ON CONFLICT ("id", "record_id") DO NOTHING
+      ;
+    `
+    await db.execute(_sql.text, _sql.values)
+  }
+  unsubscribe()
+}
+
+export async function removeSeqRecsFromCollection(accs: string[], collId: string) {
+  if (accs.length === 0) return
+  let dbs: Awaited<typeof databases> = await databases
+  let db: DB | null = null
+  const unsubscribe = dbs.subscribe((_) => {
+    db = _.dbSequences
+  })
+  if (db !== null) {
+    db = db as DB
+
+    const _sql = sql`
+      DELETE FROM assoc_records_user
+      WHERE
+        id = ${collId}
+        AND record_id IN ${bulk([accs])}
       ;
     `
     await db.execute(_sql.text, _sql.values)
