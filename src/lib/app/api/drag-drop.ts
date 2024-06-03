@@ -76,9 +76,6 @@ export class DragDrop {
         this.draggingEnded = false
         return
       }
-      if (!this.dragging) {
-        document.body.style.cursor = 'default'
-      }
       this.drgEl1 = null
       this.drgEl2 = null
     }

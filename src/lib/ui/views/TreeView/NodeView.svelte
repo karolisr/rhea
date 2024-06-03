@@ -6,7 +6,7 @@ import IconFile from '~icons/fa6-solid/file'
 import type { Tree } from '$lib/types'
 import contextMenu from '$lib/app/svelte-stores/context-menu'
 import { DB } from '$lib/app/api/db'
-import { buildNode } from '$lib'
+import { buildNode, getAllChildIds } from '$lib'
 import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
 import type { DragOverEvent, DropEvent } from '$lib/app/api/types'
 
@@ -25,6 +25,9 @@ export let selectedGroupUid: string | undefined = undefined
 export let selected: string | undefined = undefined
 export let relabelId: string | undefined = undefined
 export let expandedIds: Set<string>
+
+export let selectedLineage: string[] | undefined = undefined
+export let selectedChildIds: string[] | undefined = undefined
 
 export let acceptedDropTypes: string[]
 
@@ -46,6 +49,27 @@ export let deleteNode: (id: string) => Promise<string | null>
 export let relabelNode: (id: string, label: string) => Promise<string | null>
 export let addRecords: (ids: string[], collId: string) => Promise<void>
 export let removeRecords: (ids: string[], collId: string) => Promise<void>
+
+// $: setSelectedLineage(selected)
+
+// function setSelectedLineage(selectedTreeId: string | undefined) {
+//   if (selectedTreeId === tree.id) {
+//     selectedLineage = tree.lineage
+//   }
+// }
+
+$: _getAllChildIds(selected, db, tableName, tree.id)
+
+async function _getAllChildIds(
+  selectedTreeId: string | undefined,
+  db: DB,
+  tableName: string = 'collections',
+  parentId: string = 'ROOT'
+) {
+  if (selectedTreeId === tree.id) {
+    selectedChildIds = await getAllChildIds(db, tableName, tree.id)
+  }
+}
 
 let _deleteNode: () => void = async () => {
   if (selected === tree.id) {
@@ -245,6 +269,8 @@ async function onDrop(e: Event) {
               bind:expandedIds
               bind:rebuild
               bind:acceptedDropTypes
+              bind:selectedLineage
+              bind:selectedChildIds
               {db}
               {tableName}
               {rootLabel}

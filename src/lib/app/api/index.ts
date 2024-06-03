@@ -5,10 +5,12 @@ import { locale } from '@tauri-apps/plugin-os'
 import { download as _download } from './download'
 import { downloadText as _downloadText } from './download'
 import { setScale as _setScale } from './scale'
+import { beforeWindowClose as _beforeWindowClose } from './lifecycle'
 
 export const download = _download
 export const downloadText = _downloadText
 export const setScale = _setScale
+export const beforeWindowClose = _beforeWindowClose
 
 export const SYSINFO = getSystemInfo()
 export const BROWSER = SYSINFO.browser
@@ -50,4 +52,30 @@ function getSystemInfo(): SystemInfo {
   }
 
   return { browser, engine }
+}
+
+export function replacer(_: string, value: unknown): unknown {
+  if (value instanceof Map) {
+    return {
+      dataType: 'Map',
+      value: Array.from([...value])
+    }
+  } else if (value instanceof Set) {
+    return {
+      dataType: 'Set',
+      value: Array.from([...value])
+    }
+  } else {
+    return value
+  }
+}
+
+export function reviver(_: string, obj: { dataType: string; value: Array<[unknown, unknown]> }): unknown {
+  if (obj['dataType'] === 'Map') {
+    return new Map(obj['value'])
+  } else if (obj['dataType'] === 'Set') {
+    return new Set(obj['value'])
+  } else {
+    return obj
+  }
 }

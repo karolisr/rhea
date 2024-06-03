@@ -1,23 +1,40 @@
 <script lang="ts">
+import state from '$lib/app/svelte-stores/state'
+import { saveState } from '$lib/app/svelte-stores/state'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import TreeView from '$lib/ui/views/TreeView'
 import TableView from '$lib/ui/views/TableView'
 import { RecordList } from '$lib/utils/record-list'
-import { onMount, tick } from 'svelte'
+import { onMount, onDestroy, tick } from 'svelte'
 import { createCollection, deleteCollection, relabelCollection } from '$lib/app/api/db/collections'
 import databases from '$lib/app/svelte-stores/databases'
-import { getSeqRecs, getAllSeqRecs } from '$lib/app/api/db/gbseq'
+import { getSeqRecsByType, getSeqRecsFromCollection, getAllSeqRecs } from '$lib/app/api/db/gbseq'
 import type { IndexedUndefined } from '$lib/types'
 import { addSeqRecsToCollection, removeSeqRecsFromCollection } from '$lib/app/api/db/gbseq'
+
+onDestroy(() => {
+  saveState()
+})
 
 let dbs: Awaited<typeof databases>
 
 let rebuild: number
 
-let selectedGroupUid: string | undefined = 'user-tree'
-let selectedColl: string | undefined = 'ROOT'
+let selectedGroupUid: string | undefined = $state.selectedGroupUid as string | undefined
+$: $state.selectedGroupUid = selectedGroupUid
 
-let selectedTaxon: string | undefined = undefined
+let selectedColl: string | undefined = $state.selectedColl as string | undefined
+$: $state.selectedColl = selectedColl
+
+let expandedSeqTypeIds: Set<string> | undefined = $state.expandedSeqTypes as Set<string> | undefined
+$: $state.expandedSeqTypes = expandedSeqTypeIds
+
+let expandedCollIds: Set<string> | undefined = $state.expandedCollIds as Set<string> | undefined
+$: $state.expandedCollIds = expandedCollIds
+
+// let selectedTaxon: string | undefined = undefined
+
+let selectedSeqTypes: string[] | undefined = undefined
 
 let activeRecordId: string | undefined = undefined
 let selectedRecordIds: string[] = []
@@ -25,17 +42,32 @@ let selectedRecordIds: string[] = []
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
 
-async function _getSeqRecs(collUid: string | undefined, collectionId: string | undefined, rebuild: number) {
+// $: console.log(selectedSeqTypes)
+
+async function _getSeqRecs(
+  collUid: string | undefined,
+  collectionId: string | undefined,
+  selectedSeqTypes: string[] | undefined,
+  rebuild: number
+) {
   if ($dbs && $dbs.dbsOK && collUid !== undefined && collectionId !== undefined) {
     if (collUid === 'user-tree') {
-      seqRecList = await getSeqRecs('user', [collectionId])
+      seqRecList = await getSeqRecsFromCollection('user', [collectionId])
     } else if (collUid === 'sequence-type-tree') {
-      if (collectionId === 'ROOT') {
-        seqRecList = await getAllSeqRecs()
+      if (selectedSeqTypes !== undefined) {
+        seqRecList = await getSeqRecsByType(selectedSeqTypes)
       } else {
         seqRecList = []
       }
-      // seqRecList = await getSeqRecs('sequence_type', [collectionId])
+      // if (collectionId === 'ROOT') {
+      //   seqRecList = await getAllSeqRecs()
+      // } else {
+      //   if (selectedSeqTypes !== undefined) {
+      //     seqRecList = await getSeqRecsByType(selectedSeqTypes)
+      //   } else {
+      //     seqRecList = []
+      //   }
+      // }
     } else {
       seqRecList = []
     }
@@ -56,7 +88,7 @@ async function _removeSeqRec(id: unknown) {
 
 let seqRecList: IndexedUndefined[]
 
-$: if ($dbs && $dbs.dbsOK) _getSeqRecs(selectedGroupUid, selectedColl, rebuild)
+$: if ($dbs && $dbs.dbsOK) _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
 
 $: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
 $: if (seqRecListRL) {
@@ -77,7 +109,7 @@ onMount(async () => {
 </script>
 
 {#if $dbs && $dbs.dbsOK}
-  <ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[300, -1]}" minColW="{0}">
+  <ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[200, -1]}" minColW="{0}">
     {#if $dbs.dbCollections && $dbs.dbSequences && $dbs.dbTaxonomy}
       <ResizableGrid nRow="{1}" nCol="{1}" rowHs="{[-1]}" colWs="{[-1]}" minRowH="{0}" enforceMaxSize="{false}">
         <div class="tree-container">
@@ -94,6 +126,7 @@ onMount(async () => {
             bind:selected="{selectedColl}"
             bind:selectedGroupUid
             bind:rebuild
+            bind:expandedIds="{expandedCollIds}"
             acceptedDropTypes="{['acc-ver-array']}"
             createNode="{createCollection}"
             deleteNode="{deleteCollection}"
@@ -117,9 +150,12 @@ onMount(async () => {
             tableName="sequence_type"
             rootLabel="All Records"
             bind:selected="{selectedColl}"
-            bind:selectedGroupUid />
+            bind:selectedGroupUid
+            bind:selectedChildIds="{selectedSeqTypes}"
+            bind:expandedIds="{expandedSeqTypeIds}" />
         </div>
-        <!-- <div class="tree-container">
+        <!--
+        <div class="tree-container">
           <TreeView
             uid="{'taxonomy-tree'}"
             expanded="{true}"
@@ -129,7 +165,8 @@ onMount(async () => {
             parentId="{'1'}"
             rootId="{'1'}"
             bind:selected="{selectedTaxon}" />
-        </div> -->
+        </div>
+        -->
       </ResizableGrid>
     {:else}
       <div>Loading...</div>

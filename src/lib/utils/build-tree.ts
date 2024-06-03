@@ -2,6 +2,17 @@ import type { Tree } from '$lib/types'
 import { getCollections, getCollectionsCount } from '$lib/app/api/db/collections'
 import { DB } from '$lib/app/api/db'
 
+export async function getAllChildIds(db: DB, tableName: string = 'collections', parentId: string = 'ROOT') {
+  const nodes = await getCollections([parentId], true, db, tableName)
+  const ids = nodes.map((c) => c.id)
+  let rv = [parentId, ...ids]
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i]
+    rv = [...rv, ...(await getAllChildIds(db, tableName, id))]
+  }
+  return rv
+}
+
 export async function buildNode(
   db: DB,
   tableName: string = 'collections',

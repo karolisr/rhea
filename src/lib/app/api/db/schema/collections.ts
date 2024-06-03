@@ -72,29 +72,24 @@ export const schemaCollections = sql`
       ""
     ),
     ("DNA", "Genomes", "Genomes", ""),
-    ("Genomes", "Plasmids", "Plasmids", ""),
-    ("Genomes", "Nuclear", "Nuclear", ""),
+    ("Genomes", "plasmid", "Plasmids", ""),
+    ("Genomes", "nuclear", "Nuclear", ""),
     (
       "Genomes",
       "Organelles",
       "Organelles",
       ""
     ),
+    ("Organelles", "plastid", "Plastids", ""),
     (
       "Organelles",
-      "Plastids",
-      "Plastids",
-      ""
-    ),
-    (
-      "Organelles",
-      "Mitochondria",
+      "mitochondrion",
       "Mitochondria",
       ""
     ),
     (
-      "Plastids",
-      "Chloroplasts",
+      "plastid",
+      "chloroplast",
       "Chloroplasts",
       ""
     )

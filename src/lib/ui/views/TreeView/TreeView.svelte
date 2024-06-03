@@ -8,6 +8,9 @@ export let expanded = true
 export let selected: string | undefined = undefined
 export let selectedGroupUid: string | undefined = undefined
 
+export let selectedLineage: string[] | undefined = undefined
+export let selectedChildIds: string[] | undefined = undefined
+
 export let acceptedDropTypes: string[] = []
 
 export let db: DB
@@ -23,9 +26,10 @@ export let deleteNodeEnabled = false
 export let relabelNodeEnabled = false
 
 let relabelId: string | undefined = undefined
-let expandedIds: Set<string> = new Set()
+export let expandedIds: Set<string> = new Set()
 
-if (expanded) {
+if (expanded || expandedIds.size > 0) {
+  expanded = true
   expandedIds.add(parentId)
   expandedIds = expandedIds
 }
@@ -79,6 +83,8 @@ const _removeRecords = async (ids: string[], collId: string) => {
     bind:expandedIds
     bind:rebuild
     bind:acceptedDropTypes
+    bind:selectedLineage
+    bind:selectedChildIds
     {db}
     {tableName}
     {rootLabel}

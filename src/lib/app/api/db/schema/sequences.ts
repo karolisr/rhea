@@ -371,37 +371,47 @@ export const schemaSequences = sql`
     gb_records
   ;
   ----------------------------------------------------------------------------
-  -- DROP VIEW IF EXISTS records
-  -- ;
+  -- @block records view
+  -- @conn sequences
+  DROP VIEW IF EXISTS records
+  ;
   CREATE VIEW IF NOT EXISTS records AS
   SELECT
     records_simple."Accession",
     records_simple."Length",
-    COALESCE(
-      (
-        SELECT
-          q1."value"
-        FROM
-          gb_qualifiers AS q1
-        WHERE
-          q1.name = "organelle"
-          AND q1.accession_version = records_simple."Accession"
-          AND q1.feature_id = 1
+    REPLACE(
+      COALESCE(
+        (
+          SELECT
+            q1."value"
+          FROM
+            gb_qualifiers AS q1
+          WHERE
+            q1.name = "organelle"
+            AND q1.accession_version = records_simple."Accession"
+            AND q1.feature_id = 1
+        ),
+        "nucleus"
       ),
-      "nucleus"
+      'plastid:',
+      ''
     ) AS "Genetic Compartment",
-    COALESCE(
-      (
-        SELECT
-          q3."value"
-        FROM
-          gb_qualifiers AS q3
-        WHERE
-          q3.name = "mol_type"
-          AND q3.accession_version = records_simple."Accession"
-          AND q3.feature_id = 1
+    REPLACE(
+      COALESCE(
+        (
+          SELECT
+            q3."value"
+          FROM
+            gb_qualifiers AS q3
+          WHERE
+            q3.name = "mol_type"
+            AND q3.accession_version = records_simple."Accession"
+            AND q3.feature_id = 1
+        ),
+        records_simple."Type"
       ),
-      records_simple."Type"
+      'genomic DNA',
+      'DNA'
     ) AS "Molecule Type",
     records_simple."TaxID",
     (
@@ -420,9 +430,13 @@ export const schemaSequences = sql`
   GROUP BY
     records_simple."Accession"
   ;
+  -- @block drop records_user view
+  -- @conn sequences
   ----------------------------------------------------------------------------
   -- DROP VIEW IF EXISTS records_user
   -- ;
+  -- @block create records_user view
+  -- @conn sequences
   CREATE VIEW IF NOT EXISTS records_user AS
   SELECT
     *
