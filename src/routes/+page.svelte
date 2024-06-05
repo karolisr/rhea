@@ -8,13 +8,25 @@ import { RecordList } from '$lib/utils/record-list'
 import { onMount, onDestroy, tick } from 'svelte'
 import { createCollection, deleteCollection, relabelCollection } from '$lib/app/api/db/collections'
 import databases from '$lib/app/svelte-stores/databases'
-import { getSeqRecsByType, getSeqRecsFromCollection, getAllSeqRecs } from '$lib/app/api/db/gbseq'
+import { getSeqRecsByType, getSeqRecsFromCollection } from '$lib/app/api/db/gbseq'
 import type { IndexedUndefined } from '$lib/types'
 import { addSeqRecsToCollection, removeSeqRecsFromCollection } from '$lib/app/api/db/gbseq'
+import status from '$lib/app/svelte-stores/status'
+import settings from '$lib/app/svelte-stores/settings'
 
 onDestroy(() => {
   saveState()
 })
+
+let seqRecList: IndexedUndefined[] = []
+let statusMain: string = ''
+
+$: statusMain = `${seqRecList.length.toLocaleString($settings.locale)} records.`
+$: updateStatus(statusMain)
+
+async function updateStatus(msg: string) {
+  $status.main = msg
+}
 
 let dbs: Awaited<typeof databases>
 
@@ -59,15 +71,6 @@ async function _getSeqRecs(
       } else {
         seqRecList = []
       }
-      // if (collectionId === 'ROOT') {
-      //   seqRecList = await getAllSeqRecs()
-      // } else {
-      //   if (selectedSeqTypes !== undefined) {
-      //     seqRecList = await getSeqRecsByType(selectedSeqTypes)
-      //   } else {
-      //     seqRecList = []
-      //   }
-      // }
     } else {
       seqRecList = []
     }
@@ -85,8 +88,6 @@ async function _removeSeqRec(id: unknown) {
     console.log('_removeSeqRec: doing nothing.')
   }
 }
-
-let seqRecList: IndexedUndefined[]
 
 $: if ($dbs && $dbs.dbsOK) _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
 
