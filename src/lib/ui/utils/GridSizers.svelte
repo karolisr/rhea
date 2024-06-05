@@ -40,6 +40,14 @@ export let fixedWCols: number[] = []
 $: rowHsStr = sizesStrFromSizes(rowHs)
 $: colWsStr = sizesStrFromSizes(colWs)
 
+$: onChangeResize(rowHsStr)
+$: onChangeResize(colWsStr)
+
+async function onChangeResize(anyVar: unknown) {
+  await tick()
+  dispatchEvent(resizeEvt)
+}
+
 function sizesStrFromSizes(sizes: number[]): string {
   let _ = ''
   for (let i = 0; i < sizes.length; i++) {
@@ -138,7 +146,7 @@ function resizeCol(evt: MouseEvent) {
     let newColW = min(max(minColW, (colPrevWidth as number) + d), colMaxW as number)
     if (newColW < sizerSize * 2) newColW = 0
     colWs[colResizing as number] = newColW
-    dispatchEvent(resizeEvt)
+    // dispatchEvent(resizeEvt)
   }
 }
 
@@ -148,7 +156,7 @@ function resizeRow(evt: MouseEvent) {
     let newRowH = min(max(minRowH, (rowPrevHeight as number) + d), rowMaxH as number)
     if (newRowH < sizerSize * 2) newRowH = 0
     rowHs[rowResizing as number] = newRowH
-    dispatchEvent(resizeEvt)
+    // dispatchEvent(resizeEvt)
   }
 }
 
@@ -204,8 +212,8 @@ async function collapseGridElement(evt: MouseEvent) {
     rowHs = sizes as number[]
     rowHsPrev = prevSizes as number[]
   }
-  await tick()
-  dispatchEvent(resizeEvt)
+  // await tick()
+  // dispatchEvent(resizeEvt)
   resizeGridElementEnd(evt)
 }
 </script>

@@ -112,12 +112,12 @@ export class DragDrop {
     const drgOffsetX = -1
     const drgOffsetY = -25
     if (this.beforeDrag >= 0) this.beforeDrag += 1
-    if (this.beforeDrag > 5 && this.drgSourceEl) {
+    if (this.beforeDrag > 1 && this.drgSourceEl) {
       document.body.style.cursor = 'default'
       this.beforeDrag = -1
       this.dragging = true
       window.document.documentElement.setAttribute('dragging', 'true')
-      console.log(`Dragging: ${this.drgSourceEl?.id}`)
+      // console.log(`Dragging: ${this.drgSourceEl?.id}`)
       const dragStartEv = new Event('dragstart') as DragStartEvent
 
       const el = document.createElement('div')
@@ -186,7 +186,7 @@ export class DragDrop {
         this.drgSourceEl !== this.drgTargetEl &&
         this.payload.targetCanAccept
       ) {
-        console.log(`Dropped: ${this.drgSourceEl?.id} / ${this.drgTargetEl?.id}`)
+        // console.log(`Dropped: ${this.drgSourceEl?.id} / ${this.drgTargetEl?.id}`)
 
         const dropEv = new Event('drop') as DropEvent
         dropEv.payload = this.payload
@@ -196,7 +196,7 @@ export class DragDrop {
         this.drgSourceEl = null
         this.drgTargetEl = null
       } else {
-        console.log(`Dragging cancelled: ${this.drgSourceEl?.id}`)
+        // console.log(`Dragging cancelled: ${this.drgSourceEl?.id}`)
         if (this.drgTargetEl) this.drgTargetEl.classList.remove('drag-item-hovering')
         if (this.drgSourceEl) {
           this.drgSourceEl = null

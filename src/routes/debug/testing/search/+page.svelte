@@ -5,10 +5,10 @@ import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getSeqRecords, getTaxIds, makeESearchTerm } from '$lib/ncbi/utils'
 import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
-import { EutilParams } from '$lib/ncbi/eutils-params'
-import { type Collection } from '$lib/types'
+// import { EutilParams } from '$lib/ncbi/eutils-params'
+// import { type Collection } from '$lib/types'
 import databases from '$lib/app/svelte-stores/databases'
-import { getCollections, deleteCollection } from '$lib/app/api/db/collections'
+// import { getCollections, deleteCollection } from '$lib/app/api/db/collections'
 import { insertGbSeqRecords } from '$lib/app/api/db/gbseq'
 import { BROWSER } from '$lib/app/api'
 // import { type Readable } from 'svelte/store'
@@ -29,7 +29,7 @@ let gbseqRemaining: number = 0
 
 let esummaryResult: ESummaryNuccore[] = []
 import status from '$lib/app/svelte-stores/status'
-import type { TaxaSet } from '$lib/ncbi/types/TaxaSet'
+// import type { TaxaSet } from '$lib/ncbi/types/TaxaSet'
 import type { GBSet } from '$lib/ncbi/types/GBSet'
 
 let errorMsg: string = ''

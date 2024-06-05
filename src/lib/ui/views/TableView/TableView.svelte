@@ -173,7 +173,10 @@ const _onkeydown = (ev: KeyboardEvent) => {
       break
     case 'Backspace':
       if (ev.metaKey === true) {
-        onDeleteRow(activeRowKey)
+        if (activeRowKey !== undefined) {
+          onDeleteRow(activeRowKey)
+          activeRow = max(0, activeRow - 1)
+        }
       }
       break
     default:

@@ -28,10 +28,10 @@ let colWsStr: string
     {uid}
     {minRowH}
     {minColW}
-    {nRow}
-    {nCol}
-    {rowHs}
-    {colWs}
+    bind:nRow
+    bind:nCol
+    bind:rowHs
+    bind:colWs
     {rowsResizable}
     {colsResizable}
     {enforceMaxSize}

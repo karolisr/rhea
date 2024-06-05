@@ -13,6 +13,7 @@ import type { IndexedUndefined } from '$lib/types'
 import { addSeqRecsToCollection, removeSeqRecsFromCollection } from '$lib/app/api/db/gbseq'
 import status from '$lib/app/svelte-stores/status'
 import settings from '$lib/app/svelte-stores/settings'
+import { BROWSER } from '$lib/app/api'
 
 let seqRecList: IndexedUndefined[] = []
 let statusMain: string = ''
@@ -61,6 +62,33 @@ let selectedRecordIds: string[] = []
 
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
+
+let nRowMain: number = 2
+let rowHs: number[] = []
+let prevRowHs: number[] = []
+
+$: {
+  if (rowHeight && rowHs.length === 0) {
+    rowHs = [34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
+    prevRowHs = [...rowHs]
+  }
+}
+
+$: {
+  if (selectedGroupUid === 'search-results-tree') {
+    if (rowHs.length === 2) {
+      prevRowHs = [...rowHs]
+      nRowMain = 3
+      rowHs.unshift(300)
+      rowHs[1] = rowHs[1] - 100
+    }
+  } else {
+    if (rowHs.length === 3) {
+      nRowMain = 2
+      rowHs = prevRowHs
+    }
+  }
+}
 
 async function _getSeqRecs(
   collUid: string | undefined,
@@ -148,7 +176,7 @@ onDestroy(() => {
             expanded="{true}"
             db="{$dbs.dbCollections}"
             tableName="search_results"
-            rootLabel="Search Results"
+            rootLabel="Search NCBI"
             bind:selected="{selectedColl}"
             bind:selectedGroupUid
             createNode="{createCollection}"
@@ -183,12 +211,10 @@ onDestroy(() => {
       <div>Loading...</div>
     {/if}
 
-    <ResizableGrid
-      nRow="{2}"
-      nCol="{1}"
-      rowHs="{[34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]}"
-      colWs="{[-1]}"
-      minRowH="{0}">
+    <ResizableGrid bind:nRow="{nRowMain}" nCol="{1}" bind:rowHs colWs="{[-1]}" minRowH="{0}">
+      {#if selectedGroupUid === 'search-results-tree'}
+        <div>SEARCH UI</div>
+      {/if}
       <div class="list-container">
         <TableView
           uid="seq-rec-table"
@@ -207,7 +233,13 @@ onDestroy(() => {
     </ResizableGrid>
   </ResizableGrid>
 {:else}
-  <div style="margin: auto;">Database functionality not supported.</div>
+  <div style="margin: auto;">
+    {#if BROWSER === 'Tauri'}
+      Loading...
+    {:else}
+      Database functionality not supported.
+    {/if}
+  </div>
 {/if}
 
 <style lang="scss">
