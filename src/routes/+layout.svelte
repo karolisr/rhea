@@ -1,5 +1,4 @@
 <script lang="ts">
-import { saveState } from '$lib/app/svelte-stores/state'
 import { onMount, onDestroy } from 'svelte'
 import { BROWSER, ENGINE } from '$lib/app/api'
 import { themeChangeListener } from '$lib/app/api/darkmode'
@@ -13,17 +12,19 @@ import NavMain from './nav.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
 import { DragDrop } from '$lib/app/api/drag-drop'
-import { beforeWindowClose } from '$lib/app/api'
+
+// import { saveState } from '$lib/app/svelte-stores/state'
+// import { beforeWindowClose } from '$lib/app/api'
+
 // import databases from '$lib/app/svelte-stores/databases'
 // let dbs: Awaited<typeof databases>
 
 let unlisteners: Unlistener[] = []
 let dragDropConductor: DragDrop = new DragDrop()
 
-function cleanup() {
-  console.log('cleanup')
-  saveState()
-}
+// function cleanup() {
+//   // saveState()
+// }
 
 $: setScale($settings.scale)
 
@@ -31,7 +32,7 @@ onMount(async () => {
   console.log(BROWSER, ENGINE)
   unlisteners.push(await themeChangeListener())
   unlisteners.push(await new FileDragDrop().unlisten)
-  unlisteners.push(await beforeWindowClose(cleanup))
+  // unlisteners.push(await beforeWindowClose(cleanup))
 
   unlisteners.push(preventDefault('contextmenu'))
 

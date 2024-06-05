@@ -14,10 +14,6 @@ import { addSeqRecsToCollection, removeSeqRecsFromCollection } from '$lib/app/ap
 import status from '$lib/app/svelte-stores/status'
 import settings from '$lib/app/svelte-stores/settings'
 
-onDestroy(() => {
-  saveState()
-})
-
 let seqRecList: IndexedUndefined[] = []
 let statusMain: string = ''
 
@@ -33,16 +29,28 @@ let dbs: Awaited<typeof databases>
 let rebuild: number
 
 let selectedGroupUid: string | undefined = $state.selectedGroupUid as string | undefined
-$: $state.selectedGroupUid = selectedGroupUid
+$: {
+  $state.selectedGroupUid = selectedGroupUid
+  saveState()
+}
 
 let selectedColl: string | undefined = $state.selectedColl as string | undefined
-$: $state.selectedColl = selectedColl
+$: {
+  $state.selectedColl = selectedColl
+  saveState()
+}
 
 let expandedSeqTypeIds: Set<string> | undefined = $state.expandedSeqTypes as Set<string> | undefined
-$: $state.expandedSeqTypes = expandedSeqTypeIds
+$: {
+  $state.expandedSeqTypes = expandedSeqTypeIds
+  saveState()
+}
 
 let expandedCollIds: Set<string> | undefined = $state.expandedCollIds as Set<string> | undefined
-$: $state.expandedCollIds = expandedCollIds
+$: {
+  $state.expandedCollIds = expandedCollIds
+  saveState()
+}
 
 // let selectedTaxon: string | undefined = undefined
 
@@ -53,8 +61,6 @@ let selectedRecordIds: string[] = []
 
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
-
-// $: console.log(selectedSeqTypes)
 
 async function _getSeqRecs(
   collUid: string | undefined,
@@ -106,6 +112,10 @@ $: if (seqRecListRL) {
 
 onMount(async () => {
   dbs = await databases
+})
+
+onDestroy(() => {
+  // saveState()
 })
 </script>
 
