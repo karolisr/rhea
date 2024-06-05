@@ -111,6 +111,14 @@ grid-sizer-v {
   border-inline-end-style: solid;
 }
 
+:root[dragging='false'] grid-sizer-h {
+  cursor: row-resize;
+}
+
+:root[dragging='false'] grid-sizer-v {
+  cursor: col-resize;
+}
+
 .table grid-sizer-h,
 .table grid-sizer-v {
   border-color: $Y800;

@@ -263,7 +263,6 @@ grid-sizer-h {
 }
 
 grid-sizer-h > div {
-  cursor: row-resize;
   position: relative;
   width: 100%;
   pointer-events: all;
@@ -273,7 +272,6 @@ grid-sizer-v {
 }
 
 grid-sizer-v > div {
-  cursor: col-resize;
   position: relative;
   height: 100%;
   pointer-events: all;

@@ -126,7 +126,7 @@ function onDragStart(e: Event) {
   el.style.borderStyle = 'solid'
   el.style.backgroundColor = 'yellow'
 
-  if (selectedRecordIds.includes(ark)) {
+  if (selectedRecordIds.includes(ark) && selectedRecordIds.length > 1) {
     ev.payload.data = selectedRecordIds
     el.innerText = `${selectedRecordIds.length} records`
   } else {
@@ -449,8 +449,6 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 }
 
 .table-container {
-  overflow-x: scroll;
-  overflow-y: scroll;
   display: flex;
   flex-direction: row;
 }

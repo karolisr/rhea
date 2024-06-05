@@ -1,4 +1,5 @@
 import type { DragStartEvent, DragOverEvent, DropEvent, DragDropPayload } from './types'
+import { min, max } from '$lib'
 
 export class DragDrop {
   private drgEl1: HTMLElement | null = null
@@ -19,18 +20,13 @@ export class DragDrop {
     showWhileDraggingEl: null
   }
   private payload: DragDropPayload = this.defaultPayload
-  // private showWhileDraggingEl: HTMLElement | null = null
-
-  // private drgZ: number = 0
-  private drgSourceElXstart: number = 0
-  private drgSourceElYstart: number = 0
-  private drgSourceElXoffset: number = 0
-  private drgSourceElYoffset: number = 0
 
   constructor() {
     addEventListener('mousemove', this.#mMoveL)
     addEventListener('mouseover', this.#mOverL)
     addEventListener('mouseup', this.#dStopL)
+
+    window.document.documentElement.setAttribute('dragging', 'false')
 
     console.log('DragDrop: listen')
   }
@@ -67,7 +63,6 @@ export class DragDrop {
       if (!this.dragging) {
         this.drgEl1 = e.target
         this.#prepDrgEl(this.drgEl1)
-        // document.body.style.cursor = 'grab'
       } else {
         this.drgEl2 = e.target
       }
@@ -100,7 +95,6 @@ export class DragDrop {
       } else if (this.drgTargetElPrev) {
         this.drgTargetElPrev.classList.remove('drag-item-hovering')
         this.payload.targetCanAccept = false
-        // document.body.style.cursor = 'grabbing'
         document.body.style.cursor = 'default'
       }
     }
@@ -111,15 +105,6 @@ export class DragDrop {
       this.drgSourceEl = this.drgEl1
       this.beforeDrag = 0
       this.drgEl2 = this.drgEl1
-      if (this.drgSourceEl) {
-        //   this.drgZ += 2
-        //   this.drgSourceEl.style.pointerEvents = 'none'
-        //   this.drgSourceEl.style.zIndex = `${this.drgZ}`
-        this.drgSourceElXstart = this.drgSourceEl?.getBoundingClientRect().left
-        this.drgSourceElYstart = this.drgSourceEl?.getBoundingClientRect().top
-        this.drgSourceElXoffset = e.clientX - this.drgSourceElXstart
-        this.drgSourceElYoffset = e.clientY - this.drgSourceElYstart
-      }
     }
   }
 
@@ -128,10 +113,10 @@ export class DragDrop {
     const drgOffsetY = -25
     if (this.beforeDrag >= 0) this.beforeDrag += 1
     if (this.beforeDrag > 5 && this.drgSourceEl) {
-      // document.body.style.cursor = 'grabbing'
       document.body.style.cursor = 'default'
       this.beforeDrag = -1
       this.dragging = true
+      window.document.documentElement.setAttribute('dragging', 'true')
       console.log(`Dragging: ${this.drgSourceEl?.id}`)
       const dragStartEv = new Event('dragstart') as DragStartEvent
 
@@ -157,17 +142,11 @@ export class DragDrop {
 
       dragStartEv.payload = this.payload
       this.drgSourceEl.dispatchEvent(dragStartEv)
-      // } else if (this.dragging && this.drgTargetEl) {
-      //   if (!this.payload.targetCanAccept) document.body.style.cursor = 'no-drop'
     } else if (this.payload.showWhileDraggingEl !== null) {
       const el = this.payload.showWhileDraggingEl
       el.style.opacity = '1'
-      el.style.left = `${e.x + drgOffsetX}px`
-      el.style.top = `${e.y + drgOffsetY}px`
-      // el.style.left = `${e.x - this.drgSourceElXoffset}px`
-      // el.style.top = `${e.y - this.drgSourceElYoffset}px`
-    } else {
-      //
+      el.style.left = `${max(0, min(e.x + drgOffsetX, window.innerWidth - el.offsetWidth))}px`
+      el.style.top = `${max(28, min(e.y + drgOffsetY, window.innerHeight - el.offsetHeight))}px`
     }
   }
 
@@ -183,24 +162,19 @@ export class DragDrop {
     }
 
     if (this.drgEl1) {
-      // document.body.style.cursor = 'grab'
       document.body.style.cursor = 'default'
     } else {
       document.body.style.cursor = 'default'
     }
 
     if (this.dragging) {
-      // if (this.drgSourceEl) {
-      //   this.drgZ -= 1
-      //   this.drgSourceEl.style.pointerEvents = 'auto'
-      //   this.drgSourceEl.style.zIndex = `${this.drgZ}`
-      // }
       let flag = true
       if (this.drgEl1 === this.drgEl2) flag = false
       this.drgEl1 = this.drgEl2
       this.#prepDrgEl(this.drgEl1)
       this.drgEl2 = null
       this.dragging = false
+      window.document.documentElement.setAttribute('dragging', 'false')
 
       if (this.drgEl1) {
         if (flag) this.draggingEnded = true
@@ -227,19 +201,6 @@ export class DragDrop {
         if (this.drgSourceEl) {
           this.drgSourceEl = null
           this.drgTargetEl = null
-          // this.drgSourceEl.style.transition = 'all 150ms ease'
-          // this.drgSourceEl.style.left = `${this.drgSourceElXstart}px`
-          // this.drgSourceEl.style.top = `${this.drgSourceElYstart}px`
-          // setTimeout(() => {
-          //   if (this.drgSourceEl) {
-          //     this.drgSourceEl.style.position = 'unset'
-          //     this.drgSourceEl.style.left = 'unset'
-          //     this.drgSourceEl.style.top = 'unset'
-          //     this.drgSourceEl.style.transition = 'unset'
-          //     this.drgSourceEl = null
-          //     this.drgTargetEl = null
-          //   }
-          // }, 130)
         }
       }
     } else {
