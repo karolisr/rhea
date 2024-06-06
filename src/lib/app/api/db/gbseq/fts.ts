@@ -7,7 +7,7 @@ export async function filterSeqRecs(term: string) {
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSequences
+    db = _.dbSeqRecs
   })
   let rv: IndexedUndefined[] = []
   if (db !== null && term) {

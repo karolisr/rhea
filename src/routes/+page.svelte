@@ -175,7 +175,7 @@ onDestroy(() => {
 
 {#if $dbs && $dbs.dbsOK}
   <ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[200, -1]}" minColW="{0}">
-    {#if $dbs.dbCollections && $dbs.dbSequences && $dbs.dbTaxonomy}
+    {#if $dbs.dbCollections && $dbs.dbSeqRecs && $dbs.dbTaxonomy}
       <ResizableGrid nRow="{1}" nCol="{1}" rowHs="{[-1]}" colWs="{[-1]}" minRowH="{0}" enforceMaxSize="{false}">
         <div class="tree-container">
           <TreeView

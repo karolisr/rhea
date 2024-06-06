@@ -7,7 +7,7 @@ export async function addSeqRecsToCollection(accs: string[], collId: string) {
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSequences
+    db = _.dbSeqRecs
   })
   if (db !== null) {
     db = db as DB
@@ -33,7 +33,7 @@ export async function removeSeqRecsFromCollection(accs: string[], collId: string
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSequences
+    db = _.dbSeqRecs
   })
   if (db !== null) {
     db = db as DB

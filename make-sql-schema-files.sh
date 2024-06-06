@@ -11,6 +11,17 @@ TAXONOMY_TS="${TAXONOMY}.ts"
     echo "\`"
 } > ${TAXONOMY_TS}
 
+SECRECS="./src/lib/app/api/db/schema/seqrecs"
+SECRECS_SQL="${SECRECS}.sql"
+SECRECS_TS="${SECRECS}.ts"
+
+{   echo "import sql from 'sql-template-tag'"
+    echo
+    echo "export const schemaSeqRecs = sql\`"
+    cat "${SECRECS_SQL}"
+    echo "\`"
+} > ${SECRECS_TS}
+
 SEQUENCES="./src/lib/app/api/db/schema/sequences"
 SEQUENCES_SQL="${SEQUENCES}.sql"
 SEQUENCES_TS="${SEQUENCES}.ts"

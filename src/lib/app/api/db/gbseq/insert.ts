@@ -10,19 +10,27 @@ function nValsPerSqlInsertSet(sql: Sql) {
 
 export async function insertSeqRecs(records: GBSeq[]) {
   let dbs: Awaited<typeof databases> = await databases
-  let db: DB | undefined = undefined
+  let dbSeqRecs: DB | null = null
+  let dbSequences: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSequences
+    dbSeqRecs = _.dbSeqRecs
+    dbSequences = _.dbSequences
   })
-  if (db !== undefined) {
+  if (dbSeqRecs !== null && dbSequences !== null) {
     const nBatchesRec = 1
     const batchSizeRec = Math.floor(records.length / nBatchesRec)
     for (let i = 0; i < records.length; i += batchSizeRec) {
       const batchRec = records.slice(i, i + batchSizeRec)
       try {
         const _sqls: Sql[] = _prep(batchRec)
-        await beginTransaction(db)
-        for (let j = 0; j < _sqls.length; j++) {
+        // --------------------------------------------------------------------
+        const _sqlSeqs = _sqls[0]
+        await beginTransaction(dbSequences)
+        await (dbSequences as DB).execute(_sqlSeqs.text, _sqlSeqs.values)
+        await commitTransaction(dbSequences)
+        // --------------------------------------------------------------------
+        await beginTransaction(dbSeqRecs)
+        for (let j = 1; j < _sqls.length; j++) {
           const _sql = _sqls[j]
           const sqlValsCount = _sql.values.length
           if (sqlValsCount > 0) {
@@ -36,25 +44,25 @@ export async function insertSeqRecs(records: GBSeq[]) {
                 valsStrPieces.push(
                   `${new Array(sqlSetSize)
                     .fill(1)
-                    .map((v, z) => `$${l + z + 1}`)
+                    .map((_, z) => `$${l + z + 1}`)
                     .join()}`
                 )
               }
               const sqlText = _sql.strings[0] + valsStrPieces.join('),(') + '' + _sql.strings[_sql.strings.length - 1]
-              await (db as DB).execute(sqlText, batchVal)
+              await (dbSeqRecs as DB).execute(sqlText, batchVal)
             }
             // ----------------------------------------------------------------
           }
         }
-        await commitTransaction(db)
+        await commitTransaction(dbSeqRecs)
         console.log('insertSeqRecs: Done.')
       } catch (error) {
-        await commitTransaction(db)
+        await commitTransaction(dbSeqRecs)
         console.error('Error in insertSeqRecs:', error)
       }
     }
     // console.log('insertSeqRecs: Vacuuming Begin.')
-    // await vacuum(db)
+    // await vacuum(dbSeqRecs)
     // console.log('insertSeqRecs: Vacuuming Done.')
   }
   unsubscribe()
@@ -674,6 +682,7 @@ function _prep(records: GBSeq[]): Sql[] {
     if (r.GBSeq_sequence !== undefined) {
       sequenceVs.push([accVer, r.GBSeq_sequence])
     }
+
     metadataVs.push([
       accVer,
       taxid,
@@ -701,8 +710,8 @@ function _prep(records: GBSeq[]): Sql[] {
   }
 
   const rv = [
+    _sequences(sequenceVs), // Must be first in the array.
     _metadata(metadataVs),
-    _sequences(sequenceVs),
     _featureSets(featSetVs),
     _features(featVs),
     _intervals(intervalVs),

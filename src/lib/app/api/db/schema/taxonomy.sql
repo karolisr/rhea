@@ -146,11 +146,8 @@ WHERE
 ;
 -- @block drop name_classes view
 -- @conn taxonomy
-SELECT
-  *
-FROM
-  name_classes
-;
+-- DROP VIEW IF EXISTS name_classes
+-- ;
 -- @block create name_classes view
 -- @conn taxonomy
 CREATE VIEW IF NOT EXISTS name_classes ("name_class") AS

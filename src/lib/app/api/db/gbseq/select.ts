@@ -7,7 +7,7 @@ export async function getSeqRecsFromCollection(collectionName: string, collectio
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSequences
+    db = _.dbSeqRecs
   })
   let rv: IndexedUndefined[] = []
   if (db !== null) {
@@ -31,7 +31,7 @@ export async function getAllSeqRecs() {
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSequences
+    db = _.dbSeqRecs
   })
   let rv: IndexedUndefined[] = []
   if (db !== null) {
@@ -53,7 +53,7 @@ export async function getSeqRecsByType(types: string[]) {
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSequences
+    db = _.dbSeqRecs
   })
   let rv: IndexedUndefined[] = []
   if (db !== null) {

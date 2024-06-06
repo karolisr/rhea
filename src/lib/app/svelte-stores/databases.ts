@@ -1,10 +1,11 @@
 import { readable, type Readable } from 'svelte/store'
 import { BROWSER } from '$lib/app/api'
-import { DB, initDBTaxonomy, initDBSequences, initDBCollections } from '$lib/app/api/db'
+import { DB, initDBTaxonomy, initDBSeqRecs, initDBSequences, initDBCollections } from '$lib/app/api/db'
 
 export interface Databases {
   dbsOK: boolean
   dbTaxonomy: DB | null
+  dbSeqRecs: DB | null
   dbSequences: DB | null
   dbCollections: DB | null
 }
@@ -12,12 +13,14 @@ export interface Databases {
 async function init(): Promise<Readable<Databases>> {
   let dbsOK = false
   let dbCollections = null
+  let dbSeqRecs = null
   let dbSequences = null
   let dbTaxonomy = null
 
   if (BROWSER === 'Tauri') {
     dbsOK = true
     dbCollections = await initDBCollections()
+    dbSeqRecs = await initDBSeqRecs()
     dbSequences = await initDBSequences()
     dbTaxonomy = await initDBTaxonomy()
   }
@@ -25,6 +28,7 @@ async function init(): Promise<Readable<Databases>> {
   let dbs: Databases = {
     dbsOK,
     dbTaxonomy,
+    dbSeqRecs,
     dbSequences,
     dbCollections
   }
@@ -51,7 +55,7 @@ export default databases
 //   let dbs: Awaited<typeof databases> = await databases
 //   let db: DB | undefined = undefined
 //   const unsubscribe = dbs.subscribe((_) => {
-//     db = _.dbSequences
+//     db = _.dbSeqRecs
 //   })
 //   let rv: IndexedUndefined[] = []
 //   if (db !== undefined) {

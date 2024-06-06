@@ -31,9 +31,9 @@
       {
         "previewLimit": 50,
         "driver": "SQLite",
-        "name": "sequences",
+        "name": "seqrecs",
         "group": "cdsdb",
-        "database": "/Users/karolis/Library/Application Support/is.karol.cdsdb/db/sequences.db"
+        "database": "/Users/karolis/Library/Application Support/is.karol.cdsdb/db/seqrecs.db"
       }
     ]
   }

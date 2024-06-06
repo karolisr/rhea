@@ -35,8 +35,8 @@ VALUES
 ON CONFLICT ("id") DO NOTHING
 ;
 ------------------------------------------------------------------------------
-DROP TABLE IF EXISTS sequence_type
-;
+-- DROP TABLE IF EXISTS sequence_type
+-- ;
 ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "sequence_type" (
   "parent_id" varchar,
