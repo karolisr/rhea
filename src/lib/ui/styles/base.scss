@@ -165,3 +165,7 @@ grid-sizer-v.collapsed > div:hover,
 grid-sizer-v.collapsed > div:active {
   background-color: rgba($color: $B400, $alpha: 0.35);
 }
+
+mark {
+  background-color: yellow;
+}

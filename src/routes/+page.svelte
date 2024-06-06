@@ -14,9 +14,30 @@ import { addSeqRecsToCollection, removeSeqRecsFromCollection } from '$lib/app/ap
 import status from '$lib/app/svelte-stores/status'
 import settings from '$lib/app/svelte-stores/settings'
 import { BROWSER } from '$lib/app/api'
+import Search from './search.svelte'
+import Filter from './filter.svelte'
+import { getFontSize } from '$lib/app/api'
+import { filterSeqRecs } from '$lib/app/api/db/gbseq'
 
 let seqRecList: IndexedUndefined[] = []
 let statusMain: string = ''
+
+let filterTerm: string = ''
+let filteredResults: IndexedUndefined[] | undefined
+let filteredIds: string[] | undefined
+
+async function _filterSeqRecs(term: string) {
+  if (term) {
+    const rv = await filterSeqRecs(term)
+    filteredResults = rv
+  } else {
+    filteredResults = undefined
+    filteredIds = undefined
+  }
+}
+
+$: _filterSeqRecs(filterTerm)
+$: if (filteredResults) filteredIds = filteredResults.map((x) => x.Accession as string)
 
 $: statusMain = `${seqRecList.length.toLocaleString($settings.locale)} records.`
 $: updateStatus(statusMain)
@@ -63,32 +84,32 @@ let selectedRecordIds: string[] = []
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
 
-let nRowMain: number = 2
+let nRowMain: number = 3
 let rowHs: number[] = []
 let prevRowHs: number[] = []
 
 $: {
   if (rowHeight && rowHs.length === 0) {
-    rowHs = [34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
+    rowHs = [getFontSize() * 3, 34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
     prevRowHs = [...rowHs]
   }
 }
 
-$: {
-  if (selectedGroupUid === 'search-results-tree') {
-    if (rowHs.length === 2) {
-      prevRowHs = [...rowHs]
-      nRowMain = 3
-      rowHs.unshift(300)
-      rowHs[1] = rowHs[1] - 100
-    }
-  } else {
-    if (rowHs.length === 3) {
-      nRowMain = 2
-      rowHs = prevRowHs
-    }
-  }
-}
+// $: {
+//   if (selectedGroupUid === 'search-results-tree') {
+//     if (rowHs.length === 2) {
+//       prevRowHs = [...rowHs]
+//       nRowMain = 3
+//       rowHs.unshift(200)
+//       rowHs[1] = rowHs[1] - 100
+//     }
+//   } else {
+//     if (rowHs.length === 3) {
+//       nRowMain = 2
+//       rowHs = prevRowHs
+//     }
+//   }
+// }
 
 async function _getSeqRecs(
   collUid: string | undefined,
@@ -138,6 +159,11 @@ $: if (seqRecListRL) {
   ]
 }
 
+$: if (seqRecListRL) {
+  seqRecListRL.filterBy('Accession', undefined, filteredIds)
+  seqRecListRL = seqRecListRL
+}
+
 onMount(async () => {
   dbs = await databases
 })
@@ -176,7 +202,7 @@ onDestroy(() => {
             expanded="{true}"
             db="{$dbs.dbCollections}"
             tableName="search_results"
-            rootLabel="Search NCBI"
+            rootLabel="Sequence Search"
             bind:selected="{selectedColl}"
             bind:selectedGroupUid
             createNode="{createCollection}"
@@ -211,9 +237,11 @@ onDestroy(() => {
       <div>Loading...</div>
     {/if}
 
-    <ResizableGrid bind:nRow="{nRowMain}" nCol="{1}" bind:rowHs colWs="{[-1]}" minRowH="{0}">
+    <ResizableGrid bind:nRow="{nRowMain}" nCol="{1}" bind:rowHs colWs="{[-1]}" minRowH="{0}" fixedHRows="{[0]}">
       {#if selectedGroupUid === 'search-results-tree'}
-        <div>SEARCH UI</div>
+        <div class="filter-search"><Search /></div>
+      {:else}
+        <div class="filter-search"><Filter bind:term="{filterTerm}" /></div>
       {/if}
       <div class="list-container">
         <TableView
@@ -227,13 +255,16 @@ onDestroy(() => {
           multiRowSelect
           showHeaderRow />
       </div>
-      <div>
-        {selectedColl ? selectedGroupUid + ' : ' + selectedColl + (activeRecordId ? ` : ${activeRecordId}` : '') : ''}
+      <div class="placeholder">
+        <!-- {selectedColl ? selectedGroupUid + ' : ' + selectedColl + (activeRecordId ? ` : ${activeRecordId}` : '') : ''} -->
+        <!-- {#each filteredResults as r}
+          <div>{@html r.Accession}</div>
+        {/each} -->
       </div>
     </ResizableGrid>
   </ResizableGrid>
 {:else}
-  <div style="margin: auto;">
+  <div class="placeholder">
     {#if BROWSER === 'Tauri'}
       Loading...
     {:else}
@@ -243,10 +274,17 @@ onDestroy(() => {
 {/if}
 
 <style lang="scss">
-div {
+.placeholder {
   align-content: center;
   text-align: center;
+  margin: auto;
   background-color: white;
+}
+
+.filter-search {
+  border-bottom-style: solid;
+  background-color: white;
+  align-content: center;
 }
 
 .list-container {

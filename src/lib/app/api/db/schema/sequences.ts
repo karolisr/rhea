@@ -445,14 +445,27 @@ export const schemaSequences = sql`
     INNER JOIN records ON records.accession = assoc_records_user.record_id
   ;
   ----------------------------------------------------------------------------
-  -- DROP VIEW IF EXISTS records_sequence_type
+  -- @block drop fts_gb_records virtual table
+  -- @conn sequences
+  -- DROP TABLE IF EXISTS fts_gb_records
   -- ;
-  -- CREATE VIEW IF NOT EXISTS records_sequence_type AS
+  -- @block create fts_gb_records virtual table from gb_records
+  -- @conn sequences
+  CREATE VIRTUAL TABLE IF NOT EXISTS fts_gb_records USING fts5 (
+    "accession_version",
+    "definition",
+    content = "gb_records",
+    content_rowid = "rowid"
+  )
+  ;
+  -- @block insert records to fts_gb_records virtual table from gb_records
+  -- @conn sequences
+  -- INSERT INTO
+  --   fts_gb_records ("accession_version", "definition")
   -- SELECT
-  --   *
+  --   "accession_version",
+  --   "definition"
   -- FROM
-  --   assoc_records_sequence_type
-  --   INNER JOIN records ON records.accession = assoc_records_sequence_type.record_id
+  --   gb_records
   -- ;
-  ----------------------------------------------------------------------------
 `

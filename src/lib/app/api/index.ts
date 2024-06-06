@@ -5,11 +5,15 @@ import { locale } from '@tauri-apps/plugin-os'
 import { download as _download } from './download'
 import { downloadText as _downloadText } from './download'
 import { setScale as _setScale } from './scale'
+import { getScale as _getScale } from './scale'
+import { getFontSize as _getFontSize } from './scale'
 import { beforeWindowClose as _beforeWindowClose } from './lifecycle'
 
 export const download = _download
 export const downloadText = _downloadText
 export const setScale = _setScale
+export const getScale = _getScale
+export const getFontSize = _getFontSize
 export const beforeWindowClose = _beforeWindowClose
 
 export const SYSINFO = getSystemInfo()

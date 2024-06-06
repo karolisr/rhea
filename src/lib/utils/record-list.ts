@@ -14,6 +14,7 @@ export class RecordList<T> {
   private _allItems: T[]
   private _filterField: keyof T
   private _filterQuery: T[typeof this._filterField] | undefined
+  private _filterIds: T[typeof this._filterField][] | undefined
 
   constructor(items: T[], keyField?: KnownKeys<T>) {
     this._allItems = items
@@ -29,8 +30,14 @@ export class RecordList<T> {
   }
 
   get items() {
-    if (this._filterQuery === undefined) {
+    if (this._filterQuery === undefined && this._filterIds === undefined) {
       return this._allItems
+    } else if (this._filterIds !== undefined) {
+      const rv: T[] = []
+      this._allItems.forEach((itm) => {
+        if (this._filterIds?.includes(itm[this._filterField])) rv.push(itm)
+      })
+      return rv
     } else {
       const rv: T[] = []
       this._allItems.forEach((itm) => {
@@ -40,9 +47,10 @@ export class RecordList<T> {
     }
   }
 
-  filterBy(field: KnownKeys<T>, query: T[keyof T]) {
+  filterBy(field: KnownKeys<T> | string, query: T[keyof T] | undefined, ids: T[keyof T][] | undefined) {
     this._filterField = field as keyof T
     this._filterQuery = query as T[typeof this._filterField]
+    this._filterIds = ids as T[typeof this._filterField][]
   }
 
   get length() {
