@@ -1,5 +1,5 @@
 import type { GBFeatureSet, GBSeq } from '$lib/ncbi/types/GBSet'
-import { DB, beginTransaction, commitTransaction, vacuum } from '$lib/app/api/db'
+import { DB, beginTransaction, commitTransaction, rollbackTransaction, vacuum } from '$lib/app/api/db'
 import { getTaxId } from '$lib/ncbi/utils'
 import sql, { Sql, bulk, empty } from 'sql-template-tag'
 import databases from '$lib/app/svelte-stores/databases'
@@ -31,6 +31,8 @@ export async function insertSeqRecs(records: GBSeq[]) {
         // --------------------------------------------------------------------
         await beginTransaction(dbSeqRecs)
         for (let j = 1; j < _sqls.length; j++) {
+          const ev = new Event('seq-db-insert-in-progress')
+          document.dispatchEvent(ev)
           const _sql = _sqls[j]
           const sqlValsCount = _sql.values.length
           if (sqlValsCount > 0) {
@@ -56,8 +58,10 @@ export async function insertSeqRecs(records: GBSeq[]) {
         }
         await commitTransaction(dbSeqRecs)
         console.log('insertSeqRecs: Done.')
+        const ev = new Event('seq-db-updated')
+        document.dispatchEvent(ev)
       } catch (error) {
-        await commitTransaction(dbSeqRecs)
+        await rollbackTransaction(dbSeqRecs)
         console.error('Error in insertSeqRecs:', error)
       }
     }
@@ -82,11 +86,7 @@ function _struccommentitems(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "struc_comment_id",
-      "struc_comment_item_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "struc_comment_id", "struc_comment_item_id") DO NOTHING
     ;
   `
 }
@@ -95,11 +95,7 @@ function _struccomments(values: (string | number | undefined)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_struc_comments (
-        "accession_version",
-        "struc_comment_id",
-        "name"
-      )
+      gb_struc_comments ("accession_version", "struc_comment_id", "name")
     VALUES
       ${bulk(values)}
     ON CONFLICT ("accession_version", "struc_comment_id") DO NOTHING
@@ -111,19 +107,10 @@ function _commentparagraphs(values: (string | number)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_comment_paragraphs (
-        "accession_version",
-        "comment_id",
-        "paragraph_id",
-        "paragraph"
-      )
+      gb_comment_paragraphs ("accession_version", "comment_id", "paragraph_id", "paragraph")
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "comment_id",
-      "paragraph_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "comment_id", "paragraph_id") DO NOTHING
     ;
   `
 }
@@ -132,11 +119,7 @@ function _comments(values: (string | number | undefined)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_comments (
-        "accession_version",
-        "comment_id",
-        "type"
-      )
+      gb_comments ("accession_version", "comment_id", "type")
     VALUES
       ${bulk(values)}
     ON CONFLICT ("accession_version", "comment_id") DO NOTHING
@@ -166,11 +149,7 @@ function _altseqdataitems(values: (string | number | boolean | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "alt_seq_data_id",
-      "alt_seq_item_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "alt_seq_data_id", "alt_seq_item_id") DO NOTHING
     ;
   `
 }
@@ -179,11 +158,7 @@ function _altseqdata(values: (string | number)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_alt_seq_data (
-        "accession_version",
-        "alt_seq_data_id",
-        "name"
-      )
+      gb_alt_seq_data ("accession_version", "alt_seq_data_id", "name")
     VALUES
       ${bulk(values)}
     ON CONFLICT ("accession_version", "alt_seq_data_id") DO NOTHING
@@ -231,19 +206,10 @@ function _authors(values: (string | number)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_authors (
-        "accession_version",
-        "reference_id",
-        "author_id",
-        "author"
-      )
+      gb_authors ("accession_version", "reference_id", "author_id", "author")
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "reference_id",
-      "author_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "reference_id", "author_id") DO NOTHING
     ;
   `
 }
@@ -364,11 +330,7 @@ function _features(values: (string | number | boolean | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT (
-      "accession_version",
-      "feature_set_id",
-      "feature_id"
-    ) DO NOTHING
+    ON CONFLICT ("accession_version", "feature_set_id", "feature_id") DO NOTHING
     ;
   `
 }
@@ -377,11 +339,7 @@ function _featureSets(values: (string | number | undefined)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_feature_sets (
-        "accession_version",
-        "feature_set_id",
-        "annot_source"
-      )
+      gb_feature_sets ("accession_version", "feature_set_id", "annot_source")
     VALUES
       ${bulk(values)}
     ON CONFLICT ("accession_version", "feature_set_id") DO NOTHING

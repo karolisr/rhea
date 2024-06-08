@@ -2,6 +2,7 @@
 import { onMount, onDestroy, tick } from 'svelte'
 import { v4 as uuid } from 'uuid'
 import { max, min } from '$lib'
+import { getFontSize } from '$lib/app/api'
 
 const resizeEvt = new Event('resize')
 
@@ -200,7 +201,9 @@ async function collapseGridElement(evt: MouseEvent) {
       prevSizes[elementIndex] = sizes[elementIndex]
       sizes[elementIndex] = 0
     } else {
-      if (prevSizes[elementIndex] === 0) prevSizes[elementIndex] = 34
+      if (prevSizes[elementIndex] === 0 || prevSizes[elementIndex] === undefined) {
+        prevSizes[elementIndex] = getFontSize() * 3
+      }
       sizes[elementIndex] = prevSizes[elementIndex]
     }
   }
@@ -212,8 +215,6 @@ async function collapseGridElement(evt: MouseEvent) {
     rowHs = sizes as number[]
     rowHsPrev = prevSizes as number[]
   }
-  // await tick()
-  // dispatchEvent(resizeEvt)
   resizeGridElementEnd(evt)
 }
 </script>

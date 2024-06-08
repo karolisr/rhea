@@ -12,12 +12,14 @@ export class RecordList<T> {
   private _sortDirections: (1 | -1)[]
   private _keyField: keyof T
   private _allItems: T[]
+  private _items: T[]
   private _filterField: keyof T
   private _filterQuery: T[typeof this._filterField] | undefined
   private _filterIds: T[typeof this._filterField][] | undefined
 
   constructor(items: T[], keyField?: KnownKeys<T>) {
     this._allItems = items
+    this._items = this._allItems
     if (keyField !== undefined) {
       this._keyField = keyField as keyof T
     } else {
@@ -30,27 +32,29 @@ export class RecordList<T> {
   }
 
   get items() {
-    if (this._filterQuery === undefined && this._filterIds === undefined) {
-      return this._allItems
-    } else if (this._filterIds !== undefined) {
-      const rv: T[] = []
-      this._allItems.forEach((itm) => {
-        if (this._filterIds?.includes(itm[this._filterField])) rv.push(itm)
-      })
-      return rv
-    } else {
-      const rv: T[] = []
-      this._allItems.forEach((itm) => {
-        if (itm[this._filterField] === this._filterQuery) rv.push(itm)
-      })
-      return rv
-    }
+    return this._items
   }
 
   filterBy(field: KnownKeys<T> | string, query: T[keyof T] | undefined, ids: T[keyof T][] | undefined) {
     this._filterField = field as keyof T
     this._filterQuery = query as T[typeof this._filterField]
     this._filterIds = ids as T[typeof this._filterField][]
+
+    if (this._filterQuery === undefined && this._filterIds === undefined) {
+      this._items = this._allItems
+    } else if (this._filterIds !== undefined) {
+      const rv: T[] = []
+      this._allItems.forEach((itm) => {
+        if (this._filterIds?.includes(itm[this._filterField])) rv.push(itm)
+      })
+      this._items = rv
+    } else {
+      const rv: T[] = []
+      this._allItems.forEach((itm) => {
+        if (itm[this._filterField] === this._filterQuery) rv.push(itm)
+      })
+      this._items = rv
+    }
   }
 
   get length() {
@@ -109,6 +113,18 @@ export class RecordList<T> {
     return this.valueByIndex(index, field, '') as string
   }
 
+  typeByIndex(index: number, field: keyof T) {
+    const rec = this.items.at(index) as T
+    if (rec) {
+      let val = rec[field]
+      if (typeof val === 'number') {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
   valueByIndex(
     index: number,
     field: keyof T,
@@ -149,5 +165,7 @@ export class RecordList<T> {
         return 0
       })
     }
+
+    this.filterBy(this._filterField as string, this._filterQuery, this._filterIds)
   }
 }

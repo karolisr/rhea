@@ -1,6 +1,7 @@
 <script lang="ts">
 import GridSizers from '$lib/ui/utils/GridSizers.svelte'
 import { v4 as uuid } from 'uuid'
+import { fade as trans } from 'svelte/transition'
 
 export let uid: string = uuid()
 export let minRowH: number = 50
@@ -19,7 +20,11 @@ let rowHsStr: string
 let colWsStr: string
 </script>
 
-<div class="grid-container" style:grid-template-rows="{rowHsStr}" style:grid-template-columns="{colWsStr}">
+<div
+  transition:trans="{{ delay: 0, duration: 1000 }}"
+  class="grid-container"
+  style:grid-template-rows="{rowHsStr}"
+  style:grid-template-columns="{colWsStr}">
   <div class="grid-items" style:grid-row="1/{nRow + 1}" style:grid-column="1/{nCol + 1}">
     <slot />
   </div>

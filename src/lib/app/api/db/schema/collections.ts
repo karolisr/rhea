@@ -38,8 +38,8 @@ export const schemaCollections = sql`
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------
-  -- DROP TABLE IF EXISTS sequence_type
-  -- ;
+  DROP TABLE IF EXISTS sequence_type
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "sequence_type" (
     "parent_id" varchar,
@@ -65,34 +65,14 @@ export const schemaCollections = sql`
     ("RNA", "rRNA", "rRNA", ""),
     ("RNA", "snRNA", "snRNA", ""),
     ("RNA", "tRNA", "tRNA", ""),
-    (
-      "RNA",
-      "transcribed-RNA",
-      "transcribed-RNA",
-      ""
-    ),
+    ("RNA", "transcribed-RNA", "transcribed-RNA", ""),
     ("DNA", "Genomes", "Genomes", ""),
     ("Genomes", "plasmid", "Plasmids", ""),
-    ("Genomes", "nuclear", "Nuclear", ""),
-    (
-      "Genomes",
-      "Organelles",
-      "Organelles",
-      ""
-    ),
+    ("Genomes", "nucleus", "Nuclear", ""),
+    ("Genomes", "Organelles", "Organelles", ""),
     ("Organelles", "plastid", "Plastids", ""),
-    (
-      "Organelles",
-      "mitochondrion",
-      "Mitochondria",
-      ""
-    ),
-    (
-      "plastid",
-      "chloroplast",
-      "Chloroplasts",
-      ""
-    )
+    ("Organelles", "mitochondrion", "Mitochondria", ""),
+    ("plastid", "chloroplast", "Chloroplasts", "")
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------

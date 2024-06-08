@@ -20,7 +20,7 @@
   "functionCase": "upper",
   "identifierCase": "lower",
   "language": "sqlite",
-  "expressionWidth": 40,
+  "expressionWidth": 65,
   "linesBetweenQueries": 0,
 
   "printWidth": 120,

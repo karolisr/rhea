@@ -9,6 +9,7 @@ import type { Collection } from '$lib/types'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import { getPropNames } from '$lib'
 import type { DragStartEvent } from '$lib/app/api/types'
+import settings from '$lib/app/svelte-stores/settings'
 
 onMount(async () => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -201,7 +202,7 @@ function calcColWidths(rl: RecordList<IndexedUndefined | Collection>, charW: num
     const values: number[] = []
     for (let j = 0; j < rl.length; j++) {
       const value = rl.valueByIndex(j, field, '')
-      values.push(String(value).length)
+      values.push(formatValue(value).length)
     }
     if (values.length > 0) {
       const w = ceil(mean(values) + min(standardDeviation(values), minColW)) * charW
@@ -279,6 +280,24 @@ function sort(field: string | undefined, direction: boolean | undefined) {
     }
   }
 }
+
+function formatValue(val: string | number | boolean | object | null | undefined) {
+  let rv: string = ''
+  if (typeof val === 'number') {
+    rv = val.toLocaleString($settings.locale)
+  } else if (typeof val === 'boolean') {
+    rv = val ? 'YES' : 'NO'
+  } else if (typeof val === 'object') {
+    rv = 'OBJECT'
+  } else if (val === undefined) {
+    rv = 'UNDEFINED'
+  } else if (val === null) {
+    rv = 'NULL'
+  } else {
+    rv = val
+  }
+  return rv
+}
 </script>
 
 <!-- toolbar BEG -->
@@ -321,8 +340,8 @@ function sort(field: string | undefined, direction: boolean | undefined) {
         <div id="{uid}-table" class="table">
           <ResizableGrid
             {uid}
-            {rowHs}
-            {colWs}
+            bind:rowHs
+            bind:colWs
             {minColW}
             rowsResizable="{false}"
             colsResizable="{true}"
@@ -376,8 +395,10 @@ function sort(field: string | undefined, direction: boolean | undefined) {
                   </div>
                 {/if}
                 {#each rl.fieldsToShow as field, j}
-                  <div id="{uid}-cell-{i}-{j}" class="cell">
-                    {rl.valueByIndex(i, field, '', '-')}
+                  <div
+                    id="{uid}-cell-{i}-{j}"
+                    class="cell{rl.typeByIndex(i, field) ? ' numeric' : ''}{colWs[j + 1] === 0 ? ' collapsed' : ''}">
+                    {formatValue(rl.valueByIndex(i, field, '', '-'))}
                   </div>
                 {/each}
               </div>

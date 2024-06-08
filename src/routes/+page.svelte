@@ -16,8 +16,9 @@ import settings from '$lib/app/svelte-stores/settings'
 import { BROWSER } from '$lib/app/api'
 import Search from './search.svelte'
 import Filter from './filter.svelte'
-import { getFontSize } from '$lib/app/api'
+// import { getFontSize } from '$lib/app/api'
 import { filterSeqRecs } from '$lib/app/api/db/gbseq'
+// import { fade } from 'svelte/transition'
 
 let seqRecList: IndexedUndefined[] = []
 let statusMain: string = ''
@@ -39,7 +40,7 @@ async function _filterSeqRecs(term: string) {
 $: _filterSeqRecs(filterTerm)
 $: if (filteredResults) filteredIds = filteredResults.map((x) => x.Accession as string)
 
-$: statusMain = `${seqRecList.length.toLocaleString($settings.locale)} records.`
+$: statusMain = `Showing ${seqRecListRL.length.toLocaleString($settings.locale)} / ${seqRecList.length.toLocaleString($settings.locale)} records.`
 $: updateStatus(statusMain)
 
 async function updateStatus(msg: string) {
@@ -90,7 +91,8 @@ let prevRowHs: number[] = []
 
 $: {
   if (rowHeight && rowHs.length === 0) {
-    rowHs = [getFontSize() * 3, 34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
+    // getFontSize() * 3
+    rowHs = [0, 34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
     prevRowHs = [...rowHs]
   }
 }
@@ -153,6 +155,7 @@ $: if (seqRecListRL) {
     // 'TaxID',
     'Organism',
     'Length',
+    'Length (bp)',
     'Genetic Compartment',
     'Molecule Type',
     'Definition'
@@ -164,11 +167,25 @@ $: if (seqRecListRL) {
   seqRecListRL = seqRecListRL
 }
 
+function onSeqDbUpdated(ev: Event) {
+  console.log('onSeqDbUpdated')
+  _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
+}
+
+function onSeqDbInsertInProgress(ev: Event) {
+  console.log('onSeqDbInsertInProgress')
+  _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
+}
+
 onMount(async () => {
   dbs = await databases
+  document.addEventListener('seq-db-insert-in-progress', onSeqDbInsertInProgress)
+  document.addEventListener('seq-db-updated', onSeqDbUpdated)
 })
 
 onDestroy(() => {
+  document.removeEventListener('seq-db-insert-in-progress', onSeqDbInsertInProgress)
+  document.removeEventListener('seq-db-updated', onSeqDbUpdated)
   // saveState()
 })
 </script>
@@ -237,12 +254,19 @@ onDestroy(() => {
       <div>Loading...</div>
     {/if}
 
-    <ResizableGrid bind:nRow="{nRowMain}" nCol="{1}" bind:rowHs colWs="{[-1]}" minRowH="{0}" fixedHRows="{[0]}">
-      {#if selectedGroupUid === 'search-results-tree'}
-        <div class="filter-search"><Search /></div>
-      {:else}
-        <div class="filter-search"><Filter bind:term="{filterTerm}" /></div>
-      {/if}
+    <ResizableGrid bind:nRow="{nRowMain}" nCol="{1}" bind:rowHs colWs="{[-1]}" minRowH="{0}" fixedHRows="{[]}">
+      <div class="filter-search">
+        {#if selectedGroupUid === 'search-results-tree'}
+          {#key selectedGroupUid}
+            <Search />
+          {/key}
+        {:else}
+          {#key selectedGroupUid}
+            <Filter bind:term="{filterTerm}" />
+          {/key}
+        {/if}
+      </div>
+
       <div class="list-container">
         <TableView
           uid="seq-rec-table"
@@ -283,8 +307,10 @@ onDestroy(() => {
 
 .filter-search {
   border-bottom-style: solid;
-  background-color: white;
   align-content: center;
+  // background-color: white;
+  background-color: cornsilk;
+  // transition: all 1s ease-out;
 }
 
 .list-container {
@@ -292,6 +318,7 @@ onDestroy(() => {
   text-align: unset;
   overflow-x: hidden;
   overflow-y: hidden;
+  background-color: white;
 }
 
 .tree-container {

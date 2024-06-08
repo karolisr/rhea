@@ -18,6 +18,15 @@
   pointer-events: auto;
 }
 
+.cell.numeric {
+  padding-inline-end: calc(var(--pad) * 1);
+  text-align: right;
+}
+
+.cell.numeric.collapsed {
+  color: transparent;
+}
+
 .cell-corner {
 }
 

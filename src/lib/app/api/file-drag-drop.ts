@@ -10,10 +10,10 @@ export class FileDragDrop {
   onDragCancel: (() => void) | undefined
 
   constructor(
-    onDragStart?: (paths: string[]) => void,
-    onDrag?: (x: number, y: number) => void,
     onDrop?: (paths: string[], x: number, y: number) => void,
-    onDragCancel?: () => void
+    onDragCancel?: () => void,
+    onDragStart?: (paths: string[]) => void,
+    onDrag?: (x: number, y: number) => void
   ) {
     this.onDragStart = onDragStart
     this.onDrag = onDrag

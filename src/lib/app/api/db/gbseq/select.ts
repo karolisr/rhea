@@ -64,7 +64,10 @@ export async function getSeqRecsByType(types: string[]) {
       FROM
         records
       WHERE
-        "Genetic Compartment" IN ${bulk([types])}
+        (
+          "Genetic Compartment" IN ${bulk([types])}
+          AND "Molecule Type" = 'DNA'
+        )
         OR "Molecule Type" IN ${bulk([types])}
       ;
     `

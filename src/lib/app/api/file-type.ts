@@ -111,7 +111,7 @@ function getContentsType(obj: object) {
   return rv
 }
 
-export async function tmp(paths: string[]) {
+export async function insertGbSeqRecordsOnFileDropTMP(paths: string[]) {
   for (let i = 0; i < paths.length; i++) {
     const p = paths[i]
     // const parser = await getFileParser(p)

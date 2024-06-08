@@ -43,10 +43,7 @@ CREATE TABLE IF NOT EXISTS "tx_images" (
 ;
 -- @block create tx_codons table
 -- @conn taxonomy
-CREATE TABLE IF NOT EXISTS "tx_codons" (
-  "id" integer PRIMARY KEY NOT NULL,
-  "codon" varchar(3) NOT NULL
-)
+CREATE TABLE IF NOT EXISTS "tx_codons" ("id" integer PRIMARY KEY NOT NULL, "codon" varchar(3) NOT NULL)
 ;
 -- @block create tx_nodes table
 -- @conn taxonomy
