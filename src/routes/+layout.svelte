@@ -32,7 +32,9 @@ $: setScale($settings.scale)
 onMount(async () => {
   console.log(BROWSER, ENGINE)
   unlisteners.push(await themeChangeListener())
-  unlisteners.push(await new FileDragDrop(insertGbSeqRecordsOnFileDropTMP).unlisten)
+  unlisteners.push(
+    await new FileDragDrop(insertGbSeqRecordsOnFileDropTMP).unlisten
+  )
   // unlisteners.push(await beforeWindowClose(cleanup))
 
   unlisteners.push(preventDefault('contextmenu'))

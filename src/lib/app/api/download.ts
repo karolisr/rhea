@@ -16,7 +16,13 @@ async function dynamicImports() {
   }
 }
 
-export async function download(url: string, rt: 'text' | 'blob'): Promise<{ url: string; data: string | Blob }> {
+export async function download(
+  url: string,
+  rt: 'text' | 'blob'
+): Promise<{
+  url: string
+  data: string | Blob
+}> {
   await dynamicImports()
   return await _fetch(url).then(async (r) => {
     if (!r.ok) throw new Error(`Error downloading: ${r.url} (${r.status})`)
@@ -28,12 +34,18 @@ export async function download(url: string, rt: 'text' | 'blob'): Promise<{ url:
   })
 }
 
-export async function downloadText(url: string): Promise<{ url: string; data: string } | null> {
+export async function downloadText(url: string): Promise<{
+  url: string
+  data: string
+} | null> {
   const _ = await download(url, 'text').catch((_) => {
     return null
   })
   if (_) {
-    return { url: _.url, data: _.data as string }
+    return {
+      url: _.url,
+      data: _.data as string
+    }
   } else {
     return null
   }

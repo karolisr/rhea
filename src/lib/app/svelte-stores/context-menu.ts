@@ -22,7 +22,12 @@ function init() {
 function showContextMenu(e: MouseEvent, items: ContextMenuItem[]) {
   cm = new ContextMenu({
     target: document.body,
-    props: { x: e.x - 5, y: e.y - 5, hide: hideContextMenu, items }
+    props: {
+      x: e.x - 5,
+      y: e.y - 5,
+      hide: hideContextMenu,
+      items
+    }
   })
 }
 

@@ -3,7 +3,11 @@ import { getPropNames } from '$lib'
 declare type KeyToKeyNoIndex<T> = {
   [K in keyof T]: string extends K ? never : number extends K ? never : K
 }
-declare type ValuesOf<T> = T extends { [K in keyof T]: infer U } ? U : never
+declare type ValuesOf<T> = T extends {
+  [K in keyof T]: infer U
+}
+  ? U
+  : never
 declare type KnownKeys<T> = ValuesOf<KeyToKeyNoIndex<T>>
 
 export class RecordList<T> {
@@ -35,7 +39,11 @@ export class RecordList<T> {
     return this._items
   }
 
-  filterBy(field: KnownKeys<T> | string, query: T[keyof T] | undefined, ids: T[keyof T][] | undefined) {
+  filterBy(
+    field: KnownKeys<T> | string,
+    query: T[keyof T] | undefined,
+    ids: T[keyof T][] | undefined
+  ) {
     this._filterField = field as keyof T
     this._filterQuery = query as T[typeof this._filterField]
     this._filterIds = ids as T[typeof this._filterField][]
@@ -95,7 +103,16 @@ export class RecordList<T> {
   }
 
   fieldsByType(
-    types: ('string' | 'number' | 'boolean' | 'object' | 'bigint' | 'symbol' | 'undefined' | 'function')[]
+    types: (
+      | 'string'
+      | 'number'
+      | 'boolean'
+      | 'object'
+      | 'bigint'
+      | 'symbol'
+      | 'undefined'
+      | 'function'
+    )[]
   ): KnownKeys<T>[] | string[] {
     const rv: KnownKeys<T>[] = []
     if (this.length > 0) {
@@ -166,6 +183,10 @@ export class RecordList<T> {
       })
     }
 
-    this.filterBy(this._filterField as string, this._filterQuery, this._filterIds)
+    this.filterBy(
+      this._filterField as string,
+      this._filterQuery,
+      this._filterIds
+    )
   }
 }

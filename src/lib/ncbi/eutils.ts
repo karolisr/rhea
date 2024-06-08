@@ -73,7 +73,10 @@ function _batch(params: EutilParams): void {
   }
 }
 
-async function _batched(f: (params: EutilParams) => Promise<object>, params: EutilParams): Promise<object[]> {
+async function _batched(
+  f: (params: EutilParams) => Promise<object>,
+  params: EutilParams
+): Promise<object[]> {
   const return_value: object[] = []
   while (!params.last) {
     _batch(params)
@@ -119,10 +122,14 @@ async function processResponse(response: Response): Promise<object> {
 async function _esummary(params: EutilParams): Promise<ESummaryJSON> {
   params.retmode = RetMode.json
   params.version = '2.0'
-  const result = await eutil(Eutil.esummary, params).then((r) => processResponse(r))
+  const result = await eutil(Eutil.esummary, params).then((r) =>
+    processResponse(r)
+  )
   const rv = result as ESummaryJSON
   if (rv.esummaryresult && rv.esummaryresult[0].startsWith('Empty')) {
-    rv.result = { uids: [] }
+    rv.result = {
+      uids: []
+    }
   }
   return rv
 }
@@ -141,12 +148,20 @@ export async function esummary(params: EutilParams): Promise<ESummary[]> {
 }
 
 async function _efetch(params: EutilParams): Promise<object> {
-  const result = await eutil(Eutil.efetch, params).then((r) => processResponse(r))
+  const result = await eutil(Eutil.efetch, params).then((r) =>
+    processResponse(r)
+  )
   return result
 }
 
 export async function efetch(params: EutilParams): Promise<object> {
-  if (params.usehistory === 'y' && params.query_key && params.WebEnv && params.count && params.count > EutilsRetMax) {
+  if (
+    params.usehistory === 'y' &&
+    params.query_key &&
+    params.WebEnv &&
+    params.count &&
+    params.count > EutilsRetMax
+  ) {
     return await _batched(_efetch, params) // ToDo: Untested.
   } else {
     return [await _efetch(params)]
@@ -157,7 +172,10 @@ export async function esearch(
   db: keyof typeof NCBIDatabase,
   term: string,
   usehistory: boolean
-): Promise<{ data: object; params: EutilParams }> {
+): Promise<{
+  data: object
+  params: EutilParams
+}> {
   const p = new EutilParams()
   p.db = db
   p.term = term
@@ -166,7 +184,9 @@ export async function esearch(
   p.usehistory = usehistory ? 'y' : undefined
   p.idtype = IdType.acc
   const response = await eutil(Eutil.esearch, p)
-  const data = (await processResponse(response)) as { esearchresult: History }
+  const data = (await processResponse(response)) as {
+    esearchresult: History
+  }
   p.count = Number(data.esearchresult.count)
   p.retmax = undefined
   p.retstart = undefined
@@ -175,5 +195,8 @@ export async function esearch(
   p.term = undefined
   p.rettype = undefined
   p.retmode = undefined
-  return { data: data, params: p }
+  return {
+    data: data,
+    params: p
+  }
 }

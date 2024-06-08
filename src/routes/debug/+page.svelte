@@ -1,6 +1,11 @@
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte'
-import type { DragStartEvent, DragOverEvent, DropEvent, DragDropPayload } from '$lib/app/api/types'
+import type {
+  DragStartEvent,
+  DragOverEvent,
+  DropEvent,
+  DragDropPayload
+} from '$lib/app/api/types'
 
 let targetEl: HTMLElement | null = null
 let payload: DragDropPayload | null = null
@@ -42,12 +47,42 @@ function onDrop(e: Event) {
 
 <div id="container" class="container">
   <div id="source">
-    <div id="item1" class="item draggable" on:dragstart="{onDragStart}" role="region">Item 1</div>
-    <div id="item2" class="item draggable" on:dragstart="{onDragStart}" role="region">Item 2</div>
-    <div id="item3" class="item draggable" on:dragstart="{onDragStart}" role="region">Item 3</div>
-    <div id="item4" class="item draggable" on:dragstart="{onDragStart}" role="region">Item 4</div>
+    <div
+      id="item1"
+      class="item draggable"
+      on:dragstart="{onDragStart}"
+      role="region">
+      Item 1
+    </div>
+    <div
+      id="item2"
+      class="item draggable"
+      on:dragstart="{onDragStart}"
+      role="region">
+      Item 2
+    </div>
+    <div
+      id="item3"
+      class="item draggable"
+      on:dragstart="{onDragStart}"
+      role="region">
+      Item 3
+    </div>
+    <div
+      id="item4"
+      class="item draggable"
+      on:dragstart="{onDragStart}"
+      role="region">
+      Item 4
+    </div>
   </div>
-  <div id="target" class="drag-target" on:drop="{onDrop}" on:dragenter="{onDragOver}" role="region"></div>
+  <div
+    id="target"
+    class="drag-target"
+    on:drop="{onDrop}"
+    on:dragenter="{onDragOver}"
+    role="region">
+  </div>
 </div>
 
 <style>

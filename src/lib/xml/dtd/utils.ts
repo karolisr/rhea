@@ -3,16 +3,24 @@ import { getPropNames, removeCycle, setDiff } from '$lib'
 import { element_value_type } from '.'
 
 export function elements_to_json(
-  elements: { [element_name: string]: _dtd_element },
+  elements: {
+    [element_name: string]: _dtd_element
+  },
   dashToUnderscore: boolean = true
 ): Indexed {
-  let _els: { [element_name: string]: _dtd_element } = {}
+  let _els: {
+    [element_name: string]: _dtd_element
+  } = {}
 
   if (dashToUnderscore) {
     const ens = getPropNames(elements)
     for (const en of ens) {
       const enNew = en.replaceAll('-', '_')
-      _els[enNew] = { children: null, attributes: null, value: null }
+      _els[enNew] = {
+        children: null,
+        attributes: null,
+        value: null
+      }
       _els[enNew].attributes = elements[en].attributes
       _els[enNew].value = elements[en].value
       if (elements[en].children) {
@@ -32,7 +40,10 @@ export function elements_to_json(
               required: string
             }
           }
-          children[ecnNew] = { required: _[ecn].required, type: _[ecn].type }
+          children[ecnNew] = {
+            required: _[ecn].required,
+            type: _[ecn].type
+          }
         }
       }
     }
@@ -43,7 +54,9 @@ export function elements_to_json(
   return removeCycle(_elements_to_json(_els)) as Indexed
 }
 
-export function _never_children(elements: { [element_name: string]: _dtd_element }): Set<string> {
+export function _never_children(elements: {
+  [element_name: string]: _dtd_element
+}): Set<string> {
   const ns: Set<string> = new Set(getPropNames(elements))
   const ncs: Set<string> = new Set()
   for (const n of ns) {
@@ -65,7 +78,14 @@ export function _never_children(elements: { [element_name: string]: _dtd_element
   return rv
 }
 
-function _build_object(rootName: string, parts: Indexed, done: Indexed = {}): { _obj: Indexed; _done: Indexed } {
+function _build_object(
+  rootName: string,
+  parts: Indexed,
+  done: Indexed = {}
+): {
+  _obj: Indexed
+  _done: Indexed
+} {
   const obj: Indexed = parts[rootName] as Indexed
   const cns = getPropNames(obj)
   for (const cn of cns) {
@@ -74,7 +94,10 @@ function _build_object(rootName: string, parts: Indexed, done: Indexed = {}): { 
       continue
     }
     if (cn in parts) {
-      done[k] = { p: rootName, c: cn }
+      done[k] = {
+        p: rootName,
+        c: cn
+      }
       const objc = obj[cn] as Indexed
       const { _obj } = _build_object(cn, parts, done)
       for (const _objn of getPropNames(_obj)) {
@@ -83,11 +106,16 @@ function _build_object(rootName: string, parts: Indexed, done: Indexed = {}): { 
     }
   }
 
-  return { _obj: obj, _done: done }
+  return {
+    _obj: obj,
+    _done: done
+  }
 }
 
 function _elements_to_json(
-  elements: { [element_name: string]: _dtd_element },
+  elements: {
+    [element_name: string]: _dtd_element
+  },
   element_name: string | null = null
 ): Indexed {
   let rv: Indexed = {}

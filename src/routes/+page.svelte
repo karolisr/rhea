@@ -6,11 +6,21 @@ import TreeView from '$lib/ui/views/TreeView'
 import TableView from '$lib/ui/views/TableView'
 import { RecordList } from '$lib/utils/record-list'
 import { onMount, onDestroy, tick } from 'svelte'
-import { createCollection, deleteCollection, relabelCollection } from '$lib/app/api/db/collections'
+import {
+  createCollection,
+  deleteCollection,
+  relabelCollection
+} from '$lib/app/api/db/collections'
 import databases from '$lib/app/svelte-stores/databases'
-import { getSeqRecsByType, getSeqRecsFromCollection } from '$lib/app/api/db/gbseq'
+import {
+  getSeqRecsByType,
+  getSeqRecsFromCollection
+} from '$lib/app/api/db/gbseq'
 import type { IndexedUndefined } from '$lib/types'
-import { addSeqRecsToCollection, removeSeqRecsFromCollection } from '$lib/app/api/db/gbseq'
+import {
+  addSeqRecsToCollection,
+  removeSeqRecsFromCollection
+} from '$lib/app/api/db/gbseq'
 import status from '$lib/app/svelte-stores/status'
 import settings from '$lib/app/svelte-stores/settings'
 import { BROWSER } from '$lib/app/api'
@@ -38,7 +48,8 @@ async function _filterSeqRecs(term: string) {
 }
 
 $: _filterSeqRecs(filterTerm)
-$: if (filteredResults) filteredIds = filteredResults.map((x) => x.Accession as string)
+$: if (filteredResults)
+  filteredIds = filteredResults.map((x) => x.Accession as string)
 
 $: statusMain = `Showing ${seqRecListRL.length.toLocaleString($settings.locale)} / ${seqRecList.length.toLocaleString($settings.locale)} records.`
 $: updateStatus(statusMain)
@@ -51,7 +62,9 @@ let dbs: Awaited<typeof databases>
 
 let rebuild: number
 
-let selectedGroupUid: string | undefined = $state.selectedGroupUid as string | undefined
+let selectedGroupUid: string | undefined = $state.selectedGroupUid as
+  | string
+  | undefined
 $: {
   $state.selectedGroupUid = selectedGroupUid
   saveState()
@@ -63,13 +76,17 @@ $: {
   saveState()
 }
 
-let expandedSeqTypeIds: Set<string> | undefined = $state.expandedSeqTypes as Set<string> | undefined
+let expandedSeqTypeIds: Set<string> | undefined = $state.expandedSeqTypes as
+  | Set<string>
+  | undefined
 $: {
   $state.expandedSeqTypes = expandedSeqTypeIds
   saveState()
 }
 
-let expandedCollIds: Set<string> | undefined = $state.expandedCollIds as Set<string> | undefined
+let expandedCollIds: Set<string> | undefined = $state.expandedCollIds as
+  | Set<string>
+  | undefined
 $: {
   $state.expandedCollIds = expandedCollIds
   saveState()
@@ -119,7 +136,12 @@ async function _getSeqRecs(
   selectedSeqTypes: string[] | undefined,
   rebuild: number
 ) {
-  if ($dbs && $dbs.dbsOK && collUid !== undefined && collectionId !== undefined) {
+  if (
+    $dbs &&
+    $dbs.dbsOK &&
+    collUid !== undefined &&
+    collectionId !== undefined
+  ) {
     if (collUid === 'user-tree') {
       seqRecList = await getSeqRecsFromCollection('user', [collectionId])
     } else if (collUid === 'sequence-type-tree') {
@@ -146,7 +168,8 @@ async function _removeSeqRec(id: unknown) {
   }
 }
 
-$: if ($dbs && $dbs.dbsOK) _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
+$: if ($dbs && $dbs.dbsOK)
+  _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
 
 $: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
 $: if (seqRecListRL) {
@@ -179,21 +202,38 @@ function onSeqDbInsertInProgress(ev: Event) {
 
 onMount(async () => {
   dbs = await databases
-  document.addEventListener('seq-db-insert-in-progress', onSeqDbInsertInProgress)
+  document.addEventListener(
+    'seq-db-insert-in-progress',
+    onSeqDbInsertInProgress
+  )
   document.addEventListener('seq-db-updated', onSeqDbUpdated)
 })
 
 onDestroy(() => {
-  document.removeEventListener('seq-db-insert-in-progress', onSeqDbInsertInProgress)
+  document.removeEventListener(
+    'seq-db-insert-in-progress',
+    onSeqDbInsertInProgress
+  )
   document.removeEventListener('seq-db-updated', onSeqDbUpdated)
   // saveState()
 })
 </script>
 
 {#if $dbs && $dbs.dbsOK}
-  <ResizableGrid nRow="{1}" nCol="{2}" rowHs="{[-1]}" colWs="{[200, -1]}" minColW="{0}">
+  <ResizableGrid
+    nRow="{1}"
+    nCol="{2}"
+    rowHs="{[-1]}"
+    colWs="{[200, -1]}"
+    minColW="{0}">
     {#if $dbs.dbCollections && $dbs.dbSeqRecs && $dbs.dbTaxonomy}
-      <ResizableGrid nRow="{1}" nCol="{1}" rowHs="{[-1]}" colWs="{[-1]}" minRowH="{0}" enforceMaxSize="{false}">
+      <ResizableGrid
+        nRow="{1}"
+        nCol="{1}"
+        rowHs="{[-1]}"
+        colWs="{[-1]}"
+        minRowH="{0}"
+        enforceMaxSize="{false}">
         <div class="tree-container">
           <TreeView
             uid="{'user-tree'}"
@@ -254,7 +294,13 @@ onDestroy(() => {
       <div>Loading...</div>
     {/if}
 
-    <ResizableGrid bind:nRow="{nRowMain}" nCol="{1}" bind:rowHs colWs="{[-1]}" minRowH="{0}" fixedHRows="{[]}">
+    <ResizableGrid
+      bind:nRow="{nRowMain}"
+      nCol="{1}"
+      bind:rowHs
+      colWs="{[-1]}"
+      minRowH="{0}"
+      fixedHRows="{[]}">
       <div class="filter-search">
         {#if selectedGroupUid === 'search-results-tree'}
           {#key selectedGroupUid}

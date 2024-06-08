@@ -17,7 +17,9 @@ function init(): Writable<_CACHE_DTD> {
 }
 
 export const dtds = init()
-export const dtd_urls = derived(dtds, ($dtds) => ($dtds ? Object.getOwnPropertyNames($dtds).sort() : []))
+export const dtd_urls = derived(dtds, ($dtds) =>
+  $dtds ? Object.getOwnPropertyNames($dtds).sort() : []
+)
 
 // --------------------------------------------------------------------------
 
@@ -57,7 +59,10 @@ function cache_add_dtd_txt(url: string, txt: string): void {
   })
 }
 
-export function cache_get_dtd_txt(url: string, ref_url?: string): _DTD_TXT | null {
+export function cache_get_dtd_txt(
+  url: string,
+  ref_url?: string
+): _DTD_TXT | null {
   const urls = getDtdUrls(url, ref_url)
   let dtd_txt: _DTD_TXT | null = null
 
@@ -66,7 +71,10 @@ export function cache_get_dtd_txt(url: string, ref_url?: string): _DTD_TXT | nul
     const unsubscribe = dtds.subscribe((_dtds) => {
       if (url in _dtds) {
         // console.info(`DTD cache hit: ${url}`)
-        dtd_txt = { url: url, data: _dtds[url] }
+        dtd_txt = {
+          url: url,
+          data: _dtds[url]
+        }
       } else {
         // console.info(`DTD cache miss: ${url}`)
         dtd_txt = null
@@ -79,9 +87,18 @@ export function cache_get_dtd_txt(url: string, ref_url?: string): _DTD_TXT | nul
   return dtd_txt
 }
 
-export async function dnld_dtd_txt(url: string, ref_url?: string): Promise<_DTD_TXT | null> {
+export async function dnld_dtd_txt(
+  url: string,
+  ref_url?: string
+): Promise<_DTD_TXT | null> {
   const urls = getDtdUrls(url, ref_url)
-  let dtd_txt: { url: string; data: string } | null = { url, data: '' }
+  let dtd_txt: {
+    url: string
+    data: string
+  } | null = {
+    url,
+    data: ''
+  }
 
   for (const _url of urls) {
     const url = _url.toString()

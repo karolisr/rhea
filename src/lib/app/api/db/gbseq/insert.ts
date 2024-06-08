@@ -1,5 +1,11 @@
 import type { GBFeatureSet, GBSeq } from '$lib/ncbi/types/GBSet'
-import { DB, beginTransaction, commitTransaction, rollbackTransaction, vacuum } from '$lib/app/api/db'
+import {
+  DB,
+  beginTransaction,
+  commitTransaction,
+  rollbackTransaction,
+  vacuum
+} from '$lib/app/api/db'
 import { getTaxId } from '$lib/ncbi/utils'
 import sql, { Sql, bulk, empty } from 'sql-template-tag'
 import databases from '$lib/app/svelte-stores/databases'
@@ -50,7 +56,11 @@ export async function insertSeqRecs(records: GBSeq[]) {
                     .join()}`
                 )
               }
-              const sqlText = _sql.strings[0] + valsStrPieces.join('),(') + '' + _sql.strings[_sql.strings.length - 1]
+              const sqlText =
+                _sql.strings[0] +
+                valsStrPieces.join('),(') +
+                '' +
+                _sql.strings[_sql.strings.length - 1]
               await (dbSeqRecs as DB).execute(sqlText, batchVal)
             }
             // ----------------------------------------------------------------
@@ -86,7 +96,11 @@ function _struccommentitems(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "struc_comment_id", "struc_comment_item_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "struc_comment_id",
+      "struc_comment_item_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -95,10 +109,17 @@ function _struccomments(values: (string | number | undefined)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_struc_comments ("accession_version", "struc_comment_id", "name")
+      gb_struc_comments (
+        "accession_version",
+        "struc_comment_id",
+        "name"
+      )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "struc_comment_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "struc_comment_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -107,10 +128,19 @@ function _commentparagraphs(values: (string | number)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_comment_paragraphs ("accession_version", "comment_id", "paragraph_id", "paragraph")
+      gb_comment_paragraphs (
+        "accession_version",
+        "comment_id",
+        "paragraph_id",
+        "paragraph"
+      )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "comment_id", "paragraph_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "comment_id",
+      "paragraph_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -119,10 +149,17 @@ function _comments(values: (string | number | undefined)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_comments ("accession_version", "comment_id", "type")
+      gb_comments (
+        "accession_version",
+        "comment_id",
+        "type"
+      )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "comment_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "comment_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -149,7 +186,11 @@ function _altseqdataitems(values: (string | number | boolean | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "alt_seq_data_id", "alt_seq_item_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "alt_seq_data_id",
+      "alt_seq_item_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -158,10 +199,17 @@ function _altseqdata(values: (string | number)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_alt_seq_data ("accession_version", "alt_seq_data_id", "name")
+      gb_alt_seq_data (
+        "accession_version",
+        "alt_seq_data_id",
+        "name"
+      )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "alt_seq_data_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "alt_seq_data_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -170,7 +218,10 @@ function _secondaryaccns(values: string[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_secondary_accns ("accession_version", "accn")
+      gb_secondary_accns (
+        "accession_version",
+        "accn"
+      )
     VALUES
       ${bulk(values)}
     ON CONFLICT ("accn_id") DO NOTHING
@@ -182,7 +233,10 @@ function _seqids(values: string[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_seqids ("accession_version", "seqid")
+      gb_seqids (
+        "accession_version",
+        "seqid"
+      )
     VALUES
       ${bulk(values)}
     ON CONFLICT ("seqid_id") DO NOTHING
@@ -194,7 +248,10 @@ function _keywords(values: string[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_keywords ("accession_version", "keyword")
+      gb_keywords (
+        "accession_version",
+        "keyword"
+      )
     VALUES
       ${bulk(values)}
     ON CONFLICT ("keyword_id") DO NOTHING
@@ -206,10 +263,19 @@ function _authors(values: (string | number)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_authors ("accession_version", "reference_id", "author_id", "author")
+      gb_authors (
+        "accession_version",
+        "reference_id",
+        "author_id",
+        "author"
+      )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "reference_id", "author_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "reference_id",
+      "author_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -257,7 +323,10 @@ function _references(values: (string | number | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "reference_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "reference_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -330,7 +399,11 @@ function _features(values: (string | number | boolean | undefined)[][]) {
       )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "feature_set_id", "feature_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "feature_set_id",
+      "feature_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -339,10 +412,17 @@ function _featureSets(values: (string | number | undefined)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_feature_sets ("accession_version", "feature_set_id", "annot_source")
+      gb_feature_sets (
+        "accession_version",
+        "feature_set_id",
+        "annot_source"
+      )
     VALUES
       ${bulk(values)}
-    ON CONFLICT ("accession_version", "feature_set_id") DO NOTHING
+    ON CONFLICT (
+      "accession_version",
+      "feature_set_id"
+    ) DO NOTHING
     ;
   `
 }
@@ -351,7 +431,10 @@ function _sequences(values: (string | undefined)[][]) {
   if (values.length === 0) return empty
   return sql`
     INSERT INTO
-      gb_sequences ("accession_version", sequence)
+      gb_sequences (
+        "accession_version",
+        sequence
+      )
     VALUES
       ${bulk(values)}
     ON CONFLICT ("accession_version") DO NOTHING
@@ -473,7 +556,14 @@ function _prep(records: GBSeq[]): Sql[] {
         if (qualifiers) {
           for (let x = 0; x < qualifiers.length; x++) {
             const qual = qualifiers[x]
-            qualifierVs.push([accVer, j, k + 1, x + 1, qual.GBQualifier_name, qual.GBQualifier_value])
+            qualifierVs.push([
+              accVer,
+              j,
+              k + 1,
+              x + 1,
+              qual.GBQualifier_name,
+              qual.GBQualifier_value
+            ])
           }
         }
 
@@ -481,13 +571,31 @@ function _prep(records: GBSeq[]): Sql[] {
         if (featXRefs) {
           for (let x = 0; x < featXRefs.length; x++) {
             const xref = featXRefs[x]
-            xRefVs.push([accVer, j, k + 1, 0, x + 1, xref.GBXref_dbname, xref.GBXref_id])
+            xRefVs.push([
+              accVer,
+              j,
+              k + 1,
+              0,
+              x + 1,
+              xref.GBXref_dbname,
+              xref.GBXref_id
+            ])
           }
         }
       }
     }
 
-    referenceVs.push([accVer, 0, '', '', undefined, undefined, undefined, undefined, undefined]) // Default Reference
+    referenceVs.push([
+      accVer,
+      0,
+      '',
+      '',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    ]) // Default Reference
     const recReferences = r.GBSeq_references
     if (recReferences) {
       for (let y = 0; y < recReferences.length; y++) {
@@ -508,7 +616,15 @@ function _prep(records: GBSeq[]): Sql[] {
         if (refXRefs) {
           for (let x = 0; x < refXRefs.length; x++) {
             const xref = refXRefs[x]
-            xRefVs.push([accVer, 0, 0, y + 1, x + 1, xref.GBXref_dbname, xref.GBXref_id])
+            xRefVs.push([
+              accVer,
+              0,
+              0,
+              y + 1,
+              x + 1,
+              xref.GBXref_dbname,
+              xref.GBXref_id
+            ])
           }
         }
 
@@ -526,7 +642,15 @@ function _prep(records: GBSeq[]): Sql[] {
     if (recXRefs) {
       for (let x = 0; x < recXRefs.length; x++) {
         const xref = recXRefs[x]
-        xRefVs.push([accVer, 0, 0, 0, x + 1, xref.GBXref_dbname, xref.GBXref_id])
+        xRefVs.push([
+          accVer,
+          0,
+          0,
+          0,
+          x + 1,
+          xref.GBXref_dbname,
+          xref.GBXref_id
+        ])
       }
     }
 

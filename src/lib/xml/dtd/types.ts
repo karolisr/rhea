@@ -33,8 +33,16 @@ interface DTDRaw {
 type DTDRawPromise = Promise<DTDRaw>
 
 interface _dtd_element {
-  children: null | { [key: string]: { type: string; required: string } }
-  value: null | { type: string; required: string }
+  children: null | {
+    [key: string]: {
+      type: string
+      required: string
+    }
+  }
+  value: null | {
+    type: string
+    required: string
+  }
   attributes: null | {
     [attribute_name: string]: {
       type: string

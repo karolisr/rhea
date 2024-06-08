@@ -34,10 +34,21 @@ export class FileDragDrop {
           //   event.payload.position.x,
           //   event.payload.position.y
           // )
-          if (this.onDrag) this.onDrag(event.payload.position.x, event.payload.position.y)
+          if (this.onDrag)
+            this.onDrag(event.payload.position.x, event.payload.position.y)
         } else if (event.payload.type === 'dropped') {
-          console.info('FileDragDrop.onDrop:', event.payload.paths, event.payload.position.x, event.payload.position.y)
-          if (this.onDrop) this.onDrop(event.payload.paths, event.payload.position.x, event.payload.position.y)
+          console.info(
+            'FileDragDrop.onDrop:',
+            event.payload.paths,
+            event.payload.position.x,
+            event.payload.position.y
+          )
+          if (this.onDrop)
+            this.onDrop(
+              event.payload.paths,
+              event.payload.position.x,
+              event.payload.position.y
+            )
         } else {
           console.info('FileDragDrop.onDragCancel')
           if (this.onDragCancel) this.onDragCancel()

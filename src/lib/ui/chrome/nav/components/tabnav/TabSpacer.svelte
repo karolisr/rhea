@@ -42,7 +42,10 @@ function collapse() {
   }
 }
 
-$: document.documentElement.setAttribute(`${uid}-nav-collapsed`, String(navCollapsed))
+$: document.documentElement.setAttribute(
+  `${uid}-nav-collapsed`,
+  String(navCollapsed)
+)
 
 const _onResize = (_: UIEvent) => {
   collapse()
@@ -59,7 +62,12 @@ onDestroy(() => {
 })
 </script>
 
-<div id="{uid}-tab-nav-tab-spacer" data-tauri-drag-region class="tab-nav-tab-spacer" style="min-width: {minW}px;"></div>
+<div
+  id="{uid}-tab-nav-tab-spacer"
+  data-tauri-drag-region
+  class="tab-nav-tab-spacer"
+  style="min-width: {minW}px;">
+</div>
 
 <style lang="scss">
 .tab-nav-tab-spacer {

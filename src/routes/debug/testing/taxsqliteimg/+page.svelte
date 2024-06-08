@@ -62,7 +62,8 @@ onDestroy(async () => {})
 
 {#if $dbs && $dbs.dbsOK}
   <div style="align-items: center; text-align: center; overflow-y: scroll;">
-    <div style="margin: auto; position: sticky; top: 0px; background-color: beige; padding: 10px;">
+    <div
+      style="margin: auto; position: sticky; top: 0px; background-color: beige; padding: 10px;">
       <input
         type="text"
         name="search-input"
@@ -75,19 +76,24 @@ onDestroy(async () => {})
           getSuggestions()
         }}" />
     </div>
-    <div style="background-color: aliceblue; margin-inline: auto; padding: 10px;">
+    <div
+      style="background-color: aliceblue; margin-inline: auto; padding: 10px;">
       {#each results as r}
         <div
           style="border-style: dotted; display: flex; flex-direction: column; margin-inline: auto; margin-block: 10px; padding: 10px; align-items: center;">
           {#each getPropNames(r) as pn}
             {#if pn !== 'url'}
-              <div style="margin: 0px; font-size: large;">{r[pn]}</div>
+              <div style="margin: 0px; font-size: large;">
+                {r[pn]}
+              </div>
             {:else}
               <br />
               <img
                 draggable="false"
                 style="max-height: 200px; max-width: 200px;"
-                src="{String(r[pn]).replace('http', 'https').replace('httpss', 'https')}"
+                src="{String(r[pn])
+                  .replace('http', 'https')
+                  .replace('httpss', 'https')}"
                 alt="" />
             {/if}
           {/each}

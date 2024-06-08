@@ -28,11 +28,15 @@ onMount(async () => {
   charW = _.chrW
   visH = elh.clientHeight
 
-  addEventListener('resize', resizeEvtListener, { capture: true })
+  addEventListener('resize', resizeEvtListener, {
+    capture: true
+  })
 })
 
 onDestroy(() => {
-  removeEventListener('resize', resizeEvtListener, { capture: true })
+  removeEventListener('resize', resizeEvtListener, {
+    capture: true
+  })
 })
 
 const resizeEvtListener = (_: UIEvent) => {
@@ -78,7 +82,9 @@ let firstRowRequested: number
 let firstRow: number
 let lastRow: number
 
-function processSelectedRowKeys(_selectedRowKeys: { [key: string]: boolean | null | undefined }) {
+function processSelectedRowKeys(_selectedRowKeys: {
+  [key: string]: boolean | null | undefined
+}) {
   const _ = getPropNames(_selectedRowKeys)
   const ids: string[] = []
   _.forEach((n) => {
@@ -88,7 +94,9 @@ function processSelectedRowKeys(_selectedRowKeys: { [key: string]: boolean | nul
 }
 
 export let selectedRecordIds: string[] = []
-let _selectedRowKeys: { [key: string]: boolean | null | undefined } = {}
+let _selectedRowKeys: {
+  [key: string]: boolean | null | undefined
+} = {}
 let activeRow: number = 0
 
 $: nRow = maxRowsVis + nH + nF
@@ -155,14 +163,18 @@ const _onkeydown = (ev: KeyboardEvent) => {
     case 'ArrowDown':
       activeRow = min(activeRow + 1, rl.length - 1)
       if (lastRow < activeRow) {
-        elc.scrollTo({ top: (activeRow - lastRow + firstRow) * rowH })
+        elc.scrollTo({
+          top: (activeRow - lastRow + firstRow) * rowH
+        })
       }
       ev.preventDefault()
       break
     case 'ArrowUp':
       activeRow = max(activeRow - 1, 0)
       if (firstRow > activeRow) {
-        elc.scrollTo({ top: activeRow * rowH })
+        elc.scrollTo({
+          top: activeRow * rowH
+        })
       }
       ev.preventDefault()
       break
@@ -192,7 +204,10 @@ const _onkeydown = (ev: KeyboardEvent) => {
   }
 }
 
-function calcColWidths(rl: RecordList<IndexedUndefined | Collection>, charW: number) {
+function calcColWidths(
+  rl: RecordList<IndexedUndefined | Collection>,
+  charW: number
+) {
   const colWs: number[] = []
   if (showCheckBoxes) {
     colWs.push(charW * 3)
@@ -205,7 +220,8 @@ function calcColWidths(rl: RecordList<IndexedUndefined | Collection>, charW: num
       values.push(formatValue(value).length)
     }
     if (values.length > 0) {
-      const w = ceil(mean(values) + min(standardDeviation(values), minColW)) * charW
+      const w =
+        ceil(mean(values) + min(standardDeviation(values), minColW)) * charW
       colWs.push(max(max(minColW, w), max(...values) * charW * 0.95) + 15)
     }
   }
@@ -219,7 +235,10 @@ function initColWs() {
   return ''
 }
 
-function getRowHeight(): { rowH: number; chrW: number } {
+function getRowHeight(): {
+  rowH: number
+  chrW: number
+} {
   const _table = document.createElement('div')
   const _row = document.createElement('div')
   const _cell = document.createElement('div')
@@ -229,14 +248,19 @@ function getRowHeight(): { rowH: number; chrW: number } {
   _cell.textContent = '__13__ac__46__'
   _row.appendChild(_cell)
   _table.appendChild(_row)
-  const _container = document.getElementById(`${uid}-table-container`) as HTMLElement
+  const _container = document.getElementById(
+    `${uid}-table-container`
+  ) as HTMLElement
   _container.appendChild(_table)
   const rowH = _row.offsetHeight
   const chrW = floor(_cell.offsetWidth / _cell.textContent.length) + 0.5
   _cell.remove()
   _row.remove()
   _table.remove()
-  return { rowH, chrW }
+  return {
+    rowH,
+    chrW
+  }
 }
 
 function sort(field: string | undefined, direction: boolean | undefined) {
@@ -281,7 +305,9 @@ function sort(field: string | undefined, direction: boolean | undefined) {
   }
 }
 
-function formatValue(val: string | number | boolean | object | null | undefined) {
+function formatValue(
+  val: string | number | boolean | object | null | undefined
+) {
   let rv: string = ''
   if (typeof val === 'number') {
     rv = val.toLocaleString($settings.locale)
@@ -325,7 +351,10 @@ function formatValue(val: string | number | boolean | object | null | undefined)
 
 <div id="{uid}-table-height-container" class="table-height-container">
   <!-- table-container BEG -->
-  <div id="{uid}-table-container" class="table-container" style:height="{nRow * rowH}px">
+  <div
+    id="{uid}-table-container"
+    class="table-container"
+    style:height="{nRow * rowH}px">
     {#if rl.length === 0}
       <div style="margin: auto;">No records.</div>
     {:else if rl.fieldsToShow.length === 0}
@@ -335,7 +364,10 @@ function formatValue(val: string | number | boolean | object | null | undefined)
     {:else}
       <!-- table-scroll-container BEG -->
       {initColWs()}
-      <div id="{uid}-table-scroll-container" class="table-scroll-container" style:height="{scrollH}px">
+      <div
+        id="{uid}-table-scroll-container"
+        class="table-scroll-container"
+        style:height="{scrollH}px">
         <!-- table BEG -->
         <div id="{uid}-table" class="table">
           <ResizableGrid
@@ -352,7 +384,11 @@ function formatValue(val: string | number | boolean | object | null | undefined)
             minRowH="{rowH}">
             <!-- header BEG -->
             {#if showHeaderRow}
-              <div id="{uid}-row-h" style:grid-row="{1}/{2}" style:grid-column="1/{nCol + 1}" class="row-h">
+              <div
+                id="{uid}-row-h"
+                style:grid-row="{1}/{2}"
+                style:grid-column="1/{nCol + 1}"
+                class="row-h">
                 {#if showCheckBoxes}
                   <div class="cell-corner"></div>
                 {/if}
@@ -372,7 +408,9 @@ function formatValue(val: string | number | boolean | object | null | undefined)
                 style:grid-column="1/{nCol + 1}"
                 class="
                 row-b
-                {_selectedRowKeys[rl.stringValueByIndex(i, rl.keyField)] ? 'selected-row' : ''}
+                {_selectedRowKeys[rl.stringValueByIndex(i, rl.keyField)]
+                  ? 'selected-row'
+                  : ''}
                 {activeRow === i ? 'active-row' : ''}
                 draggable
               "
@@ -391,13 +429,17 @@ function formatValue(val: string | number | boolean | object | null | undefined)
                         elc.focus()
                         e.preventDefault()
                       }}"
-                      bind:checked="{_selectedRowKeys[rl.stringValueByIndex(i, rl.keyField)]}" />
+                      bind:checked="{_selectedRowKeys[
+                        rl.stringValueByIndex(i, rl.keyField)
+                      ]}" />
                   </div>
                 {/if}
                 {#each rl.fieldsToShow as field, j}
                   <div
                     id="{uid}-cell-{i}-{j}"
-                    class="cell{rl.typeByIndex(i, field) ? ' numeric' : ''}{colWs[j + 1] === 0 ? ' collapsed' : ''}">
+                    class="cell{rl.typeByIndex(i, field)
+                      ? ' numeric'
+                      : ''}{colWs[j + 1] === 0 ? ' collapsed' : ''}">
                     {formatValue(rl.valueByIndex(i, field, '', '-'))}
                   </div>
                 {/each}
@@ -405,7 +447,11 @@ function formatValue(val: string | number | boolean | object | null | undefined)
             {/each}
             <!-- footer BEG -->
             {#if showFooterRow}
-              <div id="{uid}-row-f" class="row-f" style:grid-row="{nRow}/{nRow + 1}" style:grid-column="1/{nCol + 1}">
+              <div
+                id="{uid}-row-f"
+                class="row-f"
+                style:grid-row="{nRow}/{nRow + 1}"
+                style:grid-column="1/{nCol + 1}">
                 {#if showCheckBoxes}
                   <div class="cell-corner"></div>
                 {/if}
@@ -418,28 +464,42 @@ function formatValue(val: string | number | boolean | object | null | undefined)
             {/if}
             <!-- footer END -->
             <!-- col-tools-container BEG -->
-            <div class="col-tools-container" style:grid-row="1/{nRow + 1}" style:grid-column="1/{nCol + 1}">
+            <div
+              class="col-tools-container"
+              style:grid-row="1/{nRow + 1}"
+              style:grid-column="1/{nCol + 1}">
               {#if showCheckBoxes}
                 <div class="col-tools"></div>
               {/if}
               {#each rl.fieldsToShow as _, i}
-                <div class="col-tools {sortDirections[sortFields.indexOf(_)] ? 'sorting' : ''}">
+                <div
+                  class="col-tools {sortDirections[sortFields.indexOf(_)]
+                    ? 'sorting'
+                    : ''}">
                   <sorter
                     id="{uid}-col-sorter-order-{i + Number(showCheckBoxes)}"
-                    class="col-sorter-order {sortDirections[sortFields.indexOf(_)] ? 'sorting' : ''}"
+                    class="col-sorter-order {sortDirections[
+                      sortFields.indexOf(_)
+                    ]
+                      ? 'sorting'
+                      : ''}"
                     role="none"
                     on:click="{() => {
                       sort(_, undefined)
                     }}">
-                    {sortFields.indexOf(_) !== -1 ? sortFields.indexOf(_) + 1 : ''}
+                    {sortFields.indexOf(_) !== -1
+                      ? sortFields.indexOf(_) + 1
+                      : ''}
                   </sorter>
                   <sorter
                     id="{uid}-col-sorter-direction-{i + Number(showCheckBoxes)}"
-                    class="col-sorter-direction {sortDirections[sortFields.indexOf(_)]
-                      ? 'sorting'
-                      : ''} {sortDirections[sortFields.indexOf(_)] === 1 ? 'inc' : ''} {sortDirections[
+                    class="col-sorter-direction {sortDirections[
                       sortFields.indexOf(_)
-                    ] === -1
+                    ]
+                      ? 'sorting'
+                      : ''} {sortDirections[sortFields.indexOf(_)] === 1
+                      ? 'inc'
+                      : ''} {sortDirections[sortFields.indexOf(_)] === -1
                       ? 'dec'
                       : ''}"
                     role="none"

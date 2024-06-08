@@ -3,7 +3,10 @@ import type { IndexedUndefined } from '$lib/types'
 import databases from '$lib/app/svelte-stores/databases'
 import { DB } from '$lib/app/api/db'
 
-export async function getSeqRecsFromCollection(collectionName: string, collectionIds: string[]) {
+export async function getSeqRecsFromCollection(
+  collectionName: string,
+  collectionIds: string[]
+) {
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
@@ -21,7 +24,10 @@ export async function getSeqRecsFromCollection(collectionName: string, collectio
         id IN ${bulk([collectionIds])}
       ;
     `
-    rv = await db.select(_sql.text.replace('collection_name', collectionName), _sql.values)
+    rv = await db.select(
+      _sql.text.replace('collection_name', collectionName),
+      _sql.values
+    )
   }
   unsubscribe()
   return rv

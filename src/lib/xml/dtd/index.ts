@@ -1,5 +1,9 @@
 import { getPropNames } from '$lib'
-import { cache_get_dtd_txt, dnld_dtd_txt, type _DTD_TXT } from '$lib/app/svelte-stores/cache-dtd'
+import {
+  cache_get_dtd_txt,
+  dnld_dtd_txt,
+  type _DTD_TXT
+} from '$lib/app/svelte-stores/cache-dtd'
 
 // --------------------------------------------------------------------------
 
@@ -7,7 +11,8 @@ function get_xml_doctype_tags(txt: string): string[] {
   // const re = /<!DOCTYPE.+?>/g                                    // Version 1
   // const re = /<!-?-?\s?DOCTYPE.+?\s?-?-?>/g                      // Version 2
   // const re = /(<!-?-?\s?DOCTYPE.+?\s?-?-?>)|(<!--\s+\S+\.dtd)/gi // Version 3 (Hack)
-  const re = /(<!-?-?\s?DOCTYPE.+?\s?-?-?>)|(<!--\s+\S+\.dtd)|((?<=This section is mapped from module ")\S+(?="))/gi // Version 4 (Hack)
+  const re =
+    /(<!-?-?\s?DOCTYPE.+?\s?-?-?>)|(<!--\s+\S+\.dtd)|((?<=This section is mapped from module ")\S+(?="))/gi // Version 4 (Hack)
   return get_dtd_tags(txt, re)
 }
 
@@ -69,7 +74,8 @@ function parse_dtd_entity_txt(txt: string): DTDEntityRaw {
   // Hack, see Version 4 in get_xml_doctype_tags.
   if (!g.entity_name) {
     g.entity_name = txt.replaceAll('.dtd', '').replaceAll('-', '_')
-    g.entity_url = txt.replaceAll('-', '_').replaceAll('"', '').split('.dtd')[0] + '.dtd'
+    g.entity_url =
+      txt.replaceAll('-', '_').replaceAll('"', '').split('.dtd')[0] + '.dtd'
     g.entity_value = undefined
   }
 
@@ -94,7 +100,8 @@ function parse_dtd_attlist_txt(txt: string) {
 
   const an = /(?<attribute_name>[^\s()]+)\s+/.source
   const at = /(?<attribute_type>\(.+?\)|[^\s()]+)\s+/.source
-  const av = /(?<attribute_value>(#FIXED\s+[^\s()]+)|((?=[#'"])[^\s()]+))/.source
+  const av = /(?<attribute_value>(#FIXED\s+[^\s()]+)|((?=[#'"])[^\s()]+))/
+    .source
 
   const ntv = an + at + av
   const re = RegExp(`(?:${en}\\s)?(?:${ntv})`, 'g')
@@ -136,7 +143,8 @@ function parse_dtd_element_txt(txt: string): DTDElementRaw {
   // <!ELEMENT element-name category>
   // <!ELEMENT element-name (element-content)>
   // But see PLIST spec too, not quite the same.
-  const re = /(?<element_name>[\w_-]+)\s+((?<category>[\w#%;]+)|\((?<element_content>[-|\s\w#%;,?*+()]+)\))/
+  const re =
+    /(?<element_name>[\w_-]+)\s+((?<category>[\w#%;]+)|\((?<element_content>[-|\s\w#%;,?*+()]+)\))/
   const m = txt.match(re)
   let g: DTDElementRaw = {} as DTDElementRaw
   if (m && m.groups) {
@@ -150,7 +158,11 @@ function parse_dtd_element_txt(txt: string): DTDElementRaw {
 
 // --------------------------------------------------------------------------
 
-async function _parse_dtd_txt(txt: string, ref_url?: string, urls_done: Set<string> = new Set()): DTDRawPromise {
+async function _parse_dtd_txt(
+  txt: string,
+  ref_url?: string,
+  urls_done: Set<string> = new Set()
+): DTDRawPromise {
   const dcts = get_xml_doctype_tags(txt)
   const ents = get_dtd_entity_tags(txt)
   const atts = get_dtd_attlist_tags(txt)
@@ -248,10 +260,18 @@ export async function parse_dtd_at_url(url: string) {
 export async function parse_dtd_txt(txt: string, ref_url?: string) {
   const raw_dtd = await _parse_dtd_txt(txt, ref_url)
 
-  const doctypes: { [entity_name: string]: DTDEntityRaw } = {}
-  const entities: { [entity_name: string]: DTDEntityRaw } = {}
-  const attributes: { [element_name: string]: _dtd_attribute[] } = {}
-  const elements: { [element_name: string]: _dtd_element } = {}
+  const doctypes: {
+    [entity_name: string]: DTDEntityRaw
+  } = {}
+  const entities: {
+    [entity_name: string]: DTDEntityRaw
+  } = {}
+  const attributes: {
+    [element_name: string]: _dtd_attribute[]
+  } = {}
+  const elements: {
+    [element_name: string]: _dtd_element
+  } = {}
 
   raw_dtd.doctypes.forEach((dt) => {
     doctypes[dt.entity_name] = dt
@@ -308,7 +328,9 @@ export const element_value_type: ElementValueType = {
 function parse_dtd_element_raw(
   e: DTDElementRaw,
   element_names: Set<string>,
-  attributes: { [element_name: string]: _dtd_attribute[] }
+  attributes: {
+    [element_name: string]: _dtd_attribute[]
+  }
 ): _dtd_element {
   const rv: _dtd_element = {
     children: null,
@@ -382,7 +404,10 @@ function parse_dtd_element_raw(
           required: content_part_required
         }
       } else {
-        console.warn(`ENTITY or ELEMENT referenced in "${e.element_name}" was not found:`, content_part)
+        console.warn(
+          `ENTITY or ELEMENT referenced in "${e.element_name}" was not found:`,
+          content_part
+        )
       }
     })
   }

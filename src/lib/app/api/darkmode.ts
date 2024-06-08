@@ -36,7 +36,10 @@ export async function setTheme(): Promise<void> {
 
 export async function themeChangeListener(): Promise<Unlistener> {
   if (BROWSER === 'Tauri') {
-    const unlisten_fn = await listen<string>(TauriEvent.WINDOW_THEME_CHANGED, (_) => setTheme())
+    const unlisten_fn = await listen<string>(
+      TauriEvent.WINDOW_THEME_CHANGED,
+      (_) => setTheme()
+    )
     setTheme()
     return unlisten_fn
   } else {

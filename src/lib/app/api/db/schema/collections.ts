@@ -14,7 +14,12 @@ export const schemaCollections = sql`
   )
   ;
   INSERT INTO
-    user ("parent_id", "id", "label", "notes")
+    user (
+      "parent_id",
+      "id",
+      "label",
+      "notes"
+    )
   VALUES
     (NULL, "ROOT", "ROOT", "")
   ON CONFLICT ("id") DO NOTHING
@@ -32,7 +37,12 @@ export const schemaCollections = sql`
   )
   ;
   INSERT INTO
-    search_results ("parent_id", "id", "label", "notes")
+    search_results (
+      "parent_id",
+      "id",
+      "label",
+      "notes"
+    )
   VALUES
     (NULL, "ROOT", "ROOT", "")
   ON CONFLICT ("id") DO NOTHING
@@ -50,29 +60,114 @@ export const schemaCollections = sql`
   )
   ;
   INSERT INTO
-    sequence_type ("parent_id", "id", "label", "notes")
+    sequence_type (
+      "parent_id",
+      "id",
+      "label",
+      "notes"
+    )
   VALUES
     (NULL, "ROOT", "ROOT", ""),
     ("ROOT", "AA", "AA", ""),
     ("ROOT", "NT", "NT", ""),
     ("NT", "DNA", "DNA", ""),
     ("NT", "RNA", "RNA", ""),
-    ("RNA", "cRNA", "cRNA", ""),
-    ("RNA", "lncRNA", "lncRNA", ""),
-    ("RNA", "mRNA", "mRNA", ""),
-    ("RNA", "miRNA", "miRNA", ""),
-    ("RNA", "ncRNA", "ncRNA", ""),
-    ("RNA", "rRNA", "rRNA", ""),
-    ("RNA", "snRNA", "snRNA", ""),
-    ("RNA", "tRNA", "tRNA", ""),
-    ("RNA", "transcribed-RNA", "transcribed-RNA", ""),
-    ("DNA", "Genomes", "Genomes", ""),
-    ("Genomes", "plasmid", "Plasmids", ""),
-    ("Genomes", "nucleus", "Nuclear", ""),
-    ("Genomes", "Organelles", "Organelles", ""),
-    ("Organelles", "plastid", "Plastids", ""),
-    ("Organelles", "mitochondrion", "Mitochondria", ""),
-    ("plastid", "chloroplast", "Chloroplasts", "")
+    (
+      "RNA",
+      "cRNA",
+      "cRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "lncRNA",
+      "lncRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "mRNA",
+      "mRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "miRNA",
+      "miRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "ncRNA",
+      "ncRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "rRNA",
+      "rRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "snRNA",
+      "snRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "tRNA",
+      "tRNA",
+      ""
+    ),
+    (
+      "RNA",
+      "transcribed-RNA",
+      "transcribed-RNA",
+      ""
+    ),
+    (
+      "DNA",
+      "Genomes",
+      "Genomes",
+      ""
+    ),
+    (
+      "Genomes",
+      "plasmid",
+      "Plasmids",
+      ""
+    ),
+    (
+      "Genomes",
+      "nucleus",
+      "Nuclear",
+      ""
+    ),
+    (
+      "Genomes",
+      "Organelles",
+      "Organelles",
+      ""
+    ),
+    (
+      "Organelles",
+      "plastid",
+      "Plastids",
+      ""
+    ),
+    (
+      "Organelles",
+      "mitochondrion",
+      "Mitochondria",
+      ""
+    ),
+    (
+      "plastid",
+      "chloroplast",
+      "Chloroplasts",
+      ""
+    )
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------

@@ -29,7 +29,12 @@ onMount(() => {
 })
 </script>
 
-<a id="chrome-nav-a-{label}" href="{link}" aria-current="{curr}" draggable="false" tabindex="-1">
+<a
+  id="chrome-nav-a-{label}"
+  href="{link}"
+  aria-current="{curr}"
+  draggable="false"
+  tabindex="-1">
   <div id="chrome-nav-a-{label}-div">
     {#if icon !== null}
       <svelte:component this="{icon}" id="chrome-nav-a-{label}-div-icon" />

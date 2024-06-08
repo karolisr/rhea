@@ -11,7 +11,7 @@
     },
     "editor.insertSpaces": true,
     "editor.tabSize": 2,
-    "editor.rulers": [80, 100, 120],
+    "editor.rulers": [],
     "sqltools.useNodeRuntime": true,
     "sqltools.connections": [
       {

@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS "tx_genetic_codes" (
 ;
 -- @block create tx_deleted_nodes table
 -- @conn taxonomy
-CREATE TABLE IF NOT EXISTS "tx_deleted_nodes" ("tax_id" integer PRIMARY KEY NOT NULL)
+CREATE TABLE IF NOT EXISTS "tx_deleted_nodes" (
+  "tax_id" integer PRIMARY KEY NOT NULL
+)
 ;
 -- @block create tx_citations table
 -- @conn taxonomy
@@ -43,7 +45,10 @@ CREATE TABLE IF NOT EXISTS "tx_images" (
 ;
 -- @block create tx_codons table
 -- @conn taxonomy
-CREATE TABLE IF NOT EXISTS "tx_codons" ("id" integer PRIMARY KEY NOT NULL, "codon" varchar(3) NOT NULL)
+CREATE TABLE IF NOT EXISTS "tx_codons" (
+  "id" integer PRIMARY KEY NOT NULL,
+  "codon" varchar(3) NOT NULL
+)
 ;
 -- @block create tx_nodes table
 -- @conn taxonomy
@@ -60,14 +65,19 @@ CREATE TABLE IF NOT EXISTS "tx_nodes" (
   FOREIGN KEY (parent_tax_id) REFERENCES "tx_nodes" (tax_id),
   FOREIGN KEY (division_id) REFERENCES "tx_divisions" (id),
   FOREIGN KEY (genetic_code_id) REFERENCES "tx_genetic_codes" (id),
-  FOREIGN KEY (mitochondrial_genetic_code_id) REFERENCES "tx_genetic_codes" (id)
+  FOREIGN KEY (
+    mitochondrial_genetic_code_id
+  ) REFERENCES "tx_genetic_codes" (id)
 )
 ;
 CREATE INDEX IF NOT EXISTS ix_tx_nodes_tax_id ON "tx_nodes" ("tax_id" ASC)
 ;
 CREATE INDEX IF NOT EXISTS ix_tx_nodes_parent_tax_id ON "tx_nodes" ("parent_tax_id" ASC)
 ;
-CREATE INDEX IF NOT EXISTS ix_tx_nodes_tax_id_parent_tax_id ON "tx_nodes" ("tax_id" ASC, "parent_tax_id" ASC)
+CREATE INDEX IF NOT EXISTS ix_tx_nodes_tax_id_parent_tax_id ON "tx_nodes" (
+  "tax_id" ASC,
+  "parent_tax_id" ASC
+)
 ;
 -- @block create tx_assoc_nodes_citations table
 -- @conn taxonomy
@@ -114,7 +124,12 @@ CREATE TABLE IF NOT EXISTS "tx_merged_nodes" (
 ;
 -- @block create tree view
 -- @conn taxonomy
-CREATE VIEW IF NOT EXISTS tree (id, parent_id, label, notes) AS
+CREATE VIEW IF NOT EXISTS tree (
+  id,
+  parent_id,
+  label,
+  notes
+) AS
 SELECT
   tx_nodes.tax_id,
   tx_nodes.parent_tax_id,

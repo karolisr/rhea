@@ -60,7 +60,10 @@ CREATE TABLE IF NOT EXISTS "gb_feature_sets" (
   "annot_source" varchar,
   -- + features: GBFeature[]
   FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-  PRIMARY KEY ("accession_version", "feature_set_id")
+  PRIMARY KEY (
+    "accession_version",
+    "feature_set_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -76,8 +79,18 @@ CREATE TABLE IF NOT EXISTS "gb_features" (
   -- + intervals?: GBInterval[]
   -- + quals?: GBQualifier[]
   -- + xrefs?: GBXref[]
-  FOREIGN KEY (accession_version, feature_set_id) REFERENCES "gb_feature_sets" (accession_version, feature_set_id),
-  PRIMARY KEY ("accession_version", "feature_set_id", "feature_id")
+  FOREIGN KEY (
+    accession_version,
+    feature_set_id
+  ) REFERENCES "gb_feature_sets" (
+    accession_version,
+    feature_set_id
+  ),
+  PRIMARY KEY (
+    "accession_version",
+    "feature_set_id",
+    "feature_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -92,7 +105,15 @@ CREATE TABLE IF NOT EXISTS "gb_intervals" (
   "point" integer,
   "iscomp" boolean,
   "interbp" boolean,
-  FOREIGN KEY (accession_version, feature_set_id, feature_id) REFERENCES "gb_features" (accession_version, feature_set_id, feature_id),
+  FOREIGN KEY (
+    accession_version,
+    feature_set_id,
+    feature_id
+  ) REFERENCES "gb_features" (
+    accession_version,
+    feature_set_id,
+    feature_id
+  ),
   PRIMARY KEY (
     "accession_version",
     "feature_set_id",
@@ -109,7 +130,15 @@ CREATE TABLE IF NOT EXISTS "gb_qualifiers" (
   "qualifier_id" integer NOT NULL,
   "name" varchar NOT NULL,
   "value" varchar,
-  FOREIGN KEY (accession_version, feature_set_id, feature_id) REFERENCES "gb_features" (accession_version, feature_set_id, feature_id),
+  FOREIGN KEY (
+    accession_version,
+    feature_set_id,
+    feature_id
+  ) REFERENCES "gb_features" (
+    accession_version,
+    feature_set_id,
+    feature_id
+  ),
   PRIMARY KEY (
     "accession_version",
     "feature_set_id",
@@ -127,8 +156,22 @@ CREATE TABLE IF NOT EXISTS "gb_xrefs" (
   "xref_id" integer NOT NULL,
   "dbname" varchar NOT NULL,
   "id" varchar NOT NULL,
-  FOREIGN KEY (accession_version, feature_set_id, feature_id) REFERENCES "gb_features" (accession_version, feature_set_id, feature_id),
-  FOREIGN KEY (accession_version, reference_id) REFERENCES "gb_references" (accession_version, reference_id),
+  FOREIGN KEY (
+    accession_version,
+    feature_set_id,
+    feature_id
+  ) REFERENCES "gb_features" (
+    accession_version,
+    feature_set_id,
+    feature_id
+  ),
+  FOREIGN KEY (
+    accession_version,
+    reference_id
+  ) REFERENCES "gb_references" (
+    accession_version,
+    reference_id
+  ),
   PRIMARY KEY (
     "reference_id",
     "accession_version",
@@ -153,7 +196,10 @@ CREATE TABLE IF NOT EXISTS "gb_alt_seq_data" (
   "name" varchar NOT NULL,
   -- + items?: GBAltSeqItem[]
   FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-  PRIMARY KEY ("accession_version", "alt_seq_data_id")
+  PRIMARY KEY (
+    "accession_version",
+    "alt_seq_data_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -172,9 +218,29 @@ CREATE TABLE IF NOT EXISTS "gb_alt_seq_items" (
   "isgap" boolean,
   "last_accn" varchar,
   "value" varchar,
-  FOREIGN KEY (accession_version, alt_seq_data_id) REFERENCES "gb_alt_seq_data" (accession_version, alt_seq_data_id),
-  FOREIGN KEY (accession_version, feature_set_id, feature_id, interval_id) REFERENCES "gb_intervals" (accession_version, feature_set_id, feature_id, interval_id),
-  PRIMARY KEY ("alt_seq_data_id", "accession_version", "alt_seq_item_id")
+  FOREIGN KEY (
+    accession_version,
+    alt_seq_data_id
+  ) REFERENCES "gb_alt_seq_data" (
+    accession_version,
+    alt_seq_data_id
+  ),
+  FOREIGN KEY (
+    accession_version,
+    feature_set_id,
+    feature_id,
+    interval_id
+  ) REFERENCES "gb_intervals" (
+    accession_version,
+    feature_set_id,
+    feature_id,
+    interval_id
+  ),
+  PRIMARY KEY (
+    "alt_seq_data_id",
+    "accession_version",
+    "alt_seq_item_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -207,7 +273,10 @@ CREATE TABLE IF NOT EXISTS "gb_references" (
   -- + authors?: GBAuthor[]
   -- + xref?: GBXref[]
   FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-  PRIMARY KEY ("accession_version", "reference_id")
+  PRIMARY KEY (
+    "accession_version",
+    "reference_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -216,8 +285,18 @@ CREATE TABLE IF NOT EXISTS "gb_authors" (
   "reference_id" integer NOT NULL,
   "author_id" integer NOT NULL,
   "author" varchar NOT NULL,
-  FOREIGN KEY (accession_version, reference_id) REFERENCES "gb_references" (accession_version, reference_id),
-  PRIMARY KEY ("accession_version", "reference_id", "author_id")
+  FOREIGN KEY (
+    accession_version,
+    reference_id
+  ) REFERENCES "gb_references" (
+    accession_version,
+    reference_id
+  ),
+  PRIMARY KEY (
+    "accession_version",
+    "reference_id",
+    "author_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -227,7 +306,10 @@ CREATE TABLE IF NOT EXISTS "gb_comments" (
   "type" varchar,
   -- + paragraphs: GBCommentParagraph[]
   FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-  PRIMARY KEY ("accession_version", "comment_id")
+  PRIMARY KEY (
+    "accession_version",
+    "comment_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -236,8 +318,18 @@ CREATE TABLE IF NOT EXISTS "gb_comment_paragraphs" (
   "comment_id" integer NOT NULL,
   "paragraph_id" integer NOT NULL,
   "paragraph" varchar NOT NULL,
-  FOREIGN KEY (accession_version, comment_id) REFERENCES "gb_comments" (accession_version, comment_id),
-  PRIMARY KEY ("accession_version", "comment_id", "paragraph_id")
+  FOREIGN KEY (
+    accession_version,
+    comment_id
+  ) REFERENCES "gb_comments" (
+    accession_version,
+    comment_id
+  ),
+  PRIMARY KEY (
+    "accession_version",
+    "comment_id",
+    "paragraph_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -247,7 +339,10 @@ CREATE TABLE IF NOT EXISTS "gb_struc_comments" (
   "name" varchar,
   -- + items: GBStrucCommentItem[]
   FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
-  PRIMARY KEY ("accession_version", "struc_comment_id")
+  PRIMARY KEY (
+    "accession_version",
+    "struc_comment_id"
+  )
 )
 ;
 ------------------------------------------------------------------------------
@@ -258,8 +353,18 @@ CREATE TABLE IF NOT EXISTS "gb_struc_comment_items" (
   "tag" varchar,
   "url" varchar,
   "value" varchar,
-  FOREIGN KEY (accession_version, struc_comment_id) REFERENCES "gb_struc_comments" (accession_version, struc_comment_id),
-  PRIMARY KEY ("accession_version", "struc_comment_id", "struc_comment_item_id")
+  FOREIGN KEY (
+    accession_version,
+    struc_comment_id
+  ) REFERENCES "gb_struc_comments" (
+    accession_version,
+    struc_comment_id
+  ),
+  PRIMARY KEY (
+    "accession_version",
+    "struc_comment_id",
+    "struc_comment_item_id"
+  )
 )
 ;
 ----------------------------------------------------------------------------
@@ -278,7 +383,13 @@ CREATE TABLE IF NOT EXISTS "assoc_records_user" (
 ----------------------------------------------------------------------------
 -- DROP VIEW IF EXISTS records_simple
 -- ;
-CREATE VIEW IF NOT EXISTS records_simple ("Accession", "TaxID", "Length", "Type", "Definition") AS
+CREATE VIEW IF NOT EXISTS records_simple (
+  "Accession",
+  "TaxID",
+  "Length",
+  "Type",
+  "Definition"
+) AS
 SELECT
   gb_records.accession_version,
   gb_records.tax_id,
@@ -300,7 +411,9 @@ SELECT
   records_simple."Accession",
   records_simple."Length" AS "Length",
   CASE
-    WHEN records_simple."Type" = "AA" THEN SUM(records_simple."Length" * 3)
+    WHEN records_simple."Type" = "AA" THEN SUM(
+      records_simple."Length" * 3
+    )
     ELSE records_simple."Length"
   END "Length (bp)",
   REPLACE(
@@ -387,15 +500,28 @@ CREATE VIRTUAL TABLE IF NOT EXISTS fts_gb_records USING fts5 (
 -- @conn seqrecs
 CREATE TRIGGER IF NOT EXISTS fts_gb_records_i AFTER INSERT ON gb_records BEGIN
 INSERT INTO
-  fts_gb_records ("accession_version", "definition", "moltype")
+  fts_gb_records (
+    "accession_version",
+    "definition",
+    "moltype"
+  )
 VALUES
-  (new."accession_version", new."definition", new."moltype")
+  (
+    new."accession_version",
+    new."definition",
+    new."moltype"
+  )
 ;
 END
 ;
 CREATE TRIGGER IF NOT EXISTS fts_gb_records_d AFTER DELETE ON gb_records BEGIN
 INSERT INTO
-  fts_gb_records (fts_gb_records, "accession_version", "definition", "moltype")
+  fts_gb_records (
+    fts_gb_records,
+    "accession_version",
+    "definition",
+    "moltype"
+  )
 VALUES
   (
     "delete",
@@ -409,7 +535,12 @@ END
 CREATE TRIGGER IF NOT EXISTS fts_gb_records_u AFTER
 UPDATE ON gb_records BEGIN
 INSERT INTO
-  fts_gb_records (fts_gb_records, "accession_version", "definition", "moltype")
+  fts_gb_records (
+    fts_gb_records,
+    "accession_version",
+    "definition",
+    "moltype"
+  )
 VALUES
   (
     "delete",
@@ -419,9 +550,17 @@ VALUES
   )
 ;
 INSERT INTO
-  fts_gb_records ("accession_version", "definition", "moltype")
+  fts_gb_records (
+    "accession_version",
+    "definition",
+    "moltype"
+  )
 VALUES
-  (new."accession_version", new."definition", new."moltype")
+  (
+    new."accession_version",
+    new."definition",
+    new."moltype"
+  )
 ;
 END
 ;

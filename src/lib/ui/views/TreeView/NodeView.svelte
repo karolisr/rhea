@@ -11,12 +11,16 @@ import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
 import type { DragOverEvent, DropEvent } from '$lib/app/api/types'
 
 onMount(async () => {
-  addEventListener('mousedown', mousedownEvtListener, { capture: true })
+  addEventListener('mousedown', mousedownEvtListener, {
+    capture: true
+  })
   if (selected === tree.id) await _scrollIntoView()
 })
 
 onDestroy(() => {
-  removeEventListener('mousedown', mousedownEvtListener, { capture: true })
+  removeEventListener('mousedown', mousedownEvtListener, {
+    capture: true
+  })
 })
 
 export let tree: Tree
@@ -44,7 +48,10 @@ export let createNodeEnabled: boolean
 export let deleteNodeEnabled: boolean
 export let relabelNodeEnabled: boolean
 
-export let createNode: (parentId: string, label: string) => Promise<string | null>
+export let createNode: (
+  parentId: string,
+  label: string
+) => Promise<string | null>
 export let deleteNode: (id: string) => Promise<string | null>
 export let relabelNode: (id: string, label: string) => Promise<string | null>
 export let addRecords: (ids: string[], collId: string) => Promise<void>
@@ -96,7 +103,11 @@ function _relabelNodeInit() {
   relabelId = tree.id
 }
 
-function relabelNodeCompleteChange(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+function relabelNodeCompleteChange(
+  e: Event & {
+    currentTarget: EventTarget & HTMLInputElement
+  }
+) {
   const target = e.target as HTMLInputElement
   relabelNodeComplete(target)
 }
@@ -118,14 +129,24 @@ function relabelNodeComplete(target: HTMLInputElement) {
 }
 
 const mousedownEvtListener = (e: MouseEvent) => {
-  if (e.button === 0 && e.target instanceof HTMLElement && e.target.id === `${uid}-tree-${tree.id}`) {
+  if (
+    e.button === 0 &&
+    e.target instanceof HTMLElement &&
+    e.target.id === `${uid}-tree-${tree.id}`
+  ) {
     selected = undefined
     selectedGroupUid = undefined
   }
 
-  const inputElement = document.getElementById(`collection-${tree.id}-label-text-input`) as HTMLInputElement
+  const inputElement = document.getElementById(
+    `collection-${tree.id}-label-text-input`
+  ) as HTMLInputElement
 
-  if (inputElement && e.target instanceof HTMLElement && e.target !== inputElement) {
+  if (
+    inputElement &&
+    e.target instanceof HTMLElement &&
+    e.target !== inputElement
+  ) {
     relabelNodeComplete(inputElement)
     relabelId = undefined
   }
@@ -203,7 +224,10 @@ async function _scrollIntoView() {
 
 function onDragOver(e: Event) {
   const ev = e as DragOverEvent
-  if (!(selected === tree.id && selectedGroupUid === uid) && acceptedDropTypes.includes(ev.payload.type)) {
+  if (
+    !(selected === tree.id && selectedGroupUid === uid) &&
+    acceptedDropTypes.includes(ev.payload.type)
+  ) {
     ev.payload.targetCanAccept = true
   } else {
     ev.payload.targetCanAccept = false
@@ -212,7 +236,10 @@ function onDragOver(e: Event) {
 
 async function onDrop(e: Event) {
   const ev = e as DropEvent
-  if (!(selected === tree.id && selectedGroupUid === uid) && acceptedDropTypes.includes(ev.payload.type)) {
+  if (
+    !(selected === tree.id && selectedGroupUid === uid) &&
+    acceptedDropTypes.includes(ev.payload.type)
+  ) {
     const droppedData = ev.payload.data as string[]
     await addRecords(droppedData, tree.id)
     // console.log(`"${tree.label}" received: ${droppedData.join(', ')}.`)
@@ -224,7 +251,10 @@ async function onDrop(e: Event) {
   <div id="{uid}-tree-{tree.id}" class="tree" style="pointer-events: none;">
     <button
       id="collection-{tree.id}"
-      class="drag-target tree-node{selected === tree.id && selectedGroupUid === uid ? ' selected' : ''}"
+      class="drag-target tree-node{selected === tree.id &&
+      selectedGroupUid === uid
+        ? ' selected'
+        : ''}"
       style="pointer-events: auto;"
       on:click="{select}"
       on:dblclick="{toggleExpand}"

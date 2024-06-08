@@ -1,4 +1,9 @@
-import type { DragStartEvent, DragOverEvent, DropEvent, DragDropPayload } from './types'
+import type {
+  DragStartEvent,
+  DragOverEvent,
+  DropEvent,
+  DragDropPayload
+} from './types'
 import { min, max } from '$lib'
 
 export class DragDrop {
@@ -58,7 +63,10 @@ export class DragDrop {
   }
 
   #mouseOverEventListener(e: MouseEvent) {
-    if (e.target instanceof HTMLElement && e.target.classList.contains('draggable')) {
+    if (
+      e.target instanceof HTMLElement &&
+      e.target.classList.contains('draggable')
+    ) {
       this.draggingEnded = false
       if (!this.dragging) {
         this.drgEl1 = e.target
@@ -78,10 +86,16 @@ export class DragDrop {
     this.drgTargetElPrev?.classList.remove('drag-item-hovering')
     this.drgTargetEl?.classList.remove('drag-item-hovering')
 
-    if (this.dragging && (e.target instanceof HTMLElement || e.target === null)) {
+    if (
+      this.dragging &&
+      (e.target instanceof HTMLElement || e.target === null)
+    ) {
       this.drgTargetElPrev = this.drgTargetEl
       this.drgTargetEl = e.target
-      if (this.drgTargetEl && this.drgTargetEl.classList.contains('drag-target')) {
+      if (
+        this.drgTargetEl &&
+        this.drgTargetEl.classList.contains('drag-target')
+      ) {
         const dragOverEv = new Event('dragenter') as DragOverEvent
         dragOverEv.payload = this.payload
         this.drgTargetEl.dispatchEvent(dragOverEv)
@@ -192,12 +206,14 @@ export class DragDrop {
         dropEv.payload = this.payload
         this.drgTargetEl.dispatchEvent(dropEv)
 
-        if (this.drgTargetEl) this.drgTargetEl.classList.remove('drag-item-hovering')
+        if (this.drgTargetEl)
+          this.drgTargetEl.classList.remove('drag-item-hovering')
         this.drgSourceEl = null
         this.drgTargetEl = null
       } else {
         // console.log(`Dragging cancelled: ${this.drgSourceEl?.id}`)
-        if (this.drgTargetEl) this.drgTargetEl.classList.remove('drag-item-hovering')
+        if (this.drgTargetEl)
+          this.drgTargetEl.classList.remove('drag-item-hovering')
         if (this.drgSourceEl) {
           this.drgSourceEl = null
           this.drgTargetEl = null

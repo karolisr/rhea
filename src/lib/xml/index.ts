@@ -4,8 +4,12 @@ import { parse_dtd_txt, parse_dtd_at_url, element_value_type } from './dtd'
 // ToDo: create_parent_object_for_arrays type problems.
 function _parse_xml(
   ele: Document | Element,
-  dtd: { [element_name: string]: _dtd_element },
-  obj: { [key: string]: unknown },
+  dtd: {
+    [element_name: string]: _dtd_element
+  },
+  obj: {
+    [key: string]: unknown
+  },
   parent_element_name?: string,
   create_parent_object_for_arrays: boolean = false
 ) {
@@ -15,9 +19,13 @@ function _parse_xml(
     const doc_element_name = doc_element.tagName
     const den = doc_element_name.replaceAll('-', '_').replaceAll('INSD', 'GB')
 
-    let obj_local = {} as { [key: string]: unknown }
+    let obj_local = {} as {
+      [key: string]: unknown
+    }
     obj_local[den] = {}
-    obj_local = obj_local[den] as { [key: string]: unknown }
+    obj_local = obj_local[den] as {
+      [key: string]: unknown
+    }
 
     if (create_parent_object_for_arrays) {
       if (pen && obj[pen] && obj[pen][den] && obj[pen][den] instanceof Array) {
@@ -43,13 +51,23 @@ function _parse_xml(
           if (c.required === 'ARRAY') {
             if (create_parent_object_for_arrays) {
               obj_local[den] = {}
-              obj_local[den][child_element_spec_name.replaceAll('-', '_').replaceAll('INSD', 'GB')] = []
+              obj_local[den][
+                child_element_spec_name
+                  .replaceAll('-', '_')
+                  .replaceAll('INSD', 'GB')
+              ] = []
             } else {
               obj_local[den] = []
             }
           }
         }
-        _parse_xml(doc_element, dtd, obj_local, doc_element_name, create_parent_object_for_arrays)
+        _parse_xml(
+          doc_element,
+          dtd,
+          obj_local,
+          doc_element_name,
+          create_parent_object_for_arrays
+        )
       } else if (element_spec.value) {
         let value: string | null | number = doc_element.textContent
         if (element_spec.value.type in element_value_type) {
@@ -88,13 +106,20 @@ function _parse_xml(
 }
 
 // These are only necessary when the XML file does not reference a DTD.
-const DTD_MAP: { [element_name: string]: string } = {
+const DTD_MAP: {
+  [element_name: string]: string
+} = {
   'Bioseq-set': 'NCBI_Seqset.dtd',
   'INSDSet': 'INSD_INSDSeq.dtd'
 }
 
-export async function parse_xml_txt(txt: string, create_parent_object_for_arrays: boolean = false) {
-  let dtd: { [element_name: string]: _dtd_element } | null
+export async function parse_xml_txt(
+  txt: string,
+  create_parent_object_for_arrays: boolean = false
+) {
+  let dtd: {
+    [element_name: string]: _dtd_element
+  } | null
 
   const dp = new DOMParser()
   const doc: Document = dp.parseFromString(txt, 'text/xml')
@@ -112,12 +137,22 @@ export async function parse_xml_txt(txt: string, create_parent_object_for_arrays
     throw new Error(`No DTD for: ${doc_element_name}`)
   }
 
-  let ret_val = _parse_xml(doc, dtd, {}, undefined, create_parent_object_for_arrays) as Indexed
+  let ret_val = _parse_xml(
+    doc,
+    dtd,
+    {},
+    undefined,
+    create_parent_object_for_arrays
+  ) as Indexed
 
-  const root_element_name = doc_element_name.replaceAll('-', '_').replaceAll('INSD', 'GB')
+  const root_element_name = doc_element_name
+    .replaceAll('-', '_')
+    .replaceAll('INSD', 'GB')
 
   if (!(root_element_name in ret_val)) {
-    let _ = {} as { [key: string]: unknown }
+    let _ = {} as {
+      [key: string]: unknown
+    }
     _[root_element_name] = ret_val
     ret_val = _ as Indexed
   }

@@ -66,7 +66,8 @@ function draw() {
   rec.GBSeq_feature_table?.forEach((f) => {
     if (f.GBFeature_key === 'CDS') {
       f.GBFeature_intervals?.forEach((i) => {
-        if (i.GBInterval_from && i.GBInterval_to) drawAnnot(i.GBInterval_from, i.GBInterval_to)
+        if (i.GBInterval_from && i.GBInterval_to)
+          drawAnnot(i.GBInterval_from, i.GBInterval_to)
       })
     }
   })
@@ -102,5 +103,5 @@ onDestroy(() => {
 </script>
 
 <div>
-  <canvas bind:this="{canvas}"></canvas>
+  <canvas bind:this="{canvas}"> </canvas>
 </div>

@@ -30,14 +30,20 @@ onDestroy(() => {
 <div>
   {#if rec}
     <span>
-      {data.recid} | {rec.GBSeq_organism}
+      {data.recid}
+      |
+      {rec.GBSeq_organism}
       {#if rec.GBSeq_feature_table && rec.GBSeq_feature_table[0].GBFeature_quals}
-        | {rec.GBSeq_feature_table[0].GBFeature_quals[1].GBQualifier_value}
+        |
+        {rec.GBSeq_feature_table[0].GBFeature_quals[1].GBQualifier_value}
       {/if}
     </span>
     <SeqView {rec} />
     <div>
-      <ObjectTreeView hideName name="{rec.GBSeq_accession_version}" obj="{rec}" />
+      <ObjectTreeView
+        hideName
+        name="{rec.GBSeq_accession_version}"
+        obj="{rec}" />
     </div>
   {/if}
 </div>

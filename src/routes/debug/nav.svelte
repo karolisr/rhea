@@ -13,9 +13,15 @@ import iconImages from '~icons/fa6-solid/image'
   <TabSpacer uid="chrome-nav-debug-spacer-l" minW="{10}" />
   <Tab link="/debug/" icon="{iconHome}" />
 
-  <Tab link="/debug/testing/taxsqliteimg/" icon="{iconImages}" label="Taxonomy Images" />
+  <Tab
+    link="/debug/testing/taxsqliteimg/"
+    icon="{iconImages}"
+    label="Taxonomy Images" />
 
-  <Tab link="/debug/testing/taxsqlite/" icon="{iconColl}" label="Taxonomy SQLite" />
+  <Tab
+    link="/debug/testing/taxsqlite/"
+    icon="{iconColl}"
+    label="Taxonomy SQLite" />
   <Tab link="/debug/testing/coll/" icon="{iconColl}" label="Collections" />
   <Tab link="/debug/testing/search/" icon="{iconSearch}" label="Search" />
   <TabSpacer uid="nav-debug-spacer-r" minW="{10}" collapsable nSpacers="{2}" />

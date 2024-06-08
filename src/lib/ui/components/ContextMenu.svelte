@@ -9,11 +9,15 @@ export let hide: () => void
 export let items: ContextMenuItem[]
 
 onMount(() => {
-  addEventListener('mousedown', mousedownEvtListener, { capture: true })
+  addEventListener('mousedown', mousedownEvtListener, {
+    capture: true
+  })
 })
 
 onDestroy(() => {
-  removeEventListener('mousedown', mousedownEvtListener, { capture: true })
+  removeEventListener('mousedown', mousedownEvtListener, {
+    capture: true
+  })
 })
 
 const mousedownEvtListener = (e: MouseEvent) => {
@@ -35,18 +39,30 @@ const mousedownEvtListener = (e: MouseEvent) => {
   id="context-menu"
   class="context-menu"
   role="menu"
-  in:fade="{{ duration: 150 }}"
-  out:fade="{{ duration: 150 }}"
+  in:fade="{{
+    duration: 150
+  }}"
+  out:fade="{{
+    duration: 150
+  }}"
   style:left="{x}px"
   style:top="{y}px">
   {#each items as item, i}
     {#if item.label !== undefined}
-      <div id="context-menu-item-{i}" class="context-menu-item{item.disabled ? ' disabled' : ''}" role="menuitem">
-        <div class="context-menu-item-label">{item.label}</div>
-        <div class="context-menu-item-right">{item.hotKey}</div>
+      <div
+        id="context-menu-item-{i}"
+        class="context-menu-item{item.disabled ? ' disabled' : ''}"
+        role="menuitem">
+        <div class="context-menu-item-label">
+          {item.label}
+        </div>
+        <div class="context-menu-item-right">
+          {item.hotKey}
+        </div>
       </div>
     {:else}
-      <div id="context-menu-item-separator" class="context-menu-item-separator"></div>
+      <div id="context-menu-item-separator" class="context-menu-item-separator">
+      </div>
     {/if}
   {/each}
 </div>

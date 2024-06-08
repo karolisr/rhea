@@ -55,7 +55,10 @@ function getSystemInfo(): SystemInfo {
     }
   }
 
-  return { browser, engine }
+  return {
+    browser,
+    engine
+  }
 }
 
 export function replacer(_: string, value: unknown): unknown {
@@ -74,7 +77,13 @@ export function replacer(_: string, value: unknown): unknown {
   }
 }
 
-export function reviver(_: string, obj: { dataType: string; value: Array<[unknown, unknown]> }): unknown {
+export function reviver(
+  _: string,
+  obj: {
+    dataType: string
+    value: Array<[unknown, unknown]>
+  }
+): unknown {
   if (obj['dataType'] === 'Map') {
     return new Map(obj['value'])
   } else if (obj['dataType'] === 'Set') {

@@ -21,11 +21,17 @@ let colWsStr: string
 </script>
 
 <div
-  transition:trans="{{ delay: 0, duration: 1000 }}"
+  transition:trans="{{
+    delay: 0,
+    duration: 1000
+  }}"
   class="grid-container"
   style:grid-template-rows="{rowHsStr}"
   style:grid-template-columns="{colWsStr}">
-  <div class="grid-items" style:grid-row="1/{nRow + 1}" style:grid-column="1/{nCol + 1}">
+  <div
+    class="grid-items"
+    style:grid-row="1/{nRow + 1}"
+    style:grid-column="1/{nCol + 1}">
     <slot />
   </div>
 

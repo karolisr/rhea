@@ -12,22 +12,43 @@ export const AA_AMBIGUOUS_CHARS = new Set('BZX')
 export const AA_GAPS_CHARS = new Set('-')
 
 export const DNA_UNAMBIGUOUS = new Set([...NT_SHARED_CHARS, ...DNA_ONLY_CHARS])
-export const DNA_UNAMBIGUOUS_GAPS = new Set([...DNA_UNAMBIGUOUS, ...NT_GAPS_CHARS])
-export const DNA_AMBIGUOUS = new Set([...DNA_UNAMBIGUOUS, ...NT_AMBIGUOUS_CHARS])
+export const DNA_UNAMBIGUOUS_GAPS = new Set([
+  ...DNA_UNAMBIGUOUS,
+  ...NT_GAPS_CHARS
+])
+export const DNA_AMBIGUOUS = new Set([
+  ...DNA_UNAMBIGUOUS,
+  ...NT_AMBIGUOUS_CHARS
+])
 export const DNA_AMBIGUOUS_GAPS = new Set([...DNA_AMBIGUOUS, ...NT_GAPS_CHARS])
 
 export const RNA_UNAMBIGUOUS = new Set([...NT_SHARED_CHARS, ...RNA_ONLY_CHARS])
-export const RNA_UNAMBIGUOUS_GAPS = new Set([...RNA_UNAMBIGUOUS, ...NT_GAPS_CHARS])
-export const RNA_AMBIGUOUS = new Set([...RNA_UNAMBIGUOUS, ...NT_AMBIGUOUS_CHARS])
+export const RNA_UNAMBIGUOUS_GAPS = new Set([
+  ...RNA_UNAMBIGUOUS,
+  ...NT_GAPS_CHARS
+])
+export const RNA_AMBIGUOUS = new Set([
+  ...RNA_UNAMBIGUOUS,
+  ...NT_AMBIGUOUS_CHARS
+])
 export const RNA_AMBIGUOUS_GAPS = new Set([...RNA_AMBIGUOUS, ...NT_GAPS_CHARS])
 
 export const NT_UNAMBIGUOUS = new Set([...DNA_UNAMBIGUOUS, ...RNA_UNAMBIGUOUS])
-export const NT_UNAMBIGUOUS_GAPS = new Set([...DNA_UNAMBIGUOUS_GAPS, ...RNA_UNAMBIGUOUS_GAPS])
+export const NT_UNAMBIGUOUS_GAPS = new Set([
+  ...DNA_UNAMBIGUOUS_GAPS,
+  ...RNA_UNAMBIGUOUS_GAPS
+])
 export const NT_AMBIGUOUS = new Set([...DNA_AMBIGUOUS, ...RNA_AMBIGUOUS])
-export const NT_AMBIGUOUS_GAPS = new Set([...DNA_AMBIGUOUS_GAPS, ...RNA_AMBIGUOUS_GAPS])
+export const NT_AMBIGUOUS_GAPS = new Set([
+  ...DNA_AMBIGUOUS_GAPS,
+  ...RNA_AMBIGUOUS_GAPS
+])
 
 export const AA_UNAMBIGUOUS = new Set([...AA_CHARS])
-export const AA_UNAMBIGUOUS_GAPS = new Set([...AA_UNAMBIGUOUS, ...AA_GAPS_CHARS])
+export const AA_UNAMBIGUOUS_GAPS = new Set([
+  ...AA_UNAMBIGUOUS,
+  ...AA_GAPS_CHARS
+])
 export const AA_AMBIGUOUS = new Set([...AA_UNAMBIGUOUS, ...AA_AMBIGUOUS_CHARS])
 export const AA_AMBIGUOUS_GAPS = new Set([...AA_AMBIGUOUS, ...AA_GAPS_CHARS])
 

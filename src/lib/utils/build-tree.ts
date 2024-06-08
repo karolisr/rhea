@@ -1,8 +1,15 @@
 import type { Tree } from '$lib/types'
-import { getCollections, getCollectionsCount } from '$lib/app/api/db/collections'
+import {
+  getCollections,
+  getCollectionsCount
+} from '$lib/app/api/db/collections'
 import { DB } from '$lib/app/api/db'
 
-export async function getAllChildIds(db: DB, tableName: string = 'collections', parentId: string = 'ROOT') {
+export async function getAllChildIds(
+  db: DB,
+  tableName: string = 'collections',
+  parentId: string = 'ROOT'
+) {
   const nodes = await getCollections([parentId], true, db, tableName)
   const ids = nodes.map((c) => c.id)
   let rv = [parentId, ...ids]

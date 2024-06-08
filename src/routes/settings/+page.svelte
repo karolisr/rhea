@@ -10,7 +10,8 @@ let currentOsThemeSetting: string
 
 onMount(async () => {
   currentOsThemeSetting = await getCurentTheme()
-  currentOsThemeSetting = currentOsThemeSetting[0].toUpperCase() + currentOsThemeSetting.slice(1)
+  currentOsThemeSetting =
+    currentOsThemeSetting[0].toUpperCase() + currentOsThemeSetting.slice(1)
 })
 
 onDestroy(() => {})

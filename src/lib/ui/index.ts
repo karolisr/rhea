@@ -9,7 +9,9 @@ export function preventDefault(k: keyof WindowEventMap): Unlistener {
     //     : e.AT_TARGET
     // )
   }
-  window.addEventListener(k, f, { capture: false })
+  window.addEventListener(k, f, {
+    capture: false
+  })
 
   return () => {
     window.removeEventListener(k, f)

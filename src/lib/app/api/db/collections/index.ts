@@ -30,12 +30,16 @@ export const _getCollections = async (
           ${idIsParentId
             ? sql`
                 WHERE
-                  parent_id IN (${join(ids)})
+                  parent_id IN (
+                    ${join(ids)}
+                  )
                   AND NOT id = parent_id
               `
             : sql`
                 WHERE
-                  id IN (${join(ids)})
+                  id IN (
+                    ${join(ids)}
+                  )
               `} ${count
             ? sql`
                 GROUP BY
@@ -46,24 +50,45 @@ export const _getCollections = async (
     ;
   `
   if (db !== null) {
-    const result = await db.select(_sql.text.replace('table_name', tableName), _sql.values)
+    const result = await db.select(
+      _sql.text.replace('table_name', tableName),
+      _sql.values
+    )
     return result
   } else {
     return []
   }
 }
 
-export const getCollections = async (ids: string[], idIsParentId: boolean, db: DB | null, tableName: string) => {
+export const getCollections = async (
+  ids: string[],
+  idIsParentId: boolean,
+  db: DB | null,
+  tableName: string
+) => {
   const result = await _getCollections(ids, idIsParentId, db, tableName, false)
   return result as Collection[]
 }
 
-export const getCollectionsCount = async (ids: string[], idIsParentId: boolean, db: DB | null, tableName: string) => {
-  const result = (await _getCollections(ids, idIsParentId, db, tableName, true)) as {
+export const getCollectionsCount = async (
+  ids: string[],
+  idIsParentId: boolean,
+  db: DB | null,
+  tableName: string
+) => {
+  const result = (await _getCollections(
+    ids,
+    idIsParentId,
+    db,
+    tableName,
+    true
+  )) as {
     id: string
     row_count: number
   }[]
-  const rv: { [id: string]: number } = {}
+  const rv: {
+    [id: string]: number
+  } = {}
   result.forEach((x) => {
     rv[x.id] = x.row_count
   })
@@ -80,7 +105,12 @@ export const createCollection = async (
   const id = uuid()
   const _sql = sql`
     INSERT INTO
-      table_name ("parent_id", "id", "label", "notes")
+      table_name (
+        "parent_id",
+        "id",
+        "label",
+        "notes"
+      )
     VALUES
       (
         ${parentId},
@@ -99,7 +129,11 @@ export const createCollection = async (
   }
 }
 
-export const deleteCollection = async (id: string, db: DB | null, tableName: string) => {
+export const deleteCollection = async (
+  id: string,
+  db: DB | null,
+  tableName: string
+) => {
   if (id !== 'ROOT') {
     const _sql = sql`
       DELETE FROM table_name
@@ -118,7 +152,12 @@ export const deleteCollection = async (id: string, db: DB | null, tableName: str
   }
 }
 
-export const relabelCollection = async (id: string, label: string, db: DB | null, tableName: string) => {
+export const relabelCollection = async (
+  id: string,
+  label: string,
+  db: DB | null,
+  tableName: string
+) => {
   const _sql = sql`
     UPDATE table_name
     SET

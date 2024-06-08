@@ -28,7 +28,10 @@ export async function addSeqRecsToCollection(accs: string[], collId: string) {
   unsubscribe()
 }
 
-export async function removeSeqRecsFromCollection(accs: string[], collId: string) {
+export async function removeSeqRecsFromCollection(
+  accs: string[],
+  collId: string
+) {
   if (accs.length === 0) return
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null

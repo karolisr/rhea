@@ -30,7 +30,9 @@ function processTerm(x: string) {
 
 <div class="container">
   <TextInput id="filter-input" placeholder="Filter" bind:value />
-  <div class="tmp">{term}</div>
+  <div class="tmp">
+    {term}
+  </div>
 </div>
 
 <style>

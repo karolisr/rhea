@@ -42,7 +42,11 @@ export let createNode: (
   tableName: string
 ) => Promise<string | null> = async () => ''
 
-export let deleteNode: (id: string, db: DB | null, tableName: string) => Promise<string | null> = async () => null
+export let deleteNode: (
+  id: string,
+  db: DB | null,
+  tableName: string
+) => Promise<string | null> = async () => null
 
 export let relabelNode: (
   id: string,
@@ -51,8 +55,14 @@ export let relabelNode: (
   tableName: string
 ) => Promise<string | null> = async () => ''
 
-export let addRecords: (ids: string[], collId: string) => Promise<void> = async () => {}
-export let removeRecords: (ids: string[], collId: string) => Promise<void> = async () => {}
+export let addRecords: (
+  ids: string[],
+  collId: string
+) => Promise<void> = async () => {}
+export let removeRecords: (
+  ids: string[],
+  collId: string
+) => Promise<void> = async () => {}
 
 const _createNode = async (parentId: string, label: string) => {
   return createNode(parentId, label, '', db, tableName)
