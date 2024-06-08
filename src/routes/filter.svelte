@@ -6,10 +6,21 @@ $: processTerm(value)
 
 function processTerm(x: string) {
   if (x) {
+    x = x.replaceAll(/\s+/g, ' ')
+    x = x.replaceAll(/\++/g, '+')
     x = x.replaceAll(' and ', ' AND ')
     x = x.replaceAll(' or ', ' OR ')
     x = x.replaceAll(' not ', ' NOT ')
     x = x.replaceAll('*', '')
+    x = x.replaceAll(/[^a-zA-Z\d\s+]/g, '')
+    x = x.trim()
+    x = x.replace(/^\+/g, '')
+    x = x.replace(/\+$/g, '')
+    x = x.replace(/^(AND|OR|NOT)/g, '')
+    x = x.replace(/(AND|OR|NOT)$/g, '')
+    x = x.trim()
+  }
+  if (x) {
     term = `${x}*`
   } else {
     term = ''
@@ -26,6 +37,7 @@ function processTerm(x: string) {
 .container {
   display: flex;
   flex-direction: row;
+  background-color: beige;
 }
 
 .tmp {
