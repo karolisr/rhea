@@ -204,6 +204,15 @@ const _onkeydown = (ev: KeyboardEvent) => {
   }
 }
 
+let allChecked: boolean = false
+
+function selectAll() {
+  rl.allKeys.forEach((k) => {
+    k = k as string
+    _selectedRowKeys[k] = !allChecked
+  })
+}
+
 function calcColWidths(
   rl: RecordList<IndexedUndefined | Collection>,
   charW: number
@@ -390,7 +399,18 @@ function formatValue(
                 style:grid-column="1/{nCol + 1}"
                 class="row-h">
                 {#if showCheckBoxes}
-                  <div class="cell-corner"></div>
+                  <!-- <div class="cell-corner"></div> -->
+                  <div class="cell">
+                    <CheckBox
+                      tabindex="{-1}"
+                      margin="{false}"
+                      on:mousedown="{(e) => {
+                        elc.focus()
+                        e.preventDefault()
+                        selectAll()
+                      }}"
+                      bind:checked="{allChecked}"></CheckBox>
+                  </div>
                 {/if}
                 {#each rl.fieldsToShow as field}
                   <div class="cell">
@@ -469,7 +489,7 @@ function formatValue(
               style:grid-row="1/{nRow + 1}"
               style:grid-column="1/{nCol + 1}">
               {#if showCheckBoxes}
-                <div class="col-tools"></div>
+                <div class="col-tools hidden"></div>
               {/if}
               {#each rl.fieldsToShow as _, i}
                 <div
@@ -593,6 +613,10 @@ function formatValue(
   height: 1.4em;
   z-index: 30;
   align-items: center;
+}
+
+.col-tools.hidden {
+  pointer-events: none;
 }
 
 .col-sorter-direction {

@@ -1,5 +1,4 @@
 <script lang="ts">
-import { getFontSize } from '$lib/app/api'
 export let id: string = ''
 export let name: string = ''
 export let value: string = ''
@@ -8,7 +7,7 @@ export let placeholder: string = ''
 export let tabindex: number = 0
 </script>
 
-<div class="container" style="padding-inline: {getFontSize() / 2}px;">
+<div class="text-input-container">
   {#if label}
     <label for="{id}">{label}</label>
   {/if}
@@ -27,13 +26,4 @@ export let tabindex: number = 0
 </div>
 
 <style lang="scss">
-// .container {
-//   display: flex;
-//   flex-direction: row;
-// }
-
-// label {
-//   align-self: center;
-//   margin: 4px;
-// }
 </style>

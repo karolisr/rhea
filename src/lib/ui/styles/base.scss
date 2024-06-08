@@ -103,11 +103,11 @@ grid-sizer-v {
   z-index: 21;
 }
 
-grid-sizer-h {
+grid-sizer-h.border {
   border-block-end-style: solid;
 }
 
-grid-sizer-v {
+grid-sizer-v.border {
   border-inline-end-style: solid;
 }
 

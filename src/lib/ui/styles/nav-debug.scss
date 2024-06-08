@@ -1,14 +1,16 @@
 .nav-debug.tab-nav {
   display: flex;
   flex-direction: row;
-  // background-color: $C050;
-  background-color: white;
-  gap: var(--pad);
-  padding: 2px;
+  background-color: $Y100;
+  // background-color: white;
+  // gap: var(--pad);
+  // padding: 2px;
   border-bottom-style: solid;
   // padding-inline-end: calc(var(--pad) * 3);
   // height: calc(1px + var(--fs) + var(--pad) * 5);
-  min-height: calc(1px + var(--fs) + var(--pad) * 5);
+  min-height: calc(1px + var(--fs) + var(--pad) * 4);
+  text-wrap: nowrap;
+  // max-height: calc(1px + var(--fs) + var(--pad) * 4);
   // margin-bottom: 10px;
 }
 
@@ -16,26 +18,26 @@
 // }
 
 .nav-debug.tab-nav > a > div {
-  // background-color: $Y200;
+  background-color: $X200;
   display: flex;
   align-items: center;
   border-right-style: solid;
-  border-left-style: solid;
+  // border-left-style: solid;
   height: 100%;
   padding: var(--pad);
-  padding-inline: calc(var(--pad) * 3);
+  padding-inline: calc(var(--pad) * 2);
   border-color: $X600;
 }
 
 .nav-debug.tab-nav > a:first-of-type > div {
-  border-right-style: solid;
-  border-left-style: none;
+  // border-right-style: solid;
+  border-left-style: solid;
   // padding-inline-start: calc(2px + var(--pad) * 3);
 }
 
 .nav-debug.tab-nav > a:last-of-type > div {
-  border-right-style: none;
-  border-left-style: solid;
+  // border-right-style: none;
+  // border-left-style: solid;
   // padding-inline-start: calc(2px + var(--pad) * 3);
 }
 
@@ -50,6 +52,7 @@
 }
 
 .nav-debug.tab-nav > a:hover > div {
+  background-color: $X200;
 }
 
 .nav-debug.tab-nav > a:hover > div > svg {
@@ -60,9 +63,9 @@
   color: $A600;
 }
 
-// .nav-debug.tab-nav > a[aria-current='true'] > div {
-//   background-color: white;
-// }
+.nav-debug.tab-nav > a[aria-current='true'] > div {
+  background-color: $Y050;
+}
 
 .nav-debug.tab-nav > a[aria-current='true'] > div > svg {
   color: $B700;

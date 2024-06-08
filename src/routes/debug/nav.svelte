@@ -4,25 +4,18 @@ import TabSpacer from '$lib/ui/chrome/nav/components/tabnav/TabSpacer.svelte'
 import Tab from '$lib/ui/chrome/nav/components/tabnav/Tab.svelte'
 
 import iconHome from '~icons/fa6-solid/house-chimney'
-import iconColl from '~icons/fa6-solid/database'
 import iconSearch from '~icons/fa6-solid/magnifying-glass'
-import iconImages from '~icons/fa6-solid/image'
+import iconDnD from '~icons/fa6-solid/chess'
 </script>
 
 <TabNav uid="chrome-nav-debug" navClass="nav-debug">
-  <TabSpacer uid="chrome-nav-debug-spacer-l" minW="{10}" />
+  <TabSpacer
+    uid="chrome-nav-debug-spacer-l"
+    minW="{10}"
+    collapsable
+    nSpacers="{2}" />
   <Tab link="/debug/" icon="{iconHome}" />
-
-  <Tab
-    link="/debug/testing/taxsqliteimg/"
-    icon="{iconImages}"
-    label="Taxonomy Images" />
-
-  <Tab
-    link="/debug/testing/taxsqlite/"
-    icon="{iconColl}"
-    label="Taxonomy SQLite" />
-  <Tab link="/debug/testing/coll/" icon="{iconColl}" label="Collections" />
   <Tab link="/debug/testing/search/" icon="{iconSearch}" label="Search" />
+  <Tab link="/debug/testing/dnd/" icon="{iconDnD}" label="Drag & Drop" />
   <TabSpacer uid="nav-debug-spacer-r" minW="{10}" collapsable nSpacers="{2}" />
 </TabNav>

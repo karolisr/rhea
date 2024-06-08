@@ -49,6 +49,8 @@ export let colsResizable: boolean = true
 export let enforceMaxSize: boolean = true
 export let fixedHRows: number[] = []
 export let fixedWCols: number[] = []
+export let rowBorders: boolean[] = rowHs.map(() => true).slice(0, -1)
+export let colBorders: boolean[] = colWs.map(() => true).slice(0, -1)
 
 $: rowHsStr = sizesStrFromSizes(rowHs)
 $: colWsStr = sizesStrFromSizes(colWs)
@@ -162,9 +164,9 @@ function resizeCol(evt: MouseEvent) {
       max(minColW, (colPrevWidth as number) + d),
       colMaxW as number
     )
-    if (newColW < sizerSize * 2) newColW = 0
+    // if (newColW < sizerSize * 2) newColW = 0
+    if (newColW < getFontSize() * 3) newColW = 0
     colWs[colResizing as number] = newColW
-    // dispatchEvent(resizeEvt)
   }
 }
 
@@ -175,9 +177,9 @@ function resizeRow(evt: MouseEvent) {
       max(minRowH, (rowPrevHeight as number) + d),
       rowMaxH as number
     )
-    if (newRowH < sizerSize * 2) newRowH = 0
+    // if (newRowH < sizerSize * 2) newRowH = 0
+    if (newRowH < getFontSize() * 3) newRowH = 0
     rowHs[rowResizing as number] = newRowH
-    // dispatchEvent(resizeEvt)
   }
 }
 
@@ -238,6 +240,7 @@ async function collapseGridElement(evt: MouseEvent) {
     rowHs = sizes as number[]
     rowHsPrev = prevSizes as number[]
   }
+
   resizeGridElementEnd(evt)
 }
 </script>
@@ -250,7 +253,9 @@ async function collapseGridElement(evt: MouseEvent) {
     {#each rowHs as rowH, row}
       {#if rowH !== -1 && !fixedHRows.includes(row)}
         <grid-sizer-h
-          class="{rowHs[row] === 0 ? 'collapsed' : ''}"
+          class="{rowHs[row] === 0 ? 'collapsed' : ''}{rowBorders[row]
+            ? ' border'
+            : ''}"
           style:grid-row="{row + 1}/{row + 2}"
           style:grid-column="1/{nCol + 1}">
           <div
@@ -273,7 +278,9 @@ async function collapseGridElement(evt: MouseEvent) {
     {#each colWs as colW, col}
       {#if colW !== -1 && !fixedWCols.includes(col)}
         <grid-sizer-v
-          class="{colWs[col] === 0 ? 'collapsed' : ''}"
+          class="{colWs[col] === 0 ? 'collapsed' : ''}{colBorders[col]
+            ? ' border'
+            : ''}"
           style:grid-row="1/{nRow + 1}"
           style:grid-column="{col + 1}/{col + 2}">
           <div

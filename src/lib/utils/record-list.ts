@@ -39,6 +39,10 @@ export class RecordList<T> {
     return this._items
   }
 
+  get allKeys() {
+    return this._allItems.map((x) => x[this._keyField])
+  }
+
   filterBy(
     field: KnownKeys<T> | string,
     query: T[keyof T] | undefined,

@@ -65,6 +65,18 @@
 .row-f > .cell {
 }
 
+.row-h > .cell input,
+.row-f > .cell input {
+  background-color: transparent;
+  margin-top: -0.5px;
+  border-style: none;
+}
+
+.row-h > .cell input[type='checkbox']:checked::after,
+.row-f > .cell input[type='checkbox']:checked::after {
+  color: white;
+}
+
 .row-b {
   font-family: 'JetBrains Mono';
   z-index: 20;

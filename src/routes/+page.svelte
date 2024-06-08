@@ -28,10 +28,11 @@ import Search from './search.svelte'
 import Filter from './filter.svelte'
 // import { getFontSize } from '$lib/app/api'
 import { filterSeqRecs } from '$lib/app/api/db/gbseq'
-// import { fade } from 'svelte/transition'
 
 let seqRecList: IndexedUndefined[] = []
 let statusMain: string = ''
+
+let searchTerm: string = ''
 
 let filterTerm: string = ''
 let filteredResults: IndexedUndefined[] | undefined
@@ -296,6 +297,7 @@ onDestroy(() => {
 
     <ResizableGrid
       bind:nRow="{nRowMain}"
+      rowBorders="{[false, true]}"
       nCol="{1}"
       bind:rowHs
       colWs="{[-1]}"
@@ -304,7 +306,7 @@ onDestroy(() => {
       <div class="filter-search">
         {#if selectedGroupUid === 'search-results-tree'}
           {#key selectedGroupUid}
-            <Search />
+            <Search bind:term="{searchTerm}" />
           {/key}
         {:else}
           {#key selectedGroupUid}
@@ -326,10 +328,12 @@ onDestroy(() => {
           showHeaderRow />
       </div>
       <div class="placeholder">
-        <!-- {selectedColl ? selectedGroupUid + ' : ' + selectedColl + (activeRecordId ? ` : ${activeRecordId}` : '') : ''} -->
-        <!-- {#each filteredResults as r}
-          <div>{@html r.Accession}</div>
-        {/each} -->
+        {selectedColl
+          ? selectedGroupUid +
+            ' : ' +
+            selectedColl +
+            (activeRecordId ? ` : ${activeRecordId}` : '')
+          : ''}
       </div>
     </ResizableGrid>
   </ResizableGrid>
@@ -352,11 +356,7 @@ onDestroy(() => {
 }
 
 .filter-search {
-  border-bottom-style: solid;
-  align-content: center;
-  // background-color: white;
-  background-color: cornsilk;
-  // transition: all 1s ease-out;
+  overflow: hidden;
 }
 
 .list-container {

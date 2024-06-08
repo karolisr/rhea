@@ -1,7 +1,6 @@
 <script lang="ts">
 import GridSizers from '$lib/ui/utils/GridSizers.svelte'
 import { v4 as uuid } from 'uuid'
-import { fade as trans } from 'svelte/transition'
 
 export let uid: string = uuid()
 export let minRowH: number = 50
@@ -15,16 +14,14 @@ export let colsResizable: boolean = true
 export let enforceMaxSize: boolean = true
 export let fixedHRows: number[] = []
 export let fixedWCols: number[] = []
+export let rowBorders: boolean[] = rowHs.map(() => true).slice(0, -1)
+export let colBorders: boolean[] = colWs.map(() => true).slice(0, -1)
 
 let rowHsStr: string
 let colWsStr: string
 </script>
 
 <div
-  transition:trans="{{
-    delay: 0,
-    duration: 1000
-  }}"
   class="grid-container"
   style:grid-template-rows="{rowHsStr}"
   style:grid-template-columns="{colWsStr}">
@@ -49,7 +46,9 @@ let colWsStr: string
     {fixedHRows}
     {fixedWCols}
     bind:rowHsStr
-    bind:colWsStr />
+    bind:colWsStr
+    bind:rowBorders
+    bind:colBorders />
 </div>
 
 <style lang="scss">
