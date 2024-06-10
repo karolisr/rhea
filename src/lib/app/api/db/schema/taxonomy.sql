@@ -180,3 +180,35 @@ FROM
 ORDER BY
   "rank" ASC
 ;
+-- @block drop fts_tx_names virtual table
+-- @conn taxonomy
+-- DROP TABLE IF EXISTS fts_tx_names
+-- ;
+-- @block create fts_tx_names virtual table from tx_names
+-- @conn taxonomy
+-- CREATE VIRTUAL TABLE IF NOT EXISTS fts_tx_names USING fts5 (
+--   "id",
+--   "tax_id",
+--   "name",
+--   "name_class",
+--   content = "tx_names",
+--   content_rowid = "id"
+-- )
+-- ;
+-- @block populate fts_tx_names virtual table
+-- @conn taxonomy
+-- INSERT INTO
+--   fts_tx_names (
+--     "id",
+--     "tax_id",
+--     "name",
+--     "name_class"
+--   )
+-- SELECT
+--   "id",
+--   "tax_id",
+--   "name",
+--   "name_class"
+-- FROM
+--   tx_names
+-- ;

@@ -28,6 +28,8 @@ import Search from './search.svelte'
 import Filter from './filter.svelte'
 import { getFontSize } from '$lib/app/api'
 import { filterSeqRecs } from '$lib/app/api/db/gbseq'
+import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
+import { getLineage } from '$lib/app/api/db/taxonomy/lineage'
 
 let seqRecList: IndexedUndefined[] = []
 let statusMain: string = ''
@@ -37,6 +39,56 @@ let searchTerm: string = ''
 let filterTerm: string = ''
 let filteredResults: IndexedUndefined[] | undefined
 let filteredIds: string[] | undefined
+
+let filterTermTax: string = ''
+let filteredResultsTax: IndexedUndefined[] | undefined
+let filteredTaxIds: string[] | undefined
+
+let taxIds: Set<number> = new Set()
+let lineages: { [id: number]: number[] } = {}
+
+async function _getLineage(taxId: number) {
+  if (taxId in lineages) {
+    // return lineages[taxId]
+    console.log('Cache Hit.')
+  } else {
+    const l = await getLineage(taxId)
+    lineages[taxId] = l
+    console.log('Cache Miss.')
+    // return l
+  }
+}
+
+function _getLineages(taxIds: Set<number>) {
+  ;[...taxIds].forEach((tid) => {
+    _getLineage(tid)
+  })
+  // console.log(lineages)
+}
+
+// $: _getLineages(taxIds)
+
+function _getTaxIds(seqRecList: IndexedUndefined[]) {
+  const _: Set<number> = new Set()
+  seqRecList.forEach((r) => {
+    _.add(r.TaxID as number)
+  })
+  return _
+}
+$: taxIds = _getTaxIds(seqRecList)
+
+async function _filterTaxonomy(term: string) {
+  if (term) {
+    const rv = await filterTaxonomy(term)
+    filteredResultsTax = rv
+  } else {
+    filteredResultsTax = undefined
+    filteredTaxIds = undefined
+  }
+}
+
+// $: _filterTaxonomy(filterTermTax)
+// $: console.table(filteredResultsTax)
 
 async function _filterSeqRecs(term: string) {
   if (term) {
@@ -110,7 +162,11 @@ let prevRowHs: number[] = []
 $: {
   if (rowHeight && rowHs.length === 0) {
     // getFontSize() * 3
-    rowHs = [getFontSize() * 3, 34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
+    rowHs = [
+      getFontSize() * 3,
+      34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1),
+      -1
+    ]
     prevRowHs = [...rowHs]
   }
 }
@@ -310,7 +366,7 @@ onDestroy(() => {
           {/key}
         {:else}
           {#key selectedGroupUid}
-            <Filter bind:term="{filterTerm}" />
+            <Filter bind:term="{filterTerm}" bind:termTax="{filterTermTax}" />
           {/key}
         {/if}
       </div>
