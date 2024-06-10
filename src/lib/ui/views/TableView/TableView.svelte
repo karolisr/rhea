@@ -205,6 +205,16 @@ const _onkeydown = (ev: KeyboardEvent) => {
 }
 
 let allChecked: boolean = false
+// $: allChecked = _allChecked(selectedRecordIds)
+// function _allChecked(selectedRecordIds: string[]) {
+//   for (let i = 0; i < rl.allKeys.length; i++) {
+//     const k = rl.allKeys[i] as string;
+//     if (k in _selectedRowKeys && _selectedRowKeys[k] === true) {
+//       return true
+//     }
+//   }
+//   return false
+// }
 
 function selectAll() {
   rl.allKeys.forEach((k) => {

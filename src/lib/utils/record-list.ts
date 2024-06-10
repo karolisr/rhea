@@ -40,7 +40,7 @@ export class RecordList<T> {
   }
 
   get allKeys() {
-    return this._allItems.map((x) => x[this._keyField])
+    return this._items.map((x) => x[this._keyField])
   }
 
   filterBy(
