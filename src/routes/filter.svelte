@@ -3,7 +3,10 @@ import TextInput from '$lib/ui/components/TextInput.svelte'
 import { getFontSize } from '$lib/app/api'
 export let value: string = ''
 export let term: string = ''
-$: processTerm(value)
+export let valueTax: string = ''
+export let termTax: string = ''
+$: term = processTerm(value)
+$: termTax = processTerm(valueTax)
 
 function processTerm(x: string) {
   if (x) {
@@ -22,9 +25,9 @@ function processTerm(x: string) {
     x = x.trim()
   }
   if (x) {
-    term = `${x}*`
+    return `${x}*`
   } else {
-    term = ''
+    return ''
   }
 }
 </script>
@@ -35,6 +38,13 @@ function processTerm(x: string) {
   <TextInput id="filter-input" placeholder="Filter" bind:value />
   <div class="processed-term">
     {term}
+  </div>
+  <TextInput
+    id="filter-input-tax"
+    placeholder="Taxonomy"
+    bind:value="{valueTax}" />
+  <div class="processed-term">
+    {termTax}
   </div>
 </div>
 
@@ -54,6 +64,7 @@ function processTerm(x: string) {
   padding: 3px;
   height: 1.9rem;
   background-color: ivory;
-  flex-grow: 1;
+  flex-grow: 0;
+  width: 200px;
 }
 </style>

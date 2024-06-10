@@ -26,7 +26,7 @@ import settings from '$lib/app/svelte-stores/settings'
 import { BROWSER } from '$lib/app/api'
 import Search from './search.svelte'
 import Filter from './filter.svelte'
-// import { getFontSize } from '$lib/app/api'
+import { getFontSize } from '$lib/app/api'
 import { filterSeqRecs } from '$lib/app/api/db/gbseq'
 
 let seqRecList: IndexedUndefined[] = []
@@ -110,7 +110,7 @@ let prevRowHs: number[] = []
 $: {
   if (rowHeight && rowHs.length === 0) {
     // getFontSize() * 3
-    rowHs = [0, 34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
+    rowHs = [getFontSize() * 3, 34 + 1 + (rowHeight ? rowHeight : 0) * (nRowsToShow - 1), -1]
     prevRowHs = [...rowHs]
   }
 }
@@ -178,7 +178,7 @@ $: if (seqRecListRL) {
     'Accession',
     // 'TaxID',
     'Organism',
-    'Length',
+    // 'Length',
     'Length (bp)',
     'Genetic Compartment',
     'Molecule Type',
