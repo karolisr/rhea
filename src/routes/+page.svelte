@@ -28,6 +28,8 @@ import Search from './search.svelte'
 import Filter from './filter.svelte'
 import { getFontSize } from '$lib/app/api'
 import { filterSeqRecs } from '$lib/app/api/db/gbseq'
+import { getSequences } from '$lib/app/api/db/gbseq'
+import SeqView from '$lib/ui/views/SeqView'
 // import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
 // import { getLineage, cacheTaxIds } from '$lib/app/api/db/taxonomy/lineage'
 // import { getPropNames } from '$lib'
@@ -42,11 +44,11 @@ let filteredResults: IndexedUndefined[] | undefined
 let filteredIds: string[] | undefined
 
 let filterTermTax: string = ''
-let filteredResultsTax: IndexedUndefined[] | undefined
-let filteredTaxIds: string[] | undefined
+// let filteredResultsTax: IndexedUndefined[] | undefined
+// let filteredTaxIds: string[] | undefined
 
-let taxIds: Set<number> = new Set()
-let lineages: { [id: number]: number[] } = {}
+// let taxIds: Set<number> = new Set()
+// let lineages: { [id: number]: number[] } = {}
 
 // async function _getLineage(taxId: number) {
 //   if (taxId in lineages) {
@@ -150,7 +152,13 @@ $: {
 let selectedSeqTypes: string[] | undefined = undefined
 
 let activeRecordId: string | undefined = undefined
+let activeRecord: IndexedUndefined | undefined = undefined
 let selectedRecordIds: string[] = []
+let activeRecordSeq: string | undefined = undefined
+let activeRecordSeqType: string | undefined = undefined
+
+$: if (activeRecord)
+  activeRecordSeqType = activeRecord['Molecule Type'] as string
 
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
@@ -256,6 +264,21 @@ function onSeqDbInsertInProgress(ev: Event) {
   console.log('onSeqDbInsertInProgress')
   _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
 }
+
+async function _getSequence(acc: string | undefined) {
+  if (acc !== undefined) {
+    const _ = await getSequences([acc])
+    if (_.length === 1 && _[0].acc === acc) {
+      activeRecordSeq = _[0].seq as string
+    } else {
+      activeRecordSeq = undefined
+    }
+  } else {
+    activeRecordSeq = undefined
+  }
+}
+
+$: _getSequence(activeRecordId)
 
 onMount(async () => {
   dbs = await databases
@@ -377,6 +400,7 @@ onDestroy(() => {
           uid="seq-rec-table"
           rl="{seqRecListRL}"
           bind:activeRowKey="{activeRecordId}"
+          bind:activeRowRecord="{activeRecord}"
           bind:selectedRecordIds
           bind:rowHeight
           onDeleteRow="{_removeSeqRec}"
@@ -384,6 +408,8 @@ onDestroy(() => {
           multiRowSelect
           showHeaderRow />
       </div>
+      <SeqView seq="{activeRecordSeq}" seqType="{activeRecordSeqType}" />
+      <!--
       <div class="placeholder">
         {selectedColl
           ? selectedGroupUid +
@@ -392,6 +418,7 @@ onDestroy(() => {
             (activeRecordId ? ` : ${activeRecordId}` : '')
           : ''}
       </div>
+      -->
     </ResizableGrid>
   </ResizableGrid>
 {:else}

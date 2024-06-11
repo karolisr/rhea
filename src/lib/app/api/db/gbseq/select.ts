@@ -77,7 +77,31 @@ export async function getSeqRecsByType(types: string[]) {
         OR "Molecule Type" IN ${bulk([types])}
       ;
     `
-    // console.log(_sql.text, _sql.values)
+    rv = await db.select(_sql.text, _sql.values)
+  }
+  unsubscribe()
+  return rv
+}
+
+export async function getSequences(accs: string[]) {
+  let dbs: Awaited<typeof databases> = await databases
+  let db: DB | null = null
+  const unsubscribe = dbs.subscribe((_) => {
+    db = _.dbSequences
+  })
+  let rv: IndexedUndefined[] = []
+  if (db !== null) {
+    db = db as DB
+    const _sql = sql`
+      SELECT
+        "accession_version" AS "acc",
+        "sequence" AS "seq"
+      FROM
+        "gb_sequences"
+      WHERE
+        "accession_version" IN ${bulk([accs])}
+      ;
+    `
     rv = await db.select(_sql.text, _sql.values)
   }
   unsubscribe()

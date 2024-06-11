@@ -66,7 +66,9 @@ export let removeRecords: (ids: string[], collId: string) => Promise<void>
 //   }
 // }
 
-$: if (selectedChildIdsEnabled) _getAllChildIds(selected, db, tableName, tree.id)
+$: if (selectedChildIdsEnabled) {
+  _getAllChildIds(selected, db, tableName, tree.id)
+}
 
 async function _getAllChildIds(
   selectedTreeId: string | undefined,
