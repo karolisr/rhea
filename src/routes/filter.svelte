@@ -39,13 +39,13 @@ function processTerm(x: string) {
   <div class="processed-term">
     {term}
   </div>
-  <TextInput
+  <!-- <TextInput
     id="filter-input-tax"
     placeholder="Taxonomy"
     bind:value="{valueTax}" />
   <div class="processed-term">
     {termTax}
-  </div>
+  </div> -->
 </div>
 
 <style>

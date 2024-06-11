@@ -28,8 +28,9 @@ import Search from './search.svelte'
 import Filter from './filter.svelte'
 import { getFontSize } from '$lib/app/api'
 import { filterSeqRecs } from '$lib/app/api/db/gbseq'
-import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
-import { getLineage } from '$lib/app/api/db/taxonomy/lineage'
+// import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
+// import { getLineage, cacheTaxIds } from '$lib/app/api/db/taxonomy/lineage'
+// import { getPropNames } from '$lib'
 
 let seqRecList: IndexedUndefined[] = []
 let statusMain: string = ''
@@ -47,45 +48,44 @@ let filteredTaxIds: string[] | undefined
 let taxIds: Set<number> = new Set()
 let lineages: { [id: number]: number[] } = {}
 
-async function _getLineage(taxId: number) {
-  if (taxId in lineages) {
-    // return lineages[taxId]
-    console.log('Cache Hit.')
-  } else {
-    const l = await getLineage(taxId)
-    lineages[taxId] = l
-    console.log('Cache Miss.')
-    // return l
-  }
-}
+// async function _getLineage(taxId: number) {
+//   if (taxId in lineages) {
+//     console.log('Cache Hit.')
+//     return lineages[taxId]
+//   } else {
+//     const l = await getLineage(taxId)
+//     lineages[taxId] = l
+//     console.log('Cache Miss.')
+//     return l
+//   }
+// }
 
-function _getLineages(taxIds: Set<number>) {
-  ;[...taxIds].forEach((tid) => {
-    _getLineage(tid)
-  })
-  // console.log(lineages)
-}
+// function _getLineages(taxIds: Set<number>) {
+//   ;[...taxIds].forEach((tid) => {
+//     _getLineage(tid)
+//   })
+// }
 
+// function _getTaxIds(seqRecList: IndexedUndefined[]) {
+//   const _: Set<number> = new Set()
+//   seqRecList.forEach((r) => {
+//     _.add(r.TaxID as number)
+//   })
+//   return _
+// }
+
+// $: taxIds = _getTaxIds(seqRecList)
 // $: _getLineages(taxIds)
 
-function _getTaxIds(seqRecList: IndexedUndefined[]) {
-  const _: Set<number> = new Set()
-  seqRecList.forEach((r) => {
-    _.add(r.TaxID as number)
-  })
-  return _
-}
-$: taxIds = _getTaxIds(seqRecList)
-
-async function _filterTaxonomy(term: string) {
-  if (term) {
-    const rv = await filterTaxonomy(term)
-    filteredResultsTax = rv
-  } else {
-    filteredResultsTax = undefined
-    filteredTaxIds = undefined
-  }
-}
+// async function _filterTaxonomy(term: string) {
+//   if (term) {
+//     const rv = await filterTaxonomy(term)
+//     filteredResultsTax = rv
+//   } else {
+//     filteredResultsTax = undefined
+//     filteredTaxIds = undefined
+//   }
+// }
 
 // $: _filterTaxonomy(filterTermTax)
 // $: console.table(filteredResultsTax)
