@@ -331,6 +331,7 @@ onDestroy(() => {
             bind:selected="{selectedColl}"
             bind:selectedGroupUid
             bind:selectedChildIds="{selectedSeqTypes}"
+            selectedChildIdsEnabled
             bind:expandedIds="{expandedSeqTypeIds}" />
         </div>
         <!--

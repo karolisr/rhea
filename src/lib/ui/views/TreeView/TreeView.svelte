@@ -10,6 +10,7 @@ export let selectedGroupUid: string | undefined = undefined
 
 export let selectedLineage: string[] | undefined = undefined
 export let selectedChildIds: string[] | undefined = undefined
+export let selectedChildIdsEnabled: boolean = false
 
 export let acceptedDropTypes: string[] = []
 
@@ -95,6 +96,7 @@ const _removeRecords = async (ids: string[], collId: string) => {
     bind:acceptedDropTypes
     bind:selectedLineage
     bind:selectedChildIds
+    bind:selectedChildIdsEnabled
     {db}
     {tableName}
     {rootLabel}

@@ -32,6 +32,7 @@ export let expandedIds: Set<string>
 
 export let selectedLineage: string[] | undefined = undefined
 export let selectedChildIds: string[] | undefined = undefined
+export let selectedChildIdsEnabled: boolean = false
 
 export let acceptedDropTypes: string[]
 
@@ -65,7 +66,7 @@ export let removeRecords: (ids: string[], collId: string) => Promise<void>
 //   }
 // }
 
-$: _getAllChildIds(selected, db, tableName, tree.id)
+$: if (selectedChildIdsEnabled) _getAllChildIds(selected, db, tableName, tree.id)
 
 async function _getAllChildIds(
   selectedTreeId: string | undefined,
@@ -301,6 +302,7 @@ async function onDrop(e: Event) {
               bind:acceptedDropTypes
               bind:selectedLineage
               bind:selectedChildIds
+              bind:selectedChildIdsEnabled
               {db}
               {tableName}
               {rootLabel}
