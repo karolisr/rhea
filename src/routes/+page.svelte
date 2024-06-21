@@ -167,6 +167,10 @@ let nRowMain: number = 3
 let rowHs: number[] = []
 let prevRowHs: number[] = []
 
+let colWs: number[] = [-1]
+
+// $: console.log(rowHs, colWs)
+
 $: {
   if (rowHeight && rowHs.length === 0) {
     // getFontSize() * 3
@@ -380,8 +384,9 @@ onDestroy(() => {
       rowBorders="{[false, true]}"
       nCol="{1}"
       bind:rowHs
-      colWs="{[-1]}"
+      bind:colWs
       minRowH="{0}"
+      minColW="{0}"
       fixedHRows="{[]}">
       <div class="filter-search">
         {#if selectedGroupUid === 'search-results-tree'}
@@ -408,6 +413,7 @@ onDestroy(() => {
           multiRowSelect
           showHeaderRow />
       </div>
+
       <SeqView seq="{activeRecordSeq}" seqType="{activeRecordSeqType}" />
       <!--
       <div class="placeholder">

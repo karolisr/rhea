@@ -51,16 +51,17 @@ export function drawSite(
 
 export function prepareSiteImages(
   size: number,
-  font: string
+  cnvScale: number
 ): Map<string, HTMLCanvasElement> {
   const renderedSites: Map<string, HTMLCanvasElement> = new Map()
   for (let [key] of color_scheme) {
     const buffer = document.createElement('canvas')
-    buffer.width = size
-    buffer.height = size
     const ctx = buffer.getContext('2d') as CanvasRenderingContext2D
-    // ctx.font = `normal ${size}px ${font}`
-    ctx.font = font
+    buffer.width = size * cnvScale
+    buffer.height = size * cnvScale
+    ctx.reset()
+    ctx.scale(cnvScale, cnvScale)
+    ctx.font = `normal ${size - 4}px Sans-Serif`
     drawSite(ctx, key, size)
     renderedSites.set(key, buffer)
   }

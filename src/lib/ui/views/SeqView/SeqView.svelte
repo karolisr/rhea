@@ -1,26 +1,37 @@
 <script lang="ts">
-import { onMount } from 'svelte'
+import { onMount, onDestroy } from 'svelte'
+import { max } from '$lib'
 import { prepareSiteImages } from '.'
+
 export let seq: string | undefined = undefined
 export let seqType: string | undefined = undefined
 
-const size = 20
+let cnv: HTMLCanvasElement | null = null
+let ctx: CanvasRenderingContext2D | null = null
+
+let width: number
+let height: number
+
+let minW: number = 20
+let minH: number = 20
+
+const cnvScale: number = 4
+
+const siteSize = 19
 
 const renderedSites: Map<string, HTMLCanvasElement> = prepareSiteImages(
-  size,
-  `${size}px Monospace`
+  siteSize,
+  cnvScale
 )
-let canvas: HTMLCanvasElement | null = null
-let ctx: CanvasRenderingContext2D | null = null
 
 const mar_x = 0
 const mar_y = 0
-const delta_x = size + mar_x
-const delta_y = size + mar_y
+const delta_x = siteSize + mar_x
+const delta_y = siteSize + mar_y
 
 function drawSite(label: string, ctx: CanvasRenderingContext2D) {
   ctx.drawImage(renderedSites.get(label) as HTMLCanvasElement, 0, 0)
-  ctx.translate(delta_x, 0)
+  ctx.translate(delta_x * cnvScale, 0)
 }
 
 function drawSites(
@@ -28,9 +39,7 @@ function drawSites(
   seq: string | undefined
 ) {
   if (ctx !== null && seq !== undefined) {
-    ctx.reset()
-    // ctx.font = '10px JetBrains Mono'
-    // ctx.font = `${size}px JetBrains Mono`
+    setCnvSize(width, height)
     for (let i = 0; i < seq.length; i++) {
       const label = seq[i]
       drawSite(label, ctx)
@@ -38,61 +47,44 @@ function drawSites(
   }
 }
 
+function setCnvSize(w: number, h: number) {
+  if (cnv && ctx) {
+    w = max(minW, w)
+    h = max(minH, h)
+    ctx.canvas.width = w * cnvScale
+    ctx.canvas.height = h * cnvScale
+    cnv.style.width = `${w}px`
+    cnv.style.height = `${h}px`
+    ctx.reset()
+  }
+}
+
+$: setCnvSize(width, height)
 $: drawSites(ctx, seq)
 
 onMount(() => {
-  canvas = document.getElementById('seqview-canvas') as HTMLCanvasElement
-  ctx = canvas.getContext('2d')
+  cnv = document.getElementById('seqview-canvas') as HTMLCanvasElement
+  ctx = cnv.getContext('2d') as CanvasRenderingContext2D
+  cnv.style.minWidth = `${minW}px`
+  cnv.style.minHeight = `${minH}px`
 })
+
+onDestroy(() => {})
 </script>
 
-<div class="seqview-container">
-  <!-- <div>{seqType}</div> -->
-  <!-- <div>{seq}</div> -->
+<div
+  class="seqview-container"
+  bind:clientWidth="{width}"
+  bind:clientHeight="{height}">
   <canvas id="seqview-canvas"></canvas>
 </div>
 
-<!--
-<div class="seqview-container">
-  <div class="seqview-seq">
-    {seq}
-  </div>
-</div>
--->
-
 <style>
 .seqview-container {
-  display: flex;
-  flex-direction: column;
-  background-color: azure;
-  overflow-x: scroll;
-  /* margin: 0; */
-  /* font-family: 'JetBrains Mono'; */
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
-
-#seqview-canvas {
-  flex-grow: 1;
-  flex-shrink: 1;
-  background-color: beige;
-  overflow-x: scroll;
-  /* margin: 0; */
-  /* width: 100px; */
-  /* height: 1000px; */
-  /* font-family: 'JetBrains Mono'; */
-}
-
-/*
-.seqview-container {
-  display: flex;
-  flex-direction: column;
-  background-color: azure;
-  overflow-x: scroll;
-}
-.seqview-seq {
-  flex-grow: 0;
-  background-color: beige;
-  font-family: 'JetBrains Mono';
-  overflow-x: scroll;
-}
-*/
+/* canvas {
+  background-color: pink;
+} */
 </style>
