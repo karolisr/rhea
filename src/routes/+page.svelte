@@ -414,7 +414,10 @@ onDestroy(() => {
           showHeaderRow />
       </div>
 
-      <SeqView seq="{activeRecordSeq}" seqType="{activeRecordSeqType}" />
+      <SeqView
+        seq="{activeRecordSeq}"
+        seqType="{activeRecordSeqType}"
+        seqId="{activeRecordId}" />
       <!--
       <div class="placeholder">
         {selectedColl

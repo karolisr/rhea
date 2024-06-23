@@ -11,6 +11,12 @@ export class Point {
   }
 }
 
+export enum xAlignment {
+  left = 0,
+  center = 1,
+  right = 2
+}
+
 const color_scheme = new Map([
   ['a', 'rgba(255,120,120,1)'],
   ['c', 'rgba(120,120,255,1)'],
@@ -23,22 +29,46 @@ const color_scheme = new Map([
 export function calcTextOffset(
   ctx: CanvasRenderingContext2D,
   text: string,
-  size: number
+  sizeX: number,
+  sizeY: number,
+  xAlign: xAlignment = xAlignment.center
 ): Point {
   const m = ctx.measureText(text)
   const w = m.actualBoundingBoxLeft + m.actualBoundingBoxRight
-  const h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent
-  const x = (size - w) / 2
-  const y = (size - h) / 2
-  return new Point(x + m.actualBoundingBoxLeft, y + m.actualBoundingBoxAscent)
+  const h = m.actualBoundingBoxAscent + m.alphabeticBaseline
+
+  let x: number = 0
+  const y = (sizeY - h) / 2
+  const topOffset = y + m.actualBoundingBoxAscent - sizeY / 30
+  switch (xAlign) {
+    case xAlignment.left:
+      return new Point(0, topOffset)
+
+    case xAlignment.center:
+      x = (sizeX - w) / 2
+      return new Point(x, topOffset)
+
+    case xAlignment.right:
+      return new Point(sizeX - w, topOffset)
+
+    default:
+      return new Point(0, 0)
+  }
 }
 
 export function drawSite(
   ctx: CanvasRenderingContext2D,
   text: string,
-  size: number
+  size: number,
+  xAlign: xAlignment
 ) {
-  const text_offset = calcTextOffset(ctx, text, size)
+  const text_offset = calcTextOffset(
+    ctx,
+    text.toUpperCase(),
+    size,
+    size,
+    xAlign
+  )
   if (color_scheme.has(text)) {
     ctx.fillStyle = color_scheme.get(text) as string
   } else {
@@ -46,7 +76,7 @@ export function drawSite(
   }
   ctx.fillRect(0, 0, size, size)
   ctx.fillStyle = '#000'
-  ctx.fillText(text, text_offset.x, text_offset.y)
+  ctx.fillText(text.toUpperCase(), text_offset.x, text_offset.y)
 }
 
 export function prepareSiteImages(
@@ -62,7 +92,7 @@ export function prepareSiteImages(
     ctx.reset()
     ctx.scale(cnvScale, cnvScale)
     ctx.font = `normal ${size - 4}px Sans-Serif`
-    drawSite(ctx, key, size)
+    drawSite(ctx, key, size, xAlignment.center)
     renderedSites.set(key, buffer)
   }
   return renderedSites

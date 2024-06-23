@@ -1,10 +1,11 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import { max } from '$lib'
-import { prepareSiteImages } from '.'
+import { max, min } from '$lib'
+import { prepareSiteImages, calcTextOffset, xAlignment } from '.'
 
 export let seq: string | undefined = undefined
 export let seqType: string | undefined = undefined
+export let seqId: string | undefined = undefined
 
 let cnv: HTMLCanvasElement | null = null
 let ctx: CanvasRenderingContext2D | null = null
@@ -17,7 +18,7 @@ let minH: number = 20
 
 const cnvScale: number = 4
 
-const siteSize = 19
+const siteSize = 18
 
 const renderedSites: Map<string, HTMLCanvasElement> = prepareSiteImages(
   siteSize,
@@ -34,13 +35,38 @@ function drawSite(label: string, ctx: CanvasRenderingContext2D) {
   ctx.translate(delta_x * cnvScale, 0)
 }
 
+function drawSeqLabel(
+  ctx: CanvasRenderingContext2D | null,
+  seqId: string | undefined
+) {
+  if (ctx !== null && seq !== undefined && seqId !== undefined) {
+    ctx.font = `normal ${(siteSize - 6) * cnvScale}px Monospace`
+    const maxLen = (siteSize * 15 * cnvScale) / 2
+    const textOffset = calcTextOffset(
+      ctx,
+      seqId,
+      maxLen,
+      siteSize * cnvScale,
+      xAlignment.right
+    )
+    const labelPadding = siteSize * cnvScale * 0.25
+    ctx.fillStyle = '#F5F5F5'
+    ctx.fillRect(0, 0, maxLen + labelPadding, siteSize * cnvScale)
+    ctx.fillStyle = '#000'
+    ctx.fillText(seqId, textOffset.x, textOffset.y)
+    ctx.translate(maxLen + labelPadding, 0)
+  }
+}
+
 function drawSites(
   ctx: CanvasRenderingContext2D | null,
-  seq: string | undefined
+  seq: string | undefined,
+  seqId: string | undefined
 ) {
-  if (ctx !== null && seq !== undefined) {
+  if (ctx !== null && seq !== undefined && seqId !== undefined) {
     setCnvSize(width, height)
-    for (let i = 0; i < seq.length; i++) {
+    drawSeqLabel(ctx, seqId)
+    for (let i = 0; i < min(seq.length, 50); i++) {
       const label = seq[i]
       drawSite(label, ctx)
     }
@@ -60,7 +86,8 @@ function setCnvSize(w: number, h: number) {
 }
 
 $: setCnvSize(width, height)
-$: drawSites(ctx, seq)
+$: drawSeqLabel(ctx, seqId)
+$: drawSites(ctx, seq, seqId)
 
 onMount(() => {
   cnv = document.getElementById('seqview-canvas') as HTMLCanvasElement
