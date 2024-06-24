@@ -294,6 +294,7 @@ onMount(async () => {
 })
 
 onDestroy(() => {
+  $status.main = ''
   document.removeEventListener(
     'seq-db-insert-in-progress',
     onSeqDbInsertInProgress
@@ -414,20 +415,22 @@ onDestroy(() => {
           showHeaderRow />
       </div>
 
-      <SeqView
-        seq="{activeRecordSeq}"
-        seqType="{activeRecordSeqType}"
-        seqId="{activeRecordId}" />
-      <!--
-      <div class="placeholder">
+      <div class="seqview-container">
+        <SeqView
+          uid="{activeRecordId ?? 'nouid'}"
+          seq="{activeRecordSeq}"
+          seqType="{activeRecordSeqType}"
+          seqId="{activeRecordId}" />
+      </div>
+
+      <!-- <div class="placeholder">
         {selectedColl
           ? selectedGroupUid +
             ' : ' +
             selectedColl +
             (activeRecordId ? ` : ${activeRecordId}` : '')
           : ''}
-      </div>
-      -->
+      </div> -->
     </ResizableGrid>
   </ResizableGrid>
 {:else}
@@ -467,5 +470,13 @@ onDestroy(() => {
   text-align: unset;
   overflow-x: hidden;
   overflow-y: scroll;
+}
+
+.seqview-container {
+  display: flex;
+  align-content: unset;
+  text-align: unset;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 </style>

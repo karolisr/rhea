@@ -1,117 +1,138 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { max, min } from '$lib'
-import { prepareSiteImages, calcTextOffset, xAlignment } from '.'
+import { prepareSiteImages, drawSeqLabel } from '.'
 
-export let seq: string | undefined = undefined
-export let seqType: string | undefined = undefined
+export let uid: string
 export let seqId: string | undefined = undefined
+export let seqType: string | undefined = undefined
+export let seq: string | undefined = undefined
+export let cnvScale: number = 2
+export let siteSize = 18
+export let labelW = siteSize * 10
+export let siteGapX = 0
+export let siteGapY = 0
+export let minW: number = labelW + siteSize * 20
+export let minH: number = siteSize
 
-let cnv: HTMLCanvasElement | null = null
 let ctx: CanvasRenderingContext2D | null = null
 
-let width: number
-let height: number
+let cnvW: number
+let cnvH: number
 
-let minW: number = 20
-let minH: number = 20
+let deltaX: number
+let deltaY: number
 
-const cnvScale: number = 4
+let renderedSites: Map<string, HTMLCanvasElement>
 
-const siteSize = 18
-
-const renderedSites: Map<string, HTMLCanvasElement> = prepareSiteImages(
-  siteSize,
-  cnvScale
-)
-
-const mar_x = 0
-const mar_y = 0
-const delta_x = siteSize + mar_x
-const delta_y = siteSize + mar_y
-
-function drawSite(label: string, ctx: CanvasRenderingContext2D) {
-  ctx.drawImage(renderedSites.get(label) as HTMLCanvasElement, 0, 0)
-  ctx.translate(delta_x * cnvScale, 0)
-}
-
-function drawSeqLabel(
-  ctx: CanvasRenderingContext2D | null,
-  seqId: string | undefined
+function drawSite(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  renderedSites: Map<string, HTMLCanvasElement>
 ) {
-  if (ctx !== null && seq !== undefined && seqId !== undefined) {
-    ctx.font = `normal ${(siteSize - 6) * cnvScale}px Monospace`
-    const maxLen = (siteSize * 15 * cnvScale) / 2
-    const textOffset = calcTextOffset(
-      ctx,
-      seqId,
-      maxLen,
-      siteSize * cnvScale,
-      xAlignment.right
-    )
-    const labelPadding = siteSize * cnvScale * 0.25
-    ctx.fillStyle = '#F5F5F5'
-    ctx.fillRect(0, 0, maxLen + labelPadding, siteSize * cnvScale)
-    ctx.fillStyle = '#000'
-    ctx.fillText(seqId, textOffset.x, textOffset.y)
-    ctx.translate(maxLen + labelPadding, 0)
-  }
+  ctx.drawImage(renderedSites.get(label) as HTMLCanvasElement, 0, 0)
 }
 
 function drawSites(
-  ctx: CanvasRenderingContext2D | null,
-  seq: string | undefined,
-  seqId: string | undefined
+  ctx: CanvasRenderingContext2D,
+  seq: string,
+  deltaX: number,
+  cnvScale: number,
+  renderedSites: Map<string, HTMLCanvasElement>
 ) {
-  if (ctx !== null && seq !== undefined && seqId !== undefined) {
-    setCnvSize(width, height)
-    drawSeqLabel(ctx, seqId)
-    for (let i = 0; i < min(seq.length, 50); i++) {
-      const label = seq[i]
-      drawSite(label, ctx)
-    }
+  for (let i = 0; i < min(seq.length, 50); i++) {
+    const label = seq[i]
+    drawSite(ctx, label, renderedSites)
+    ctx.translate(deltaX * cnvScale, 0)
   }
 }
 
-function setCnvSize(w: number, h: number) {
-  if (cnv && ctx) {
-    w = max(minW, w)
-    h = max(minH, h)
-    ctx.canvas.width = w * cnvScale
-    ctx.canvas.height = h * cnvScale
-    cnv.style.width = `${w}px`
-    cnv.style.height = `${h}px`
-    ctx.reset()
-  }
+function setCnvSize(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  minW: number,
+  minH: number
+) {
+  w = max(minW, w)
+  h = max(minH, h)
+  ctx.canvas.width = w * cnvScale
+  ctx.canvas.height = h * cnvScale
+  ctx.canvas.style.width = `${w}px`
+  ctx.canvas.style.height = `${h}px`
+  ctx.reset()
 }
 
-$: setCnvSize(width, height)
-$: drawSeqLabel(ctx, seqId)
-$: drawSites(ctx, seq, seqId)
+function draw(
+  ctx: CanvasRenderingContext2D | null,
+  cnvW: number,
+  cnvH: number,
+  minW: number,
+  minH: number,
+  deltaX: number,
+  deltaY: number,
+  cnvScale: number,
+  siteSize: number,
+  seqId: string | undefined,
+  seq: string | undefined,
+  renderedSites: Map<string, HTMLCanvasElement>
+) {
+  if (ctx !== null) {
+    setCnvSize(ctx, cnvW, cnvH, minW, minH)
+    if (seqId !== undefined)
+      drawSeqLabel(ctx, seqId, labelW, siteSize, cnvScale)
+    if (seq !== undefined) drawSites(ctx, seq, deltaX, cnvScale, renderedSites)
+  }
+}
 
 onMount(() => {
-  cnv = document.getElementById('seqview-canvas') as HTMLCanvasElement
+  const cnv = document.getElementById(
+    `${uid}-seqview-canvas`
+  ) as HTMLCanvasElement
   ctx = cnv.getContext('2d') as CanvasRenderingContext2D
-  cnv.style.minWidth = `${minW}px`
-  cnv.style.minHeight = `${minH}px`
+  ctx.canvas.style.minWidth = `${minW}px`
+  ctx.canvas.style.minHeight = `${minH}px`
 })
 
 onDestroy(() => {})
+
+$: renderedSites = prepareSiteImages(siteSize, cnvScale)
+$: deltaX = siteSize + siteGapX
+$: deltaY = siteSize + siteGapY
+$: draw(
+  ctx,
+  cnvW,
+  cnvH,
+  minW,
+  minH,
+  deltaX,
+  deltaY,
+  cnvScale,
+  siteSize,
+  seqId,
+  seq,
+  renderedSites
+)
 </script>
 
 <div
-  class="seqview-container"
-  bind:clientWidth="{width}"
-  bind:clientHeight="{height}">
-  <canvas id="seqview-canvas"></canvas>
+  class="seqview-element"
+  bind:clientWidth="{cnvW}"
+  bind:clientHeight="{cnvH}">
+  <canvas id="{uid}-seqview-canvas" class="seqview-canvas"></canvas>
 </div>
 
 <style>
-.seqview-container {
+.seqview-element {
+  display: flex;
   overflow-x: hidden;
   overflow-y: hidden;
+  flex-grow: 1;
+  flex-shrink: 1;
 }
-/* canvas {
-  background-color: pink;
-} */
+
+.seqview-canvas {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
 </style>

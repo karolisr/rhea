@@ -34,12 +34,11 @@ export function calcTextOffset(
   xAlign: xAlignment = xAlignment.center
 ): Point {
   const m = ctx.measureText(text)
-  const w = m.actualBoundingBoxLeft + m.actualBoundingBoxRight
-  const h = m.actualBoundingBoxAscent + m.alphabeticBaseline
+  const w = m.width
+  const h = m.fontBoundingBoxAscent + m.ideographicBaseline
 
   let x: number = 0
-  const y = (sizeY - h) / 2
-  const topOffset = y + m.actualBoundingBoxAscent - sizeY / 30
+  const topOffset = (sizeY + h) / 2
   switch (xAlign) {
     case xAlignment.left:
       return new Point(0, topOffset)
@@ -96,4 +95,27 @@ export function prepareSiteImages(
     renderedSites.set(key, buffer)
   }
   return renderedSites
+}
+
+export function drawSeqLabel(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  sizeX: number,
+  sizeY: number,
+  cnvScale: number
+) {
+  ctx.font = `normal ${(sizeY - 6) * cnvScale}px Monospace`
+  const textOffset = calcTextOffset(
+    ctx,
+    label,
+    sizeX * cnvScale,
+    sizeY * cnvScale,
+    xAlignment.right
+  )
+  const labelPadding = sizeY * cnvScale * 0.25
+  ctx.fillStyle = '#F5F5F5'
+  ctx.fillRect(0, 0, sizeX * cnvScale + labelPadding, sizeY * cnvScale)
+  ctx.fillStyle = '#000'
+  ctx.fillText(label, textOffset.x, textOffset.y)
+  ctx.translate(sizeX * cnvScale + labelPadding, 0)
 }
