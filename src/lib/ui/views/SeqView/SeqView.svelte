@@ -1,12 +1,13 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import { max, min } from '$lib'
-import { prepareSiteImages, drawSeqLabel } from '.'
+import { prepareSiteImages, drawSeqLabel, setCnvSize, drawSites } from '.'
 
 export let uid: string
+
 export let seqId: string | undefined = undefined
 export let seqType: string | undefined = undefined
 export let seq: string | undefined = undefined
+
 export let cnvScale: number = 2
 export let siteSize = 18
 export let labelW = siteSize * 10
@@ -25,44 +26,6 @@ let deltaY: number
 
 let renderedSites: Map<string, HTMLCanvasElement>
 
-function drawSite(
-  ctx: CanvasRenderingContext2D,
-  label: string,
-  renderedSites: Map<string, HTMLCanvasElement>
-) {
-  ctx.drawImage(renderedSites.get(label) as HTMLCanvasElement, 0, 0)
-}
-
-function drawSites(
-  ctx: CanvasRenderingContext2D,
-  seq: string,
-  deltaX: number,
-  cnvScale: number,
-  renderedSites: Map<string, HTMLCanvasElement>
-) {
-  for (let i = 0; i < min(seq.length, 50); i++) {
-    const label = seq[i]
-    drawSite(ctx, label, renderedSites)
-    ctx.translate(deltaX * cnvScale, 0)
-  }
-}
-
-function setCnvSize(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  minW: number,
-  minH: number
-) {
-  w = max(minW, w)
-  h = max(minH, h)
-  ctx.canvas.width = w * cnvScale
-  ctx.canvas.height = h * cnvScale
-  ctx.canvas.style.width = `${w}px`
-  ctx.canvas.style.height = `${h}px`
-  ctx.reset()
-}
-
 function draw(
   ctx: CanvasRenderingContext2D | null,
   cnvW: number,
@@ -78,7 +41,7 @@ function draw(
   renderedSites: Map<string, HTMLCanvasElement>
 ) {
   if (ctx !== null) {
-    setCnvSize(ctx, cnvW, cnvH, minW, minH)
+    setCnvSize(ctx, cnvW, cnvH, minW, minH, cnvScale)
     if (seqId !== undefined)
       drawSeqLabel(ctx, seqId, labelW, siteSize, cnvScale)
     if (seq !== undefined) drawSites(ctx, seq, deltaX, cnvScale, renderedSites)

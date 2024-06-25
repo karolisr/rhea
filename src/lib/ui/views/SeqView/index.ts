@@ -1,4 +1,6 @@
 import SeqView from './SeqView.svelte'
+import { max, min } from '$lib'
+
 export default SeqView
 
 export class Point {
@@ -25,6 +27,23 @@ const color_scheme = new Map([
   ['n', 'rgba(200,200,200,1)'],
   ['-', 'rgba(255,255,255,1)']
 ])
+
+export function setCnvSize(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  minW: number,
+  minH: number,
+  cnvScale: number
+) {
+  w = max(minW, w)
+  h = max(minH, h)
+  ctx.canvas.width = w * cnvScale
+  ctx.canvas.height = h * cnvScale
+  ctx.canvas.style.width = `${w}px`
+  ctx.canvas.style.height = `${h}px`
+  ctx.reset()
+}
 
 export function calcTextOffset(
   ctx: CanvasRenderingContext2D,
@@ -55,7 +74,7 @@ export function calcTextOffset(
   }
 }
 
-export function drawSite(
+export function prepareSiteImage(
   ctx: CanvasRenderingContext2D,
   text: string,
   size: number,
@@ -91,7 +110,7 @@ export function prepareSiteImages(
     ctx.reset()
     ctx.scale(cnvScale, cnvScale)
     ctx.font = `normal ${size - 4}px Sans-Serif`
-    drawSite(ctx, key, size, xAlignment.center)
+    prepareSiteImage(ctx, key, size, xAlignment.center)
     renderedSites.set(key, buffer)
   }
   return renderedSites
@@ -118,4 +137,26 @@ export function drawSeqLabel(
   ctx.fillStyle = '#000'
   ctx.fillText(label, textOffset.x, textOffset.y)
   ctx.translate(sizeX * cnvScale + labelPadding, 0)
+}
+
+export function drawSite(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  renderedSites: Map<string, HTMLCanvasElement>
+) {
+  ctx.drawImage(renderedSites.get(label) as HTMLCanvasElement, 0, 0)
+}
+
+export function drawSites(
+  ctx: CanvasRenderingContext2D,
+  seq: string,
+  deltaX: number,
+  cnvScale: number,
+  renderedSites: Map<string, HTMLCanvasElement>
+) {
+  for (let i = 0; i < min(seq.length, 50); i++) {
+    const label = seq[i]
+    drawSite(ctx, label, renderedSites)
+    ctx.translate(deltaX * cnvScale, 0)
+  }
 }
