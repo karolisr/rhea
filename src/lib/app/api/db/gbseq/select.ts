@@ -84,12 +84,16 @@ export async function getSeqRecsByType(types: string[]) {
 }
 
 export async function getSequences(accs: string[]) {
+  let rv: IndexedUndefined[] = []
+  if (accs.length === 0) {
+    return rv
+  }
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
     db = _.dbSequences
   })
-  let rv: IndexedUndefined[] = []
+
   if (db !== null) {
     db = db as DB
     const _sql = sql`

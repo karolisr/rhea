@@ -24,6 +24,7 @@ const color_scheme = new Map([
   ['C', 'rgba(120,120,255,1)'],
   ['G', 'rgba(251,231,2,1)'],
   ['T', 'rgba(0,255,0,1)'],
+  ['U', 'rgba(0,255,0,1)'],
   ['N', 'rgba(200,200,200,1)'],
   ['-', 'rgba(255,255,255,1)']
 ])
@@ -146,6 +147,8 @@ export function drawSite(
   label: string,
   renderedSites: Map<string, HTMLCanvasElement>
 ) {
+  label = label.toUpperCase()
+  if (!renderedSites.has(label)) return
   ctx.drawImage(renderedSites.get(label) as HTMLCanvasElement, 0, 0)
 }
 
@@ -157,7 +160,7 @@ export function drawSites(
   renderedSites: Map<string, HTMLCanvasElement>
 ): number {
   let totalOffsetX = 0
-  for (let i = 0; i < min(seq.length, 50); i++) {
+  for (let i = 0; i < min(seq.length, 30); i++) {
     const label = seq[i]
     drawSite(ctx, label, renderedSites)
     const offsetX = deltaX * cnvScale
@@ -165,4 +168,51 @@ export function drawSites(
     totalOffsetX += offsetX
   }
   return totalOffsetX
+}
+
+export function drawScale(
+  ctx: CanvasRenderingContext2D,
+  nSites: number,
+  siteSize: number,
+  deltaX: number,
+  lineW: number,
+  cnvScale: number,
+  height: number,
+  minorTicksEvery: number,
+  majorTicksEvery: number
+) {
+  ctx.font = `normal ${height / 2.75}px Monospace`
+  for (let i = 1; i < nSites + 1; i++) {
+    const x = i * deltaX * cnvScale + ((deltaX - siteSize) * cnvScale) / 2
+    if (i % majorTicksEvery === 0) {
+      const labOffset = calcTextOffset(
+        ctx,
+        String(i),
+        deltaX * 2 * cnvScale,
+        height / 3
+      )
+      ctx.fillText(
+        String(i),
+        x + labOffset.x - deltaX * cnvScale,
+        labOffset.y + height / 10
+      )
+      ctx.lineWidth = lineW * 2
+      ctx.beginPath()
+      ctx.moveTo(x, height / 1.75)
+      ctx.lineTo(x, height)
+      ctx.stroke()
+    } else if (i % minorTicksEvery === 0) {
+      ctx.lineWidth = lineW
+      ctx.beginPath()
+      ctx.moveTo(x, height / 1.5)
+      ctx.lineTo(x, height)
+      ctx.stroke()
+    }
+  }
+
+  ctx.lineWidth = lineW
+  ctx.beginPath()
+  ctx.moveTo((deltaX - siteSize) * cnvScale, height)
+  ctx.lineTo(nSites * deltaX * cnvScale, height)
+  ctx.stroke()
 }

@@ -31,7 +31,8 @@ import { filterSeqRecs } from '$lib/app/api/db/gbseq'
 import { getSequences } from '$lib/app/api/db/gbseq'
 import SeqView from '$lib/ui/views/SeqView'
 import { SeqRecord } from '$lib/seq/seq-record'
-import { DNASeq } from '$lib/seq/seq'
+import { NTSeq, DNASeq, RNASeq, AASeq } from '$lib/seq/seq'
+import type { Seq } from '$lib/seq/types'
 
 // import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
 // import { getLineage, cacheTaxIds } from '$lib/app/api/db/taxonomy/lineage'
@@ -151,17 +152,7 @@ $: {
 }
 
 // let selectedTaxon: string | undefined = undefined
-
-let selectedSeqTypes: string[] | undefined = undefined
-
-let activeRecordId: string | undefined = undefined
-let activeRecord: IndexedUndefined | undefined = undefined
-let selectedRecordIds: string[] = []
-let activeRecordSeq: string | undefined = undefined
-let activeRecordSeqType: string | undefined = undefined
-
-$: if (activeRecord)
-  activeRecordSeqType = activeRecord['Molecule Type'] as string
+let subsetSeqTypes: string[] | undefined = undefined
 
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
@@ -205,7 +196,7 @@ $: {
 async function _getSeqRecs(
   collUid: string | undefined,
   collectionId: string | undefined,
-  selectedSeqTypes: string[] | undefined,
+  subsetSeqTypes: string[] | undefined,
   rebuild: number
 ) {
   if (
@@ -217,8 +208,8 @@ async function _getSeqRecs(
     if (collUid === 'user-tree') {
       seqRecList = await getSeqRecsFromCollection('user', [collectionId])
     } else if (collUid === 'sequence-type-tree') {
-      if (selectedSeqTypes !== undefined) {
-        seqRecList = await getSeqRecsByType(selectedSeqTypes)
+      if (subsetSeqTypes !== undefined) {
+        seqRecList = await getSeqRecsByType(subsetSeqTypes)
       } else {
         seqRecList = []
       }
@@ -241,7 +232,7 @@ async function _removeSeqRec(id: unknown) {
 }
 
 $: if ($dbs && $dbs.dbsOK)
-  _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
+  _getSeqRecs(selectedGroupUid, selectedColl, subsetSeqTypes, rebuild)
 
 $: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
 $: if (seqRecListRL) {
@@ -264,28 +255,96 @@ $: if (seqRecListRL) {
 
 function onSeqDbUpdated(ev: Event) {
   console.log('onSeqDbUpdated')
-  _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
+  _getSeqRecs(selectedGroupUid, selectedColl, subsetSeqTypes, rebuild)
 }
 
 function onSeqDbInsertInProgress(ev: Event) {
   console.log('onSeqDbInsertInProgress')
-  _getSeqRecs(selectedGroupUid, selectedColl, selectedSeqTypes, rebuild)
+  _getSeqRecs(selectedGroupUid, selectedColl, subsetSeqTypes, rebuild)
 }
 
-async function _getSequence(acc: string | undefined) {
-  if (acc !== undefined) {
-    const _ = await getSequences([acc])
-    if (_.length === 1 && _[0].acc === acc) {
-      activeRecordSeq = _[0].seq as string
-    } else {
-      activeRecordSeq = undefined
+let activeRecordId: string | undefined = undefined
+let activeRecord: IndexedUndefined | undefined = undefined
+// let activeRecordSeq: string | undefined = undefined
+// let activeRecordSeqType: string | undefined = undefined
+// $: if (activeRecord)
+//   activeRecordSeqType = activeRecord['Molecule Type'] as string
+
+// async function _getSeqForActiveRec(acc: string | undefined) {
+//   if (acc !== undefined) {
+//     const _ = await getSequences([acc])
+//     if (_.length === 1 && _[0].acc === acc) {
+//       activeRecordSeq = _[0].seq as string
+//     } else {
+//       activeRecordSeq = undefined
+//     }
+//   } else {
+//     activeRecordSeq = undefined
+//   }
+// }
+
+// $: _getSeqForActiveRec(activeRecordId)
+
+async function _getSeqsForSelectedRecs(
+  accsSelected: string[],
+  accActive: string | undefined,
+  accFiltered: string[] | undefined
+) {
+  let _accsSelected: string[] = [...accsSelected]
+  let _accs: string[] = []
+  let _moltypes: string[] = []
+  const srs: SeqRecord[] = []
+
+  // if (_accsSelected.length === 0 && accActive !== undefined) {
+  //   _accsSelected = [accActive]
+  // }
+
+  for (let i = 0; i < _accsSelected.length; i++) {
+    const acc = _accsSelected[i]
+    const moltype = seqRecListRL.valueByKey(acc, 'Molecule Type')
+    if (typeof moltype === 'string') {
+      _accs.push(acc)
+      _moltypes.push(moltype)
     }
-  } else {
-    activeRecordSeq = undefined
   }
+
+  if (_accs.length === 0 && accActive !== undefined) {
+    const moltype = seqRecListRL.valueByKey(accActive, 'Molecule Type')
+    if (typeof moltype === 'string') {
+      _accs = [accActive]
+      _moltypes = [moltype]
+    }
+  }
+
+  const _ = await getSequences(_accs)
+  for (let i = 0; i < _.length; i++) {
+    const dbrv = _[i]
+    const acc: string = dbrv.acc as string
+    const seqstr: string = dbrv.seq as string
+    const idx: number = _accs.indexOf(acc)
+    const moltype: string = _moltypes[idx]
+
+    let seq: Seq | undefined = undefined
+
+    if (moltype.endsWith('RNA')) {
+      seq = new RNASeq(seqstr)
+    } else if (moltype === 'DNA') {
+      seq = new DNASeq(seqstr)
+    } else if (moltype === 'AA') {
+      seq = new AASeq(seqstr)
+    }
+
+    if (seq !== undefined) {
+      const sr = new SeqRecord(acc, seq)
+      srs.push(sr)
+    }
+  }
+  selectedRecords = srs
 }
 
-$: _getSequence(activeRecordId)
+let selectedRecordIds: string[] = []
+let selectedRecords: SeqRecord[] = []
+$: _getSeqsForSelectedRecs(selectedRecordIds, activeRecordId, filteredIds)
 
 onMount(async () => {
   dbs = await databases
@@ -361,7 +420,7 @@ onDestroy(() => {
             rootLabel="All Records"
             bind:selected="{selectedColl}"
             bind:selectedGroupUid
-            bind:selectedChildIds="{selectedSeqTypes}"
+            bind:selectedChildIds="{subsetSeqTypes}"
             selectedChildIdsEnabled
             bind:expandedIds="{expandedSeqTypeIds}" />
         </div>
@@ -418,22 +477,18 @@ onDestroy(() => {
           showHeaderRow />
       </div>
 
-      <!-- <div class="seqview-container">
-        <SeqView
-          uid="{activeRecordId ?? 'nouid'}"
-          seq="{activeRecordSeq}"
-          seqType="{activeRecordSeqType}"
-          seqId="{activeRecordId}" />
-      </div> -->
+      <div class="seqview-container">
+        <SeqView uid="seqview-main" seqRecords="{selectedRecords}" />
+      </div>
 
-      <div class="placeholder">
+      <!-- <div class="placeholder">
         {selectedColl
           ? selectedGroupUid +
             ' : ' +
             selectedColl +
             (activeRecordId ? ` : ${activeRecordId}` : '')
           : ''}
-      </div>
+      </div> -->
     </ResizableGrid>
   </ResizableGrid>
 {:else}

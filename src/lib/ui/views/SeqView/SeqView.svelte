@@ -1,7 +1,14 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import { prepareSiteImages, drawSeqLabel, setCnvSize, drawSites } from '.'
+import {
+  prepareSiteImages,
+  drawScale,
+  drawSeqLabel,
+  setCnvSize,
+  drawSites
+} from '.'
 import { SeqRecord } from '$lib/seq/seq-record'
+import { ceil, floor, max, min } from '$lib'
 
 export let uid: string
 
@@ -15,6 +22,8 @@ export let minW: number = labelW + siteSize * 20
 export let minH: number = siteSize
 export let cnvScale: number = 2
 
+let renderedSites: Map<string, HTMLCanvasElement>
+
 let ctx: CanvasRenderingContext2D | null = null
 
 let cnvW: number
@@ -23,7 +32,12 @@ let cnvH: number
 let deltaX: number
 let deltaY: number
 
-let renderedSites: Map<string, HTMLCanvasElement>
+let nRowsVis: number
+let nColsVis: number
+
+function calcNumVis(cnvWH: number, delta: number, offset: number) {
+  return floor((cnvWH - offset) / delta)
+}
 
 function draw(
   seqRecords: SeqRecord[],
@@ -40,8 +54,24 @@ function draw(
 ) {
   if (ctx !== null) {
     const labelPadding = siteSize * cnvScale * 0.25
-    setCnvSize(ctx, cnvW, cnvH, minW, minH, cnvScale)
-    ctx.lineWidth = cnvScale * 1
+    setCnvSize(
+      ctx,
+      cnvW,
+      max(cnvH, seqRecords.length * deltaY),
+      minW,
+      minH,
+      cnvScale
+    )
+    const lineW = cnvScale * 1
+
+    const scaleHeight = siteSize * 1.5 * cnvScale
+    ctx.translate(labelW * cnvScale, 0)
+    ctx.strokeStyle = '#5C5C5C'
+    drawScale(ctx, 100, siteSize, deltaX, lineW, cnvScale, scaleHeight, 5, 10)
+    ctx.translate(-labelW * cnvScale, scaleHeight + lineW * 1.5)
+
+    ctx.lineWidth = lineW
+
     for (let i = 0; i < seqRecords.length; i++) {
       const sr = seqRecords[i]
       let offsetX = 0
@@ -56,6 +86,11 @@ function draw(
 
       ctx.translate(siteGapX * cnvScale, 0)
       offsetX += siteGapX * cnvScale
+
+      nRowsVis = max(0, calcNumVis(cnvH, deltaY, 0))
+      nColsVis = max(0, calcNumVis(cnvW, deltaX, offsetX / cnvScale))
+      // console.log(nRowsVis, nColsVis)
+
       offsetX += drawSites(ctx, sr.seq.str, deltaX, cnvScale, renderedSites)
 
       // ctx.moveTo(-offsetX, siteSize * cnvScale + (siteGapY / 2) * cnvScale)

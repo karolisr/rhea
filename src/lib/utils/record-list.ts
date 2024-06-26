@@ -130,10 +130,6 @@ export class RecordList<T> {
     return rv
   }
 
-  stringValueByIndex(index: number, field: keyof T) {
-    return this.valueByIndex(index, field, '') as string
-  }
-
   typeByIndex(index: number, field: keyof T) {
     const rec = this.items.at(index) as T
     if (rec) {
@@ -164,6 +160,23 @@ export class RecordList<T> {
       }
 
       return rv
+    }
+  }
+
+  stringValueByIndex(index: number, field: keyof T) {
+    return this.valueByIndex(index, field, '') as string
+  }
+
+  valueByKey(key: string, field: keyof T) {
+    let idx: number | undefined = undefined
+
+    for (let i = 0; i < this.items.length; i++) {
+      const rec = this.items[i]
+      if (rec[this._keyField] === key) {
+        idx = i
+        return this.valueByIndex(idx, field)
+        // break
+      }
     }
   }
 
