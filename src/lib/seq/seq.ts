@@ -1,10 +1,14 @@
 abstract class _Seq {
   protected _seq: string
-  protected _gc_id: number
+  protected _gcId: number
 
-  constructor(seq: string, genetic_code_id: number) {
+  constructor(seq: string, geneticCodeId: number) {
     this._seq = seq
-    this._gc_id = genetic_code_id
+    this._gcId = geneticCodeId
+  }
+
+  get str(): string {
+    return this._seq
   }
 
   get length(): number {
@@ -13,25 +17,25 @@ abstract class _Seq {
 }
 
 export class AASeq extends _Seq {
-  constructor(seq: string, genetic_code_id: number) {
-    super(seq, genetic_code_id)
+  constructor(seq: string, geneticCodeId: number) {
+    super(seq, geneticCodeId)
   }
 }
 
 export class NTSeq extends _Seq {
-  constructor(seq: string, genetic_code_id: number) {
-    super(seq, genetic_code_id)
+  constructor(seq: string, geneticCodeId: number) {
+    super(seq, geneticCodeId)
   }
 }
 
 export class DNASeq extends NTSeq {
-  constructor(seq: string, genetic_code_id: number) {
-    super(seq, genetic_code_id)
+  constructor(seq: string, geneticCodeId: number) {
+    super(seq, geneticCodeId)
   }
 }
 
 export class RNASeq extends NTSeq {
-  constructor(seq: string, genetic_code_id: number) {
-    super(seq, genetic_code_id)
+  constructor(seq: string, geneticCodeId: number) {
+    super(seq, geneticCodeId)
   }
 }

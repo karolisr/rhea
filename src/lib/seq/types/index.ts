@@ -1,10 +1,10 @@
 import { AASeq, NTSeq, DNASeq, RNASeq } from '../seq'
 import type { SeqRecord } from '../seq-record'
 export type Seq = AASeq | NTSeq | DNASeq | RNASeq
-export type SeqRecordID = string
-export type SeqRecords = {
-  [seqRecordID: SeqRecordID | string]: SeqRecord
-}
+export type SeqRecordId = string
+// export type SeqRecords = {
+//   [seqRecordId: SeqRecordId | string]: SeqRecord
+// }
 
 export class Organelle {}
 export class Mitochondrion extends Organelle {}
