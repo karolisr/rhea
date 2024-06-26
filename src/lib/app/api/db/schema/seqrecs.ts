@@ -485,6 +485,21 @@ export const schemaSeqRecs = sql`
     INNER JOIN records ON records.accession = assoc_records_user.record_id
   ;
   ----------------------------------------------------------------------------
+  -- @block drop qualifier_names view
+  -- @conn seqrecs
+  -- DROP VIEW IF EXISTS qualifier_names
+  -- ;
+  -- @block create qualifier_names view
+  -- @conn seqrecs
+  CREATE VIEW IF NOT EXISTS qualifier_names ("name") AS
+  SELECT DISTINCT
+    gb_qualifiers.name
+  FROM
+    gb_qualifiers
+  ORDER BY
+    "name" ASC
+  ;
+  ----------------------------------------------------------------------------
   -- @block drop fts_gb_records virtual table
   -- @conn seqrecs
   -- DROP TABLE IF EXISTS fts_gb_records
