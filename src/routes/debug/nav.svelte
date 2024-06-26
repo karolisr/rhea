@@ -6,7 +6,10 @@ import Tab from '$lib/ui/chrome/nav/components/tabnav/Tab.svelte'
 import iconHome from '~icons/fa6-solid/house-chimney'
 import iconSearch from '~icons/fa6-solid/magnifying-glass'
 import iconDnD from '~icons/fa6-solid/chess'
-import iconSeqView from '~icons/fa6-solid/dna'
+
+// import iconSeqView from '~icons/fa6-solid/dna'
+import iconSeqView from '~icons/bx/dna'
+// import iconSeqView from '~icons/fluent-emoji-flat/dna'
 </script>
 
 <TabNav uid="chrome-nav-debug" navClass="nav-debug">

@@ -30,6 +30,9 @@ import { getFontSize } from '$lib/app/api'
 import { filterSeqRecs } from '$lib/app/api/db/gbseq'
 import { getSequences } from '$lib/app/api/db/gbseq'
 import SeqView from '$lib/ui/views/SeqView'
+import { SeqRecord } from '$lib/seq/seq-record'
+import { DNASeq } from '$lib/seq/seq'
+
 // import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
 // import { getLineage, cacheTaxIds } from '$lib/app/api/db/taxonomy/lineage'
 // import { getPropNames } from '$lib'
@@ -415,22 +418,22 @@ onDestroy(() => {
           showHeaderRow />
       </div>
 
-      <div class="seqview-container">
+      <!-- <div class="seqview-container">
         <SeqView
           uid="{activeRecordId ?? 'nouid'}"
           seq="{activeRecordSeq}"
           seqType="{activeRecordSeqType}"
           seqId="{activeRecordId}" />
-      </div>
+      </div> -->
 
-      <!-- <div class="placeholder">
+      <div class="placeholder">
         {selectedColl
           ? selectedGroupUid +
             ' : ' +
             selectedColl +
             (activeRecordId ? ` : ${activeRecordId}` : '')
           : ''}
-      </div> -->
+      </div>
     </ResizableGrid>
   </ResizableGrid>
 {:else}

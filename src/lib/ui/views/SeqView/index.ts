@@ -20,11 +20,11 @@ export enum xAlignment {
 }
 
 const color_scheme = new Map([
-  ['a', 'rgba(255,120,120,1)'],
-  ['c', 'rgba(120,120,255,1)'],
-  ['g', 'rgba(251,231,2,1)'],
-  ['t', 'rgba(0,255,0,1)'],
-  ['n', 'rgba(200,200,200,1)'],
+  ['A', 'rgba(255,120,120,1)'],
+  ['C', 'rgba(120,120,255,1)'],
+  ['G', 'rgba(251,231,2,1)'],
+  ['T', 'rgba(0,255,0,1)'],
+  ['N', 'rgba(200,200,200,1)'],
   ['-', 'rgba(255,255,255,1)']
 ])
 
@@ -119,24 +119,26 @@ export function prepareSiteImages(
 export function drawSeqLabel(
   ctx: CanvasRenderingContext2D,
   label: string,
+  labelPadding: number,
   sizeX: number,
   sizeY: number,
   cnvScale: number
-) {
+): number {
   ctx.font = `normal ${(sizeY - 6) * cnvScale}px Monospace`
   const textOffset = calcTextOffset(
     ctx,
     label,
-    sizeX * cnvScale,
+    sizeX * cnvScale - labelPadding,
     sizeY * cnvScale,
     xAlignment.right
   )
-  const labelPadding = sizeY * cnvScale * 0.25
   ctx.fillStyle = '#F5F5F5'
-  ctx.fillRect(0, 0, sizeX * cnvScale + labelPadding, sizeY * cnvScale)
+  ctx.fillRect(0, 0, sizeX * cnvScale, sizeY * cnvScale)
   ctx.fillStyle = '#000'
   ctx.fillText(label, textOffset.x, textOffset.y)
-  ctx.translate(sizeX * cnvScale + labelPadding, 0)
+  const offsetX = sizeX * cnvScale
+  ctx.translate(offsetX, 0)
+  return offsetX
 }
 
 export function drawSite(
@@ -153,10 +155,14 @@ export function drawSites(
   deltaX: number,
   cnvScale: number,
   renderedSites: Map<string, HTMLCanvasElement>
-) {
+): number {
+  let totalOffsetX = 0
   for (let i = 0; i < min(seq.length, 50); i++) {
     const label = seq[i]
     drawSite(ctx, label, renderedSites)
-    ctx.translate(deltaX * cnvScale, 0)
+    const offsetX = deltaX * cnvScale
+    ctx.translate(offsetX, 0)
+    totalOffsetX += offsetX
   }
+  return totalOffsetX
 }

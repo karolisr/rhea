@@ -1,20 +1,19 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { prepareSiteImages, drawSeqLabel, setCnvSize, drawSites } from '.'
+import { SeqRecord } from '$lib/seq/seq-record'
 
 export let uid: string
 
-export let seqId: string | undefined = undefined
-export let seqType: string | undefined = undefined
-export let seq: string | undefined = undefined
+export let seqRecords: SeqRecord[] = []
 
-export let cnvScale: number = 2
-export let siteSize = 18
-export let labelW = siteSize * 10
-export let siteGapX = 0
-export let siteGapY = 0
+export let siteSize = 17
+export let labelW = siteSize * 7
+export let siteGapX = 1
+export let siteGapY = 1
 export let minW: number = labelW + siteSize * 20
 export let minH: number = siteSize
+export let cnvScale: number = 2
 
 let ctx: CanvasRenderingContext2D | null = null
 
@@ -27,6 +26,7 @@ let deltaY: number
 let renderedSites: Map<string, HTMLCanvasElement>
 
 function draw(
+  seqRecords: SeqRecord[],
   ctx: CanvasRenderingContext2D | null,
   cnvW: number,
   cnvH: number,
@@ -36,15 +36,51 @@ function draw(
   deltaY: number,
   cnvScale: number,
   siteSize: number,
-  seqId: string | undefined,
-  seq: string | undefined,
   renderedSites: Map<string, HTMLCanvasElement>
 ) {
   if (ctx !== null) {
+    const labelPadding = siteSize * cnvScale * 0.25
     setCnvSize(ctx, cnvW, cnvH, minW, minH, cnvScale)
-    if (seqId !== undefined)
-      drawSeqLabel(ctx, seqId, labelW, siteSize, cnvScale)
-    if (seq !== undefined) drawSites(ctx, seq, deltaX, cnvScale, renderedSites)
+    ctx.lineWidth = cnvScale * 1
+    for (let i = 0; i < seqRecords.length; i++) {
+      const sr = seqRecords[i]
+      let offsetX = 0
+      offsetX += drawSeqLabel(
+        ctx,
+        sr.id,
+        labelPadding,
+        labelW,
+        siteSize,
+        cnvScale
+      )
+
+      ctx.translate(siteGapX * cnvScale, 0)
+      offsetX += siteGapX * cnvScale
+      offsetX += drawSites(ctx, sr.seq.str, deltaX, cnvScale, renderedSites)
+
+      // ctx.moveTo(-offsetX, siteSize * cnvScale + (siteGapY / 2) * cnvScale)
+      // ctx.lineTo(
+      //   -offsetX + labelW * cnvScale,
+      //   siteSize * cnvScale + (siteGapY / 2) * cnvScale
+      // )
+      // ctx.stroke()
+
+      // ctx.moveTo(-offsetX, siteSize * cnvScale + (siteGapY / 2) * cnvScale)
+      // ctx.lineTo(
+      //   -siteGapX * cnvScale,
+      //   siteSize * cnvScale + (siteGapY / 2) * cnvScale
+      // )
+      // ctx.stroke()
+
+      ctx.translate(-offsetX, deltaY * cnvScale)
+    }
+    // ctx.translate(
+    //   labelW * cnvScale + (siteGapX / 2) * cnvScale,
+    //   -siteGapY * cnvScale
+    // )
+    // ctx.moveTo(0, 0)
+    // ctx.lineTo(0, -deltaY * cnvScale * seqRecords.length)
+    // ctx.stroke()
   }
 }
 
@@ -53,8 +89,8 @@ onMount(() => {
     `${uid}-seqview-canvas`
   ) as HTMLCanvasElement
   ctx = cnv.getContext('2d') as CanvasRenderingContext2D
-  ctx.canvas.style.minWidth = `${minW}px`
-  ctx.canvas.style.minHeight = `${minH}px`
+  // ctx.canvas.style.minWidth = `${minW}px`
+  // ctx.canvas.style.minHeight = `${minH}px`
 })
 
 onDestroy(() => {})
@@ -63,6 +99,7 @@ $: renderedSites = prepareSiteImages(siteSize, cnvScale)
 $: deltaX = siteSize + siteGapX
 $: deltaY = siteSize + siteGapY
 $: draw(
+  seqRecords,
   ctx,
   cnvW,
   cnvH,
@@ -72,8 +109,6 @@ $: draw(
   deltaY,
   cnvScale,
   siteSize,
-  seqId,
-  seq,
   renderedSites
 )
 </script>
