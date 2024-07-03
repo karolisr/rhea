@@ -1,4 +1,5 @@
 import Database from '@tauri-apps/plugin-sql'
+import { BaseDirectory, mkdir } from '@tauri-apps/plugin-fs'
 
 import { schemaTaxonomy } from './schema/taxonomy'
 import { schemaSeqRecs } from './schema/seqrecs'
@@ -12,8 +13,13 @@ export const dbPathSeqRecs: string = 'sqlite:db/seqrecs.db'
 export const dbPathSequences: string = 'sqlite:db/sequences.db'
 export const dbPathCollections: string = 'sqlite:db/collections.db'
 
+async function prepareDBDir() {
+  await mkdir('db', { baseDir: BaseDirectory.AppConfig, recursive: true })
+}
+
 export async function initDBTaxonomy() {
   // console.log('initDBTaxonomy: BEGIN')
+  await prepareDBDir()
   const db: DB = await DB.load(dbPathTaxonomy)
   await beginTransaction(db)
   await db.execute(schemaTaxonomy.text)
@@ -24,6 +30,7 @@ export async function initDBTaxonomy() {
 
 export async function initDBSeqRecs() {
   // console.log('initDBSeqRecs: BEGIN')
+  await prepareDBDir()
   const db: DB = await DB.load(dbPathSeqRecs)
   await beginTransaction(db)
   await db.execute(schemaSeqRecs.text)
@@ -34,6 +41,7 @@ export async function initDBSeqRecs() {
 
 export async function initDBSequences() {
   // console.log('initDBSequences: BEGIN')
+  await prepareDBDir()
   const db: DB = await DB.load(dbPathSequences)
   await beginTransaction(db)
   await db.execute(schemaSequences.text)
@@ -44,6 +52,7 @@ export async function initDBSequences() {
 
 export async function initDBCollections() {
   // console.log('initDBCollections: BEGIN')
+  await prepareDBDir()
   const db: DB = await DB.load(dbPathCollections)
   await beginTransaction(db)
   await db.execute(schemaCollections.text)
