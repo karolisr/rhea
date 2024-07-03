@@ -8,7 +8,7 @@ export enum AppScale {
 
 export enum AppFontSize {
   small = 12,
-  medium = 16,
+  medium = 19,
   large = 24
 }
 

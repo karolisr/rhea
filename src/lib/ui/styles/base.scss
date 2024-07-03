@@ -6,6 +6,7 @@
 body {
   height: 100%;
   overflow: hidden;
+  background-color: var(--bg1);
 }
 
 input:focus {
@@ -17,6 +18,21 @@ input:focus {
 button,
 input {
   padding: var(--pad);
+}
+
+checkbox-grid {
+  display: grid;
+  grid-template-columns:
+    calc(var(--fs) + calc(var(--pad) * 2))
+    auto;
+}
+
+radio-grid {
+  display: grid;
+  grid-template-columns:
+    calc(var(--fs) + var(--pad))
+    auto;
+  align-items: center;
 }
 
 input[type='checkbox'],

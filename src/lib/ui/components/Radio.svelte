@@ -32,11 +32,11 @@ style = style.trim()
 </radio-grid>
 
 <style lang="scss">
-radio-grid {
-  display: grid;
-  grid-template-columns:
-    calc(var(--fs) + var(--pad))
-    auto;
-  align-items: center;
-}
+// radio-grid {
+//   display: grid;
+//   grid-template-columns:
+//     calc(var(--fs) + var(--pad))
+//     auto;
+//   align-items: center;
+// }
 </style>

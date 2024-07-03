@@ -9,12 +9,14 @@ import {
 } from '.'
 import { SeqRecord } from '$lib/seq/seq-record'
 import { ceil, floor, max, min } from '$lib'
+import { getFontSize } from '$lib/app/api'
 
 export let uid: string
 
 export let seqRecords: SeqRecord[] = []
 
-export let siteSize = 17
+export let siteSize =
+  getFontSize() % 2 === 0 ? getFontSize() + 5 : getFontSize() + 6
 export let labelW = siteSize * 7
 export let siteGapX = 1
 export let siteGapY = 1

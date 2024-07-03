@@ -21,10 +21,10 @@ style = style.trim()
 </checkbox-grid>
 
 <style lang="scss">
-checkbox-grid {
-  display: grid;
-  grid-template-columns:
-    calc(var(--fs) + calc(var(--pad) * 2))
-    auto;
-}
+// checkbox-grid {
+//   display: grid;
+//   grid-template-columns:
+//     calc(var(--fs) + calc(var(--pad) * 2))
+//     auto;
+// }
 </style>

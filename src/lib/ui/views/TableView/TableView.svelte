@@ -617,7 +617,7 @@ function formatValue(
   cursor: pointer;
   font-size: 0.75rem;
   margin-block: auto;
-  margin-inline-end: 0.15em;
+  margin-inline-end: 0.2em;
   margin-inline-start: auto;
   width: 2.5em;
   height: 1.4em;

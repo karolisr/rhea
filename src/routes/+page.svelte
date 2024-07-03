@@ -371,7 +371,7 @@ onDestroy(() => {
     nRow="{1}"
     nCol="{2}"
     rowHs="{[-1]}"
-    colWs="{[200, -1]}"
+    colWs="{[290, -1]}"
     minColW="{0}">
     {#if $dbs.dbCollections && $dbs.dbSeqRecs && $dbs.dbTaxonomy}
       <ResizableGrid

@@ -50,18 +50,18 @@
         "title": "CDSDB",
         "center": false,
         "dragDropEnabled": true,
-        "width": 560,
-        "minWidth": 0,
-        "height": 500,
-        "minHeight": 0,
+        "width": 1200,
+        "height": 800,
         "resizable": true,
+        "minWidth": 600,
+        "minHeight": 400,
         "fullscreen": false,
         "titleBarStyle": "Overlay",
         "acceptFirstMouse": true,
         "hiddenTitle": true,
         "alwaysOnTop": false,
-        "x": 20,
-        "y": 45
+        "x": 10,
+        "y": 10
       }
     ],
     "security": {
