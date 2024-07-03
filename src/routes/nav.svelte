@@ -12,6 +12,7 @@ import iconDebug from '~icons/fa6-solid/bug'
 <TabNav uid="chrome-nav-main" navClass="nav-main">
   <TabSpacer uid="chrome-nav-main-left-spacer" minW="{68}" collapsable />
   <Tab link="/" icon="{iconHome}" label="Home" />
+  <Tab link="/home-prev/" icon="{iconHome}" label="HomePrev" />
   <!-- <Tab link="/search/" icon="{iconSearch}" label="Search" /> -->
   <Tab link="/debug/" icon="{iconDebug}" label="Debug" current="startsWith" />
   <Tab link="/settings/" icon="{iconSettings}" label="Settings" />
