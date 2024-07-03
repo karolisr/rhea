@@ -21,15 +21,22 @@ export const BROWSER = SYSINFO.browser
 export const ENGINE = SYSINFO.engine
 
 export async function getLocale(): Promise<string> {
+  let l: string | null = null
   if (getSystemInfo().browser === 'Tauri') {
-    const l = await locale()
-    if (l) {
-      return l
-    } else {
-      return navigator.language
+    l = await locale()
+    if (l === null) {
+      l = navigator.language
     }
   } else {
-    return navigator.language
+    l = navigator.language
+  }
+
+  console.log(l)
+
+  if (l === null || l === '' || l === 'C') {
+    return 'en-US'
+  } else {
+    return l
   }
 }
 
