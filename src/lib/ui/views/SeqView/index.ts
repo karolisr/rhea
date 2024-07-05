@@ -110,7 +110,7 @@ export function prepareSiteImages(
     buffer.height = size * cnvScale
     ctx.reset()
     ctx.scale(cnvScale, cnvScale)
-    ctx.font = `normal ${size - 4}px Sans-Serif`
+    ctx.font = `normal ${size - 4}px sans-serif`
     prepareSiteImage(ctx, key, size, xAlignment.center)
     renderedSites.set(key, buffer)
   }
@@ -125,7 +125,7 @@ export function drawSeqLabel(
   sizeY: number,
   cnvScale: number
 ): number {
-  ctx.font = `normal ${(sizeY - 6) * cnvScale}px Monospace`
+  ctx.font = `normal ${(sizeY - 6) * cnvScale}px monospace`
   const textOffset = calcTextOffset(
     ctx,
     label,
