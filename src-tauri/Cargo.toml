@@ -1,11 +1,11 @@
 [package]
-name = "is-karol-cdsdb"
+name = "cdsdb_app_binary"
 version = "0.1.0"
-description = "CDSDB"
+description = "CDSDB Description in Cargo.toml"
 authors = ["Karolis Ramanauskas"]
 license = "GNU General Public License v3.0"
 repository = "https://github.com/karolisr/cdsdb"
-default-run = "is-karol-cdsdb"
+default-run = "cdsdb_app_binary"
 edition = "2021"
 rust-version = "1.60"
 

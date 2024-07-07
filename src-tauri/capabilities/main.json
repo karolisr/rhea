@@ -17,6 +17,8 @@
     "fs:allow-appdata-write-recursive",
     "fs:allow-applocaldata-read-recursive",
     "fs:allow-applocaldata-meta",
+    "fs:allow-read-text-file",
+    "fs:allow-resource-read-recursive",
     "resources:default",
     "sql:allow-close",
     "sql:allow-execute",
@@ -48,14 +50,14 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
-          "name": "sidecar/mafft",
-          "cmd": "",
+          "name": "mafft",
+          "cmd": "$RESOURCE/third-party/mafft/mafft.bat",
           "args": [
             {
               "validator": "\\S+"
             }
           ],
-          "sidecar": true
+          "sidecar": false
         }
       ]
     }
