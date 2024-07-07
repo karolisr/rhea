@@ -12,3 +12,5 @@ gen/
 
 #
 # Cargo.lock
+
+sidecar/packages
