@@ -11,7 +11,7 @@
     "category": "Productivity",
     "copyright": "© 2024 Karolis Ramanauskas",
     "targets": "app",
-    "externalBin": [],
+    "externalBin": ["sidecar/mafft"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -32,11 +32,24 @@
       "providerShortName": null,
       "signingIdentity": null
     },
-    "resources": [],
+    "resources": {
+      "sidecar/sidecar/mafft-linux64/mafft.bat": "sidecar/mafft-linux64/",
+      "sidecar/sidecar/mafft-linux64/mafftdir/bin/*": "sidecar/mafft-linux64/mafftdir/bin/",
+      "sidecar/sidecar/mafft-linux64/mafftdir/libexec/*": "sidecar/mafft-linux64/mafftdir/libexec/"
+    },
     "shortDescription": "Phylogenetic conflict, locus-by-locus.",
     "linux": {
+      "appimage": {
+        "bundleMediaFramework": false,
+        "files": {}
+      },
+      "rpm": {
+        "epoch": 0,
+        "files": {},
+        "release": "1"
+      },
       "deb": {
-        "depends": []
+        "files": {}
       }
     }
   },
