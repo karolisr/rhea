@@ -19,6 +19,7 @@ import iconSeqView from '~icons/bx/dna'
     collapsable
     nSpacers="{2}" />
   <Tab link="/debug/" icon="{iconHome}" />
+  <Tab link="/debug/testing/home-prev/" icon="{iconHome}" label="HomePrev" />
   <Tab link="/debug/testing/seqview/" icon="{iconSeqView}" label="SeqView" />
   <Tab link="/debug/testing/search/" icon="{iconSearch}" label="Search" />
   <Tab link="/debug/testing/dnd/" icon="{iconDnD}" label="Drag & Drop" />

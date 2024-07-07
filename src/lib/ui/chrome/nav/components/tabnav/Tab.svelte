@@ -3,7 +3,7 @@ import { page } from '$app/stores'
 import { onMount, type ComponentType } from 'svelte'
 
 export let link: string
-export let current: 'equals' | 'startsWith' = 'equals'
+export let current: 'equals' | 'startsWith' | 'base' = 'equals'
 export let icon: ComponentType | null = null
 export let label: string | null = null
 
@@ -17,6 +17,14 @@ $: {
 
   if (current === 'startsWith') {
     curr = path.startsWith(link)
+  }
+
+  if (current === 'base') {
+    const _ = link.split('/').at(1)
+    if (_ !== undefined) {
+      console.log(`/${_}`, path)
+      curr = path.startsWith(`/${_}`)
+    }
   }
 }
 
