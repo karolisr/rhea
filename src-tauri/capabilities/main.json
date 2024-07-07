@@ -3,7 +3,9 @@
   "identifier": "main-capability",
   "description": "Capability for the main window",
   "local": true,
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "app:default",
     "event:default",
@@ -32,7 +34,6 @@
     "window:allow-set-cursor-position",
     "window:allow-set-cursor-visible",
     "window:allow-set-ignore-cursor-events",
-
     {
       "identifier": "http:default",
       "allow": [
@@ -44,6 +45,7 @@
         }
       ],
       "deny": []
-    }
+    },
+    "shell:default"
   ]
 }
