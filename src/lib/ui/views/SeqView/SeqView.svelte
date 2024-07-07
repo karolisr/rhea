@@ -15,7 +15,7 @@ export let uid: string
 
 export let seqRecords: SeqRecord[] = []
 
-export let siteSize = ceil(getFontSize() * 1.15)
+export let siteSize = max(getFontSize() + 2, 16)
 export let labelW = siteSize * 7
 export let siteGapX = 1
 export let siteGapY = 1
