@@ -22,7 +22,6 @@ $: {
   if (current === 'base') {
     const _ = link.split('/').at(1)
     if (_ !== undefined) {
-      console.log(`/${_}`, path)
       curr = path.startsWith(`/${_}`)
     }
   }
