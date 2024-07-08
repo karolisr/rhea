@@ -79,9 +79,6 @@ export class SeqRecordDoc extends Doc {
   constructor(seqRecord: SeqRecord) {
     super(seqRecord.data, seqRecord.id, seqRecord.seq.type)
     this._length = seqRecord.seq.length
-  }
-
-  public get nSeq(): number {
-    return 1
+    this._nSeq = 1
   }
 }

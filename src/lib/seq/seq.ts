@@ -1,4 +1,4 @@
-import type { SeqType } from "./types"
+import type { SeqType } from './types'
 
 abstract class _Seq {
   protected _seq: string
