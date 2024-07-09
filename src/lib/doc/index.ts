@@ -1,8 +1,9 @@
 import type { IndexedUndefined } from '$lib/types'
 import { SeqRecord } from '$lib/seq/seq-record'
+import { Alignment } from '$lib/seq/aln'
 
 abstract class _Doc {
-  protected _data: IndexedUndefined
+  protected _data: unknown
 
   protected _id: string
   protected _type: string
@@ -14,7 +15,7 @@ abstract class _Doc {
   protected _nSeq: number = 0
 
   constructor(
-    data: IndexedUndefined,
+    data: unknown,
     id: string,
     type: string,
     name: string,
@@ -29,7 +30,7 @@ abstract class _Doc {
     this._data = data
   }
 
-  public get data(): IndexedUndefined {
+  public get data(): unknown {
     return this._data
   }
 
@@ -64,7 +65,7 @@ abstract class _Doc {
 
 export class Doc extends _Doc {
   constructor(
-    data: IndexedUndefined,
+    data: unknown,
     id: string,
     type: string,
     name: string = '',
@@ -76,9 +77,38 @@ export class Doc extends _Doc {
 }
 
 export class SeqRecordDoc extends Doc {
+  protected declare _data: SeqRecord
+
   constructor(seqRecord: SeqRecord) {
-    super(seqRecord.data, seqRecord.id, seqRecord.seq.type)
-    this._length = seqRecord.seq.length
+    super(seqRecord, seqRecord.id, seqRecord.seq.type)
     this._nSeq = 1
+  }
+
+  public get data(): SeqRecord {
+    return this._data
+  }
+
+  public get length(): number {
+    return this._data.seq.length
+  }
+}
+
+export class AlignmentDoc extends Doc {
+  protected declare _data: Alignment
+
+  constructor(alignment: Alignment, id: string) {
+    super(alignment, id, alignment.type)
+  }
+
+  public get data(): Alignment {
+    return this._data
+  }
+
+  public get length(): number {
+    return this._data.nCol
+  }
+
+  public get nSeq(): number {
+    return this._data.nRow
   }
 }
