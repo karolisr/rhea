@@ -5,6 +5,8 @@ import type {
   DragDropPayload
 } from './types'
 import { min, max } from '$lib'
+import { FileDragDrop } from '$lib/app/api/file-drag-drop'
+import type { Unlistener } from '$lib/types'
 
 export class DragDrop {
   private drgEl1: HTMLElement | null = null
@@ -26,28 +28,87 @@ export class DragDrop {
   }
   private payload: DragDropPayload = this.defaultPayload
 
+  private fileDragDropUnlistener: Promise<Unlistener>
+
   constructor() {
     addEventListener('mousemove', this.#mMoveL)
     addEventListener('mouseover', this.#mOverL)
     addEventListener('mouseup', this.#dStopL)
+    addEventListener('drop', this.#mOverL)
+
+    this.fileDragDropUnlistener = new FileDragDrop(
+      (paths, x, y) => {}, // onDrop
+
+      // () => {}, // onDragCancel
+      this.#dStopL,
+
+      // (paths) => {},                 // onDragStart
+      this.#onFilesDragStart.bind(this),
+
+      () => {} // onDrag
+
+      // ((x: number, y: number) => {
+      //   const e = { x: x, y: y }
+      //   this.#mouseMoveEventListener(e as MouseEvent, true)
+      // }).bind(this)
+    ).unlisten
 
     window.document.documentElement.setAttribute('dragging', 'false')
 
-    console.log('DragDrop: listen')
+    console.info('DragDrop: listen')
   }
 
-  unlisten() {
+  async unlisten() {
+    ;(await this.fileDragDropUnlistener)()
     removeEventListener('mousemove', this.#mMoveL)
     removeEventListener('mouseover', this.#mOverL)
     removeEventListener('mouseup', this.#dStopL)
+    removeEventListener('drop', this.#mOverL)
 
-    console.log('DragDrop: unlisten')
+    console.info('DragDrop: unlisten')
   }
 
   #dStrtL: (e: MouseEvent) => void = this.#dragStartListener.bind(this)
   #mMoveL: (e: MouseEvent) => void = this.#mouseMoveEventListener.bind(this)
   #mOverL: (e: MouseEvent) => void = this.#mouseOverEventListener.bind(this)
-  #dStopL: (e: MouseEvent) => void = this.#dragStopListener.bind(this)
+  #dStopL: (e?: MouseEvent) => void = this.#dragStopListener.bind(this)
+
+  #onFilesDragStart(paths: string[]) {
+    const el = document.createElement('div')
+    // el.style.transition = 'opacity 250ms'
+    // el.style.opacity = '0'
+    el.style.pointerEvents = 'none'
+    el.style.paddingBlock = '5px'
+    el.style.paddingInline = '5px'
+    el.style.position = 'absolute'
+    // el.style.left = `${e.x + drgOffsetX}px`
+    // el.style.top = `${e.y + drgOffsetY}px`
+    el.style.zIndex = '1000'
+
+    // el.style.borderStyle = 'solid'
+    // el.style.backgroundColor = 'yellow'
+    el.classList.add('draggable')
+    // el.innerText = paths[0]
+
+    const pEl = document.body
+    pEl.appendChild(el)
+
+    this.drgEl1 = el
+    this.drgSourceEl = el
+    this.beforeDrag = 0
+    this.drgEl2 = el
+    this.beforeDrag = -1
+
+    this.dragging = true
+    window.document.documentElement.setAttribute('dragging', 'true')
+
+    this.payload = {
+      type: 'some-type',
+      data: paths[0],
+      targetCanAccept: false,
+      showWhileDraggingEl: el
+    }
+  }
 
   #prepDrgEl(el: HTMLElement | null) {
     if (el) {
@@ -164,7 +225,7 @@ export class DragDrop {
     }
   }
 
-  #dragStopListener(e: MouseEvent) {
+  #dragStopListener(e?: MouseEvent) {
     this.beforeDrag = -1
 
     if (this.payload.showWhileDraggingEl !== null) {

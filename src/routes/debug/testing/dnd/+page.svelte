@@ -20,28 +20,36 @@ $: if (targetEl && payload) targetEl.innerText = payload.data as string
 
 function onDragStart(e: Event) {
   const ev = e as DragStartEvent
-  ev.payload.type = 'some-type'
-  const el = ev.payload.showWhileDraggingEl as HTMLElement
-  el.style.borderStyle = 'solid'
-  el.style.backgroundColor = 'yellow'
-  el.innerText = ev.payload.data as string
-  // ev.payload.data = 'Y'
-  // console.log('onDragStart:', e)
+  if (ev.payload !== undefined) {
+    ev.payload.type = 'some-type'
+    const el = ev.payload.showWhileDraggingEl as HTMLElement
+    el.style.borderStyle = 'solid'
+    el.style.backgroundColor = 'yellow'
+    el.innerText = ev.payload.data as string
+    // ev.payload.data = 'Y'
+    console.log('onDragStart:', e)
+  }
 }
 
 function onDragOver(e: Event) {
   const ev = e as DragOverEvent
-  if (ev.payload.type !== 'some-type') {
-    ev.payload.targetCanAccept = false
-  } else {
-    ev.payload.targetCanAccept = true
+  if (ev.payload !== undefined) {
+    if (ev.payload.type !== 'some-type') {
+      ev.payload.targetCanAccept = false
+    } else {
+      ev.payload.targetCanAccept = true
+    }
+    console.log('onDragOver:', e)
   }
 }
 
 function onDrop(e: Event) {
   const ev = e as DropEvent
-  if (ev.payload.type === 'some-type') payload = ev.payload
-  // console.log('onDrop:', ev.payload)
+  if (ev.payload !== undefined) {
+    if (ev.payload.type === 'some-type') payload = ev.payload
+    // console.log('onDrop:', ev.payload)
+    console.log('onDrop:', e)
+  }
 }
 </script>
 

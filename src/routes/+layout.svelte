@@ -2,7 +2,7 @@
 import { onMount, onDestroy } from 'svelte'
 import { BROWSER, ENGINE } from '$lib/app/api'
 import { themeChangeListener } from '$lib/app/api/darkmode'
-import { FileDragDrop } from '$lib/app/api/file-drag-drop'
+// import { FileDragDrop } from '$lib/app/api/file-drag-drop'
 import type { Unlistener } from '$lib/types'
 import settings from '$lib/app/svelte-stores/settings'
 import { setScale } from '$lib/app/api'
@@ -12,7 +12,7 @@ import NavMain from './nav.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 import subheader from '$lib/app/svelte-stores/subheader'
 import { DragDrop } from '$lib/app/api/drag-drop'
-import { insertGbSeqRecordsOnFileDropTMP } from '$lib/app/api/file-type'
+// import { insertGbSeqRecordsOnFileDropTMP } from '$lib/app/api/file-type'
 
 // import { saveState } from '$lib/app/svelte-stores/state'
 // import { beforeWindowClose } from '$lib/app/api'
@@ -32,9 +32,9 @@ $: setScale($settings.scale)
 onMount(async () => {
   console.log(BROWSER, ENGINE)
   unlisteners.push(await themeChangeListener())
-  unlisteners.push(
-    await new FileDragDrop(insertGbSeqRecordsOnFileDropTMP).unlisten
-  )
+  // unlisteners.push(
+  //   await new FileDragDrop(insertGbSeqRecordsOnFileDropTMP).unlisten
+  // )
   // unlisteners.push(await beforeWindowClose(cleanup))
 
   unlisteners.push(preventDefault('contextmenu'))

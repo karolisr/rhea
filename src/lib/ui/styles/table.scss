@@ -1,9 +1,19 @@
 .table-height-container {
 }
 
+:root .table-container {
+  overflow-x: scroll;
+  overflow-y: scroll;
+}
+
 :root[dragging='false'] .table-container {
   overflow-x: scroll;
   overflow-y: scroll;
+}
+
+:root[dragging='true'] .table-container {
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .table-container:focus {

@@ -14,6 +14,8 @@ export function preventDefault(k: keyof WindowEventMap): Unlistener {
   })
 
   return () => {
-    window.removeEventListener(k, f)
+    window.removeEventListener(k, f, {
+      capture: false
+    })
   }
 }
