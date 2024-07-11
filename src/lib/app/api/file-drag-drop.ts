@@ -24,17 +24,18 @@ export class FileDragDrop {
 
   async #listen(): Promise<Unlistener> {
     if (BROWSER === 'Tauri') {
-      const retFun = getCurrent().onDragDropEvent((event) => {
+      const retFun = getCurrent().onDragDropEvent(async (event) => {
         if (event.payload.type === 'dragged') {
           // console.info('FileDragDrop.onDragStart:', event.payload.paths)
-          if (this.onDragStart) this.onDragStart(event.payload.paths)
+          if (this.onDragStart !== undefined)
+            this.onDragStart(event.payload.paths)
         } else if (event.payload.type === 'dragOver') {
           // console.info(
           //   'FileDragDrop.onDrag:',
           //   event.payload.position.x,
           //   event.payload.position.y
           // )
-          if (this.onDrag)
+          if (this.onDrag !== undefined)
             this.onDrag(event.payload.position.x, event.payload.position.y)
         } else if (event.payload.type === 'dropped') {
           // console.info(
@@ -43,7 +44,7 @@ export class FileDragDrop {
           //   event.payload.position.x,
           //   event.payload.position.y
           // )
-          if (this.onDrop)
+          if (this.onDrop !== undefined)
             this.onDrop(
               event.payload.paths,
               event.payload.position.x,
@@ -51,7 +52,7 @@ export class FileDragDrop {
             )
         } else {
           // console.info('FileDragDrop.onDragCancel')
-          if (this.onDragCancel) this.onDragCancel()
+          if (this.onDragCancel !== undefined) this.onDragCancel()
         }
       })
       return retFun

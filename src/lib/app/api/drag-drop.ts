@@ -37,20 +37,18 @@ export class DragDrop {
     addEventListener('drop', this.#mOverL)
 
     this.fileDragDropUnlistener = new FileDragDrop(
-      (paths, x, y) => {}, // onDrop
+      // (paths, x, y) => {}, // onDrop
+      ((paths: string[], x: number, y: number) => {
+        this.#dStopL()
+      }).bind(this),
 
       // () => {}, // onDragCancel
       this.#dStopL,
 
-      // (paths) => {},                 // onDragStart
+      // (paths) => {}, // onDragStart
       this.#onFilesDragStart.bind(this),
 
       () => {} // onDrag
-
-      // ((x: number, y: number) => {
-      //   const e = { x: x, y: y }
-      //   this.#mouseMoveEventListener(e as MouseEvent, true)
-      // }).bind(this)
     ).unlisten
 
     window.document.documentElement.setAttribute('dragging', 'false')
@@ -94,7 +92,6 @@ export class DragDrop {
 
     this.drgEl1 = el
     this.drgSourceEl = el
-    this.drgEl2 = el
     this.beforeDrag = -1
     this.dragging = true
 

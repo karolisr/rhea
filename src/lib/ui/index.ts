@@ -10,12 +10,12 @@ export function preventDefault(k: keyof WindowEventMap): Unlistener {
     // )
   }
   window.addEventListener(k, f, {
-    capture: false
+    capture: true
   })
 
   return () => {
     window.removeEventListener(k, f, {
-      capture: false
+      capture: true
     })
   }
 }
