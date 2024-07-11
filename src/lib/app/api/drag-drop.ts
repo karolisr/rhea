@@ -75,38 +75,36 @@ export class DragDrop {
 
   #onFilesDragStart(paths: string[]) {
     const el = document.createElement('div')
+    el.id = 'files-drag-drop-el'
     // el.style.transition = 'opacity 250ms'
     // el.style.opacity = '0'
-    el.style.pointerEvents = 'none'
-    el.style.paddingBlock = '5px'
-    el.style.paddingInline = '5px'
-    el.style.position = 'absolute'
+    // el.style.pointerEvents = 'none'
+    // el.style.paddingBlock = '5px'
+    // el.style.paddingInline = '5px'
+    // el.style.position = 'absolute'
     // el.style.left = `${e.x + drgOffsetX}px`
     // el.style.top = `${e.y + drgOffsetY}px`
-    el.style.zIndex = '1000'
-
+    // el.style.zIndex = '1000'
     // el.style.borderStyle = 'solid'
     // el.style.backgroundColor = 'yellow'
-    el.classList.add('draggable')
     // el.innerText = paths[0]
+    el.classList.add('draggable')
 
-    const pEl = document.body
-    pEl.appendChild(el)
+    document.body.appendChild(el)
 
     this.drgEl1 = el
     this.drgSourceEl = el
-    this.beforeDrag = 0
     this.drgEl2 = el
     this.beforeDrag = -1
-
     this.dragging = true
+
     window.document.documentElement.setAttribute('dragging', 'true')
 
     this.payload = {
       type: 'some-type',
       data: paths[0],
       targetCanAccept: false,
-      showWhileDraggingEl: el
+      showWhileDraggingEl: null
     }
   }
 
@@ -284,5 +282,11 @@ export class DragDrop {
       this.draggingEnded = true
     }
     this.payload = this.defaultPayload
+
+    let tmpEl = window.document.getElementById('files-drag-drop-el')
+    while (tmpEl !== null) {
+      document.body.removeChild(tmpEl)
+      tmpEl = window.document.getElementById('files-drag-drop-el')
+    }
   }
 }

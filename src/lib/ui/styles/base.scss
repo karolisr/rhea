@@ -185,3 +185,7 @@ grid-sizer-v.collapsed > div:active {
 mark {
   background-color: yellow;
 }
+
+.drag-target.drag-item-hovering {
+  background-color: azure;
+}

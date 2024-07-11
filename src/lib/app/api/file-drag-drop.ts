@@ -26,7 +26,7 @@ export class FileDragDrop {
     if (BROWSER === 'Tauri') {
       const retFun = getCurrent().onDragDropEvent((event) => {
         if (event.payload.type === 'dragged') {
-          console.info('FileDragDrop.onDragStart:', event.payload.paths)
+          // console.info('FileDragDrop.onDragStart:', event.payload.paths)
           if (this.onDragStart) this.onDragStart(event.payload.paths)
         } else if (event.payload.type === 'dragOver') {
           // console.info(
@@ -37,12 +37,12 @@ export class FileDragDrop {
           if (this.onDrag)
             this.onDrag(event.payload.position.x, event.payload.position.y)
         } else if (event.payload.type === 'dropped') {
-          console.info(
-            'FileDragDrop.onDrop:',
-            event.payload.paths,
-            event.payload.position.x,
-            event.payload.position.y
-          )
+          // console.info(
+          //   'FileDragDrop.onDrop:',
+          //   event.payload.paths,
+          //   event.payload.position.x,
+          //   event.payload.position.y
+          // )
           if (this.onDrop)
             this.onDrop(
               event.payload.paths,
@@ -50,7 +50,7 @@ export class FileDragDrop {
               event.payload.position.y
             )
         } else {
-          console.info('FileDragDrop.onDragCancel')
+          // console.info('FileDragDrop.onDragCancel')
           if (this.onDragCancel) this.onDragCancel()
         }
       })

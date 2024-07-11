@@ -27,7 +27,7 @@ function onDragStart(e: Event) {
     el.style.backgroundColor = 'yellow'
     el.innerText = ev.payload.data as string
     // ev.payload.data = 'Y'
-    console.log('onDragStart:', e)
+    // console.log('onDragStart:', e)
   }
 }
 
@@ -39,7 +39,7 @@ function onDragOver(e: Event) {
     } else {
       ev.payload.targetCanAccept = true
     }
-    console.log('onDragOver:', e)
+    // console.log('onDragOver:', e)
   }
 }
 
@@ -48,7 +48,7 @@ function onDrop(e: Event) {
   if (ev.payload !== undefined) {
     if (ev.payload.type === 'some-type') payload = ev.payload
     // console.log('onDrop:', ev.payload)
-    console.log('onDrop:', e)
+    // console.log('onDrop:', e)
   }
 }
 </script>
@@ -101,10 +101,10 @@ function onDrop(e: Event) {
   gap: 20px;
 }
 
-#target {
+.drag-target {
   margin: auto;
-  width: 200px;
-  height: 100px;
+  width: 500px;
+  height: 300px;
   padding: 20px;
   border-style: solid;
 }
