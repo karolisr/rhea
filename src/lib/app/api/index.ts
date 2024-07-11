@@ -31,13 +31,14 @@ export async function getLocale(): Promise<string> {
     l = navigator.language
   }
 
-  console.log(l)
+  console.info(`Locale: ${l}`)
 
   if (l === null || l === '' || l === 'C') {
-    return 'en-US'
-  } else {
-    return l
+    l = 'en-US'
+    console.info(`using locale: ${l}`)
   }
+
+  return l
 }
 
 interface SystemInfo {

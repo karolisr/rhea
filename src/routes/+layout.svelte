@@ -30,7 +30,7 @@ let dragDropConductor: DragDrop = new DragDrop()
 $: setScale($settings.scale)
 
 onMount(async () => {
-  console.log(BROWSER, ENGINE)
+  console.info(BROWSER, ENGINE)
   unlisteners.push(await themeChangeListener())
   // unlisteners.push(
   //   await new FileDragDrop(insertGbSeqRecordsOnFileDropTMP).unlisten

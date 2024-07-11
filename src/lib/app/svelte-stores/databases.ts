@@ -40,9 +40,9 @@ async function init(): Promise<Readable<Databases>> {
   }
 
   if (BROWSER === 'Tauri') {
-    console.log('Databases loaded.')
+    console.info('Databases loaded.')
   } else {
-    console.log('Databases were not loaded:', BROWSER)
+    console.info('Databases were not loaded:', BROWSER)
   }
   return readable(dbs)
 }
