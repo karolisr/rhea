@@ -1,18 +1,31 @@
 import { SeqRecord } from '$lib/seq/seq-record'
 import { SeqType } from '../types'
-import { mkSeq } from '../seq'
+import { parseFasta } from '../fasta'
 
 export type Position = { col: number; row: number }
 
 export class Alignment {
   seqRecs: SeqRecord[]
-  type: keyof typeof SeqType = 'NT'
+  type: keyof typeof SeqType
   nCol: number
 
-  constructor(fastaText: string) {
-    this.seqRecs = []
-    this.#fromFasta(fastaText)
+  constructor(seqRecs: SeqRecord[]) {
+    this.seqRecs = seqRecs
+    this.type = 'NT'
+
+    if (seqRecs.length > 0) {
+      this.type = seqRecs[0].seq.type
+    }
+
     this.nCol = this.#calcNCol()
+  }
+
+  static fromFasta(
+    fastaStr: string,
+    type: keyof typeof SeqType = 'NT',
+    geneticCodeId: number = 1
+  ): Alignment {
+    return new Alignment(parseFasta(fastaStr, type, geneticCodeId))
   }
 
   trimTrailingGaps() {
@@ -86,28 +99,5 @@ export class Alignment {
     } else {
       throw new Error('Sequences in the alignment are not of the same length.')
     }
-  }
-
-  #fromFasta(
-    text: string,
-    type: keyof typeof SeqType = 'NT',
-    geneticCodeId: number = 1
-  ) {
-    const lines = text.split('\n')
-    let def = ''
-    let str = ''
-    lines.forEach((l) => {
-      if (l[0] == '>') {
-        if (str != '') {
-          this.seqRecs.push(new SeqRecord(def, mkSeq(str, type, geneticCodeId)))
-          str = ''
-        }
-        def = l.slice(1)
-        def = def.split('||')[0] // ToDo: remove.
-      } else if (def != '') {
-        str += l
-      }
-    })
-    this.seqRecs.push(new SeqRecord(def, mkSeq(str, type, geneticCodeId)))
   }
 }

@@ -1,4 +1,3 @@
-import type { IndexedUndefined } from '$lib/types'
 import { SeqRecord } from '$lib/seq/seq-record'
 import { Alignment } from '$lib/seq/aln'
 
