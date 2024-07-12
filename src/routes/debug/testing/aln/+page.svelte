@@ -8,7 +8,8 @@ import type { SeqRecord } from '$lib/seq/seq-record'
 import SeqView from '$lib/ui/views/SeqView'
 
 let targetEl: HTMLElement | null = null
-let filePath: string = ''
+let filePath: string =
+  '$HOME/Documents/output.bak.2/group-4/cp_loci_nt_aln/ycf2.fasta'
 let parser: (txt: string) => Promise<unknown>
 let seqRecs: SeqRecord[] = []
 let aln: Alignment = new Alignment([])

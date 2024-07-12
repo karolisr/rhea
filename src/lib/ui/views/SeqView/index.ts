@@ -19,7 +19,7 @@ export enum xAlignment {
   right = 2
 }
 
-const color_scheme = new Map([
+export const colorSchemeNT = new Map([
   ['A', 'rgba(255,120,120,1)'],
   ['C', 'rgba(120,120,255,1)'],
   ['G', 'rgba(251,231,2,1)'],
@@ -28,6 +28,8 @@ const color_scheme = new Map([
   ['N', 'rgba(200,200,200,1)'],
   ['-', 'rgba(255,255,255,1)']
 ])
+
+export const colorSchemeAA = new Map([['-', 'rgba(255,255,255,1)']])
 
 export function setCnvSize(
   ctx: CanvasRenderingContext2D,
@@ -79,7 +81,8 @@ export function prepareSiteImage(
   ctx: CanvasRenderingContext2D,
   text: string,
   size: number,
-  xAlign: xAlignment
+  xAlign: xAlignment,
+  colorScheme: Map<string, string>
 ) {
   const text_offset = calcTextOffset(
     ctx,
@@ -88,8 +91,8 @@ export function prepareSiteImage(
     size,
     xAlign
   )
-  if (color_scheme.has(text)) {
-    ctx.fillStyle = color_scheme.get(text) as string
+  if (colorScheme.has(text)) {
+    ctx.fillStyle = colorScheme.get(text) as string
   } else {
     ctx.fillStyle = '#fff'
   }
@@ -100,18 +103,19 @@ export function prepareSiteImage(
 
 export function prepareSiteImages(
   size: number,
-  cnvScale: number
+  cnvScale: number,
+  colorScheme: Map<string, string>
 ): Map<string, HTMLCanvasElement> {
   const renderedSites: Map<string, HTMLCanvasElement> = new Map()
-  for (let [key] of color_scheme) {
-    const buffer = document.createElement('canvas')
+  for (let [key] of colorScheme) {
+    const buffer = window.document.createElement('canvas')
     const ctx = buffer.getContext('2d') as CanvasRenderingContext2D
     buffer.width = size * cnvScale
     buffer.height = size * cnvScale
     ctx.reset()
     ctx.scale(cnvScale, cnvScale)
     ctx.font = `${max(size - 3, 14)}px sans-serif`
-    prepareSiteImage(ctx, key, size, xAlignment.center)
+    prepareSiteImage(ctx, key, size, xAlignment.center, colorScheme)
     renderedSites.set(key, buffer)
   }
   return renderedSites

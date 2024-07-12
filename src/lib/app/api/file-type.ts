@@ -1,5 +1,5 @@
 import { readTextFile, readFile } from '@tauri-apps/plugin-fs'
-import { resolve, normalize } from '@tauri-apps/api/path'
+import { resolve, normalize, homeDir } from '@tauri-apps/api/path'
 import { parse_dtd_txt } from '$lib/xml/dtd'
 import { parse_xml_txt } from '$lib/xml'
 import { parse_fasta_txt } from '$lib/seq/fasta'
@@ -11,8 +11,13 @@ import type { FileSignature } from 'file-type-checker/dist/core'
 import { insertGbSeqRecords } from './db/gbseq'
 import type { GBSet } from '$lib/ncbi/types/GBSet'
 
+export async function absPath(path: string): Promise<string> {
+  path = path.replace('$HOME', await homeDir())
+  return path
+}
+
 export async function getFileType(path: string) {
-  const fbin = await readFile(path).catch((error) => {
+  const fbin = await readFile(await absPath(path)).catch((error) => {
     console.warn(error)
   })
 
@@ -67,7 +72,7 @@ const otherParser = () => {
 
 const txtParser = async (f: (txt: string) => unknown) => {
   return async (path: string) => {
-    const txt = await readTextFile(path)
+    const txt = await readTextFile(await absPath(path))
     return f(txt)
   }
 }
