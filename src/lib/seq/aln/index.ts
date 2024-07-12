@@ -1,6 +1,6 @@
 import { SeqRecord } from '$lib/seq/seq-record'
 import { SeqType } from '../types'
-import { parseFasta } from '../fasta'
+import { parse_fasta_txt } from '../fasta'
 
 export type Position = { col: number; row: number }
 
@@ -25,7 +25,7 @@ export class Alignment {
     type: keyof typeof SeqType = 'NT',
     geneticCodeId: number = 1
   ): Alignment {
-    return new Alignment(parseFasta(fastaStr, type, geneticCodeId))
+    return new Alignment(parse_fasta_txt(fastaStr, type, geneticCodeId))
   }
 
   trimTrailingGaps() {
@@ -92,12 +92,18 @@ export class Alignment {
       const sr = this.seqRecs[i]
       lengths.push(sr.seq.length)
     }
-    const min_len = Math.min(...lengths)
-    const max_len = Math.max(...lengths)
-    if (min_len == max_len) {
-      return min_len
+    if (lengths.length > 0) {
+      const min_len = Math.min(...lengths)
+      const max_len = Math.max(...lengths)
+      if (min_len == max_len) {
+        return min_len
+      } else {
+        throw new Error(
+          'Sequences in the alignment are not of the same length.'
+        )
+      }
     } else {
-      throw new Error('Sequences in the alignment are not of the same length.')
+      return 0
     }
   }
 }

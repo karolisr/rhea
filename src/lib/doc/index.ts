@@ -1,32 +1,30 @@
 import { SeqRecord } from '$lib/seq/seq-record'
 import { Alignment } from '$lib/seq/aln'
 
-abstract class _Doc {
+abstract class Doc {
   protected _data: unknown
-
   protected _id: string
-  protected _type: string
-  protected _name: string = ''
-  protected _description: string = ''
-  protected _organism: string = ''
-
+  protected _type: string = '_DocType'
+  protected _name: string = '_DocName'
+  protected _description: string = '_DocDescription'
+  protected _organism: string = '_DocOrganism'
   protected _length: number = 0
   protected _nSeq: number = 0
 
   constructor(
     data: unknown,
     id: string,
-    type: string,
-    name: string,
-    description: string,
-    organism: string
+    type: string = '_DocType',
+    name: string = '_DocName',
+    description: string = '_DocDescription',
+    organism: string = '_DocOrganism'
   ) {
+    this._data = data
     this._id = id
     this._type = type
     this._name = name
     this._description = description
     this._organism = organism
-    this._data = data
   }
 
   public get data(): unknown {
@@ -62,29 +60,20 @@ abstract class _Doc {
   }
 }
 
-export class Doc extends _Doc {
-  constructor(
-    data: unknown,
-    id: string,
-    type: string,
-    name: string = '',
-    description: string = '',
-    organism: string = ''
-  ) {
-    super(data, id, type, name, description, organism)
-  }
-}
-
 export class SeqRecordDoc extends Doc {
   protected declare _data: SeqRecord
 
   constructor(seqRecord: SeqRecord) {
-    super(seqRecord, seqRecord.id, seqRecord.seq.type)
+    super(seqRecord, seqRecord.id)
     this._nSeq = 1
   }
 
   public get data(): SeqRecord {
     return this._data
+  }
+
+  public get type(): string {
+    return this._data.seq.type
   }
 
   public get length(): number {
@@ -96,11 +85,15 @@ export class AlignmentDoc extends Doc {
   protected declare _data: Alignment
 
   constructor(alignment: Alignment, id: string) {
-    super(alignment, id, alignment.type)
+    super(alignment, id)
   }
 
   public get data(): Alignment {
     return this._data
+  }
+
+  public get type(): string {
+    return this._data.type
   }
 
   public get length(): number {

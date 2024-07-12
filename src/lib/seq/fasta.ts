@@ -2,7 +2,7 @@ import { SeqType } from '$lib/seq/types'
 import { mkSeq } from '$lib/seq/seq'
 import { SeqRecord } from '$lib/seq/seq-record'
 
-export function parseFasta(
+export function parse_fasta_txt(
   fastaStr: string,
   type: keyof typeof SeqType = 'NT',
   geneticCodeId: number = 1

@@ -26,29 +26,31 @@ function onDragStart(e: Event) {
     el.style.borderStyle = 'solid'
     el.style.backgroundColor = 'yellow'
     el.innerText = ev.payload.data as string
-    // ev.payload.data = 'Y'
-    // console.log('onDragStart:', e)
   }
 }
 
 function onDragOver(e: Event) {
   const ev = e as DragOverEvent
   if (ev.payload !== undefined) {
-    if (ev.payload.type !== 'some-type') {
+    if (ev.payload.type !== 'some-type' && ev.payload.type !== 'files') {
       ev.payload.targetCanAccept = false
     } else {
       ev.payload.targetCanAccept = true
     }
-    // console.log('onDragOver:', e)
   }
 }
 
 function onDrop(e: Event) {
   const ev = e as DropEvent
   if (ev.payload !== undefined) {
-    if (ev.payload.type === 'some-type') payload = ev.payload
-    // console.log('onDrop:', ev.payload)
-    // console.log('onDrop:', e)
+    if (ev.payload.type === 'some-type') {
+      payload = ev.payload
+    }
+    if (ev.payload.type === 'files') {
+      const _ = ev.payload.data as string[]
+      ev.payload.data = _.join(', ')
+      payload = ev.payload
+    }
   }
 }
 </script>

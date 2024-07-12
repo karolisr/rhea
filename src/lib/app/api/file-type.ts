@@ -1,6 +1,8 @@
 import { readTextFile, readFile } from '@tauri-apps/plugin-fs'
+import { resolve, normalize } from '@tauri-apps/api/path'
 import { parse_dtd_txt } from '$lib/xml/dtd'
 import { parse_xml_txt } from '$lib/xml'
+import { parse_fasta_txt } from '$lib/seq/fasta'
 
 import fileTypeChecker from 'file-type-checker'
 import { getPropNames } from '$lib'
@@ -9,7 +11,7 @@ import type { FileSignature } from 'file-type-checker/dist/core'
 import { insertGbSeqRecords } from './db/gbseq'
 import type { GBSet } from '$lib/ncbi/types/GBSet'
 
-async function getFileType(path: string) {
+export async function getFileType(path: string) {
   const fbin = await readFile(path).catch((error) => {
     console.warn(error)
   })
@@ -45,6 +47,9 @@ async function getFileType(path: string) {
           case 'fasta':
             info.mimeType = 'text/fasta'
             break
+          case 'mfa':
+            info.mimeType = 'text/fasta'
+            break
           default:
             break
         }
@@ -67,7 +72,7 @@ const txtParser = async (f: (txt: string) => unknown) => {
   }
 }
 
-async function getFileParser(path: string) {
+export async function getFileParser(path: string) {
   const info = await getFileType(path)
 
   if (info) {
@@ -76,6 +81,8 @@ async function getFileParser(path: string) {
         return txtParser(parse_dtd_txt)
       case 'text/xml':
         return txtParser(parse_xml_txt)
+      case 'text/fasta':
+        return txtParser(parse_fasta_txt)
       default:
         break
     }

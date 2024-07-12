@@ -160,7 +160,7 @@ export function drawSites(
   renderedSites: Map<string, HTMLCanvasElement>
 ): number {
   let totalOffsetX = 0
-  for (let i = 0; i < min(seq.length, 30); i++) {
+  for (let i = 0; i < min(seq.length, 200); i++) {
     const label = seq[i]
     drawSite(ctx, label, renderedSites)
     const offsetX = deltaX * cnvScale

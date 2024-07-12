@@ -74,20 +74,7 @@ export class DragDrop {
   #onFilesDragStart(paths: string[]) {
     const el = document.createElement('div')
     el.id = 'files-drag-drop-el'
-    // el.style.transition = 'opacity 250ms'
-    // el.style.opacity = '0'
-    // el.style.pointerEvents = 'none'
-    // el.style.paddingBlock = '5px'
-    // el.style.paddingInline = '5px'
-    // el.style.position = 'absolute'
-    // el.style.left = `${e.x + drgOffsetX}px`
-    // el.style.top = `${e.y + drgOffsetY}px`
-    // el.style.zIndex = '1000'
-    // el.style.borderStyle = 'solid'
-    // el.style.backgroundColor = 'yellow'
-    // el.innerText = paths[0]
     el.classList.add('draggable')
-
     document.body.appendChild(el)
 
     this.drgEl1 = el
@@ -98,8 +85,8 @@ export class DragDrop {
     window.document.documentElement.setAttribute('dragging', 'true')
 
     this.payload = {
-      type: 'some-type',
-      data: paths[0],
+      type: 'files',
+      data: paths,
       targetCanAccept: false,
       showWhileDraggingEl: null
     }
