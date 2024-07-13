@@ -5,6 +5,8 @@ import { max } from '$lib'
 import { getFontSize } from '$lib/app/api'
 import GridSizers from '$lib/ui/utils/GridSizers.svelte'
 import { SeqViewController } from './seq-view-controller'
+import { SeqList } from '$lib/seq/seq-list'
+import { Alignment } from '$lib/seq/aln'
 
 let svc: SeqViewController
 let ctx: CanvasRenderingContext2D | null = null
@@ -16,8 +18,7 @@ let rowHsStr: string
 let colWsStr: string
 
 export let uid: string
-export let seqRecords: SeqRecord[] = []
-export let isAlignment: boolean = false
+export let seqs: SeqList | Alignment
 export let siteSize = max(getFontSize() + 2, 16)
 export let siteGapX = 1
 export let siteGapY = 1
@@ -46,25 +47,18 @@ onDestroy(() => {
 
 function resizeEvtListener(_: UIEvent) {
   labelW = colWs[0]
-  // if (svc) svc.labelW = colWs[0]
-  // if (seqRecords.length > 0) svc.draw()
-}
-
-$: if (svc && labelW !== undefined) {
-  svc.labelW = labelW
-  if (seqRecords.length > 0) svc.draw()
 }
 
 $: if (svc) {
+  svc.labelW = labelW
   svc.siteSize = siteSize
   svc.cnvScale = cnvScale
   svc.siteGapX = siteGapX
   svc.siteGapY = siteGapY
-  svc.seqRecords = seqRecords
-  svc.isAlignment = isAlignment
+  svc.data = seqs
   svc.cnvW = cnvW
   svc.cnvH = cnvH
-  if (seqRecords.length > 0) svc.draw()
+  if (seqs.nRow > 0) svc.draw()
 }
 </script>
 

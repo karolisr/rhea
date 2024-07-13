@@ -1,4 +1,6 @@
 import type { SeqRecord } from '$lib/seq/seq-record'
+import { SeqList } from '$lib/seq/seq-list'
+import { Alignment } from '$lib/seq/aln'
 import { floor, max } from '$lib'
 import {
   colorSchemeNT,
@@ -11,8 +13,7 @@ import {
 } from '.'
 
 export class SeqViewController {
-  private _seqRecords: SeqRecord[] = []
-  private _isAlignment: boolean = false
+  private _data: SeqList | Alignment
   private _ctx: CanvasRenderingContext2D
   private _siteSize: number = 0
   private _cnvScale: number = 0
@@ -44,6 +45,7 @@ export class SeqViewController {
   private _slice: string[] = []
 
   constructor(ctx: CanvasRenderingContext2D) {
+    this._data = new SeqList([])
     this._ctx = ctx
 
     this._offScrCnv = document.createElement('canvas')
@@ -122,7 +124,7 @@ export class SeqViewController {
     const labelPadding = this.siteSize * this.cnvScale * 0.25
 
     for (let i = 0; i < this._slice.length; i++) {
-      const sr = this.seqRecords[i]
+      const sr = this.data.seqRecs[i]
       const sliceStr = this._slice[i]
       const renderedSites =
         sr.seq.type === 'AA' ? this.renderedSitesAA : this.renderedSitesNT
@@ -151,26 +153,6 @@ export class SeqViewController {
     }
   }
 
-  #slice(
-    left: number = 0,
-    right: number = 1,
-    top: number = 0,
-    bottom: number = this.seqRecords.length
-  ): string[] {
-    const sliced: string[] = []
-    for (
-      let i = Math.max(top, 0);
-      i < Math.min(bottom, this.seqRecords.length);
-      i++
-    ) {
-      const sr = this.seqRecords[i]
-      sliced.push(
-        sr.seq.str.slice(Math.max(left, 0), Math.min(right, sr.seq.length))
-      )
-    }
-    return sliced
-  }
-
   draw() {
     // console.log('DRAW')
     this.ctx.translate(-this._deltaColOffset * this._deltaX * this._loadNCol, 0)
@@ -180,7 +162,7 @@ export class SeqViewController {
     }
 
     // if (this._deltaColOffset != 0) {
-    this._slice = this.#slice(
+    this._slice = this.data.slice(
       this._colOffset - this._loadNCol,
       this._colOffset + this.#nColVisible() + this._loadNCol + 1,
       0,
@@ -357,20 +339,12 @@ export class SeqViewController {
     this._labelW = labelW
   }
 
-  public get seqRecords(): SeqRecord[] {
-    return this._seqRecords
+  public get data(): SeqList | Alignment {
+    return this._data
   }
 
-  public set seqRecords(seqRecords: SeqRecord[]) {
-    this._seqRecords = seqRecords
-  }
-
-  public get isAlignment(): boolean {
-    return this._isAlignment
-  }
-
-  public set isAlignment(isAlignment: boolean) {
-    this._isAlignment = isAlignment
+  public set data(data: SeqList | Alignment) {
+    this._data = data
   }
 
   // draw() {

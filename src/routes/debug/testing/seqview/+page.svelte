@@ -3,6 +3,7 @@ import SeqView from '$lib/ui/views/SeqView'
 import { SeqRecord } from '$lib/seq/seq-record'
 import { DNASeq } from '$lib/seq/seq'
 import { onMount } from 'svelte'
+import { Alignment } from '$lib/seq/aln'
 
 const sq1 = new DNASeq('AC-T----GTGA', 1)
 const sq2 = new DNASeq('ACGT--AC-TGA', 1)
@@ -19,4 +20,4 @@ onMount(() => {
 })
 </script>
 
-<SeqView uid="sv1" {seqRecords} />
+<SeqView uid="sv1" seqs={new Alignment(seqRecords)} />

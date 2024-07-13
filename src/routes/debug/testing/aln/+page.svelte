@@ -65,7 +65,7 @@ function onDrop(e: Event) {
   on:dragenter="{onDragOver}"
   role="region">
   <div class="seqview-container">
-    <SeqView uid="seqview-aln" seqRecords="{aln.seqRecs}" />
+    <SeqView uid="seqview-aln" seqs="{aln}" />
   </div>
 </div>
 

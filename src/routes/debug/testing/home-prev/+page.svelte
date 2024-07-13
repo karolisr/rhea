@@ -33,6 +33,7 @@ import SeqView from '$lib/ui/views/SeqView'
 import { SeqRecord } from '$lib/seq/seq-record'
 import { NTSeq, DNASeq, RNASeq, AASeq } from '$lib/seq/seq'
 import type { Seq } from '$lib/seq/types'
+import { SeqList } from '$lib/seq/seq-list'
 
 // import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
 // import { getLineage, cacheTaxIds } from '$lib/app/api/db/taxonomy/lineage'
@@ -478,7 +479,7 @@ onDestroy(() => {
       </div>
 
       <div class="seqview-container">
-        <SeqView uid="seqview-main" seqRecords="{selectedRecords}" />
+        <SeqView uid="seqview-main" seqs="{new SeqList(selectedRecords)}" />
       </div>
 
       <!-- <div class="placeholder">
