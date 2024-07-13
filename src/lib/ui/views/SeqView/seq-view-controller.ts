@@ -31,11 +31,17 @@ export class SeqViewController {
   private _offScrCnv: HTMLCanvasElement
   private _offScrCtx: CanvasRenderingContext2D
 
-  private _colOffset: number = 0
-  private _offset: number = 0
+  private _offsetX: number = 0
+  private _offsetY: number = 0
+
+  private _deltaRowOffset: number = -1
+  private _rowOffset: number = 0
+
   private _deltaColOffset: number = -1
+  private _colOffset: number = 0
+
   private _loadNCol: number = 1
-  private slice: string[] = []
+  private _slice: string[] = []
 
   constructor(ctx: CanvasRenderingContext2D) {
     this._ctx = ctx
@@ -76,10 +82,11 @@ export class SeqViewController {
   }
 
   #drawSlice() {
+    // console.log('DRAW-SLICE')
     setCnvSize(
       this.ctx,
       this.cnvW,
-      max(this.cnvH, this.slice.length * this.deltaY),
+      max(this.cnvH, this._slice.length * this.deltaY),
       this.minCnvW,
       this.minCnvH,
       this.cnvScale
@@ -114,9 +121,9 @@ export class SeqViewController {
 
     const labelPadding = this.siteSize * this.cnvScale * 0.25
 
-    for (let i = 0; i < this.slice.length; i++) {
+    for (let i = 0; i < this._slice.length; i++) {
       const sr = this.seqRecords[i]
-      const sliceStr = this.slice[i]
+      const sliceStr = this._slice[i]
       const renderedSites =
         sr.seq.type === 'AA' ? this.renderedSitesAA : this.renderedSitesNT
 
@@ -165,54 +172,76 @@ export class SeqViewController {
   }
 
   draw() {
-    this.ctx.translate(-this._offset, 0)
+    // console.log('DRAW')
+    this.ctx.translate(-this._deltaColOffset * this._deltaX * this._loadNCol, 0)
 
     if (this._colOffset > 0) {
       this.ctx.translate(-this._deltaX * this._loadNCol, 0)
     }
 
-    if (this._deltaColOffset != 0) {
-      this.slice = this.#slice(
-        this._colOffset - this._loadNCol,
-        this._colOffset + this.#nColVisible() + this._loadNCol + 1,
-        0,
-        this.#nRowVisible()
-      )
-      this.#drawSlice()
-    }
+    // if (this._deltaColOffset != 0) {
+    this._slice = this.#slice(
+      this._colOffset - this._loadNCol,
+      this._colOffset + this.#nColVisible() + this._loadNCol + 1,
+      0,
+      this.#nRowVisible()
+    )
+    this.#drawSlice()
+    // }
     this.ctx.drawImage(this._offScrCnv, 0, 0)
   }
 
   #pan(evt: WheelEvent) {
-    this._offset += evt.deltaX
-    if (this._colOffset <= 0 && this._offset <= 0) {
-      this._offset = 0
-      this._colOffset = 0
-      this._deltaColOffset = 0
-    } else if (
-      this._offset >= 0 &&
-      1000 - this._colOffset <= this.#nColVisible()
-    ) {
-      this._offset = 0
-      this._deltaColOffset = 0
-    } else if (
-      Math.sign(evt.deltaX) == 1 &&
-      this._offset > this._deltaX * this._loadNCol
-    ) {
-      this._offset = 0
-      this._colOffset += 1 * this._loadNCol
-      this._deltaColOffset = 1
-    } else if (
-      Math.sign(evt.deltaX) == -1 &&
-      this._offset < -this._deltaX * this._loadNCol
-    ) {
-      this._offset = 0
-      this._colOffset -= 1 * this._loadNCol
-      this._deltaColOffset = -1
-    } else {
-      this._deltaColOffset = 0
+    const deltaX = floor(evt.deltaX)
+    const deltaY = floor(evt.deltaY)
+
+    if (evt.deltaX !== 0) {
+      this._offsetX += deltaX
+
+      // left edge
+      if (this._colOffset <= 0 && this._offsetX <= 0) {
+        this._offsetX = 0
+        this._colOffset = 0
+        this._deltaColOffset = 0
+        // this.draw()
+      }
+      // right edge
+      else if (
+        this._offsetX >= 0 &&
+        1000 - this._colOffset <= this.#nColVisible()
+      ) {
+        this._offsetX = 0
+        this._deltaColOffset = 0
+        // this.draw()
+      }
+      // forward
+      else if (
+        Math.sign(deltaX) == 1 &&
+        this._offsetX > this._deltaX * this._loadNCol
+      ) {
+        this._offsetX = 0
+        this._colOffset += 1 * this._loadNCol
+        this._deltaColOffset = 1
+        this.draw()
+      }
+      // back
+      else if (
+        Math.sign(deltaX) == -1 &&
+        this._offsetX < -this._deltaX * this._loadNCol
+      ) {
+        this._offsetX = 0
+        this._colOffset -= 1 * this._loadNCol
+        this._deltaColOffset = -1
+        this.draw()
+      } else {
+        this._deltaColOffset = 0
+        // this._offsetX = 0
+      }
     }
-    this.draw()
+
+    if (deltaY !== 0) {
+      // console.log(deltaY)
+    }
   }
 
   #prepareSiteImages() {

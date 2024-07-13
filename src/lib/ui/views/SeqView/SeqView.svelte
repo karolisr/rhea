@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount, onDestroy } from 'svelte'
+import { onMount, onDestroy, tick } from 'svelte'
 import { SeqRecord } from '$lib/seq/seq-record'
 import { max } from '$lib'
 import { getFontSize } from '$lib/app/api'
@@ -14,7 +14,6 @@ let rowHs: number[] = [-1]
 let colWs: number[] = [200, 10]
 let rowHsStr: string
 let colWsStr: string
-let labelW: number
 
 export let uid: string
 export let seqRecords: SeqRecord[] = []
@@ -23,6 +22,7 @@ export let siteSize = max(getFontSize() + 2, 16)
 export let siteGapX = 1
 export let siteGapY = 1
 export let cnvScale: number = 1
+export let labelW = colWs[0]
 
 onMount(() => {
   const cnv = document.getElementById(
@@ -32,7 +32,7 @@ onMount(() => {
   ctx = cnv.getContext('2d') as CanvasRenderingContext2D
 
   addEventListener('resize', resizeEvtListener, {
-    capture: true
+    capture: false
   })
 
   svc = new SeqViewController(ctx)
@@ -40,12 +40,19 @@ onMount(() => {
 
 onDestroy(() => {
   removeEventListener('resize', resizeEvtListener, {
-    capture: true
+    capture: false
   })
 })
 
-const resizeEvtListener = (_: UIEvent) => {
+function resizeEvtListener(_: UIEvent) {
   labelW = colWs[0]
+  // if (svc) svc.labelW = colWs[0]
+  // if (seqRecords.length > 0) svc.draw()
+}
+
+$: if (svc && labelW !== undefined) {
+  svc.labelW = labelW
+  if (seqRecords.length > 0) svc.draw()
 }
 
 $: if (svc) {
@@ -53,7 +60,6 @@ $: if (svc) {
   svc.cnvScale = cnvScale
   svc.siteGapX = siteGapX
   svc.siteGapY = siteGapY
-  svc.labelW = labelW
   svc.seqRecords = seqRecords
   svc.isAlignment = isAlignment
   svc.cnvW = cnvW
