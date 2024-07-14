@@ -9,9 +9,10 @@ import { SeqList } from '$lib/seq/seq-list'
 import { Alignment } from '$lib/seq/aln'
 
 let svc: SeqViewController
-let ctx: CanvasRenderingContext2D | null = null
-let cnvW: number
-let cnvH: number
+let scaleCtx: CanvasRenderingContext2D | null = null
+let seqCtx: CanvasRenderingContext2D | null = null
+let w: number
+let h: number
 let rowHs: number[] = [-1]
 let colWs: number[] = [200, 10]
 let rowHsStr: string
@@ -24,19 +25,27 @@ export let siteGapX = 1
 export let siteGapY = 1
 export let cnvScale: number = 1
 export let labelW = colWs[0]
+export let scaleH = siteSize * 2
+
+let minCnvW: number = siteSize
+let minCnvH: number = siteSize
 
 onMount(() => {
-  const cnv = document.getElementById(
+  const scaleCnv = document.getElementById(
+    `${uid}-seqview-scale-canvas`
+  ) as HTMLCanvasElement
+  scaleCtx = scaleCnv.getContext('2d') as CanvasRenderingContext2D
+
+  const seqCnv = document.getElementById(
     `${uid}-seqview-canvas`
   ) as HTMLCanvasElement
-
-  ctx = cnv.getContext('2d') as CanvasRenderingContext2D
+  seqCtx = seqCnv.getContext('2d') as CanvasRenderingContext2D
 
   addEventListener('resize', resizeEvtListener, {
     capture: false
   })
 
-  svc = new SeqViewController(ctx)
+  svc = new SeqViewController(seqCtx, scaleCtx)
 })
 
 onDestroy(() => {
@@ -50,49 +59,73 @@ function resizeEvtListener(_: UIEvent) {
 }
 
 $: if (svc) {
+  svc.data = seqs
+  svc.cnvW = w
+  svc.cnvH = h - scaleH
   svc.labelW = labelW
+  svc.scaleH = scaleH
   svc.siteSize = siteSize
   svc.cnvScale = cnvScale
   svc.siteGapX = siteGapX
   svc.siteGapY = siteGapY
-  svc.data = seqs
-  svc.cnvW = cnvW
-  svc.cnvH = cnvH
+  minCnvW = svc.minCnvW
+  minCnvH = svc.minCnvH
   if (seqs.nRow > 0) svc.draw()
 }
 </script>
 
-<div
-  class="seqview-element"
-  bind:clientWidth="{cnvW}"
-  bind:clientHeight="{cnvH}">
-  <canvas id="{uid}-seqview-canvas" class="seqview-canvas"></canvas>
-</div>
-<div
-  class="seqview-grid-container"
-  style="height:{cnvH}px;"
-  style:grid-template-rows="{rowHsStr}"
-  style:grid-template-columns="{colWsStr}">
-  <GridSizers
-    enforceMaxSize="{false}"
-    bind:rowHs
-    bind:colWs
-    bind:rowHsStr
-    bind:colWsStr
-    fixedWCols="{[1]}"
-    minColW="{0}"
-    minRowH="{0}" />
+<div class="seqview-element" bind:clientWidth="{w}" bind:clientHeight="{h}">
+  <div class="seqview-scale" style="width:{w}px; height:{scaleH}px;">
+    <canvas id="{uid}-seqview-scale-canvas" class="seqview-scale-canvas"
+    ></canvas>
+  </div>
+
+  <div class="seqview">
+    <canvas
+      id="{uid}-seqview-canvas"
+      class="seqview-canvas"
+      style="min-width: {minCnvW}px; min-height: {minCnvH}px;"></canvas>
+    <div
+      class="seqview-grid-container"
+      style="height:{h}px;"
+      style:grid-template-rows="{rowHsStr}"
+      style:grid-template-columns="{colWsStr}">
+      <GridSizers
+        enforceMaxSize="{false}"
+        bind:rowHs
+        bind:colWs
+        bind:rowHsStr
+        bind:colWsStr
+        fixedWCols="{[1]}"
+        minColW="{0}"
+        minRowH="{0}" />
+    </div>
+  </div>
 </div>
 
 <style>
-.seqview-grid-container {
-  position: absolute;
-  display: grid;
+.seqview-element {
+  display: flex;
+  flex-direction: column;
   overflow-x: hidden;
   overflow-y: hidden;
+  flex-grow: 1;
+  flex-shrink: 1;
 }
 
-.seqview-element {
+.seqview-scale {
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.seqview-scale-canvas {
+  background-color: transparent;
+}
+
+.seqview {
   display: flex;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -101,7 +134,13 @@ $: if (svc) {
 }
 
 .seqview-canvas {
-  flex-grow: 1;
-  flex-shrink: 1;
+  background-color: transparent;
+}
+
+.seqview-grid-container {
+  position: absolute;
+  display: grid;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 </style>

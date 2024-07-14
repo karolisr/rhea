@@ -1,7 +1,6 @@
-import type { SeqRecord } from '$lib/seq/seq-record'
 import { SeqList } from '$lib/seq/seq-list'
 import { Alignment } from '$lib/seq/aln'
-import { floor, max } from '$lib'
+import { floor, max, min } from '$lib'
 import {
   colorSchemeNT,
   colorSchemeAA,
@@ -44,12 +43,30 @@ export class SeqViewController {
   private _loadNCol: number = 1
   private _slice: string[] = []
 
-  constructor(ctx: CanvasRenderingContext2D) {
+  private _cnvSizeSet: boolean = false
+  private _scaleH: number = 0
+  private _lineW: number = 0
+
+  private _scaleDrawn: boolean = false
+  private _scaleCtx: CanvasRenderingContext2D
+  private _offScrScaleCnv: HTMLCanvasElement
+  private _offScrScaleCtx: CanvasRenderingContext2D
+
+  constructor(
+    seqCtx: CanvasRenderingContext2D,
+    scaleCtx: CanvasRenderingContext2D
+  ) {
     this._data = new SeqList([])
-    this._ctx = ctx
+    this._ctx = seqCtx
+    this._scaleCtx = scaleCtx
 
     this._offScrCnv = document.createElement('canvas')
     this._offScrCtx = this._offScrCnv.getContext(
+      '2d'
+    ) as CanvasRenderingContext2D
+
+    this._offScrScaleCnv = document.createElement('canvas')
+    this._offScrScaleCtx = this._offScrScaleCnv.getContext(
       '2d'
     ) as CanvasRenderingContext2D
 
@@ -83,8 +100,7 @@ export class SeqViewController {
     return max(0, this.#calcNumVis(this.cnvH, this.deltaY, 0))
   }
 
-  #drawSlice() {
-    // console.log('DRAW-SLICE')
+  #setCnvSize() {
     setCnvSize(
       this.ctx,
       this.cnvW,
@@ -93,33 +109,18 @@ export class SeqViewController {
       this.minCnvH,
       this.cnvScale
     )
+  }
 
-    // const lineW = this.cnvScale * 1
-    // const scaleHeight = this.siteSize * 1.5 * this.cnvScale
-    // this.ctx.translate(this.labelW * this.cnvScale, 0)
-    // this.ctx.strokeStyle = '#5C5C5C'
-    // drawScale(
-    //   this.ctx,
-    //   200,
-    //   this.siteSize,
-    //   this.deltaX,
-    //   lineW,
-    //   this.cnvScale,
-    //   scaleHeight,
-    //   5,
-    //   10
-    // )
-    // this.ctx.translate(-this.labelW * this.cnvScale, scaleHeight + lineW * 1.5)
-    // this.ctx.lineWidth = lineW
+  #drawSlice() {
+    if (!this._cnvSizeSet) {
+      this.#setCnvSize()
+      this._cnvSizeSet = true
+    }
 
-    // -------
     this._offScrCnv.width =
       this.ctx.canvas.width + this._deltaX * this._loadNCol
     this._offScrCnv.height = this.ctx.canvas.height
     this._offScrCtx.font = this.ctx.font
-    // let x = 0
-    // let y = 0
-    // -------
 
     const labelPadding = this.siteSize * this.cnvScale * 0.25
 
@@ -153,24 +154,52 @@ export class SeqViewController {
     }
   }
 
+  #drawScale() {
+    setCnvSize(
+      this._scaleCtx,
+      this.cnvW,
+      this.scaleH,
+      this.minCnvW,
+      this.minCnvH,
+      this.cnvScale
+    )
+
+    this._offScrScaleCnv.width =
+      this.ctx.canvas.width + this._deltaX * this._loadNCol
+    this._offScrScaleCnv.height = this._scaleCtx.canvas.height
+    this._offScrScaleCtx.font = this._scaleCtx.font
+
+    this._lineW = this.cnvScale * 1
+    this._offScrScaleCtx.translate(this.labelW * this.cnvScale, 0)
+    this._offScrScaleCtx.strokeStyle = '#000000'
+    drawScale(
+      this._offScrScaleCtx,
+      max(this._colOffset - this._loadNCol, 0),
+      this._colOffset +
+        min(this.#nColVisible() + 1, this.data.nCol - this._colOffset),
+      this.siteSize,
+      this.deltaX,
+      this._lineW,
+      this.cnvScale,
+      this.scaleH - this._lineW,
+      5,
+      10
+    )
+  }
+
   draw() {
-    // console.log('DRAW')
-    this.ctx.translate(-this._deltaColOffset * this._deltaX * this._loadNCol, 0)
-
-    if (this._colOffset > 0) {
-      this.ctx.translate(-this._deltaX * this._loadNCol, 0)
-    }
-
-    // if (this._deltaColOffset != 0) {
     this._slice = this.data.slice(
       this._colOffset - this._loadNCol,
       this._colOffset + this.#nColVisible() + this._loadNCol + 1,
       0,
       this.#nRowVisible()
     )
+
     this.#drawSlice()
-    // }
     this.ctx.drawImage(this._offScrCnv, 0, 0)
+
+    this.#drawScale()
+    this._scaleCtx.drawImage(this._offScrScaleCnv, 0, 0)
   }
 
   #pan(evt: WheelEvent) {
@@ -178,6 +207,7 @@ export class SeqViewController {
     const deltaY = floor(evt.deltaY)
 
     if (evt.deltaX !== 0) {
+      this._cnvSizeSet = false
       this._offsetX += deltaX
 
       // left edge
@@ -185,16 +215,14 @@ export class SeqViewController {
         this._offsetX = 0
         this._colOffset = 0
         this._deltaColOffset = 0
-        // this.draw()
       }
       // right edge
       else if (
         this._offsetX >= 0 &&
-        1000 - this._colOffset <= this.#nColVisible()
+        this.data.nCol - this._colOffset <= this.#nColVisible()
       ) {
         this._offsetX = 0
         this._deltaColOffset = 0
-        // this.draw()
       }
       // forward
       else if (
@@ -217,7 +245,6 @@ export class SeqViewController {
         this.draw()
       } else {
         this._deltaColOffset = 0
-        // this._offsetX = 0
       }
     }
 
@@ -321,6 +348,7 @@ export class SeqViewController {
 
   public set cnvW(cnvW: number) {
     this._cnvW = cnvW
+    this._cnvSizeSet = false
   }
 
   public get cnvH(): number {
@@ -329,6 +357,16 @@ export class SeqViewController {
 
   public set cnvH(cnvH: number) {
     this._cnvH = cnvH
+    this._cnvSizeSet = false
+  }
+
+  public get scaleH(): number {
+    return this._scaleH
+  }
+
+  public set scaleH(scaleH: number) {
+    this._scaleH = scaleH
+    this._cnvSizeSet = false
   }
 
   public get labelW(): number {
@@ -337,6 +375,7 @@ export class SeqViewController {
 
   public set labelW(labelW: number) {
     this._labelW = labelW
+    this._cnvSizeSet = false
   }
 
   public get data(): SeqList | Alignment {
@@ -346,68 +385,4 @@ export class SeqViewController {
   public set data(data: SeqList | Alignment) {
     this._data = data
   }
-
-  // draw() {
-  //   if (this.ctx !== null) {
-  //     const labelPadding = this.siteSize * this.cnvScale * 0.25
-  //     setCnvSize(
-  //       this.ctx,
-  //       this.cnvW,
-  //       max(this.cnvH, this.seqRecords.length * this.deltaY),
-  //       this.minCnvW,
-  //       this.minCnvH,
-  //       this.cnvScale
-  //     )
-  //     const lineW = this.cnvScale * 1
-
-  //     const scaleHeight = this.siteSize * 1.5 * this.cnvScale
-  //     this.ctx.translate(this.labelW * this.cnvScale, 0)
-  //     this.ctx.strokeStyle = '#5C5C5C'
-  //     drawScale(
-  //       this.ctx,
-  //       200,
-  //       this.siteSize,
-  //       this.deltaX,
-  //       lineW,
-  //       this.cnvScale,
-  //       scaleHeight,
-  //       5,
-  //       10
-  //     )
-  //     this.ctx.translate(
-  //       -this.labelW * this.cnvScale,
-  //       scaleHeight + lineW * 1.5
-  //     )
-
-  //     this.ctx.lineWidth = lineW
-
-  //     for (let i = 0; i < this.seqRecords.length; i++) {
-  //       const sr = this.seqRecords[i]
-  //       const renderedSites =
-  //         sr.seq.type === 'AA' ? this.renderedSitesAA : this.renderedSitesNT
-
-  //       let offsetX = 0
-  //       offsetX += drawSeqLabel(
-  //         this.ctx,
-  //         sr.id,
-  //         labelPadding,
-  //         this.labelW,
-  //         this.siteSize,
-  //         this.cnvScale
-  //       )
-
-  //       this.ctx.translate(this.siteGapX * this.cnvScale, 0)
-  //       offsetX += this.siteGapX * this.cnvScale
-
-  //       offsetX += drawSites(
-  //         this.ctx,
-  //         sr.seq.str,
-  //         this.deltaX,
-  //         this.cnvScale,
-  //         renderedSites
-  //       )
-  //       this.ctx.translate(-offsetX, this.deltaY * this.cnvScale)
-  //     }
-  //   }
-  // }
 }

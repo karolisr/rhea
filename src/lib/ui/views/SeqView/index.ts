@@ -164,7 +164,7 @@ export function drawSites(
   renderedSites: Map<string, HTMLCanvasElement>
 ): number {
   let totalOffsetX = 0
-  for (let i = 0; i < min(seq.length, 200); i++) {
+  for (let i = 0; i < seq.length; i++) {
     const label = seq[i]
     drawSite(ctx, label, renderedSites)
     const offsetX = deltaX * cnvScale
@@ -176,7 +176,8 @@ export function drawSites(
 
 export function drawScale(
   ctx: CanvasRenderingContext2D,
-  nSites: number,
+  from: number,
+  to: number,
   siteSize: number,
   deltaX: number,
   lineW: number,
@@ -185,38 +186,39 @@ export function drawScale(
   minorTicksEvery: number,
   majorTicksEvery: number
 ) {
-  ctx.font = `normal ${height / 2.75}px Monospace`
-  for (let i = 1; i < nSites + 1; i++) {
+  ctx.font = `normal ${(height * cnvScale) / 2.5}px sans-serif`
+  const nSites = to - from
+  for (let i = 0; i < nSites; i++) {
     const x = i * deltaX * cnvScale + ((deltaX - siteSize) * cnvScale) / 2
-    if (i % majorTicksEvery === 0) {
+    if ((from + i) % majorTicksEvery === 0) {
       const labOffset = calcTextOffset(
         ctx,
-        String(i),
+        String(from + i),
         deltaX * 2 * cnvScale,
-        height / 3
+        (height * cnvScale) / 3
       )
       ctx.fillText(
-        String(i),
+        String(from + i),
         x + labOffset.x - deltaX * cnvScale,
-        labOffset.y + height / 10
+        labOffset.y + (height * cnvScale) / 10
       )
       ctx.lineWidth = lineW * 2
       ctx.beginPath()
-      ctx.moveTo(x, height / 1.75)
-      ctx.lineTo(x, height)
+      ctx.moveTo(x, (height * cnvScale) / 1.7)
+      ctx.lineTo(x, height * cnvScale)
       ctx.stroke()
-    } else if (i % minorTicksEvery === 0) {
+    } else if ((from + i) % minorTicksEvery === 0) {
       ctx.lineWidth = lineW
       ctx.beginPath()
-      ctx.moveTo(x, height / 1.5)
-      ctx.lineTo(x, height)
+      ctx.moveTo(x, (height * cnvScale) / 1.5)
+      ctx.lineTo(x, height * cnvScale)
       ctx.stroke()
     }
   }
 
   ctx.lineWidth = lineW
   ctx.beginPath()
-  ctx.moveTo((deltaX - siteSize) * cnvScale, height)
-  ctx.lineTo(nSites * deltaX * cnvScale, height)
+  ctx.moveTo((deltaX - siteSize) * cnvScale, height * cnvScale)
+  ctx.lineTo(nSites * deltaX * cnvScale, height * cnvScale)
   ctx.stroke()
 }

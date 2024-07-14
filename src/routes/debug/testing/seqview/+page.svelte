@@ -20,4 +20,4 @@ onMount(() => {
 })
 </script>
 
-<SeqView uid="sv1" seqs={new Alignment(seqRecords)} />
+<SeqView uid="sv1" seqs="{new Alignment(seqRecords)}" />

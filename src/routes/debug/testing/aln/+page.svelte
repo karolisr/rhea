@@ -31,11 +31,11 @@ async function parse(path: string) {
   aln = new Alignment(seqRecs)
 }
 
-$: if (targetEl && filePath) console.log(filePath)
 $: $status.main = filePath
 $: if (targetEl && filePath) fileParser(filePath)
 $: if (parser !== undefined && filePath) parse(filePath)
-$: if (aln) console.log(aln)
+// $: if (targetEl && filePath) console.log(filePath)
+// $: if (aln) console.log(aln)
 
 function onDragOver(e: Event) {
   const ev = e as DragOverEvent
@@ -51,7 +51,6 @@ function onDragOver(e: Event) {
 function onDrop(e: Event) {
   const ev = e as DropEvent
   if (ev.payload !== undefined && ev.payload.type === 'files') {
-    console.log(ev)
     const _ = ev.payload.data as string[]
     filePath = _[0]
   }
@@ -72,10 +71,8 @@ function onDrop(e: Event) {
 <style>
 .drag-target {
   background-color: aliceblue;
-  /* margin: auto; */
-  /* width: 500px; */
-  /* height: 300px; */
-  padding: 20px;
+  padding: 25px;
+  margin: 25px;
   border-style: solid;
 }
 
