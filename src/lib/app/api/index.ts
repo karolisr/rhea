@@ -19,6 +19,7 @@ export const beforeWindowClose = _beforeWindowClose
 export const SYSINFO = getSystemInfo()
 export const BROWSER = SYSINFO.browser
 export const ENGINE = SYSINFO.engine
+export const PIXELRATIO = SYSINFO.pixelRatio
 
 export async function getLocale(): Promise<string> {
   let l: string | null = null
@@ -44,12 +45,18 @@ export async function getLocale(): Promise<string> {
 interface SystemInfo {
   browser: string
   engine: string
+  pixelRatio: number
 }
 
 function getSystemInfo(): SystemInfo {
   const detector = new Detector()
   let engine: string = '?'
   let browser: string = '?'
+  let pixelRatio: number = 1
+
+  if ('pixelRatio' in detector.feature) {
+    pixelRatio = detector.feature.pixelRatio as number
+  }
 
   if ('name' in detector.engine) {
     engine = detector.engine.name as string
@@ -65,7 +72,8 @@ function getSystemInfo(): SystemInfo {
 
   return {
     browser,
-    engine
+    engine,
+    pixelRatio
   }
 }
 

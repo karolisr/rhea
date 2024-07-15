@@ -7,6 +7,7 @@ import GridSizers from '$lib/ui/utils/GridSizers.svelte'
 import { SeqViewController } from './seq-view-controller'
 import { SeqList } from '$lib/seq/seq-list'
 import { Alignment } from '$lib/seq/aln'
+import { PIXELRATIO } from '$lib/app/api'
 
 let svc: SeqViewController
 let scaleCtx: CanvasRenderingContext2D | null = null
@@ -23,7 +24,7 @@ export let seqs: SeqList | Alignment
 export let siteSize = max(getFontSize() + 2, 16)
 export let siteGapX = 1
 export let siteGapY = 1
-export let cnvScale: number = 1
+export let cnvScale: number = PIXELRATIO
 export let labelW = colWs[0]
 export let scaleH = siteSize * 2
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import { BROWSER, ENGINE } from '$lib/app/api'
+import { BROWSER, ENGINE, PIXELRATIO } from '$lib/app/api'
 import { themeChangeListener } from '$lib/app/api/darkmode'
 // import { FileDragDrop } from '$lib/app/api/file-drag-drop'
 import type { Unlistener } from '$lib/types'
@@ -30,7 +30,7 @@ let dragDropConductor: DragDrop = new DragDrop()
 $: setScale($settings.scale)
 
 onMount(async () => {
-  console.info(BROWSER, ENGINE)
+  console.info(BROWSER, ENGINE, `Pixel ratio: ${PIXELRATIO}`)
   unlisteners.push(await themeChangeListener())
   // unlisteners.push(
   //   await new FileDragDrop(insertGbSeqRecordsOnFileDropTMP).unlisten
