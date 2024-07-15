@@ -48,7 +48,7 @@ export class SeqViewController {
   private _scaleH: number = 0
   private _lineW: number = 0
 
-  private _scaleDrawn: boolean = false
+  // private _scaleDrawn: boolean = false
   private _scaleCtx: CanvasRenderingContext2D
   private _offScrScaleCnv: HTMLCanvasElement
   private _offScrScaleCtx: CanvasRenderingContext2D

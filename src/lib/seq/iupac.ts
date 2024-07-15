@@ -140,6 +140,29 @@ export const IUPAC_AMBIGUOUS_SECOND_ORDER_DNA_DICT_REVERSE = new Map([
 //  W           Trp     Tryptophan
 //  Y           Tyr     Tyrosine
 
+// const AA = [
+//   ['A', 'Ala', 'Alanine'],
+//   ['C', 'Cys', 'Cysteine'],
+//   ['D', 'Asp', 'Aspartic Acid'],
+//   ['E', 'Glu', 'Glutamic Acid'],
+//   ['F', 'Phe', 'Phenylalanine'],
+//   ['G', 'Gly', 'Glycine'],
+//   ['H', 'His', 'Histidine'],
+//   ['I', 'Ile', 'Isoleucine'],
+//   ['K', 'Lys', 'Lysine'],
+//   ['L', 'Leu', 'Leucine'],
+//   ['M', 'Met', 'Methionine'],
+//   ['N', 'Asn', 'Asparagine'],
+//   ['P', 'Pro', 'Proline'],
+//   ['Q', 'Gln', 'Glutamine'],
+//   ['R', 'Arg', 'Arginine'],
+//   ['S', 'Ser', 'Serine'],
+//   ['T', 'Thr', 'Threonine'],
+//   ['V', 'Val', 'Valine'],
+//   ['W', 'Trp', 'Tryptophan'],
+//   ['Y', 'Tyr', 'Tyrosine']
+// ]
+
 // IUPAC
 // nucleotide
 // code         Base
