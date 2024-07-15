@@ -27,8 +27,8 @@ export let cnvScale: number = 1
 export let labelW = colWs[0]
 export let scaleH = siteSize * 2
 
-let minCnvW: number = siteSize
-let minCnvH: number = siteSize
+let minCnvW: number = siteSize * 2
+let minCnvH: number = siteSize * 2
 
 onMount(() => {
   const scaleCnv = document.getElementById(
@@ -75,16 +75,15 @@ $: if (svc) {
 </script>
 
 <div class="seqview-element" bind:clientWidth="{w}" bind:clientHeight="{h}">
-  <div class="seqview-scale" style="width:{w}px; height:{scaleH}px;">
+  <div
+    class="seqview-scale"
+    style="width:{w}px; height:{scaleH}px; min-width: {minCnvW}px; min-height: {scaleH}px;">
     <canvas id="{uid}-seqview-scale-canvas" class="seqview-scale-canvas"
     ></canvas>
   </div>
 
-  <div class="seqview">
-    <canvas
-      id="{uid}-seqview-canvas"
-      class="seqview-canvas"
-      style="min-width: {minCnvW}px; min-height: {minCnvH}px;"></canvas>
+  <div class="seqview" style="min-width: {minCnvW}px; min-height: {minCnvH}px;">
+    <canvas id="{uid}-seqview-canvas" class="seqview-canvas"></canvas>
     <div
       class="seqview-grid-container"
       style="height:{h}px;"

@@ -202,13 +202,13 @@ export function drawScale(
         x + labOffset.x - deltaX * cnvScale,
         labOffset.y + (height * cnvScale) / 10
       )
-      ctx.lineWidth = lineW * 2
+      ctx.lineWidth = lineW * 2 * cnvScale
       ctx.beginPath()
       ctx.moveTo(x, (height * cnvScale) / 1.7)
       ctx.lineTo(x, height * cnvScale)
       ctx.stroke()
     } else if ((from + i) % minorTicksEvery === 0) {
-      ctx.lineWidth = lineW
+      ctx.lineWidth = lineW * cnvScale
       ctx.beginPath()
       ctx.moveTo(x, (height * cnvScale) / 1.5)
       ctx.lineTo(x, height * cnvScale)
@@ -216,9 +216,12 @@ export function drawScale(
     }
   }
 
-  ctx.lineWidth = lineW
+  ctx.lineWidth = lineW * cnvScale
   ctx.beginPath()
-  ctx.moveTo((deltaX - siteSize) * cnvScale, height * cnvScale)
+  ctx.moveTo(
+    (deltaX - siteSize - 0.5 * (deltaX - siteSize) - lineW) * cnvScale,
+    height * cnvScale
+  )
   ctx.lineTo(nSites * deltaX * cnvScale, height * cnvScale)
   ctx.stroke()
 }

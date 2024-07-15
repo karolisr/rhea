@@ -60,11 +60,15 @@ export class SeqList {
     right: number = this.nCol,
     top: number = 0,
     bottom: number = this.nRow
-  ): string[] {
-    const sliced: string[] = []
+  ): string[][] {
+    const sliced: string[][] = []
     for (let i = max(top, 0); i < min(bottom, this.nRow); i++) {
       const sr = this.seqRecs[i]
-      sliced.push(sr.seq.str.slice(max(left, 0), min(right, sr.seq.length)))
+      sliced.push([
+        sr.id,
+        sr.seq.type,
+        sr.seq.str.slice(max(left, 0), min(right, sr.seq.length))
+      ])
     }
     return sliced
   }

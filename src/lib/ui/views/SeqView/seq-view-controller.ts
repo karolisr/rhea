@@ -34,14 +34,15 @@ export class SeqViewController {
   private _offsetX: number = 0
   private _offsetY: number = 0
 
-  private _deltaRowOffset: number = -1
+  // private _deltaRowOffset: number = -1
   private _rowOffset: number = 0
 
-  private _deltaColOffset: number = -1
+  // private _deltaColOffset: number = -1
   private _colOffset: number = 0
 
   private _loadNCol: number = 1
-  private _slice: string[] = []
+  private _loadNRow: number = 1
+  private _slice: string[][] = []
 
   private _cnvSizeSet: boolean = false
   private _scaleH: number = 0
@@ -111,6 +112,39 @@ export class SeqViewController {
     )
   }
 
+  #drawScale() {
+    setCnvSize(
+      this._scaleCtx,
+      this.cnvW,
+      this.scaleH,
+      this.minCnvW,
+      this.scaleH,
+      this.cnvScale
+    )
+
+    this._offScrScaleCnv.width =
+      this.ctx.canvas.width + this._deltaX * this._loadNCol
+    this._offScrScaleCnv.height = this._scaleCtx.canvas.height
+    this._offScrScaleCtx.font = this._scaleCtx.font
+
+    this._lineW = 1
+    this._offScrScaleCtx.translate(this.labelW * this.cnvScale, 0)
+    this._offScrScaleCtx.strokeStyle = '#000000'
+    drawScale(
+      this._offScrScaleCtx,
+      max(this._colOffset - this._loadNCol, 0),
+      this._colOffset +
+        min(this.#nColVisible() + 1, this.data.nCol - this._colOffset),
+      this.siteSize,
+      this.deltaX,
+      this._lineW,
+      this.cnvScale,
+      this.scaleH - this._lineW * 3,
+      10,
+      50
+    )
+  }
+
   #drawSlice() {
     if (!this._cnvSizeSet) {
       this.#setCnvSize()
@@ -125,15 +159,14 @@ export class SeqViewController {
     const labelPadding = this.siteSize * this.cnvScale * 0.25
 
     for (let i = 0; i < this._slice.length; i++) {
-      const sr = this.data.seqRecs[i]
-      const sliceStr = this._slice[i]
+      const row = this._slice[i + this._loadNRow - 1]
       const renderedSites =
-        sr.seq.type === 'AA' ? this.renderedSitesAA : this.renderedSitesNT
+        row[1] === 'AA' ? this.renderedSitesAA : this.renderedSitesNT
 
       let offsetX = 0
       offsetX += drawSeqLabel(
         this._offScrCtx,
-        sr.id,
+        row[0],
         labelPadding,
         this.labelW,
         this.siteSize,
@@ -145,7 +178,7 @@ export class SeqViewController {
 
       offsetX += drawSites(
         this._offScrCtx,
-        sliceStr,
+        row[2],
         this.deltaX,
         this.cnvScale,
         renderedSites
@@ -154,45 +187,12 @@ export class SeqViewController {
     }
   }
 
-  #drawScale() {
-    setCnvSize(
-      this._scaleCtx,
-      this.cnvW,
-      this.scaleH,
-      this.minCnvW,
-      this.minCnvH,
-      this.cnvScale
-    )
-
-    this._offScrScaleCnv.width =
-      this.ctx.canvas.width + this._deltaX * this._loadNCol
-    this._offScrScaleCnv.height = this._scaleCtx.canvas.height
-    this._offScrScaleCtx.font = this._scaleCtx.font
-
-    this._lineW = this.cnvScale * 1
-    this._offScrScaleCtx.translate(this.labelW * this.cnvScale, 0)
-    this._offScrScaleCtx.strokeStyle = '#000000'
-    drawScale(
-      this._offScrScaleCtx,
-      max(this._colOffset - this._loadNCol, 0),
-      this._colOffset +
-        min(this.#nColVisible() + 1, this.data.nCol - this._colOffset),
-      this.siteSize,
-      this.deltaX,
-      this._lineW,
-      this.cnvScale,
-      this.scaleH - this._lineW,
-      5,
-      10
-    )
-  }
-
   draw() {
     this._slice = this.data.slice(
       this._colOffset - this._loadNCol,
-      this._colOffset + this.#nColVisible() + this._loadNCol + 1,
-      0,
-      this.#nRowVisible()
+      this._colOffset + this.#nColVisible() + this._loadNCol,
+      this._rowOffset - this._loadNRow,
+      this._rowOffset + this.#nRowVisible() + this._loadNRow
     )
 
     this.#drawSlice()
@@ -206,7 +206,7 @@ export class SeqViewController {
     const deltaX = floor(evt.deltaX)
     const deltaY = floor(evt.deltaY)
 
-    if (evt.deltaX !== 0) {
+    if (deltaX !== 0) {
       this._cnvSizeSet = false
       this._offsetX += deltaX
 
@@ -214,15 +214,15 @@ export class SeqViewController {
       if (this._colOffset <= 0 && this._offsetX <= 0) {
         this._offsetX = 0
         this._colOffset = 0
-        this._deltaColOffset = 0
+        // this._deltaColOffset = 0
       }
       // right edge
       else if (
         this._offsetX >= 0 &&
-        this.data.nCol - this._colOffset <= this.#nColVisible()
+        this.data.nCol - this._colOffset < this.#nColVisible()
       ) {
         this._offsetX = 0
-        this._deltaColOffset = 0
+        // this._deltaColOffset = 0
       }
       // forward
       else if (
@@ -231,7 +231,7 @@ export class SeqViewController {
       ) {
         this._offsetX = 0
         this._colOffset += 1 * this._loadNCol
-        this._deltaColOffset = 1
+        // this._deltaColOffset = 1
         this.draw()
       }
       // back
@@ -241,15 +241,53 @@ export class SeqViewController {
       ) {
         this._offsetX = 0
         this._colOffset -= 1 * this._loadNCol
-        this._deltaColOffset = -1
+        // this._deltaColOffset = -1
         this.draw()
       } else {
-        this._deltaColOffset = 0
+        // this._deltaColOffset = 0
       }
     }
 
     if (deltaY !== 0) {
-      // console.log(deltaY)
+      this._cnvSizeSet = false
+      this._offsetY += deltaY
+
+      // top
+      if (this._rowOffset <= 0 && this._offsetY <= 0) {
+        this._offsetY = 0
+        this._rowOffset = 0
+        // this._deltaRowOffset = 0
+      }
+      // bottom
+      else if (
+        this._offsetY >= 0 &&
+        this.data.nRow - this._rowOffset < this.#nRowVisible()
+      ) {
+        this._offsetY = 0
+        // this._deltaRowOffset = 0
+      }
+      // down
+      else if (
+        Math.sign(deltaY) == 1 &&
+        this._offsetY > this._deltaY * this._loadNRow
+      ) {
+        this._offsetY = 0
+        this._rowOffset += 1 * this._loadNRow
+        // this._deltaRowOffset = 1
+        this.draw()
+      }
+      // up
+      else if (
+        Math.sign(deltaY) == -1 &&
+        this._offsetY < -this._deltaY * this._loadNRow
+      ) {
+        this._offsetY = 0
+        this._rowOffset -= 1 * this._loadNRow
+        // this._deltaRowOffset = -1
+        this.draw()
+      } else {
+        // this._deltaRowOffset = 0
+      }
     }
   }
 
@@ -326,8 +364,8 @@ export class SeqViewController {
 
   public set siteSize(siteSize: number) {
     this._siteSize = siteSize
-    this._minCnvW = siteSize
-    this._minCnvH = siteSize
+    this._minCnvW = siteSize * 2
+    this._minCnvH = siteSize * 2
     this.#calcDeltaX()
     this.#calcDeltaY()
     this.#prepareSiteImages()
@@ -348,6 +386,10 @@ export class SeqViewController {
 
   public set cnvW(cnvW: number) {
     this._cnvW = cnvW
+    this._colOffset = max(
+      0,
+      min(this._colOffset, this.data.nCol - this.#nColVisible() + 1)
+    )
     this._cnvSizeSet = false
   }
 
@@ -357,6 +399,10 @@ export class SeqViewController {
 
   public set cnvH(cnvH: number) {
     this._cnvH = cnvH
+    this._rowOffset = max(
+      0,
+      min(this._rowOffset, this.data.nRow - this.#nRowVisible() + 1)
+    )
     this._cnvSizeSet = false
   }
 
