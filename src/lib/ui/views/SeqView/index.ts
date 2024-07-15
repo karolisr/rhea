@@ -26,10 +26,36 @@ export const colorSchemeNT = new Map([
   ['T', 'rgba(0,255,0,1)'],
   ['U', 'rgba(0,255,0,1)'],
   ['N', 'rgba(200,200,200,1)'],
-  ['-', 'rgba(255,255,255,1)']
+  ['-', 'rgba(255,255,255,1)'],
+  ['.', 'rgba(255,255,255,1)']
 ])
 
-export const colorSchemeAA = new Map([['-', 'rgba(255,255,255,1)']])
+export const colorSchemeAA = new Map([
+  ['A', 'rgba(179,179,179,1)'],
+  ['C', 'rgba(255,230,0,1)'],
+  ['D', 'rgba(255,109,115,1)'],
+  ['E', 'rgba(255,0,255,1)'],
+  ['F', 'rgba(242,230,126,1)'],
+  ['G', 'rgba(137,204,0,1)'],
+  ['H', 'rgba(255,132,0,1)'],
+  ['I', 'rgba(0,201,116,1)'],
+  ['K', 'rgba(111,208,255,1)'],
+  ['L', 'rgba(255,38,137,1)'],
+  ['M', 'rgba(255,0,255,1)'],
+  ['N', 'rgba(0,255,255,1)'],
+  ['P', 'rgba(255,255,0,1)'],
+  ['Q', 'rgba(61,188,255,1)'],
+  ['R', 'rgba(100,228,230,1)'],
+  ['S', 'rgba(255,178,158,1)'],
+  ['T', 'rgba(255,233,121,1)'],
+  ['V', 'rgba(0,255,0,1)'],
+  ['W', 'rgba(255,171,173,1)'],
+  ['Y', 'rgba(146,255,0,1)'],
+  ['X', 'rgba(100,100,100,1)'],
+  ['-', 'rgba(255,255,255,1)'],
+  ['.', 'rgba(255,255,255,1)'],
+  ['*', 'rgba(0,0,0,1)']
+])
 
 export function setCnvSize(
   ctx: CanvasRenderingContext2D,
@@ -91,13 +117,21 @@ export function prepareSiteImage(
     size,
     xAlign
   )
+  let bg: string = '#fff'
+  let fg: string = '#000'
   if (colorScheme.has(text)) {
-    ctx.fillStyle = colorScheme.get(text) as string
-  } else {
-    ctx.fillStyle = '#fff'
+    bg = colorScheme.get(text) as string
   }
+  ctx.fillStyle = bg
   ctx.fillRect(0, 0, size, size)
-  ctx.fillStyle = '#000'
+
+  // ctx.strokeStyle = '#000'
+  // ctx.strokeRect(0, 0, size, size)
+
+  if (bg === 'rgba(0,0,0,1)' || bg === 'rgba(100,100,100,1)') {
+    fg = '#fff'
+  }
+  ctx.fillStyle = fg
   ctx.fillText(text.toUpperCase(), text_offset.x, text_offset.y)
 }
 
