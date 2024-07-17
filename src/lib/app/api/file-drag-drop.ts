@@ -1,4 +1,4 @@
-import { getCurrent } from '@tauri-apps/api/webviewWindow'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import type { Unlistener } from '$lib/types'
 import { BROWSER } from '$lib/app/api'
 
@@ -24,12 +24,12 @@ export class FileDragDrop {
 
   async #listen(): Promise<Unlistener> {
     if (BROWSER === 'Tauri') {
-      const retFun = getCurrent().onDragDropEvent(async (event) => {
-        if (event.payload.type === 'dragged') {
+      const retFun = getCurrentWindow().onDragDropEvent(async (event) => {
+        if (event.payload.type === 'enter') {
           // console.info('FileDragDrop.onDragStart:', event.payload.paths)
           if (this.onDragStart !== undefined)
             this.onDragStart(event.payload.paths)
-        } else if (event.payload.type === 'dragOver') {
+        } else if (event.payload.type === 'over') {
           // console.info(
           //   'FileDragDrop.onDrag:',
           //   event.payload.position.x,
@@ -37,7 +37,7 @@ export class FileDragDrop {
           // )
           if (this.onDrag !== undefined)
             this.onDrag(event.payload.position.x, event.payload.position.y)
-        } else if (event.payload.type === 'dropped') {
+        } else if (event.payload.type === 'drop') {
           // console.info(
           //   'FileDragDrop.onDrop:',
           //   event.payload.paths,
