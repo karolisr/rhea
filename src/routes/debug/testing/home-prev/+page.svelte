@@ -1,6 +1,6 @@
 <script lang="ts">
-import state from '$lib/app/svelte-stores/state'
-import { saveState } from '$lib/app/svelte-stores/state'
+// import state from '$lib/app/svelte-stores/state'
+// import { saveState } from '$lib/app/svelte-stores/state'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import TreeView from '$lib/ui/views/TreeView'
 import TableView from '$lib/ui/views/TableView'
@@ -122,35 +122,10 @@ let dbs: Awaited<typeof databases>
 
 let rebuild: number
 
-let selectedGroupUid: string | undefined = $state.selectedGroupUid as
-  | string
-  | undefined
-$: {
-  $state.selectedGroupUid = selectedGroupUid
-  saveState()
-}
-
-let selectedColl: string | undefined = $state.selectedColl as string | undefined
-$: {
-  $state.selectedColl = selectedColl
-  saveState()
-}
-
-let expandedSeqTypeIds: Set<string> | undefined = $state.expandedSeqTypes as
-  | Set<string>
-  | undefined
-$: {
-  $state.expandedSeqTypes = expandedSeqTypeIds
-  saveState()
-}
-
-let expandedCollIds: Set<string> | undefined = $state.expandedCollIds as
-  | Set<string>
-  | undefined
-$: {
-  $state.expandedCollIds = expandedCollIds
-  saveState()
-}
+let selectedGroupUid: string | undefined
+let selectedColl: string | undefined
+let expandedSeqTypeIds: Set<string> | undefined
+let expandedCollIds: Set<string> | undefined
 
 // let selectedTaxon: string | undefined = undefined
 let subsetSeqTypes: string[] | undefined = undefined

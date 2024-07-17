@@ -52,11 +52,6 @@ let tvMainRowH: number | undefined = undefined
 let gridLeftColW: number = ($state.gridLeftColW as number | undefined) || 200
 let gridLRColWs: number[] = [gridLeftColW, -1]
 
-$: {
-  $state.gridLeftColW = gridLRColWs[0]
-  saveState()
-}
-
 let gridMainNRow: number = 3
 let gridMainNCol: number = 1
 
@@ -67,16 +62,28 @@ let gridMainColWs: number[] = [-1]
 let gridMainRowHs: number[] = []
 let gridMainRowHsPrev: number[] = []
 
+if ($state.gridMainRowHs !== undefined) {
+  gridMainRowHs = [...($state.gridMainRowHs as number[])]
+  gridMainRowHsPrev = [...gridMainRowHs]
+}
+
 $: {
+  $state.gridLeftColW = gridLRColWs[0]
+
   if (tvMainRowH && gridMainRowHs.length === 0) {
     gridMainRowHs = [
-      // getFontSize() * 3,
-      0,
+      getFontSize() * 3,
       34 + 1 + (tvMainRowH ? tvMainRowH : 0) * (tvMainNRowsToShow - 1),
       -1
     ]
     gridMainRowHsPrev = [...gridMainRowHs]
   }
+
+  if (gridMainRowHs.length > 0) {
+    $state.gridMainRowHs = [...gridMainRowHs]
+  }
+
+  saveState()
 }
 // Grid / State END ----------------------------------------------------------
 
