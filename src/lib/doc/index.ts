@@ -1,7 +1,9 @@
 import { SeqRecord } from '$lib/seq/seq-record'
 import { Alignment } from '$lib/seq/aln'
 
-abstract class Doc {
+export type Doc = SeqRecordDoc | AlignmentDoc
+
+abstract class _Doc {
   protected _data: unknown
   protected _id: string
   protected _type: string = '_DocType'
@@ -60,7 +62,7 @@ abstract class Doc {
   }
 }
 
-export class SeqRecordDoc extends Doc {
+export class SeqRecordDoc extends _Doc {
   protected declare _data: SeqRecord
 
   constructor(seqRecord: SeqRecord) {
@@ -81,7 +83,7 @@ export class SeqRecordDoc extends Doc {
   }
 }
 
-export class AlignmentDoc extends Doc {
+export class AlignmentDoc extends _Doc {
   protected declare _data: Alignment
 
   constructor(alignment: Alignment, id: string) {
