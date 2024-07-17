@@ -27,6 +27,12 @@ export class FileDragDrop {
       const retFun = getCurrentWindow().onDragDropEvent(async (event) => {
         if (event.payload.type === 'enter') {
           // console.info('FileDragDrop.onDragStart:', event.payload.paths)
+          getCurrentWindow().setFocus()
+          const targets = document.getElementsByClassName('drag-target')
+          for (let i = 0; i < targets.length; i++) {
+            const element = targets[i] as HTMLElement
+            element.style.zIndex = '30'
+          }
           if (this.onDragStart !== undefined)
             this.onDragStart(event.payload.paths)
         } else if (event.payload.type === 'over') {
@@ -44,6 +50,11 @@ export class FileDragDrop {
           //   event.payload.position.x,
           //   event.payload.position.y
           // )
+          const targets = document.getElementsByClassName('drag-target')
+          for (let i = 0; i < targets.length; i++) {
+            const element = targets[i] as HTMLElement
+            element.style.zIndex = '0'
+          }
           if (this.onDrop !== undefined)
             this.onDrop(
               event.payload.paths,
@@ -52,6 +63,11 @@ export class FileDragDrop {
             )
         } else {
           // console.info('FileDragDrop.onDragCancel')
+          const targets = document.getElementsByClassName('drag-target')
+          for (let i = 0; i < targets.length; i++) {
+            const element = targets[i] as HTMLElement
+            element.style.zIndex = '0'
+          }
           if (this.onDragCancel !== undefined) this.onDragCancel()
         }
       })

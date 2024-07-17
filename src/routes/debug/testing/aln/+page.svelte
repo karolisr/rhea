@@ -63,17 +63,18 @@ function onDrop(e: Event) {
   on:drop="{onDrop}"
   on:dragenter="{onDragOver}"
   role="region">
-  <div class="seqview-container">
-    <SeqView uid="seqview-aln" seqs="{aln}" />
-  </div>
+</div>
+
+<div class="seqview-container">
+  <SeqView uid="seqview-aln" seqs="{aln}" />
 </div>
 
 <style>
 .drag-target {
-  background-color: aliceblue;
-  padding: 25px;
-  margin: 25px;
-  border-style: solid;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .seqview-container {

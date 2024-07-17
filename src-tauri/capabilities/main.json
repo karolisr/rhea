@@ -44,6 +44,7 @@
     "window:allow-set-cursor-position",
     "window:allow-set-cursor-visible",
     "window:allow-set-ignore-cursor-events",
+    "window:allow-set-focus",
     {
       "identifier": "http:default",
       "allow": [

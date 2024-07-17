@@ -43,7 +43,10 @@ export class DragDrop {
       }).bind(this),
 
       // () => {}, // onDragCancel
-      this.#dStopL,
+      (() => {
+        this.drgTargetEl = null
+        this.#dStopL()
+      }).bind(this),
 
       // (paths) => {}, // onDragStart
       this.#onFilesDragStart.bind(this),
