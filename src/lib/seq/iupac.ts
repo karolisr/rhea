@@ -7,9 +7,10 @@ export const NT_GAPS_CHARS = new Set(NT_GAPS_STRING)
 export const DNA_ONLY_CHARS = new Set('T')
 export const RNA_ONLY_CHARS = new Set('U')
 
-export const AA_CHARS = new Set('GAVLIPFYCMHKRWSTDENQ.*')
+export const AA_CHARS = new Set('GAVLIPFYCMHKRWSTDENQ*')
 export const AA_AMBIGUOUS_CHARS = new Set('BZX')
-export const AA_GAPS_CHARS = new Set('-')
+export const AA_GAPS_STRING = '-.'
+export const AA_GAPS_CHARS = new Set(AA_GAPS_STRING)
 
 export const DNA_UNAMBIGUOUS = new Set([...NT_SHARED_CHARS, ...DNA_ONLY_CHARS])
 export const DNA_UNAMBIGUOUS_GAPS = new Set([
@@ -51,6 +52,8 @@ export const AA_UNAMBIGUOUS_GAPS = new Set([
 ])
 export const AA_AMBIGUOUS = new Set([...AA_UNAMBIGUOUS, ...AA_AMBIGUOUS_CHARS])
 export const AA_AMBIGUOUS_GAPS = new Set([...AA_AMBIGUOUS, ...AA_GAPS_CHARS])
+
+export const AA_ONLY_CHARS = AA_AMBIGUOUS.difference(NT_AMBIGUOUS)
 
 const DNA_COMPLEMENT_CHARS_1 = 'ACGTRYMKWSBDHV'
 const DNA_COMPLEMENT_CHARS_2 = 'TGCAYRKMWSVHDB'
@@ -140,28 +143,51 @@ export const IUPAC_AMBIGUOUS_SECOND_ORDER_DNA_DICT_REVERSE = new Map([
 //  W           Trp     Tryptophan
 //  Y           Tyr     Tyrosine
 
-// const AA = [
-//   ['A', 'Ala', 'Alanine'],
-//   ['C', 'Cys', 'Cysteine'],
-//   ['D', 'Asp', 'Aspartic Acid'],
-//   ['E', 'Glu', 'Glutamic Acid'],
-//   ['F', 'Phe', 'Phenylalanine'],
-//   ['G', 'Gly', 'Glycine'],
-//   ['H', 'His', 'Histidine'],
-//   ['I', 'Ile', 'Isoleucine'],
-//   ['K', 'Lys', 'Lysine'],
-//   ['L', 'Leu', 'Leucine'],
-//   ['M', 'Met', 'Methionine'],
-//   ['N', 'Asn', 'Asparagine'],
-//   ['P', 'Pro', 'Proline'],
-//   ['Q', 'Gln', 'Glutamine'],
-//   ['R', 'Arg', 'Arginine'],
-//   ['S', 'Ser', 'Serine'],
-//   ['T', 'Thr', 'Threonine'],
-//   ['V', 'Val', 'Valine'],
-//   ['W', 'Trp', 'Tryptophan'],
-//   ['Y', 'Tyr', 'Tyrosine']
-// ]
+export const IUPAC_AA_NAMES_TLC = new Map([
+  ['A', 'Ala'],
+  ['C', 'Cys'],
+  ['D', 'Asp'],
+  ['E', 'Glu'],
+  ['F', 'Phe'],
+  ['G', 'Gly'],
+  ['H', 'His'],
+  ['I', 'Ile'],
+  ['K', 'Lys'],
+  ['L', 'Leu'],
+  ['M', 'Met'],
+  ['N', 'Asn'],
+  ['P', 'Pro'],
+  ['Q', 'Gln'],
+  ['R', 'Arg'],
+  ['S', 'Ser'],
+  ['T', 'Thr'],
+  ['V', 'Val'],
+  ['W', 'Trp'],
+  ['Y', 'Tyr']
+])
+
+export const IUPAC_AA_NAMES_FULL = new Map([
+  ['A', 'Alanine'],
+  ['C', 'Cysteine'],
+  ['D', 'Aspartic Acid'],
+  ['E', 'Glutamic Acid'],
+  ['F', 'Phenylalanine'],
+  ['G', 'Glycine'],
+  ['H', 'Histidine'],
+  ['I', 'Isoleucine'],
+  ['K', 'Lysine'],
+  ['L', 'Leucine'],
+  ['M', 'Methionine'],
+  ['N', 'Asparagine'],
+  ['P', 'Proline'],
+  ['Q', 'Glutamine'],
+  ['R', 'Arginine'],
+  ['S', 'Serine'],
+  ['T', 'Threonine'],
+  ['V', 'Valine'],
+  ['W', 'Tryptophan'],
+  ['Y', 'Tyrosine']
+])
 
 // IUPAC
 // nucleotide
