@@ -3,18 +3,29 @@ import { onMount, onDestroy } from 'svelte'
 import Radio from '$lib/ui/components/Radio.svelte'
 import settings from '$lib/app/svelte-stores/settings'
 import { saveSettings } from '$lib/app/svelte-stores/settings'
-import { getCurentTheme } from '$lib/app/api/darkmode'
+import { getCurentTheme, themeChangeListener } from '$lib/app/api/darkmode'
 import { BROWSER } from '$lib/app/api'
+import type { Unlistener } from '$lib/types'
 
+let unlisteners: Unlistener[] = []
 let currentOsThemeSetting: string
 
-onMount(async () => {
+async function getCurrentOsThemeSetting() {
   currentOsThemeSetting = await getCurentTheme()
   currentOsThemeSetting =
     currentOsThemeSetting[0].toUpperCase() + currentOsThemeSetting.slice(1)
+}
+
+onMount(async () => {
+  await getCurrentOsThemeSetting()
+  unlisteners.push(await themeChangeListener(getCurrentOsThemeSetting))
 })
 
-onDestroy(() => {})
+onDestroy(() => {
+  unlisteners.forEach((f) => {
+    f()
+  })
+})
 </script>
 
 <div class="padded">
