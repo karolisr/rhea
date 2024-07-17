@@ -2,7 +2,7 @@
 import { onMount, onDestroy, tick } from 'svelte'
 import { v4 as uuid } from 'uuid'
 import { max, min } from '$lib'
-import { getFontSize } from '$lib/app/api'
+import { getFontSize } from '$lib/api'
 
 const resizeEvt = new Event('resize')
 

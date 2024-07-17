@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/stores'
-import status from '$lib/app/svelte-stores/status'
+import status from '$lib/svelte-stores/status'
 </script>
 
 <div id="chrome-status-bar" data-tauri-drag-region class="status-bar">

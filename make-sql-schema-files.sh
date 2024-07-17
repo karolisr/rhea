@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TAXONOMY="./src/lib/app/api/db/schema/taxonomy"
+TAXONOMY="./src/lib/api/db/schema/taxonomy"
 TAXONOMY_SQL="${TAXONOMY}.sql"
 TAXONOMY_TS="${TAXONOMY}.ts"
 
@@ -11,7 +11,7 @@ TAXONOMY_TS="${TAXONOMY}.ts"
     echo "\`"
 } > ${TAXONOMY_TS}
 
-SECRECS="./src/lib/app/api/db/schema/seqrecs"
+SECRECS="./src/lib/api/db/schema/seqrecs"
 SECRECS_SQL="${SECRECS}.sql"
 SECRECS_TS="${SECRECS}.ts"
 
@@ -22,7 +22,7 @@ SECRECS_TS="${SECRECS}.ts"
     echo "\`"
 } > ${SECRECS_TS}
 
-SEQUENCES="./src/lib/app/api/db/schema/sequences"
+SEQUENCES="./src/lib/api/db/schema/sequences"
 SEQUENCES_SQL="${SEQUENCES}.sql"
 SEQUENCES_TS="${SEQUENCES}.ts"
 
@@ -33,7 +33,7 @@ SEQUENCES_TS="${SEQUENCES}.ts"
     echo "\`"
 } > ${SEQUENCES_TS}
 
-COLLECTIONS="./src/lib/app/api/db/schema/collections"
+COLLECTIONS="./src/lib/api/db/schema/collections"
 COLLECTIONS_SQL="${COLLECTIONS}.sql"
 COLLECTIONS_TS="${COLLECTIONS}.ts"
 

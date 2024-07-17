@@ -8,8 +8,8 @@ import type { IndexedUndefined } from '$lib/types'
 import type { Collection } from '$lib/types'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import { getPropNames } from '$lib'
-import type { DragStartEvent } from '$lib/app/api/types'
-import settings from '$lib/app/svelte-stores/settings'
+import type { DragStartEvent } from '$lib/api/types'
+import settings from '$lib/svelte-stores/settings'
 
 onMount(async () => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement

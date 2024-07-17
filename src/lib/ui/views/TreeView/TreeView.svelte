@@ -1,6 +1,6 @@
 <script lang="ts">
 import NodeView from './NodeView.svelte'
-import { DB } from '$lib/app/api/db'
+import { DB } from '$lib/api/db'
 import { buildNode } from '$lib'
 
 export let uid: string

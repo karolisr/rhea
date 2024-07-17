@@ -1,13 +1,12 @@
 <script lang="ts">
 import { onMount, onDestroy, tick } from 'svelte'
-import { SeqRecord } from '$lib/seq/seq-record'
 import { max } from '$lib'
-import { getFontSize } from '$lib/app/api'
+import { getFontSize } from '$lib/api'
 import GridSizers from '$lib/ui/utils/GridSizers.svelte'
 import { SeqViewController } from './seq-view-controller'
 import { SeqList } from '$lib/seq/seq-list'
 import { Alignment } from '$lib/seq/aln'
-import { PIXELRATIO } from '$lib/app/api'
+import { PIXELRATIO } from '$lib/api'
 
 let svc: SeqViewController
 let scaleCtx: CanvasRenderingContext2D | null = null
@@ -71,7 +70,7 @@ $: if (svc) {
   svc.siteGapY = siteGapY
   minCnvW = svc.minCnvW
   minCnvH = svc.minCnvH
-  if (seqs.nRow > 0) svc.draw()
+  svc.draw()
 }
 </script>
 
@@ -85,21 +84,23 @@ $: if (svc) {
 
   <div class="seqview" style="min-width: {minCnvW}px; min-height: {minCnvH}px;">
     <canvas id="{uid}-seqview-canvas" class="seqview-canvas"></canvas>
-    <div
-      class="seqview-grid-container"
-      style="height:{h}px;"
-      style:grid-template-rows="{rowHsStr}"
-      style:grid-template-columns="{colWsStr}">
-      <GridSizers
-        enforceMaxSize="{false}"
-        bind:rowHs
-        bind:colWs
-        bind:rowHsStr
-        bind:colWsStr
-        fixedWCols="{[1]}"
-        minColW="{0}"
-        minRowH="{0}" />
-    </div>
+    {#if seqs.nRow > 0}
+      <div
+        class="seqview-grid-container"
+        style="height:{h}px;"
+        style:grid-template-rows="{rowHsStr}"
+        style:grid-template-columns="{colWsStr}">
+        <GridSizers
+          enforceMaxSize="{false}"
+          bind:rowHs
+          bind:colWs
+          bind:rowHsStr
+          bind:colWsStr
+          fixedWCols="{[1]}"
+          minColW="{0}"
+          minRowH="{0}" />
+      </div>
+    {/if}
   </div>
 </div>
 

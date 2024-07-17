@@ -1,4 +1,4 @@
-import settings from '$lib/app/svelte-stores/settings'
+import settings from '$lib/svelte-stores/settings'
 import { EutilParams } from './eutils-params'
 import {
   Eutil,

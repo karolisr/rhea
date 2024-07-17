@@ -5,7 +5,7 @@ import type {
   DragOverEvent,
   DropEvent,
   DragDropPayload
-} from '$lib/app/api/types'
+} from '$lib/api/types'
 
 let targetEl: HTMLElement | null = null
 let payload: DragDropPayload | null = null

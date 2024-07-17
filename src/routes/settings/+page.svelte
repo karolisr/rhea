@@ -1,10 +1,10 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import Radio from '$lib/ui/components/Radio.svelte'
-import settings from '$lib/app/svelte-stores/settings'
-import { saveSettings } from '$lib/app/svelte-stores/settings'
-import { getCurentTheme, themeChangeListener } from '$lib/app/api/darkmode'
-import { BROWSER } from '$lib/app/api'
+import settings from '$lib/svelte-stores/settings'
+import { saveSettings } from '$lib/svelte-stores/settings'
+import { getCurentTheme, themeChangeListener } from '$lib/api/darkmode'
+import { BROWSER } from '$lib/api'
 import type { Unlistener } from '$lib/types'
 
 let unlisteners: Unlistener[] = []

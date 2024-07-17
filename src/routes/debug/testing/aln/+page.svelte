@@ -1,8 +1,8 @@
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte'
-import type { DragOverEvent, DropEvent } from '$lib/app/api/types'
-import status from '$lib/app/svelte-stores/status'
-import { getFileParser } from '$lib/app/api/file-type'
+import type { DragOverEvent, DropEvent } from '$lib/api/types'
+import status from '$lib/svelte-stores/status'
+import { getFileParser } from '$lib/api/file-type'
 import { Alignment } from '$lib/seq/aln'
 import type { SeqRecord } from '$lib/seq/seq-record'
 import SeqView from '$lib/ui/views/SeqView'

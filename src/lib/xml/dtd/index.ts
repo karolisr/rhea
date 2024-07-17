@@ -3,7 +3,7 @@ import {
   cache_get_dtd_txt,
   dnld_dtd_txt,
   type _DTD_TXT
-} from '$lib/app/svelte-stores/cache-dtd'
+} from '$lib/svelte-stores/cache-dtd'
 
 // --------------------------------------------------------------------------
 

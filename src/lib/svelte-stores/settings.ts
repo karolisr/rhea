@@ -1,7 +1,7 @@
 import { writable, type Writable } from 'svelte/store'
-import { getLocale } from '$lib/app/api'
-import { setTheme } from '$lib/app/api/darkmode'
-import { AppScale } from '$lib/app/api/scale'
+import { getLocale } from '$lib/api'
+import { setTheme } from '$lib/api/darkmode'
+import { AppScale } from '$lib/api/scale'
 
 export interface Settings {
   email: string

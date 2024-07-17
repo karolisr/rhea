@@ -189,3 +189,10 @@ mark {
 // .drag-target.drag-item-hovering {
 //   background-color: rgba($color: $B400, $alpha: 0.35);
 // }
+
+.placeholder {
+  margin: auto;
+  background-color: transparent;
+  align-content: center;
+  text-align: center;
+}

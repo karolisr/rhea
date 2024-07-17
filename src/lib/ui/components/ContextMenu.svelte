@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte'
 import { fade } from 'svelte/transition'
-import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
+import type { ContextMenuItem } from '$lib/svelte-stores/context-menu'
 
 export let x: number
 export let y: number

@@ -1,9 +1,6 @@
 import type { Tree } from '$lib/types'
-import {
-  getCollections,
-  getCollectionsCount
-} from '$lib/app/api/db/collections'
-import { DB } from '$lib/app/api/db'
+import { getCollections, getCollectionsCount } from '$lib/api/db/collections'
+import { DB } from '$lib/api/db'
 
 export async function getAllChildIds(
   db: DB,

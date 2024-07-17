@@ -1,6 +1,5 @@
 import { writable, type Writable } from 'svelte/store'
-// import { getPropNames } from '$lib'
-import { replacer, reviver } from '$lib/app/api'
+import { replacer, reviver } from '$lib/api'
 
 export interface State {
   [key: string]: unknown | undefined
@@ -22,10 +21,6 @@ export default state
 
 export function saveState(): void {
   state.update((st) => {
-    // const pNames = getPropNames(st)
-    // for (let i = 0; i < pNames.length; i++) {
-    //   const prop = pNames[i];
-    // }
     localStorage.setItem(key, JSON.stringify(st, replacer))
     return st
   })

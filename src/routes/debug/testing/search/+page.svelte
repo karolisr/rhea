@@ -7,13 +7,13 @@ import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
 import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
 // import { EutilParams } from '$lib/ncbi/eutils-params'
 // import { type Collection } from '$lib/types'
-import databases from '$lib/app/svelte-stores/databases'
-// import { getCollections, deleteCollection } from '$lib/app/api/db/collections'
-import { insertGbSeqRecords } from '$lib/app/api/db/gbseq'
-import { BROWSER } from '$lib/app/api'
+import databases from '$lib/svelte-stores/databases'
+// import { getCollections, deleteCollection } from '$lib/api/db/collections'
+import { insertGbSeqRecords } from '$lib/api/db/gbseq'
+import { BROWSER } from '$lib/api'
 // import { type Readable } from 'svelte/store'
-// import { type DBMainSvelteStore } from '$lib/app/svelte-stores/db/db-main'
-// import db_main from '$lib/app/svelte-stores/db/db-main'
+// import { type DBMainSvelteStore } from '$lib/svelte-stores/db/db-main'
+// import db_main from '$lib/svelte-stores/db/db-main'
 // let _db_main: Readable<DBMainSvelteStore>
 let dbs: Awaited<typeof databases>
 
@@ -28,7 +28,7 @@ let searching = false
 let gbseqRemaining: number = 0
 
 let esummaryResult: ESummaryNuccore[] = []
-import status from '$lib/app/svelte-stores/status'
+import status from '$lib/svelte-stores/status'
 // import type { TaxaSet } from '$lib/ncbi/types/TaxaSet'
 import type { GBSet } from '$lib/ncbi/types/GBSet'
 

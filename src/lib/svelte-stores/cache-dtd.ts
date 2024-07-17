@@ -1,5 +1,5 @@
 import { writable, derived, type Writable } from 'svelte/store'
-import { downloadText } from '$lib/app/api/download'
+import { downloadText } from '$lib/api/download'
 
 interface _CACHE_DTD {
   [url: string]: string

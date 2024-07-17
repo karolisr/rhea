@@ -1,5 +1,5 @@
 import { readTextFile, readFile } from '@tauri-apps/plugin-fs'
-import { resolve, normalize, homeDir } from '@tauri-apps/api/path'
+import { homeDir } from '@tauri-apps/api/path'
 import { parse_dtd_txt } from '$lib/xml/dtd'
 import { parse_xml_txt } from '$lib/xml'
 import { parse_fasta_txt } from '$lib/seq/fasta'

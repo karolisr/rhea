@@ -1,6 +1,6 @@
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import type { Unlistener } from '$lib/types'
-import { BROWSER } from '$lib/app/api'
+import { BROWSER } from '$lib/api'
 
 export class FileDragDrop {
   unlisten: Promise<Unlistener>

@@ -1,6 +1,6 @@
 import sql, { bulk, empty } from 'sql-template-tag'
-import databases from '$lib/app/svelte-stores/databases'
-import { DB } from '$lib/app/api/db'
+import databases from '$lib/svelte-stores/databases'
+import { DB } from '$lib/api/db'
 
 export async function addSeqRecsToCollection(accs: string[], collId: string) {
   if (accs.length === 0) return

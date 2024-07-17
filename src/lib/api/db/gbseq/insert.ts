@@ -5,10 +5,10 @@ import {
   commitTransaction,
   rollbackTransaction,
   vacuum
-} from '$lib/app/api/db'
+} from '$lib/api/db'
 import { getTaxId } from '$lib/ncbi/utils'
 import sql, { Sql, bulk, empty } from 'sql-template-tag'
-import databases from '$lib/app/svelte-stores/databases'
+import databases from '$lib/svelte-stores/databases'
 
 function nValsPerSqlInsertSet(sql: Sql) {
   return sql.strings.slice(1, -1).join('').split('),(')[0].split(',').length

@@ -1,6 +1,6 @@
 import { listen, TauriEvent } from '@tauri-apps/api/event'
 import type { Unlistener } from '$lib/types'
-import { BROWSER } from '$lib/app/api'
+import { BROWSER } from '$lib/api'
 
 export async function beforeWindowClose(
   handler: () => void

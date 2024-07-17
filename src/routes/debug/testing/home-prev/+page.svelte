@@ -1,6 +1,6 @@
 <script lang="ts">
-// import state from '$lib/app/svelte-stores/state'
-// import { saveState } from '$lib/app/svelte-stores/state'
+// import state from '$lib/svelte-stores/state'
+// import { saveState } from '$lib/svelte-stores/state'
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import TreeView from '$lib/ui/views/TreeView'
 import TableView from '$lib/ui/views/TableView'
@@ -10,33 +10,30 @@ import {
   createCollection,
   deleteCollection,
   relabelCollection
-} from '$lib/app/api/db/collections'
-import databases from '$lib/app/svelte-stores/databases'
-import {
-  getSeqRecsByType,
-  getSeqRecsFromCollection
-} from '$lib/app/api/db/gbseq'
+} from '$lib/api/db/collections'
+import databases from '$lib/svelte-stores/databases'
+import { getSeqRecsByType, getSeqRecsFromCollection } from '$lib/api/db/gbseq'
 import type { IndexedUndefined } from '$lib/types'
 import {
   addSeqRecsToCollection,
   removeSeqRecsFromCollection
-} from '$lib/app/api/db/gbseq'
-import status from '$lib/app/svelte-stores/status'
-import settings from '$lib/app/svelte-stores/settings'
-import { BROWSER } from '$lib/app/api'
+} from '$lib/api/db/gbseq'
+import status from '$lib/svelte-stores/status'
+import settings from '$lib/svelte-stores/settings'
+import { BROWSER } from '$lib/api'
 import Search from './search.svelte'
 import Filter from './filter.svelte'
-import { getFontSize } from '$lib/app/api'
-import { filterSeqRecs } from '$lib/app/api/db/gbseq'
-import { getSequences } from '$lib/app/api/db/gbseq'
+import { getFontSize } from '$lib/api'
+import { filterSeqRecs } from '$lib/api/db/gbseq'
+import { getSequences } from '$lib/api/db/gbseq'
 import SeqView from '$lib/ui/views/SeqView'
 import { SeqRecord } from '$lib/seq/seq-record'
 import { NTSeq, DNASeq, RNASeq, AASeq } from '$lib/seq/seq'
 import type { Seq } from '$lib/seq/types'
 import { SeqList } from '$lib/seq/seq-list'
 
-// import { filterTaxonomy } from '$lib/app/api/db/taxonomy/fts'
-// import { getLineage, cacheTaxIds } from '$lib/app/api/db/taxonomy/lineage'
+// import { filterTaxonomy } from '$lib/api/db/taxonomy/fts'
+// import { getLineage, cacheTaxIds } from '$lib/api/db/taxonomy/lineage'
 // import { getPropNames } from '$lib'
 
 let seqRecList: IndexedUndefined[] = []

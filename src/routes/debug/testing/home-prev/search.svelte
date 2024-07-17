@@ -1,6 +1,6 @@
 <script lang="ts">
 import TextInput from '$lib/ui/components/TextInput.svelte'
-import { getFontSize } from '$lib/app/api'
+import { getFontSize } from '$lib/api'
 export let value: string = ''
 export let term: string = ''
 

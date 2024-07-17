@@ -1,8 +1,8 @@
 import { listen, TauriEvent } from '@tauri-apps/api/event'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import settings from '$lib/app/svelte-stores/settings'
+import settings from '$lib/svelte-stores/settings'
 import type { Unlistener } from '$lib/types'
-import { BROWSER } from '$lib/app/api'
+import { BROWSER } from '$lib/api'
 
 export enum ThemeDarkLight {
   light = 'light',

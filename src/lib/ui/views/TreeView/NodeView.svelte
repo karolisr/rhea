@@ -4,11 +4,11 @@ import IconFolderClosed from '~icons/fa6-solid/folder-closed'
 import IconFolderOpen from '~icons/fa6-solid/folder-open'
 import IconFile from '~icons/fa6-solid/file'
 import type { Tree } from '$lib/types'
-import contextMenu from '$lib/app/svelte-stores/context-menu'
-import { DB } from '$lib/app/api/db'
+import contextMenu from '$lib/svelte-stores/context-menu'
+import { DB } from '$lib/api/db'
 import { buildNode, getAllChildIds } from '$lib'
-import type { ContextMenuItem } from '$lib/app/svelte-stores/context-menu'
-import type { DragOverEvent, DropEvent } from '$lib/app/api/types'
+import type { ContextMenuItem } from '$lib/svelte-stores/context-menu'
+import type { DragOverEvent, DropEvent } from '$lib/api/types'
 
 onMount(async () => {
   addEventListener('mousedown', mousedownEvtListener, {

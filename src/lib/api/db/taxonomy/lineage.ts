@@ -1,7 +1,7 @@
 import sql from 'sql-template-tag'
 import type { IndexedUndefined } from '$lib/types'
-import databases from '$lib/app/svelte-stores/databases'
-import { DB } from '$lib/app/api/db'
+import databases from '$lib/svelte-stores/databases'
+import { DB } from '$lib/api/db'
 
 export const cacheTaxIds: { [id: number]: number } = {}
 

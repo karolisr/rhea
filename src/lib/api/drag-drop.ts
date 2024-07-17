@@ -5,7 +5,7 @@ import type {
   DragDropPayload
 } from './types'
 import { min, max } from '$lib'
-import { FileDragDrop } from '$lib/app/api/file-drag-drop'
+import { FileDragDrop } from '$lib/api/file-drag-drop'
 import type { Unlistener } from '$lib/types'
 
 export class DragDrop {

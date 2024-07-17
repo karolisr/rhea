@@ -1,5 +1,5 @@
 import { readable, type Readable } from 'svelte/store'
-import { BROWSER } from '$lib/app/api'
+import { BROWSER } from '$lib/api'
 import {
   DB,
   initDBTaxonomy,
@@ -8,7 +8,7 @@ import {
   initDBSequences,
   initDBSequencesUser,
   initDBCollections
-} from '$lib/app/api/db'
+} from '$lib/api/db'
 
 export interface Databases {
   dbsOK: boolean
@@ -63,8 +63,8 @@ export default databases
 // ----------------------------------------------------------------------------
 // Usage Template:
 
-// import databases from '$lib/app/svelte-stores/databases'
-// import { DB } from '$lib/app/api/db'
+// import databases from '$lib/svelte-stores/databases'
+// import { DB } from '$lib/api/db'
 // import type { IndexedUndefined } from '$lib/types'
 
 // export async function xyz() {
