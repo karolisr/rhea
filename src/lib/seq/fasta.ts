@@ -25,7 +25,7 @@ export function parse_fasta_txt(
   let str = ''
 
   if (type === 'auto') {
-    type = detectSeqType(fastaStr)
+    type = detectFastaSeqType(fastaStr)
   }
 
   lines.forEach((l) => {
