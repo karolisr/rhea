@@ -10,7 +10,9 @@ export class DB extends Database {}
 
 export const dbPathTaxonomy: string = 'sqlite:db/taxonomy.db'
 export const dbPathSeqRecs: string = 'sqlite:db/seqrecs.db'
+export const dbPathSeqRecsUser: string = 'sqlite:db/seqrecs-user.db'
 export const dbPathSequences: string = 'sqlite:db/sequences.db'
+export const dbPathSequencesUser: string = 'sqlite:db/sequences-user.db'
 export const dbPathCollections: string = 'sqlite:db/collections.db'
 
 async function prepareDBDir() {
@@ -39,10 +41,32 @@ export async function initDBSeqRecs() {
   return db
 }
 
+export async function initDBSeqRecsUser() {
+  // console.log('initDBSeqRecs: BEGIN')
+  await prepareDBDir()
+  const db: DB = await DB.load(dbPathSeqRecsUser)
+  await beginTransaction(db)
+  await db.execute(schemaSeqRecs.text)
+  await commitTransaction(db)
+  // console.log('initDBSeqRecs: DONE')
+  return db
+}
+
 export async function initDBSequences() {
   // console.log('initDBSequences: BEGIN')
   await prepareDBDir()
   const db: DB = await DB.load(dbPathSequences)
+  await beginTransaction(db)
+  await db.execute(schemaSequences.text)
+  await commitTransaction(db)
+  // console.log('initDBSequences: DONE')
+  return db
+}
+
+export async function initDBSequencesUser() {
+  // console.log('initDBSequences: BEGIN')
+  await prepareDBDir()
+  const db: DB = await DB.load(dbPathSequencesUser)
   await beginTransaction(db)
   await db.execute(schemaSequences.text)
   await commitTransaction(db)
