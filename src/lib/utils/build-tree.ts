@@ -9,7 +9,7 @@ export async function getAllChildIds(
 ) {
   const nodes = await getCollections([parentId], true, db, tableName)
   const ids = nodes.map((c) => c.id)
-  let rv = [parentId, ...ids]
+  let rv = [parentId]
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i]
     rv = [...rv, ...(await getAllChildIds(db, tableName, id))]

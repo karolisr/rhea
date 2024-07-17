@@ -125,7 +125,17 @@ let expandedSeqTypeIds: Set<string> | undefined
 let expandedCollIds: Set<string> | undefined
 
 // let selectedTaxon: string | undefined = undefined
-let subsetSeqTypes: string[] | undefined = undefined
+
+let selectedSeqCategories: string[] = []
+let subsetSeqTypes: string[] = []
+
+$: {
+  const prev = new Set(selectedSeqCategories)
+  const curr = new Set(subsetSeqTypes)
+  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+    selectedSeqCategories = subsetSeqTypes
+  }
+}
 
 let rowHeight: number | undefined = undefined
 const nRowsToShow: number = 15
@@ -181,7 +191,7 @@ async function _getSeqRecs(
     if (collUid === 'user-tree') {
       seqRecList = await getSeqRecsFromCollection('user', [collectionId])
     } else if (collUid === 'sequence-type-tree') {
-      if (subsetSeqTypes !== undefined) {
+      if (subsetSeqTypes !== undefined && subsetSeqTypes.length > 0) {
         seqRecList = await getSeqRecsByType(subsetSeqTypes)
       } else {
         seqRecList = []

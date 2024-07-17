@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onDestroy, onMount, tick } from 'svelte'
+import { onDestroy, onMount } from 'svelte'
 import IconFolderClosed from '~icons/fa6-solid/folder-closed'
 import IconFolderOpen from '~icons/fa6-solid/folder-open'
 import IconFile from '~icons/fa6-solid/file'
@@ -31,7 +31,7 @@ export let relabelId: string | undefined = undefined
 export let expandedIds: Set<string>
 
 export let selectedLineage: string[] | undefined = undefined
-export let selectedChildIds: string[] | undefined = undefined
+export let selectedChildIds: string[] | undefined
 export let selectedChildIdsEnabled: boolean = false
 
 export let acceptedDropTypes: string[]
@@ -76,8 +76,10 @@ async function _getAllChildIds(
   tableName: string = 'collections',
   parentId: string = 'ROOT'
 ) {
-  if (selectedTreeId === tree.id) {
+  if (selectedGroupUid === uid && selectedTreeId === tree.id) {
     selectedChildIds = await getAllChildIds(db, tableName, tree.id)
+  } else if (selectedGroupUid !== uid) {
+    selectedChildIds = []
   }
 }
 

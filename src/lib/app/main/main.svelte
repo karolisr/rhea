@@ -12,17 +12,23 @@ import { type Doc } from '$lib/doc'
 
 let dbs: Awaited<typeof databases>
 
-// ---------------------------------------------------------------------------
 onMount(async () => {
   dbs = await databases
 })
 
 onDestroy(async () => {})
-// ---------------------------------------------------------------------------
-
-let selectedCollGroup: string | undefined
 
 let mainDocList: Doc[] = []
+
+let selectedCollGroup: string | undefined
+let selectedColl: string | undefined
+let selectedSeqCategories: string[] | undefined
+
+$: {
+  if (selectedSeqCategories && selectedSeqCategories.length > 0) {
+    // console.log(selectedSeqCategories)
+  }
+}
 
 // Grid / State --------------------------------------------------------------
 let tvMainNRowsToShow: number = 15
@@ -70,7 +76,11 @@ $: {
     bind:colWs="{gridLRColWs}"
     minColW="{0}">
     <div class="grid-left-tree">
-      <MainCollections bind:selectedCollGroup></MainCollections>
+      <MainCollections
+        bind:selectedCollGroup
+        bind:selectedColl
+        bind:selectedSeqCategories>
+      </MainCollections>
     </div>
     <ResizableGrid
       bind:nRow="{gridMainNRow}"

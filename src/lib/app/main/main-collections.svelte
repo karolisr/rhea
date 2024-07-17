@@ -27,9 +27,9 @@ onMount(async () => {
 onDestroy(async () => {})
 // ---------------------------------------------------------------------------
 
-// Collections / State -------------------------------------------------------
+// Collections state ---------------------------------------------------------
 export let selectedCollGroup = $state.selectedCollGroup as string | undefined
-let selectedColl = $state.selectedColl as string | undefined
+export let selectedColl = $state.selectedColl as string | undefined
 let expndUserCollIds = $state.expndUserCollIds as Set<string> | undefined
 let expndSeqCatCollIds = $state.expndSeqCatCollIds as Set<string> | undefined
 
@@ -41,19 +41,22 @@ $: {
   saveState()
 }
 
-let seqCatsToShow: string[] | undefined = undefined
 let userCollRebuildTag: number
-// Collections / State END ---------------------------------------------------
+// Collections state END -----------------------------------------------------
+
+export let selectedSeqCategories: string[] = []
+let _ssc: string[] = []
+
+$: {
+  const prev = new Set(selectedSeqCategories)
+  const curr = new Set(_ssc)
+  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+    selectedSeqCategories = _ssc
+  }
+}
 </script>
 
 {#if $dbs && $dbs.dbsOK && $dbs.dbCollections}
-  <!-- <ResizableGrid
-    nRow="{1}"
-    nCol="{1}"
-    rowHs="{[-1]}"
-    colWs="{[-1]}"
-    minRowH="{0}"
-    enforceMaxSize="{false}"> -->
   <div class="grid-left-tree">
     <TreeView
       uid="{'collections-user'}"
@@ -96,10 +99,9 @@ let userCollRebuildTag: number
       bind:selected="{selectedColl}"
       bind:selectedGroupUid="{selectedCollGroup}"
       bind:expandedIds="{expndSeqCatCollIds}"
-      bind:selectedChildIds="{seqCatsToShow}"
+      bind:selectedChildIds="{_ssc}"
       selectedChildIdsEnabled />
   </div>
-  <!-- </ResizableGrid> -->
 {:else}
   <div>Loading...</div>
 {/if}
