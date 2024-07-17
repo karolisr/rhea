@@ -497,6 +497,21 @@ ORDER BY
   "name" ASC
 ;
 ----------------------------------------------------------------------------
+-- @block drop feature_keys view
+-- @conn seqrecs
+-- DROP VIEW IF EXISTS feature_keys
+-- ;
+-- @block create feature_keys view
+-- @conn seqrecs
+CREATE VIEW IF NOT EXISTS feature_keys ("key") AS
+SELECT DISTINCT
+  gb_features.key
+FROM
+  gb_features
+ORDER BY
+  "key" ASC
+;
+----------------------------------------------------------------------------
 -- @block drop fts_gb_records virtual table
 -- @conn seqrecs
 -- DROP TABLE IF EXISTS fts_gb_records
