@@ -13,12 +13,14 @@ import subheader from '$lib/svelte-stores/subheader'
 import { DragDrop } from '$lib/api/drag-drop'
 
 let unlisteners: Unlistener[] = []
-let dragDropConductor: DragDrop = new DragDrop()
+let dragDropConductor: DragDrop | null = null
 
 $: setScale($settings.scale)
 
 onMount(async () => {
   console.info(BROWSER, ENGINE, `Pixel ratio: ${PIXELRATIO}`)
+  dragDropConductor = new DragDrop()
+
   unlisteners.push(await themeChangeListener())
 
   unlisteners.push(preventDefault('contextmenu'))
@@ -35,8 +37,8 @@ onMount(async () => {
   unlisteners.push(preventDefault('drop'))
 })
 
-onDestroy(() => {
-  dragDropConductor.unlisten()
+onDestroy(async () => {
+  if (dragDropConductor) await dragDropConductor.unlisten()
   unlisteners.forEach((f) => {
     f()
   })

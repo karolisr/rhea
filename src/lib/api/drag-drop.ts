@@ -252,18 +252,20 @@ export class DragDrop {
         dropEv.payload = this.payload
         this.drgTargetEl.dispatchEvent(dropEv)
 
-        if (this.drgTargetEl)
+        if (this.drgTargetEl) {
           this.drgTargetEl.classList.remove('drag-item-hovering')
+        }
         this.drgSourceEl = null
         this.drgTargetEl = null
+        this.drgTargetElPrev = null
       } else {
         // console.log(`Dragging cancelled: ${this.drgSourceEl?.id}`)
-        if (this.drgTargetEl)
+        if (this.drgTargetEl) {
           this.drgTargetEl.classList.remove('drag-item-hovering')
-        if (this.drgSourceEl) {
-          this.drgSourceEl = null
-          this.drgTargetEl = null
         }
+        this.drgSourceEl = null
+        this.drgTargetEl = null
+        this.drgTargetElPrev = null
       }
     } else {
       this.draggingEnded = true

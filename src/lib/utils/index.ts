@@ -4,9 +4,11 @@ export function getPropNames<T>(obj: T) {
   return Object.getOwnPropertyNames(obj)
 }
 
-export function setDiff<T>(a: Set<T>, b: Set<T>) {
-  return new Set([...a].filter((x) => !b.has(x)))
-}
+// It's finally here!
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/difference
+// export function setDiff<T>(a: Set<T>, b: Set<T>) {
+//   return new Set([...a].filter((x) => !b.has(x)))
+// }
 
 export function removeCycle(
   obj: object,

@@ -2,4 +2,6 @@
 import MainLayout from '$lib/app/main/main-layout.svelte'
 </script>
 
-<MainLayout><slot /></MainLayout>
+<MainLayout>
+  <slot />
+</MainLayout>

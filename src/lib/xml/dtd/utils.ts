@@ -1,5 +1,5 @@
 import type { Indexed } from '$lib/types'
-import { getPropNames, removeCycle, setDiff } from '$lib'
+import { getPropNames, removeCycle } from '$lib'
 import { element_value_type } from '.'
 
 export function elements_to_json(
@@ -67,7 +67,11 @@ export function _never_children(elements: {
       })
     }
   }
-  const nsDiff = setDiff(ns, ncs)
+
+  // It's finally here!
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/difference
+  // const nsDiff = setDiff(ns, ncs)
+  const nsDiff = ns.difference(ncs)
   const rv: Set<string> = new Set()
   for (const n of nsDiff) {
     const e = elements[n]

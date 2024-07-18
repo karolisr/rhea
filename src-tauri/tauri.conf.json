@@ -53,7 +53,7 @@
         "height": 800,
         "resizable": true,
         "minWidth": 600,
-        "minHeight": 400,
+        "minHeight": 420,
         "fullscreen": false,
         "titleBarStyle": "Overlay",
         "acceptFirstMouse": true,
