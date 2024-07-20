@@ -1,10 +1,10 @@
-import type { Seq, SeqRecordId } from './types'
+import type { Seq } from './seq'
 
 export class SeqRecord {
-  protected _id: SeqRecordId
+  protected _id: string
   protected _seq: Seq
 
-  constructor(id: SeqRecordId, seq: Seq) {
+  constructor(id: string, seq: Seq) {
     this._seq = seq
     this._id = id
   }
@@ -16,4 +16,12 @@ export class SeqRecord {
   public get seq(): Seq {
     return this._seq
   }
+
+  // public set id(id: string) {
+  //   this._id = id
+  // }
+
+  // public set seq(seq: Seq) {
+  //   this._seq = seq
+  // }
 }

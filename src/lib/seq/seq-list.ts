@@ -1,6 +1,6 @@
 import { SeqRecord } from '$lib/seq/seq-record'
-import { SeqType } from './types'
-import { parse_fasta_txt } from './fasta'
+import { type SeqType } from '.'
+import { parseFastaStr } from './fasta'
 import { min, max } from '$lib'
 
 export type Position = { col: number; row: number }
@@ -26,7 +26,7 @@ export class SeqList {
     type: keyof typeof SeqType = 'NT',
     geneticCodeId: number = 1
   ): SeqList {
-    return new SeqList(parse_fasta_txt(fastaStr, type, geneticCodeId))
+    return new SeqList(parseFastaStr(fastaStr, type, geneticCodeId))
   }
 
   public insert(char: string, col: number, rows: number[]) {

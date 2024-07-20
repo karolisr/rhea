@@ -45,19 +45,19 @@ VALUES
 ON CONFLICT ("id") DO NOTHING
 ;
 ------------------------------------------------------------------------------
-DROP TABLE IF EXISTS sequence_type
+DROP TABLE IF EXISTS sequence_category
 ;
 ------------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS "sequence_type" (
+CREATE TABLE IF NOT EXISTS "sequence_category" (
   "parent_id" varchar,
   "id" varchar PRIMARY KEY NOT NULL,
   "label" varchar NOT NULL,
   "notes" varchar,
-  FOREIGN KEY (parent_id) REFERENCES "sequence_type" (id) ON DELETE CASCADE
+  FOREIGN KEY (parent_id) REFERENCES "sequence_category" (id) ON DELETE CASCADE
 )
 ;
 INSERT INTO
-  sequence_type (
+  sequence_category (
     "parent_id",
     "id",
     "label",
@@ -125,36 +125,36 @@ VALUES
   ),
   (
     "DNA",
-    "Genomes",
-    "Genomes",
+    "genomic",
+    "Genomic",
+    ""
+  ),
+  -- (
+  --   "DNA",
+  --   "plasmid",
+  --   "Plasmids",
+  --   ""
+  -- ),
+  (
+    "genomic",
+    "nucbac",
+    "Nuclear / Bacterial",
     ""
   ),
   (
-    "Genomes",
-    "plasmid",
-    "Plasmids",
-    ""
-  ),
-  (
-    "Genomes",
-    "nucleus",
-    "Nuclear",
-    ""
-  ),
-  (
-    "Genomes",
+    "genomic",
+    "organelle",
     "Organelles",
-    "Organelles",
     ""
   ),
   (
-    "Organelles",
+    "organelle",
     "plastid",
     "Plastids",
     ""
   ),
   (
-    "Organelles",
+    "organelle",
     "mitochondrion",
     "Mitochondria",
     ""
@@ -163,6 +163,12 @@ VALUES
     "plastid",
     "chloroplast",
     "Chloroplasts",
+    ""
+  ),
+  (
+    "plastid",
+    "apicoplast",
+    "Apicoplasts",
     ""
   )
 ON CONFLICT ("id") DO NOTHING

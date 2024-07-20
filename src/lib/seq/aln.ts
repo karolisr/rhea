@@ -1,7 +1,7 @@
-import { SeqRecord } from '$lib/seq/seq-record'
+import { type SeqType } from '.'
+import { SeqRecord } from './seq-record'
 import { SeqList } from './seq-list'
-import { SeqType } from './types'
-import { parse_fasta_txt } from './fasta'
+import { parseFastaStr } from './fasta'
 
 export type Position = { col: number; row: number }
 
@@ -15,12 +15,12 @@ export class Alignment extends SeqList {
     type: keyof typeof SeqType = 'NT',
     geneticCodeId: number = 1
   ): Alignment {
-    return new Alignment(parse_fasta_txt(fastaStr, type, geneticCodeId))
+    return new Alignment(parseFastaStr(fastaStr, type, geneticCodeId))
   }
 
   trimTrailingGaps() {
     const sliced = this.slice(this.nCol - 1)
-    const same = sliced.every((v) => v == '-')
+    const same = sliced.every((v) => v[2] === '-')
     if (same) {
       this.seqRecs.forEach((sr) => {
         sr.seq.str = sr.seq.str.slice(0, this.nCol - 1)

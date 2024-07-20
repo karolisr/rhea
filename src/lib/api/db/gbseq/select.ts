@@ -1,4 +1,4 @@
-import sql, { bulk } from 'sql-template-tag'
+import sql, { bulk, empty } from 'sql-template-tag'
 import type { IndexedUndefined } from '$lib/types'
 import databases from '$lib/svelte-stores/databases'
 import { DB } from '$lib/api/db'
@@ -55,7 +55,7 @@ export async function getAllSeqRecs() {
   return rv
 }
 
-export async function getSeqRecsByType(types: string[]) {
+export async function getSeqRecsByCategory(categories: string[]) {
   let dbs: Awaited<typeof databases> = await databases
   let db: DB | null = null
   const unsubscribe = dbs.subscribe((_) => {
@@ -71,10 +71,16 @@ export async function getSeqRecsByType(types: string[]) {
         records
       WHERE
         (
-          "Genetic Compartment" IN ${bulk([types])}
-          AND "Molecule Type" = 'DNA'
-        )
-        OR "Molecule Type" IN ${bulk([types])}
+          "organelle" IN ${bulk([categories])}
+          AND "moltype" = 'DNA'
+        ) ${categories.includes('plasmid')
+        ? sql`
+            OR (
+              "moltype" IN ${bulk([categories])}
+              AND "plasmid" != ''
+            )
+          `
+        : sql`OR "moltype" IN ${bulk([categories])}`}
       ;
     `
     rv = await db.select(_sql.text, _sql.values)

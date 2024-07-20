@@ -1,4 +1,4 @@
-import sql, { bulk, empty } from 'sql-template-tag'
+import sql, { bulk } from 'sql-template-tag'
 import databases from '$lib/svelte-stores/databases'
 import { DB } from '$lib/api/db'
 

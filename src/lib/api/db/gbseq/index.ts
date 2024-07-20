@@ -1,5 +1,5 @@
 import { insertSeqRecs as _insertSeqRecs } from './insert'
-import { getSeqRecsByType as _getSeqRecsByType } from './select'
+import { getSeqRecsByCategory as _getSeqRecsByType } from './select'
 import { getSeqRecsFromCollection as _getSeqRecsFromCollection } from './select'
 import { getAllSeqRecs as _getAllSeqRecs } from './select'
 import { getSequences as _getSequences } from './select'

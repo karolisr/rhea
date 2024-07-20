@@ -14,7 +14,7 @@ export async function filterSeqRecs(term: string) {
     db = db as DB
     const _sql = sql`
       SELECT
-        accession_version AS "Accession"
+        accession_version
         -- bm25 (fts_gb_records),
         -- highlight (fts_gb_records, 1, '<mark>', '</mark>') "highlight",
         -- snippet (fts_gb_records, 1, 'A', 'B', 'C', 2) "snippet",

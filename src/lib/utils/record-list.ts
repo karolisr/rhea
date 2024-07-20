@@ -1,19 +1,12 @@
+import type { KnownKeys, SortDir } from '$lib/types'
 import { getPropNames } from '$lib'
-
-declare type KeyToKeyNoIndex<T> = {
-  [K in keyof T]: string extends K ? never : number extends K ? never : K
-}
-declare type ValuesOf<T> = T extends {
-  [K in keyof T]: infer U
-}
-  ? U
-  : never
-declare type KnownKeys<T> = ValuesOf<KeyToKeyNoIndex<T>>
+import { Doc } from '$lib/doc'
 
 export class RecordList<T> {
+  private _uid: string
   private _sortFields: KnownKeys<T>[] | string[]
   private _fieldsToShow: KnownKeys<T>[] | string[]
-  private _sortDirections: (1 | -1)[]
+  private _sortDirections: SortDir[]
   private _keyField: keyof T
   private _allItems: T[]
   private _items: T[]
@@ -21,18 +14,23 @@ export class RecordList<T> {
   private _filterQuery: T[typeof this._filterField] | undefined
   private _filterIds: T[typeof this._filterField][] | undefined
 
-  constructor(items: T[], keyField?: KnownKeys<T>) {
+  constructor(uid: string, items: T[], keyField: KnownKeys<T> | keyof T) {
+    this._uid = uid
     this._allItems = items
     this._items = this._allItems
-    if (keyField !== undefined) {
-      this._keyField = keyField as keyof T
-    } else {
-      this._keyField = this.fields[0] as keyof T
-    }
+    this._keyField = keyField as keyof T
     this._filterField = this.keyField
     this._sortFields = []
     this._sortDirections = []
     this._fieldsToShow = []
+  }
+
+  private updated() {
+    dispatchEvent(new Event(this.updatedEventName))
+  }
+
+  public get updatedEventName(): string {
+    return `${this._uid}-updated`
   }
 
   get items() {
@@ -41,32 +39,6 @@ export class RecordList<T> {
 
   get allKeys() {
     return this._items.map((x) => x[this._keyField])
-  }
-
-  filterBy(
-    field: KnownKeys<T> | string,
-    query: T[keyof T] | undefined,
-    ids: T[keyof T][] | undefined
-  ) {
-    this._filterField = field as keyof T
-    this._filterQuery = query as T[typeof this._filterField]
-    this._filterIds = ids as T[typeof this._filterField][]
-
-    if (this._filterQuery === undefined && this._filterIds === undefined) {
-      this._items = this._allItems
-    } else if (this._filterIds !== undefined) {
-      const rv: T[] = []
-      this._allItems.forEach((itm) => {
-        if (this._filterIds?.includes(itm[this._filterField])) rv.push(itm)
-      })
-      this._items = rv
-    } else {
-      const rv: T[] = []
-      this._allItems.forEach((itm) => {
-        if (itm[this._filterField] === this._filterQuery) rv.push(itm)
-      })
-      this._items = rv
-    }
   }
 
   get length() {
@@ -79,7 +51,12 @@ export class RecordList<T> {
 
   get fields(): KnownKeys<T>[] | string[] {
     if (this.length > 0) {
-      return getPropNames(this.items.at(0)) as KnownKeys<T>[]
+      const _ = this.items.at(0)
+      try {
+        return (_ as Doc).fields // should be some more generic class, not "Doc"
+      } catch (error) {
+        return getPropNames(_) as KnownKeys<T>[]
+      }
     } else {
       return []
     }
@@ -94,7 +71,6 @@ export class RecordList<T> {
       return this._fieldsToShow as KnownKeys<T>[]
     } else {
       return this.fields as KnownKeys<T>[]
-      // return [this.keyField] as KnownKeys<T>[]
     }
   }
 
@@ -169,8 +145,7 @@ export class RecordList<T> {
 
   valueByKey(key: string, field: keyof T) {
     let idx: number | undefined = undefined
-
-    for (let i = 0; i < this.items.length; i++) {
+    for (let i = 0; i < this.length; i++) {
       const rec = this.items[i]
       if (rec[this._keyField] === key) {
         idx = i
@@ -180,7 +155,27 @@ export class RecordList<T> {
     }
   }
 
-  sortBy(fields: KnownKeys<T>[], directions: (1 | -1)[]) {
+  private reSort() {
+    this.sortBy(this._sortFields as KnownKeys<T>[], this._sortDirections)
+  }
+
+  addItems(items: T[]) {
+    this._allItems.push(...items)
+    this.reSort()
+  }
+
+  sortBy(fields: KnownKeys<T>[], directions: SortDir[] = []) {
+    if (fields.length !== directions.length) {
+      if (fields.length > directions.length) {
+        const diff = fields.length - directions.length
+        for (let i = 0; i < diff; i++) {
+          directions.push(1)
+        }
+      } else {
+        directions = directions.slice(0, fields.length)
+      }
+    }
+
     this._sortFields = fields
     this._sortDirections = directions
 
@@ -205,5 +200,32 @@ export class RecordList<T> {
       this._filterQuery,
       this._filterIds
     )
+  }
+
+  filterBy(
+    field: KnownKeys<T> | string,
+    query: T[keyof T] | undefined,
+    ids: T[keyof T][] | undefined
+  ) {
+    this._filterField = field as keyof T
+    this._filterQuery = query as T[typeof this._filterField]
+    this._filterIds = ids as T[typeof this._filterField][]
+
+    if (this._filterQuery === undefined && this._filterIds === undefined) {
+      this._items = this._allItems
+    } else if (this._filterIds !== undefined) {
+      const rv: T[] = []
+      this._allItems.forEach((itm) => {
+        if (this._filterIds?.includes(itm[this._filterField])) rv.push(itm)
+      })
+      this._items = rv
+    } else {
+      const rv: T[] = []
+      this._allItems.forEach((itm) => {
+        if (itm[this._filterField] === this._filterQuery) rv.push(itm)
+      })
+      this._items = rv
+    }
+    this.updated()
   }
 }

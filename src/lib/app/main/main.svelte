@@ -7,44 +7,54 @@ import { onMount, onDestroy } from 'svelte'
 import { BROWSER, getFontSize } from '$lib/api'
 import state, { saveState } from '$lib/svelte-stores/state'
 import databases from '$lib/svelte-stores/databases'
-import { type Doc } from '$lib/doc'
+import { DocList } from '$lib/doc/doc-list'
+import type { DocField } from '$lib/doc'
+import type { SortDir } from '$lib/types'
 // ---------------------------------------------------------------------------
-
-let dbs: Awaited<typeof databases>
-
 onMount(async () => {
   dbs = await databases
+  const sf: DocField[] = $state.mdlSF ? ($state.mdlSF as DocField[]) : ['id']
+  const sd: SortDir[] = $state.mdlSD ? ($state.mdlSD as SortDir[]) : [1]
+  mainDocList = new DocList('main-doc-list', sf, sd)
+  addEventListener(mainDocList.updatedEventName, mdlUpdatedEventListener)
+})
+onDestroy(async () => {
+  removeEventListener(mainDocList.updatedEventName, mdlUpdatedEventListener)
 })
 
-onDestroy(async () => {})
-
-let mainDocList: Doc[] = []
-
+const mdlUpdatedEventListener = () => {
+  $state.mdlSF = mainDocList.list.sortFields
+  $state.mdlSD = mainDocList.list.sortDirections
+  saveState()
+}
+// ---------------------------------------------------------------------------
+let dbs: Awaited<typeof databases>
+let mainDocList: DocList
+// ---------------------------------------------------------------------------
 let selectedCollGroup: string | undefined
 let selectedColl: string | undefined
 let selectedSeqCategories: string[] | undefined
-
-$: {
-  if (selectedSeqCategories && selectedSeqCategories.length > 0) {
-    // console.log(selectedSeqCategories)
-  }
-}
+// $: {
+//   if (selectedSeqCategories && selectedSeqCategories.length > 0) {
+//     console.log(selectedSeqCategories)
+//   }
+// }
+// ---------------------------------------------------------------------------
 
 // Grid / State --------------------------------------------------------------
 let tvMainNRowsToShow: number = 15
 let tvMainRowH: number | undefined = undefined
-let gridLeftColW: number = ($state.gridLeftColW as number | undefined) || 200
+let gridLeftColW: number =
+  $state.gridLeftColW !== undefined ? ($state.gridLeftColW as number) : 200
 let gridLRColWs: number[] = [gridLeftColW, -1]
 let gridMainNRow: number = 3
 let gridMainNCol: number = 1
 let gridMainRowBorders: boolean[] = [true, true]
 let gridMainColWs: number[] = [-1]
 let gridMainRowHs: number[] = []
-let gridMainRowHsPrev: number[] = []
 
 if ($state.gridMainRowHs !== undefined) {
   gridMainRowHs = [...($state.gridMainRowHs as number[])]
-  gridMainRowHsPrev = [...gridMainRowHs]
 }
 
 $: {
@@ -56,7 +66,6 @@ $: {
       34 + 1 + (tvMainRowH ? tvMainRowH : 0) * (tvMainNRowsToShow - 1),
       -1
     ]
-    gridMainRowHsPrev = [...gridMainRowHs]
   }
 
   if (gridMainRowHs.length > 0) {
@@ -91,11 +100,11 @@ $: {
       minRowH="{0}"
       minColW="{0}">
       <div class="grid-main-filter-search">
-        <MainFilterSearch bind:selectedCollGroup></MainFilterSearch>
+        <MainFilterSearch bind:selectedCollGroup />
       </div>
 
       <div class="grid-main-tableview">
-        <MainDocList bind:tvMainRowH bind:mainDocList></MainDocList>
+        <MainDocList bind:tvMainRowH bind:mainDocList />
       </div>
 
       <div class="grid-main-seqview">

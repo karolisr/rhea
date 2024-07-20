@@ -28,8 +28,7 @@ import { filterSeqRecs } from '$lib/api/db/gbseq'
 import { getSequences } from '$lib/api/db/gbseq'
 import SeqView from '$lib/ui/views/SeqView'
 import { SeqRecord } from '$lib/seq/seq-record'
-import { NTSeq, DNASeq, RNASeq, AASeq } from '$lib/seq/seq'
-import type { Seq } from '$lib/seq/types'
+import { Seq, NTSeq, DNASeq, RNASeq, AASeq } from '$lib/seq/seq'
 import { SeqList } from '$lib/seq/seq-list'
 
 // import { filterTaxonomy } from '$lib/api/db/taxonomy/fts'
@@ -217,22 +216,27 @@ async function _removeSeqRec(id: unknown) {
 $: if ($dbs && $dbs.dbsOK)
   _getSeqRecs(selectedGroupUid, selectedColl, subsetSeqTypes, rebuild)
 
-$: seqRecListRL = new RecordList<IndexedUndefined>(seqRecList ?? [])
+$: seqRecListRL = new RecordList<IndexedUndefined>(
+  'old-seq-req-list',
+  seqRecList ?? [],
+  'accession_version'
+)
 $: if (seqRecListRL) {
   seqRecListRL.fieldsToShow = [
-    'Accession',
-    // 'TaxID',
-    'Organism',
-    // 'Length',
-    'Length (bp)',
-    'Genetic Compartment',
-    'Molecule Type',
-    'Definition'
+    'accession_version',
+    // 'tax_id',
+    'organism',
+    // 'length',
+    'length_bp',
+    'organelle',
+    // 'plasmid',
+    'moltype',
+    'definition'
   ]
 }
 
 $: if (seqRecListRL) {
-  seqRecListRL.filterBy('Accession', undefined, filteredIds)
+  seqRecListRL.filterBy('accession_version', undefined, filteredIds)
   seqRecListRL = seqRecListRL
 }
 
@@ -284,7 +288,7 @@ async function _getSeqsForSelectedRecs(
 
   for (let i = 0; i < _accsSelected.length; i++) {
     const acc = _accsSelected[i]
-    const moltype = seqRecListRL.valueByKey(acc, 'Molecule Type')
+    const moltype = seqRecListRL.valueByKey(acc, 'moltype')
     if (typeof moltype === 'string') {
       _accs.push(acc)
       _moltypes.push(moltype)
@@ -292,7 +296,7 @@ async function _getSeqsForSelectedRecs(
   }
 
   if (_accs.length === 0 && accActive !== undefined) {
-    const moltype = seqRecListRL.valueByKey(accActive, 'Molecule Type')
+    const moltype = seqRecListRL.valueByKey(accActive, 'moltype')
     if (typeof moltype === 'string') {
       _accs = [accActive]
       _moltypes = [moltype]
@@ -399,7 +403,7 @@ onDestroy(() => {
             uid="{'sequence-type-tree'}"
             expanded="{true}"
             db="{$dbs.dbCollections}"
-            tableName="sequence_type"
+            tableName="sequence_category"
             rootLabel="All Records"
             bind:selected="{selectedColl}"
             bind:selectedGroupUid

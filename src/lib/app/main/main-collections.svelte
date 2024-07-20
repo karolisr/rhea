@@ -93,7 +93,7 @@ $: {
     <TreeView
       uid="{'collections-seq-categories'}"
       rootLabel="All Records"
-      tableName="sequence_type"
+      tableName="sequence_category"
       db="{$dbs.dbCollections}"
       expanded="{true}"
       bind:selected="{selectedColl}"

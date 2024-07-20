@@ -3,13 +3,13 @@ import type { Collection } from '$lib/types'
 import sql, { empty, join } from 'sql-template-tag'
 import { DB } from '$lib/api/db'
 
-export const _getCollections = async (
+async function _getCollections(
   ids: string[],
   idIsParentId: boolean,
   db: DB | null,
   tableName: string,
   count: boolean
-) => {
+) {
   const _sql = sql`
     SELECT
       ${count
@@ -60,22 +60,22 @@ export const _getCollections = async (
   }
 }
 
-export const getCollections = async (
+export async function getCollections(
   ids: string[],
   idIsParentId: boolean,
   db: DB | null,
   tableName: string
-) => {
+) {
   const result = await _getCollections(ids, idIsParentId, db, tableName, false)
   return result as Collection[]
 }
 
-export const getCollectionsCount = async (
+export async function getCollectionsCount(
   ids: string[],
   idIsParentId: boolean,
   db: DB | null,
   tableName: string
-) => {
+) {
   const result = (await _getCollections(
     ids,
     idIsParentId,
@@ -95,13 +95,13 @@ export const getCollectionsCount = async (
   return rv
 }
 
-export const createCollection = async (
+export async function createCollection(
   parentId: string,
   label: string,
   notes: string,
   db: DB | null,
   tableName: string
-) => {
+) {
   const id = uuid()
   const _sql = sql`
     INSERT INTO
@@ -129,11 +129,11 @@ export const createCollection = async (
   }
 }
 
-export const deleteCollection = async (
+export async function deleteCollection(
   id: string,
   db: DB | null,
   tableName: string
-) => {
+) {
   if (id !== 'ROOT') {
     const _sql = sql`
       DELETE FROM table_name
@@ -152,12 +152,12 @@ export const deleteCollection = async (
   }
 }
 
-export const relabelCollection = async (
+export async function relabelCollection(
   id: string,
   label: string,
   db: DB | null,
   tableName: string
-) => {
+) {
   const _sql = sql`
     UPDATE table_name
     SET

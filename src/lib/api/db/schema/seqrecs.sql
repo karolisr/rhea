@@ -383,22 +383,22 @@ CREATE TABLE IF NOT EXISTS "assoc_records_user" (
 ----------------------------------------------------------------------------
 -- DROP VIEW IF EXISTS records_simple
 -- ;
-CREATE VIEW IF NOT EXISTS records_simple (
-  "Accession",
-  "TaxID",
-  "Length",
-  "Type",
-  "Definition"
-) AS
-SELECT
-  gb_records.accession_version,
-  gb_records.tax_id,
-  gb_records.length,
-  gb_records.moltype,
-  gb_records.definition
-FROM
-  gb_records
-;
+-- CREATE VIEW IF NOT EXISTS records_simple (
+--   "Accession",
+--   "TaxID",
+--   "Length",
+--   "Type",
+--   "Definition"
+-- ) AS
+-- SELECT
+--   gb_records.accession_version,
+--   gb_records.tax_id,
+--   gb_records.length,
+--   gb_records.moltype,
+--   gb_records.definition
+-- FROM
+--   gb_records
+-- ;
 ----------------------------------------------------------------------------
 -- @block drop records view
 -- @conn seqrecs
@@ -408,14 +408,12 @@ DROP VIEW IF EXISTS records
 -- @conn seqrecs
 CREATE VIEW IF NOT EXISTS records AS
 SELECT
-  records_simple."Accession",
-  records_simple."Length" AS "Length",
+  gb_records."accession_version",
+  gb_records."length",
   CASE
-    WHEN records_simple."Type" = "AA" THEN SUM(
-      records_simple."Length" * 3
-    )
-    ELSE records_simple."Length"
-  END "Length (bp)",
+    WHEN gb_records."moltype" = "AA" THEN SUM(gb_records."length" * 3)
+    ELSE gb_records."length"
+  END "length_bp",
   REPLACE(
     COALESCE(
       (
@@ -425,32 +423,46 @@ SELECT
           gb_qualifiers AS q1
         WHERE
           q1.name = "organelle"
-          AND q1.accession_version = records_simple."Accession"
+          AND q1.accession_version = gb_records."accession_version"
           AND q1.feature_id = 1
       ),
-      "nucleus"
+      "nucbac"
     ),
     "plastid:",
     ""
-  ) AS "Genetic Compartment",
-  REPLACE(
-    COALESCE(
-      (
-        SELECT
-          q3."value"
-        FROM
-          gb_qualifiers AS q3
-        WHERE
-          q3.name = "mol_type"
-          AND q3.accession_version = records_simple."Accession"
-          AND q3.feature_id = 1
-      ),
-      records_simple."Type"
+  ) AS "organelle",
+  COALESCE(
+    (
+      SELECT
+        q4."value"
+      FROM
+        gb_qualifiers AS q4
+      WHERE
+        q4.name = "plasmid"
+        AND q4.accession_version = gb_records."accession_version"
+        AND q4.feature_id = 1
     ),
-    "genomic DNA",
-    "DNA"
-  ) AS "Molecule Type",
-  records_simple."TaxID",
+    ""
+  ) AS "plasmid",
+  -- REPLACE(
+  --   COALESCE(
+  --     (
+  --       SELECT
+  --         q3."value"
+  --       FROM
+  --         gb_qualifiers AS q3
+  --       WHERE
+  --         q3.name = "mol_type"
+  --         AND q3.accession_version = gb_records."accession_version"
+  --         AND q3.feature_id = 1
+  --     ),
+  --     gb_records."moltype"
+  --   ),
+  --   "genomic DNA",
+  --   "DNA"
+  -- ) AS "moltype",
+  gb_records."moltype",
+  gb_records."tax_id",
   (
     SELECT
       q2."value"
@@ -458,20 +470,20 @@ SELECT
       gb_qualifiers AS q2
     WHERE
       q2.name = "organism"
-      AND q2.accession_version = records_simple."Accession"
+      AND q2.accession_version = gb_records."accession_version"
       AND q2.feature_id = 1
-  ) AS "Organism",
-  records_simple."Definition"
+  ) AS "organism",
+  gb_records."definition"
 FROM
-  records_simple
+  gb_records
 GROUP BY
-  records_simple."Accession"
+  gb_records."accession_version"
 ;
 -- @block drop records_user view
 -- @conn seqrecs
 ----------------------------------------------------------------------------
--- DROP VIEW IF EXISTS records_user
--- ;
+DROP VIEW IF EXISTS records_user
+;
 -- @block create records_user view
 -- @conn seqrecs
 CREATE VIEW IF NOT EXISTS records_user AS
@@ -479,7 +491,7 @@ SELECT
   *
 FROM
   assoc_records_user
-  INNER JOIN records ON records.accession = assoc_records_user.record_id
+  INNER JOIN records ON records.accession_version = assoc_records_user.record_id
 ;
 ----------------------------------------------------------------------------
 -- @block drop qualifier_names view
@@ -496,6 +508,21 @@ FROM
 ORDER BY
   "name" ASC
 ;
+----------------------------------------------------------------------------
+-- @block drop qualifier_values view
+-- @conn seqrecs
+DROP VIEW IF EXISTS qualifier_values
+;
+-- @block create qualifier_values view
+-- @conn seqrecs
+-- CREATE VIEW IF NOT EXISTS qualifier_values ("value") AS
+-- SELECT DISTINCT
+--   gb_qualifiers.value
+-- FROM
+--   gb_qualifiers
+-- ORDER BY
+--   "value" ASC
+-- ;
 ----------------------------------------------------------------------------
 -- @block drop feature_keys view
 -- @conn seqrecs

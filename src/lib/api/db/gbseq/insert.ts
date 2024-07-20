@@ -3,8 +3,7 @@ import {
   DB,
   beginTransaction,
   commitTransaction,
-  rollbackTransaction,
-  vacuum
+  rollbackTransaction
 } from '$lib/api/db'
 import { getTaxId } from '$lib/ncbi/utils'
 import sql, { Sql, bulk, empty } from 'sql-template-tag'
