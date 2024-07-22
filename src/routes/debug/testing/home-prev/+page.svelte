@@ -403,7 +403,7 @@ onDestroy(() => {
             uid="{'sequence-type-tree'}"
             expanded="{true}"
             db="{$dbs.dbCollections}"
-            tableName="sequence_category"
+            tableName="cat_moltype"
             rootLabel="All Records"
             bind:selected="{selectedColl}"
             bind:selectedGroupUid

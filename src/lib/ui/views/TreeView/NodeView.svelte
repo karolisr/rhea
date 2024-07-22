@@ -181,7 +181,7 @@ function showContextMenu(e: MouseEvent) {
       contextMenuItems.push({
         label: 'Create collection in "' + tree.label + '"',
         hotKey: '',
-        disabled: false,
+        disabled: tree.id.startsWith('FIXED'),
         action() {
           _createNode('New Collection')
         }
@@ -192,7 +192,8 @@ function showContextMenu(e: MouseEvent) {
       contextMenuItems.push({
         label: 'Delete "' + tree.label + '"',
         hotKey: '',
-        disabled: tree.id === 'ROOT' || tree.id === '1',
+        disabled:
+          tree.id === 'ROOT' || tree.id === '1' || tree.id.startsWith('FIXED'),
         action() {
           _deleteNode()
         }
@@ -203,7 +204,8 @@ function showContextMenu(e: MouseEvent) {
       contextMenuItems.push({
         label: 'Rename "' + tree.label + '"',
         hotKey: '',
-        disabled: tree.id === 'ROOT' || tree.id === '1',
+        disabled:
+          tree.id === 'ROOT' || tree.id === '1' || tree.id.startsWith('FIXED'),
         action() {
           _relabelNodeInit()
         }
@@ -230,6 +232,7 @@ async function _scrollIntoView() {
 function onDragOver(e: Event) {
   const ev = e as DragOverEvent
   if (
+    !(tree.id === 'ROOT' || tree.id.startsWith('FIXED')) &&
     !(selected === tree.id && selectedGroupUid === uid) &&
     acceptedDropTypes.includes(ev.payload.type)
   ) {

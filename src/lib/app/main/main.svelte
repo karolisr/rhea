@@ -31,9 +31,9 @@ const mdlUpdatedEventListener = () => {
 let dbs: Awaited<typeof databases>
 let mainDocList: DocList
 // ---------------------------------------------------------------------------
-let selectedCollGroup: string | undefined
-let selectedColl: string | undefined
-let selectedSeqCategories: string[] | undefined
+let selCollGrp: string | undefined
+let selColl: string | undefined
+// let selectedSeqCategories: string[] | undefined
 // $: {
 //   if (selectedSeqCategories && selectedSeqCategories.length > 0) {
 //     console.log(selectedSeqCategories)
@@ -85,11 +85,7 @@ $: {
     bind:colWs="{gridLRColWs}"
     minColW="{0}">
     <div class="grid-left-tree">
-      <MainCollections
-        bind:selectedCollGroup
-        bind:selectedColl
-        bind:selectedSeqCategories>
-      </MainCollections>
+      <MainCollections bind:selCollGrp bind:selColl />
     </div>
     <ResizableGrid
       bind:nRow="{gridMainNRow}"
@@ -100,7 +96,7 @@ $: {
       minRowH="{0}"
       minColW="{0}">
       <div class="grid-main-filter-search">
-        <MainFilterSearch bind:selectedCollGroup />
+        <MainFilterSearch bind:selCollGrp />
       </div>
 
       <div class="grid-main-tableview">

@@ -2,8 +2,8 @@ import sql from 'sql-template-tag'
 
 export const schemaCollections = sql`
   ------------------------------------------------------------------------------
-  -- DROP TABLE IF EXISTS user
-  -- ;
+  DROP TABLE IF EXISTS "user"
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "user" (
     "parent_id" varchar,
@@ -21,12 +21,18 @@ export const schemaCollections = sql`
       "notes"
     )
   VALUES
-    (NULL, "ROOT", "ROOT", "")
+    (NULL, "ROOT", "ROOT", ""),
+    (
+      "ROOT",
+      "FIXED_ALL_RECORDS",
+      "All Records",
+      ""
+    )
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------
-  -- DROP TABLE IF EXISTS search_results
-  -- ;
+  DROP TABLE IF EXISTS "search_results"
+  ;
   ------------------------------------------------------------------------------
   CREATE TABLE IF NOT EXISTS "search_results" (
     "parent_id" varchar,
@@ -48,19 +54,19 @@ export const schemaCollections = sql`
   ON CONFLICT ("id") DO NOTHING
   ;
   ------------------------------------------------------------------------------
-  DROP TABLE IF EXISTS sequence_category
+  DROP TABLE IF EXISTS "cat_moltype"
   ;
   ------------------------------------------------------------------------------
-  CREATE TABLE IF NOT EXISTS "sequence_category" (
+  CREATE TABLE IF NOT EXISTS "cat_moltype" (
     "parent_id" varchar,
     "id" varchar PRIMARY KEY NOT NULL,
     "label" varchar NOT NULL,
     "notes" varchar,
-    FOREIGN KEY (parent_id) REFERENCES "sequence_category" (id) ON DELETE CASCADE
+    FOREIGN KEY (parent_id) REFERENCES "cat_moltype" (id) ON DELETE CASCADE
   )
   ;
   INSERT INTO
-    sequence_category (
+    cat_moltype (
       "parent_id",
       "id",
       "label",
@@ -125,53 +131,93 @@ export const schemaCollections = sql`
       "transcribed-RNA",
       "transcribed-RNA",
       ""
-    ),
+    )
+  ON CONFLICT ("id") DO NOTHING
+  ;
+  ------------------------------------------------------------------------------
+  DROP TABLE IF EXISTS "cat_organelle"
+  ;
+  ------------------------------------------------------------------------------
+  CREATE TABLE IF NOT EXISTS "cat_organelle" (
+    "parent_id" varchar,
+    "id" varchar PRIMARY KEY NOT NULL,
+    "label" varchar NOT NULL,
+    "notes" varchar,
+    FOREIGN KEY (parent_id) REFERENCES "cat_organelle" (id) ON DELETE CASCADE
+  )
+  ;
+  INSERT INTO
+    cat_organelle (
+      "parent_id",
+      "id",
+      "label",
+      "notes"
+    )
+  VALUES
+    (NULL, "ROOT", "ROOT", ""),
     (
-      "DNA",
-      "genomic",
-      "Genomic",
-      ""
-    ),
-    -- (
-    --   "DNA",
-    --   "plasmid",
-    --   "Plasmids",
-    --   ""
-    -- ),
-    (
-      "genomic",
+      "ROOT",
       "nucbac",
-      "Nuclear / Bacterial",
+      "Nuclear/Bacterial",
       ""
     ),
     (
-      "genomic",
+      "ROOT",
       "organelle",
-      "Organelles",
+      "Organelle",
       ""
     ),
     (
       "organelle",
       "plastid",
-      "Plastids",
+      "Plastid",
       ""
     ),
     (
       "organelle",
       "mitochondrion",
-      "Mitochondria",
+      "Mitochondrion",
       ""
     ),
     (
       "plastid",
       "chloroplast",
-      "Chloroplasts",
+      "Chloroplast",
       ""
     ),
     (
       "plastid",
       "apicoplast",
-      "Apicoplasts",
+      "Apicoplast",
+      ""
+    )
+  ON CONFLICT ("id") DO NOTHING
+  ;
+  ------------------------------------------------------------------------------
+  DROP TABLE IF EXISTS "cat_other"
+  ;
+  ------------------------------------------------------------------------------
+  CREATE TABLE IF NOT EXISTS "cat_other" (
+    "parent_id" varchar,
+    "id" varchar PRIMARY KEY NOT NULL,
+    "label" varchar NOT NULL,
+    "notes" varchar,
+    FOREIGN KEY (parent_id) REFERENCES "cat_other" (id) ON DELETE CASCADE
+  )
+  ;
+  INSERT INTO
+    cat_other (
+      "parent_id",
+      "id",
+      "label",
+      "notes"
+    )
+  VALUES
+    (NULL, "ROOT", "ROOT", ""),
+    (
+      "ROOT",
+      "plasmid",
+      "Plasmid",
       ""
     )
   ON CONFLICT ("id") DO NOTHING
