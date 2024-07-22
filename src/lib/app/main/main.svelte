@@ -10,18 +10,19 @@ import databases from '$lib/svelte-stores/databases'
 import { DocList } from '$lib/doc/doc-list'
 import type { DocField } from '$lib/doc'
 import type { SortDir } from '$lib/types'
+import { getSeqRecIdsByCategory } from '$lib/api/db/gbseq'
 // ---------------------------------------------------------------------------
 onMount(async () => {
   dbs = await databases
   const sf: DocField[] = $state.mdlSF ? ($state.mdlSF as DocField[]) : ['id']
   const sd: SortDir[] = $state.mdlSD ? ($state.mdlSD as SortDir[]) : [1]
-  mainDocList = new DocList('main-doc-list', sf, sd)
+  mainDocList = new DocList($dbs, 'main-doc-list', sf, sd)
   addEventListener(mainDocList.updatedEventName, mdlUpdatedEventListener)
 })
 onDestroy(async () => {
   removeEventListener(mainDocList.updatedEventName, mdlUpdatedEventListener)
 })
-
+// ---------------------------------------------------------------------------
 const mdlUpdatedEventListener = () => {
   $state.mdlSF = mainDocList.list.sortFields
   $state.mdlSD = mainDocList.list.sortDirections
@@ -33,12 +34,64 @@ let mainDocList: DocList
 // ---------------------------------------------------------------------------
 let selCollGrp: string | undefined
 let selColl: string | undefined
-// let selectedSeqCategories: string[] | undefined
-// $: {
-//   if (selectedSeqCategories && selectedSeqCategories.length > 0) {
-//     console.log(selectedSeqCategories)
-//   }
-// }
+// ---------------------------------------------------------------------------
+let selMolTypes: string[] | undefined
+let selOrgnells: string[] | undefined
+let selOthers: string[] | undefined
+
+let idsByMolType: Set<string> = new Set()
+let idsByOrgnell: Set<string> = new Set()
+let idsByOthers: Set<string> = new Set()
+
+let idsByCat: Set<string> = new Set()
+$: {
+  const prev = idsByCat
+  const curr = idsByMolType.intersection(idsByOrgnell).intersection(idsByOthers)
+  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+    idsByCat = curr
+    mainDocList.list.filterBy('id', undefined, [...idsByCat])
+  }
+}
+// ---------------------------------------------------------------------------
+
+async function _getIdsByMolType(selMolTypes: string[]) {
+  idsByMolType = new Set(
+    await getSeqRecIdsByCategory('moltype', selMolTypes, $dbs, 'dbSeqRecs')
+  )
+}
+
+async function _getIdsByOrgnell(selOrgnells: string[]) {
+  idsByOrgnell = new Set(
+    await getSeqRecIdsByCategory('organelle', selOrgnells, $dbs, 'dbSeqRecs')
+  )
+}
+
+async function _getIdsByOthers(selOthers: string[]) {
+  idsByOthers = new Set(
+    await getSeqRecIdsByCategory('other', selOthers, $dbs, 'dbSeqRecs')
+  )
+}
+
+$: {
+  if (selMolTypes && selMolTypes.length > 0) {
+    _getIdsByMolType(selMolTypes)
+  }
+}
+
+$: {
+  if (selOrgnells && selOrgnells.length > 0) {
+    _getIdsByOrgnell(selOrgnells)
+  }
+}
+
+$: {
+  if (selOthers && selOthers.length > 0) {
+    _getIdsByOthers(selOthers)
+  }
+}
+// ---------------------------------------------------------------------------
+// $: console.log(selCollGrp)
+// $: console.log(selColl)
 // ---------------------------------------------------------------------------
 
 // Grid / State --------------------------------------------------------------
@@ -85,7 +138,12 @@ $: {
     bind:colWs="{gridLRColWs}"
     minColW="{0}">
     <div class="grid-left-tree">
-      <MainCollections bind:selCollGrp bind:selColl />
+      <MainCollections
+        bind:selCollGrp
+        bind:selColl
+        bind:selMolTypes
+        bind:selOrgnells
+        bind:selOthers />
     </div>
     <ResizableGrid
       bind:nRow="{gridMainNRow}"

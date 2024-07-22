@@ -2,16 +2,20 @@ import { RecordList } from '$lib/utils/record-list'
 import { Doc, SeqRecordDocGenBank, SeqRecordDocUser, AlignmentDoc } from '.'
 import type { IndexedUndefined } from '$lib/types'
 import { getAllSeqRecs } from '$lib/api/db/gbseq'
+import type { Databases } from '$lib/svelte-stores/databases'
 
 export class DocList {
+  protected _dbs: Databases
   protected _uid: string
   protected _list: RecordList<Doc>
 
   constructor(
+    dbs: Databases,
     uid: string,
     sortFields: (keyof Doc)[] = [],
     sortDirections: (1 | -1)[] = []
   ) {
+    this._dbs = dbs
     this._uid = uid
     this._list = new RecordList<Doc>(uid, [], 'uid')
     this._list.fieldsToShow = ['id', 'moltype', 'definition']
@@ -20,7 +24,7 @@ export class DocList {
   }
 
   private async init() {
-    const _dbrecs = await getAllSeqRecs()
+    const _dbrecs = await getAllSeqRecs(this._dbs, 'dbSeqRecs')
     const _items: Doc[] = []
     for (let i = 0; i < _dbrecs.length; i++) {
       const _dbrec = _dbrecs[i]

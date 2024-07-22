@@ -20,7 +20,7 @@ import iconAln from '~icons/bx/dna'
     collapsable
     nSpacers="{2}" />
   <Tab link="/debug/" icon="{iconHome}" />
-  <Tab link="/debug/testing/home-prev/" icon="{iconHome}" label="HomePrev" />
+  <!-- <Tab link="/debug/testing/home-prev/" icon="{iconHome}" label="HomePrev" /> -->
   <Tab link="/debug/testing/aln/" icon="{iconAln}" label="Alignment" />
   <Tab link="/debug/testing/seqview/" icon="{iconSeqView}" label="SeqView" />
   <Tab link="/debug/testing/search/" icon="{iconSearch}" label="Search" />

@@ -14,10 +14,6 @@ import iconDebug from '~icons/fa6-solid/bug'
   <Tab link="/" icon="{iconHome}" label="Home" />
   <!-- <Tab link="/home-prev/" icon="{iconHome}" label="HomePrev" /> -->
   <!-- <Tab link="/search/" icon="{iconSearch}" label="Search" /> -->
-  <Tab
-    link="/debug/testing/home-prev/"
-    icon="{iconDebug}"
-    label="Debug"
-    current="base" />
+  <Tab link="/debug/" icon="{iconDebug}" label="Debug" current="base" />
   <Tab link="/settings/" icon="{iconSettings}" label="Settings" />
 </TabNav>

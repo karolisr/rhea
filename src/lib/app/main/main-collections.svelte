@@ -27,6 +27,38 @@ onMount(async () => {
 onDestroy(async () => {})
 // ---------------------------------------------------------------------------
 
+// Collections state ---------------------------------------------------------
+export let selCollGrp = $state.selCollGrp as string | undefined
+export let selColl = $state.selColl as string | undefined
+
+let selMolType = $state.selMolType as string | undefined
+let selOrgnell = $state.selOrgnell as string | undefined
+let selOther = $state.selOther as string | undefined
+
+let expCollsUsr = $state.expCollsUsr as Set<string> | undefined
+let expCollsMolType = $state.expCollsMolType as Set<string> | undefined
+let expCollsOrgnell = $state.expCollsOrgnell as Set<string> | undefined
+let expCollsOther = $state.expCollsOther as Set<string> | undefined
+
+let rebuildTagCollsUsr: number
+
+$: {
+  $state.selCollGrp = selCollGrp
+  $state.selColl = selColl
+
+  $state.selMolType = selMolType
+  $state.selOrgnell = selOrgnell
+  $state.selOther = selOther
+
+  $state.expCollsUsr = expCollsUsr
+  $state.expCollsMolType = expCollsMolType
+  $state.expCollsOrgnell = expCollsOrgnell
+  $state.expCollsOther = expCollsOther
+  saveState()
+}
+
+// Collections state END -----------------------------------------------------
+
 // ---------------------------------------------------------------------------
 export let selMolTypes: string[] = []
 let _selMolTypes: string[] = []
@@ -58,37 +90,6 @@ $: {
   }
 }
 // ---------------------------------------------------------------------------
-
-// Collections state ---------------------------------------------------------
-export let selCollGrp = $state.selCollGrp as string | undefined
-export let selColl = $state.selColl as string | undefined
-
-let selMolType = $state.selMolType as string | undefined
-let selOrgnell = $state.selOrgnell as string | undefined
-let selOther = $state.selOther as string | undefined
-
-let expCollsUsr = $state.expCollsUsr as Set<string> | undefined
-let expCollsMolType = $state.expCollsMolType as Set<string> | undefined
-let expCollsOrgnell = $state.expCollsOrgnell as Set<string> | undefined
-let expCollsOther = $state.expCollsOther as Set<string> | undefined
-
-let rebuildTagCollsUsr: number
-
-$: {
-  $state.selCollGrp = selCollGrp
-  $state.selColl = selColl
-
-  $state.selMolType = selMolType
-  $state.selOrgnell = selOrgnell
-  $state.selOther = selOther
-
-  $state.expCollsUsr = expCollsUsr
-  $state.expCollsMolType = expCollsMolType
-  $state.expCollsOrgnell = expCollsOrgnell
-  $state.expCollsOther = expCollsOther
-  saveState()
-}
-// Collections state END -----------------------------------------------------
 </script>
 
 {#if $dbs && $dbs.dbsOK && $dbs.dbCollections}
