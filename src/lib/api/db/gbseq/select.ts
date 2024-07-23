@@ -34,7 +34,7 @@ export async function getSeqRecIdsByCategory(
   terms: string[],
   dbs: Databases,
   dbName: 'dbSeqRecs' | 'dbSeqRecsUser'
-): Promise<string[]> {
+): Promise<Set<string>> {
   let db: DB | null = dbs[dbName]
   // let dbs: Awaited<typeof databases> = await databases
   // let db: DB | null = null
@@ -84,7 +84,7 @@ export async function getSeqRecIdsByCategory(
     _rv = await db.select(_sql.text, _sql.values)
   }
   // unsubscribe()
-  return _rv.map((v) => v['id'] as string)
+  return new Set<string>(_rv.map((v) => v['id'] as string))
 }
 
 export async function getSeqRecIdsForCollections(
@@ -92,7 +92,7 @@ export async function getSeqRecIdsForCollections(
   collectionIds: string[],
   dbs: Databases,
   dbName: 'dbSeqRecs' | 'dbSeqRecsUser'
-): Promise<string[]> {
+): Promise<Set<string>> {
   let db: DB | null = dbs[dbName]
   // let dbs: Awaited<typeof databases> = await databases
   // let db: DB | null = null
@@ -117,7 +117,7 @@ export async function getSeqRecIdsForCollections(
     )
   }
   // unsubscribe()
-  return _rv.map((v) => v['id'] as string)
+  return new Set<string>(_rv.map((v) => v['id'] as string))
 }
 
 // export async function getSequences(accs: string[]) {
