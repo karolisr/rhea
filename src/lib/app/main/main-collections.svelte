@@ -7,10 +7,6 @@ import {
   deleteCollection,
   relabelCollection
 } from '$lib/api/db/collections'
-import {
-  addSeqRecsToCollection,
-  removeSeqRecsFromCollection
-} from '$lib/api/db/gbseq'
 import databases from '$lib/svelte-stores/databases'
 // ----------------------------------------------------------------------------
 
@@ -99,8 +95,6 @@ $: {
       createNode="{createCollection}"
       deleteNode="{deleteCollection}"
       relabelNode="{relabelCollection}"
-      addRecords="{addSeqRecsToCollection}"
-      removeRecords="{removeSeqRecsFromCollection}"
       acceptedDropTypes="{['acc-ver-array']}" />
 
     <TreeView

@@ -1,18 +1,13 @@
 import sql, { Sql, bulk, empty } from 'sql-template-tag'
-import type { IndexedUndefined } from '$lib/types'
-import databases, { type Databases } from '$lib/svelte-stores/databases'
 import { DB } from '$lib/api/db'
+import type { Databases } from '$lib/svelte-stores/databases'
+import type { IndexedUndefined } from '$lib/types'
 
 export async function getAllSeqRecs(
   dbs: Databases,
   dbName: 'dbSeqRecs' | 'dbSeqRecsUser'
 ) {
   let db: DB | null = dbs[dbName]
-  // let dbs: Awaited<typeof databases> = await databases
-  // let db: DB | null = null
-  // const unsubscribe = dbs.subscribe((_) => {
-  //   db = _[dbName]
-  // })
   let rv: IndexedUndefined[] = []
   if (db !== null) {
     db = db as DB
@@ -20,12 +15,11 @@ export async function getAllSeqRecs(
       SELECT
         *
       FROM
-        records
+        "records"
       ;
     `
     rv = await db.select(_sql.text, _sql.values)
   }
-  // unsubscribe()
   return rv
 }
 
@@ -36,11 +30,6 @@ export async function getSeqRecIdsByCategory(
   dbName: 'dbSeqRecs' | 'dbSeqRecsUser'
 ): Promise<Set<string>> {
   let db: DB | null = dbs[dbName]
-  // let dbs: Awaited<typeof databases> = await databases
-  // let db: DB | null = null
-  // const unsubscribe = dbs.subscribe((_) => {
-  //   db = _[dbName]
-  // })
   let _rv: IndexedUndefined[] = []
   let subSql: Sql = empty
   switch (category) {
@@ -76,15 +65,14 @@ export async function getSeqRecIdsByCategory(
     db = db as DB
     const _sql = sql`
       SELECT
-        accession_version AS id
+        "accession_version"
       FROM
-        records ${subSql}
+        "records" ${subSql}
       ;
     `
     _rv = await db.select(_sql.text, _sql.values)
   }
-  // unsubscribe()
-  return new Set<string>(_rv.map((v) => v['id'] as string))
+  return new Set<string>(_rv.map((v) => v['accession_version'] as string))
 }
 
 export async function getSeqRecIdsForCollections(
@@ -94,21 +82,16 @@ export async function getSeqRecIdsForCollections(
   dbName: 'dbSeqRecs' | 'dbSeqRecsUser'
 ): Promise<Set<string>> {
   let db: DB | null = dbs[dbName]
-  // let dbs: Awaited<typeof databases> = await databases
-  // let db: DB | null = null
-  // const unsubscribe = dbs.subscribe((_) => {
-  //   db = _[dbName]
-  // })
   let _rv: IndexedUndefined[] = []
   if (db !== null) {
     db = db as DB
     const _sql = sql`
       SELECT
-        accession_version AS id
+        "accession_version"
       FROM
-        records_collection_name
+        "records_collection_name"
       WHERE
-        id IN ${bulk([collectionIds])}
+        "id" IN ${bulk([collectionIds])}
       ;
     `
     _rv = await db.select(
@@ -116,35 +99,32 @@ export async function getSeqRecIdsForCollections(
       _sql.values
     )
   }
-  // unsubscribe()
-  return new Set<string>(_rv.map((v) => v['id'] as string))
+  return new Set<string>(_rv.map((v) => v['accession_version'] as string))
 }
 
-// export async function getSequences(accs: string[]) {
-//   let rv: IndexedUndefined[] = []
-//   if (accs.length === 0) {
-//     return rv
-//   }
-//   let dbs: Awaited<typeof databases> = await databases
-//   let db: DB | null = null
-//   const unsubscribe = dbs.subscribe((_) => {
-//     db = _.dbSequences
-//   })
-
-//   if (db !== null) {
-//     db = db as DB
-//     const _sql = sql`
-//       SELECT
-//         "accession_version" AS "acc",
-//         "sequence" AS "seq"
-//       FROM
-//         "gb_sequences"
-//       WHERE
-//         "accession_version" IN ${bulk([accs])}
-//       ;
-//     `
-//     rv = await db.select(_sql.text, _sql.values)
-//   }
-//   unsubscribe()
-//   return rv
-// }
+export async function getSequences(
+  accs: string[],
+  dbs: Databases,
+  dbName: 'dbSequences' | 'dbSequencesUser'
+) {
+  let rv: IndexedUndefined[] = []
+  if (accs.length === 0) {
+    return rv
+  }
+  let db: DB | null = dbs[dbName]
+  if (db !== null) {
+    db = db as DB
+    const _sql = sql`
+      SELECT
+        "accession_version",
+        "sequence"
+      FROM
+        "gb_sequences"
+      WHERE
+        "accession_version" IN ${bulk([accs])}
+      ;
+    `
+    rv = await db.select(_sql.text, _sql.values)
+  }
+  return rv
+}

@@ -1,6 +1,20 @@
 import sql from 'sql-template-tag'
 
 export const schemaSeqRecs = sql`
+  -- PRAGMA journal_mode = 'OFF'
+  -- ;
+  -- PRAGMA page_size = '32768'
+  -- ;
+  -- PRAGMA auto_vacuum = '1'
+  -- ;
+  -- VACUUM
+  -- ;
+  -- PRAGMA journal_mode = 'WAL'
+  -- ;
+  ------------------------------------------------------------------------------
+  BEGIN TRANSACTION
+  ;
+  ------------------------------------------------------------------------------
   ------------------------------------------------------------------------------
   -- DROP TABLE IF EXISTS gb_keywords;
   -- DROP TABLE IF EXISTS gb_seqids;
@@ -630,4 +644,8 @@ export const schemaSeqRecs = sql`
   ;
   END
   ;
+  ------------------------------------------------------------------------------
+  COMMIT TRANSACTION
+  ;
+  ------------------------------------------------------------------------------
 `

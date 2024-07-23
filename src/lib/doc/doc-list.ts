@@ -1,8 +1,8 @@
-import { RecordList } from '$lib/utils/record-list'
-import { Doc, SeqRecordDocGenBank, SeqRecordDocUser, AlignmentDoc } from '.'
-import type { IndexedUndefined } from '$lib/types'
-import { getAllSeqRecs } from '$lib/api/db/gbseq'
+import { getAllSeqRecs } from '$lib/api/db/seqrecs'
 import type { Databases } from '$lib/svelte-stores/databases'
+import { RecordList } from '$lib/utils/record-list'
+import type { IndexedUndefined } from '$lib/types'
+import { Doc, SeqRecordDocGenBank, SeqRecordDocUser, AlignmentDoc } from '.'
 
 export class DocList {
   protected _dbs: Databases

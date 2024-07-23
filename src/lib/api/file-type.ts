@@ -8,8 +8,8 @@ import fileTypeChecker from 'file-type-checker'
 import { getPropNames } from '$lib'
 import type { FileSignature } from 'file-type-checker/dist/core'
 
-import { insertGbSeqRecords } from './db/gbseq'
-import type { GBSet } from '$lib/ncbi/types/GBSet'
+// import { insertGbSeqRecords } from './db/seqrecs'
+// import type { GBSet } from '$lib/ncbi/types/GBSet'
 
 export async function absPath(path: string): Promise<string> {
   path = path.replace('$HOME', await homeDir())
@@ -125,15 +125,15 @@ function getContentsType(obj: object) {
 
 export async function insertGbSeqRecordsOnFileDropTMP(paths: string[]) {
   for (let i = 0; i < paths.length; i++) {
-    const p = paths[i]
+    // const p = paths[i]
     // const parser = await getFileParser(p)
     // const parsed = await parser(p).catch((reason) => {
     //   throw new Error(reason)
     // })
     // console.log(getContentsType(parsed as object), parsed)
-    // if (getContentsType(parsed as object) === 'GBSeq') {
-    const parsed = await (await txtParser(parse_xml_txt))(p)
-    console.log('insertGbSeqRecords', (parsed as GBSet).length)
-    await insertGbSeqRecords(parsed as GBSet)
+    // if (getContentsType(parsed as object) === 'GBSeq') {}
+    // const parsed = await (await txtParser(parse_xml_txt))(p)
+    // console.log('insertGbSeqRecords', (parsed as GBSet).length)
+    // await insertGbSeqRecords(parsed as GBSet, $dbs, 'dbSeqRecs', 'dbSequences')
   }
 }

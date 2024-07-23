@@ -105,7 +105,7 @@ function onDrop(e: Event) {
 
 .drag-target {
   margin: auto;
-  width: 500px;
+  width: 400px;
   height: 300px;
   padding: 20px;
   border-style: solid;

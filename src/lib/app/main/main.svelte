@@ -15,7 +15,7 @@ import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import {
   getSeqRecIdsByCategory,
   getSeqRecIdsForCollections
-} from '$lib/api/db/gbseq'
+} from '$lib/api/db/seqrecs'
 
 import MainDocList from './main-doc-list.svelte'
 import MainCollections from './main-collections.svelte'
