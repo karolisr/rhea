@@ -25,7 +25,7 @@ onDestroy(() => {
 
 export let tree: Tree
 export let uid: string
-export let selectedGroupUid: string | undefined = undefined
+export let selectedGroupUid: string | undefined = uid
 export let selected: string | undefined = undefined
 export let relabelId: string | undefined = undefined
 export let expandedIds: Set<string>
