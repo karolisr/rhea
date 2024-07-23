@@ -53,6 +53,8 @@ CREATE TABLE IF NOT EXISTS "gb_records" (
   -- FOREIGN KEY (tax_id) REFERENCES "tx_nodes" (tax_id)
 )
 ;
+CREATE INDEX IF NOT EXISTS ix_gb_records_accession_version ON "gb_records" ("accession_version" ASC)
+;
 ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "gb_feature_sets" (
   "accession_version" varchar NOT NULL,
@@ -377,6 +379,10 @@ CREATE TABLE IF NOT EXISTS "assoc_records_user" (
   FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version)
   -- FOREIGN KEY (id) REFERENCES "collections.user" (id)
 )
+;
+CREATE INDEX IF NOT EXISTS ix_assoc_records_user_id ON "assoc_records_user" ("id" ASC)
+;
+CREATE INDEX IF NOT EXISTS ix_assoc_records_user_record_id ON "assoc_records_user" ("record_id" ASC)
 ;
 ----------------------------------------------------------------------------
 -- Views -------------------------------------------------------------------
