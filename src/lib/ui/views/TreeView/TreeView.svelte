@@ -31,7 +31,7 @@ export let expandedIds: Set<string> = new Set()
 
 if (expanded || expandedIds.size > 0) {
   expanded = true
-  expandedIds.add(parentId)
+  // expandedIds.add(parentId)
   expandedIds = expandedIds
 }
 

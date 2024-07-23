@@ -37,8 +37,12 @@ export class RecordList<T> {
     return this._items
   }
 
+  get keys() {
+    return this._items.map((x) => x[this._keyField]) as string[]
+  }
+
   get allKeys() {
-    return this._items.map((x) => x[this._keyField])
+    return this._allItems.map((x) => x[this._keyField]) as string[]
   }
 
   get length() {

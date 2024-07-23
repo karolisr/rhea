@@ -127,6 +127,19 @@ $: {
       relabelNode="{relabelCollection}" />
 
     <TreeView
+      uid="{'coll-db-all-recs'}"
+      rootLabel="All Records"
+      tableName="all_records"
+      db="{$dbs.dbCollections}"
+      expanded="{false}"
+      bind:selected="{selColl}"
+      bind:selectedGroupUid="{selCollGrp}"
+      selectedChildIdsEnabled />
+
+    <div style="background-color: #CCC; height: 1px; margin-block-start: 3px;">
+    </div>
+
+    <TreeView
       uid="{'coll-cat-moltype'}"
       rootLabel="All Molecule Types"
       tableName="cat_moltype"

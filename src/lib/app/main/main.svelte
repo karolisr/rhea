@@ -10,7 +10,10 @@ import databases from '$lib/svelte-stores/databases'
 import { DocList } from '$lib/doc/doc-list'
 import type { DocField } from '$lib/doc'
 import type { SortDir } from '$lib/types'
-import { getSeqRecIdsByCategory } from '$lib/api/db/gbseq'
+import {
+  getSeqRecIdsByCategory,
+  getSeqRecIdsForCollections
+} from '$lib/api/db/gbseq'
 // ---------------------------------------------------------------------------
 onMount(async () => {
   dbs = await databases
@@ -34,6 +37,8 @@ let mainDocList: DocList
 // ---------------------------------------------------------------------------
 let selCollGrp: string | undefined
 let selColl: string | undefined
+let idsByColl: Set<string>
+let idsFinal: Set<string> = new Set()
 // ---------------------------------------------------------------------------
 let selMolTypes: string[] | undefined
 let selOrgnells: string[] | undefined
@@ -42,17 +47,27 @@ let selOthers: string[] | undefined
 let idsByMolType: Set<string> = new Set()
 let idsByOrgnell: Set<string> = new Set()
 let idsByOthers: Set<string> = new Set()
-
 let idsByCat: Set<string> = new Set()
-$: {
-  const prev = idsByCat
-  const curr = idsByMolType.intersection(idsByOrgnell).intersection(idsByOthers)
-  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
-    idsByCat = curr
-    mainDocList.list.filterBy('id', undefined, [...idsByCat])
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+async function _getIdsByColl(
+  selCollGrp: string,
+  selColl: string,
+  idsByCat: Set<string>
+) {
+  if (idsByCat.size > 0) {
+    if (selCollGrp === 'coll-db-all-recs' && selColl === 'ROOT') {
+      idsByColl = new Set(mainDocList.list.allKeys)
+    } else if (selCollGrp === 'coll-user') {
+      idsByColl = new Set(
+        await getSeqRecIdsForCollections('user', [selColl], $dbs, 'dbSeqRecs')
+      )
+    }
+  } else {
+    idsByColl = new Set()
   }
 }
-// ---------------------------------------------------------------------------
 
 async function _getIdsByMolType(selMolTypes: string[]) {
   idsByMolType = new Set(
@@ -128,6 +143,26 @@ $: {
   saveState()
 }
 // Grid / State END ----------------------------------------------------------
+
+$: {
+  const prev = idsByCat
+  const curr = idsByMolType.intersection(idsByOrgnell).intersection(idsByOthers)
+  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+    idsByCat = curr
+  }
+}
+
+$: if (selCollGrp && selColl) _getIdsByColl(selCollGrp, selColl, idsByCat)
+
+$: if (idsByColl !== undefined) {
+  const prev = idsFinal
+  const curr = idsByColl.intersection(idsByCat)
+  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+    idsFinal = curr
+  }
+}
+
+$: if (mainDocList) mainDocList.list.filterBy('id', undefined, [...idsFinal])
 </script>
 
 {#if $dbs && $dbs.dbsOK}

@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
-DROP TABLE IF EXISTS "user"
-;
+-- DROP TABLE IF EXISTS "user"
+-- ;
 ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "user" (
   "parent_id" varchar,
@@ -18,18 +18,35 @@ INSERT INTO
     "notes"
   )
 VALUES
-  (NULL, "ROOT", "ROOT", ""),
-  (
-    "ROOT",
-    "FIXED_ALL_RECORDS",
-    "All Records",
-    ""
-  )
+  (NULL, "ROOT", "ROOT", "")
 ON CONFLICT ("id") DO NOTHING
 ;
 ------------------------------------------------------------------------------
-DROP TABLE IF EXISTS "search_results"
+-- DROP TABLE IF EXISTS "all_records"
+-- ;
+------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "all_records" (
+  "parent_id" varchar,
+  "id" varchar PRIMARY KEY NOT NULL,
+  "label" varchar NOT NULL,
+  "notes" varchar,
+  FOREIGN KEY (parent_id) REFERENCES "all_records" (id) ON DELETE CASCADE
+)
 ;
+INSERT INTO
+  all_records (
+    "parent_id",
+    "id",
+    "label",
+    "notes"
+  )
+VALUES
+  (NULL, "ROOT", "ROOT", "")
+ON CONFLICT ("id") DO NOTHING
+;
+------------------------------------------------------------------------------
+-- DROP TABLE IF EXISTS "search_results"
+-- ;
 ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "search_results" (
   "parent_id" varchar,
@@ -51,8 +68,8 @@ VALUES
 ON CONFLICT ("id") DO NOTHING
 ;
 ------------------------------------------------------------------------------
-DROP TABLE IF EXISTS "cat_moltype"
-;
+-- DROP TABLE IF EXISTS "cat_moltype"
+-- ;
 ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "cat_moltype" (
   "parent_id" varchar,
@@ -132,8 +149,8 @@ VALUES
 ON CONFLICT ("id") DO NOTHING
 ;
 ------------------------------------------------------------------------------
-DROP TABLE IF EXISTS "cat_organelle"
-;
+-- DROP TABLE IF EXISTS "cat_organelle"
+-- ;
 ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "cat_organelle" (
   "parent_id" varchar,
@@ -191,8 +208,8 @@ VALUES
 ON CONFLICT ("id") DO NOTHING
 ;
 ------------------------------------------------------------------------------
-DROP TABLE IF EXISTS "cat_other"
-;
+-- DROP TABLE IF EXISTS "cat_other"
+-- ;
 ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "cat_other" (
   "parent_id" varchar,

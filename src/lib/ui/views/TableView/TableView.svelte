@@ -219,7 +219,7 @@ let allChecked: boolean = false
 // }
 
 function selectAll() {
-  rl.allKeys.forEach((k) => {
+  rl.keys.forEach((k) => {
     k = k as string
     _selectedRowKeys[k] = !allChecked
   })
