@@ -1,16 +1,20 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import { BROWSER, ENGINE, PIXELRATIO } from '$lib/api'
-import { themeChangeListener } from '$lib/api/darkmode'
+
 import type { Unlistener } from '$lib/types'
+
+import { BROWSER, ENGINE, PIXELRATIO, setScale } from '$lib/api'
+import { DragDrop } from '$lib/api/drag-drop'
+import { themeChangeListener } from '$lib/api/darkmode'
+
 import settings from '$lib/svelte-stores/settings'
-import { setScale } from '$lib/api'
+import subheader from '$lib/svelte-stores/subheader'
+
 import { preventDefault } from '$lib/ui'
 import Layout from '$lib/ui/chrome/layout/Layout.svelte'
-import MainNav from './main-nav.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
-import subheader from '$lib/svelte-stores/subheader'
-import { DragDrop } from '$lib/api/drag-drop'
+
+import MainNav from './main-nav.svelte'
 
 let unlisteners: Unlistener[] = []
 let dragDropConductor: DragDrop | null = null
@@ -22,7 +26,6 @@ onMount(async () => {
   dragDropConductor = new DragDrop()
 
   unlisteners.push(await themeChangeListener())
-
   unlisteners.push(preventDefault('contextmenu'))
 
   // source -----------------------------------------------------------------

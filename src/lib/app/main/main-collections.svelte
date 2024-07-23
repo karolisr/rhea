@@ -7,27 +7,21 @@ import {
   deleteCollection,
   relabelCollection
 } from '$lib/api/db/collections'
-
 import {
   addSeqRecsToCollection,
   removeSeqRecsFromCollection
 } from '$lib/api/db/gbseq'
-
 import databases from '$lib/svelte-stores/databases'
-
-// ---------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 let dbs: Awaited<typeof databases>
 
-// ---------------------------------------------------------------------------
 onMount(async () => {
   dbs = await databases
 })
 
 onDestroy(async () => {})
-// ---------------------------------------------------------------------------
 
-// Collections state ---------------------------------------------------------
 export let selCollGrp = $state.selCollGrp as string | undefined
 export let selColl = $state.selColl as string | undefined
 
@@ -45,11 +39,9 @@ let rebuildTagCollsUsr: number
 $: {
   $state.selCollGrp = selCollGrp
   $state.selColl = selColl
-
   $state.selMolType = selMolType
   $state.selOrgnell = selOrgnell
   $state.selOther = selOther
-
   $state.expCollsUsr = expCollsUsr
   $state.expCollsMolType = expCollsMolType
   $state.expCollsOrgnell = expCollsOrgnell
@@ -57,15 +49,12 @@ $: {
   saveState()
 }
 
-// Collections state END -----------------------------------------------------
-
-// ---------------------------------------------------------------------------
 export let selMolTypes: string[] = []
 let _selMolTypes: string[] = []
 $: {
   const prev = new Set(selMolTypes)
   const curr = new Set(_selMolTypes)
-  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+  if (prev.symmetricDifference(curr).size !== 0) {
     selMolTypes = _selMolTypes
   }
 }
@@ -75,7 +64,7 @@ let _selOrgnells: string[] = []
 $: {
   const prev = new Set(selOrgnells)
   const curr = new Set(_selOrgnells)
-  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+  if (prev.symmetricDifference(curr).size !== 0) {
     selOrgnells = _selOrgnells
   }
 }
@@ -85,11 +74,10 @@ let _selOthers: string[] = []
 $: {
   const prev = new Set(selOthers)
   const curr = new Set(_selOthers)
-  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
+  if (prev.symmetricDifference(curr).size !== 0) {
     selOthers = _selOthers
   }
 }
-// ---------------------------------------------------------------------------
 </script>
 
 {#if $dbs && $dbs.dbsOK && $dbs.dbCollections}
@@ -112,6 +100,7 @@ $: {
       deleteNode="{deleteCollection}"
       relabelNode="{relabelCollection}"
       addRecords="{addSeqRecsToCollection}"
+      removeRecords="{removeSeqRecsFromCollection}"
       acceptedDropTypes="{['acc-ver-array']}" />
 
     <TreeView
@@ -146,7 +135,6 @@ $: {
       db="{$dbs.dbCollections}"
       expanded="{false}"
       bind:selected="{selMolType}"
-      selectedGroupUid="{'coll-cat-moltype'}"
       bind:expandedIds="{expCollsMolType}"
       bind:selectedChildIds="{_selMolTypes}"
       selectedChildIdsEnabled />
@@ -158,7 +146,6 @@ $: {
       db="{$dbs.dbCollections}"
       expanded="{false}"
       bind:selected="{selOrgnell}"
-      selectedGroupUid="{'coll-cat-organelle'}"
       bind:expandedIds="{expCollsOrgnell}"
       bind:selectedChildIds="{_selOrgnells}"
       selectedChildIdsEnabled />
@@ -170,7 +157,6 @@ $: {
       db="{$dbs.dbCollections}"
       expanded="{false}"
       bind:selected="{selOther}"
-      selectedGroupUid="{'coll-cat-other'}"
       bind:expandedIds="{expCollsOther}"
       bind:selectedChildIds="{_selOthers}"
       selectedChildIdsEnabled />
