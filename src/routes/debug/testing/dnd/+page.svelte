@@ -6,6 +6,7 @@ import type {
   DropEvent,
   DragDropPayload
 } from '$lib/api/types'
+import { processFilePaths } from '$lib/api/file-type'
 
 let targetEl: HTMLElement | null = null
 let payload: DragDropPayload | null = null
@@ -40,7 +41,7 @@ function onDragOver(e: Event) {
   }
 }
 
-function onDrop(e: Event) {
+async function onDrop(e: Event) {
   const ev = e as DropEvent
   if (ev.payload !== undefined) {
     if (ev.payload.type === 'some-type') {
@@ -48,6 +49,7 @@ function onDrop(e: Event) {
     }
     if (ev.payload.type === 'files') {
       const _ = ev.payload.data as string[]
+      console.log(await processFilePaths(_))
       ev.payload.data = _.join(', ')
       payload = ev.payload
     }

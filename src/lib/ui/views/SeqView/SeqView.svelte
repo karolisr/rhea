@@ -14,7 +14,7 @@ let seqCtx: CanvasRenderingContext2D | null = null
 let w: number
 let h: number
 let rowHs: number[] = [-1]
-let colWs: number[] = [200, 10]
+let colWs: number[] = [250, 10]
 let rowHsStr: string
 let colWsStr: string
 

@@ -12,7 +12,7 @@ export class Alignment extends SeqList {
 
   static fromFasta(
     fastaStr: string,
-    type: keyof typeof SeqType = 'NT',
+    type: keyof typeof SeqType | 'auto' = 'auto',
     geneticCodeId: number = 1
   ): Alignment {
     return new Alignment(parseFastaStr(fastaStr, type, geneticCodeId))

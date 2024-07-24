@@ -7,10 +7,8 @@ import iconHome from '~icons/fa6-solid/house-chimney'
 import iconSearch from '~icons/fa6-solid/magnifying-glass'
 import iconDnD from '~icons/fa6-solid/chess'
 
-// import iconSeqView from '~icons/fa6-solid/dna'
-import iconSeqView from '~icons/bx/dna'
-import iconAln from '~icons/bx/dna'
-// import iconSeqView from '~icons/fluent-emoji-flat/dna'
+import iconSeqView from '~icons/fa6-solid/dna'
+// import iconSeqView from '~icons/bx/dna'
 </script>
 
 <TabNav uid="chrome-nav-debug" navClass="nav-debug">
@@ -20,8 +18,6 @@ import iconAln from '~icons/bx/dna'
     collapsable
     nSpacers="{2}" />
   <Tab link="/debug/" icon="{iconHome}" />
-  <!-- <Tab link="/debug/testing/home-prev/" icon="{iconHome}" label="HomePrev" /> -->
-  <Tab link="/debug/testing/aln/" icon="{iconAln}" label="Alignment" />
   <Tab link="/debug/testing/seqview/" icon="{iconSeqView}" label="SeqView" />
   <Tab link="/debug/testing/search/" icon="{iconSearch}" label="Search" />
   <Tab link="/debug/testing/dnd/" icon="{iconDnD}" label="Drag & Drop" />

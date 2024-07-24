@@ -7,12 +7,11 @@ export type Position = { col: number; row: number }
 
 export class SeqList {
   public seqRecs: SeqRecord[]
-  public type: keyof typeof SeqType
+  public type: keyof typeof SeqType = 'UNKNOWN'
   public nCol: number
 
   constructor(seqRecs: SeqRecord[]) {
     this.seqRecs = seqRecs
-    this.type = 'NT'
 
     if (seqRecs.length > 0) {
       this.type = seqRecs[0].seq.type
@@ -23,7 +22,7 @@ export class SeqList {
 
   static fromFasta(
     fastaStr: string,
-    type: keyof typeof SeqType = 'NT',
+    type: keyof typeof SeqType | 'auto' = 'auto',
     geneticCodeId: number = 1
   ): SeqList {
     return new SeqList(parseFastaStr(fastaStr, type, geneticCodeId))

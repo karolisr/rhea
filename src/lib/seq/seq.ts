@@ -20,6 +20,10 @@ export abstract class Seq {
   public get length(): number {
     return this._str.length
   }
+
+  public get type(): keyof typeof SeqType {
+    return 'UNKNOWN'
+  }
 }
 
 export class AASeq extends Seq {
