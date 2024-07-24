@@ -1,21 +1,26 @@
 import type { Unlistener } from '$lib/types'
+
 export function preventDefault(k: keyof WindowEventMap): Unlistener {
   const f = (e: Event) => {
     e.preventDefault()
-    // console.log(
-    //   e.type,
-    //   e.target instanceof HTMLElement
-    //     ? e.target.tagName + ': ' + e.target.id
-    //     : e.AT_TARGET
-    // )
+
+    if (!['dragover'].includes(e.type)) {
+      console.log(
+        e.type,
+
+        e.currentTarget instanceof Element
+          ? e.currentTarget.id || e.currentTarget.tagName
+          : e.AT_TARGET,
+
+        e.target instanceof Element
+          ? e.target.id || e.target.tagName
+          : e.AT_TARGET
+      )
+    }
   }
-  window.addEventListener(k, f, {
-    capture: true
-  })
+  document.body.addEventListener(k, f, { capture: true, passive: false })
 
   return () => {
-    window.removeEventListener(k, f, {
-      capture: true
-    })
+    document.body.removeEventListener(k, f, { capture: true })
   }
 }
