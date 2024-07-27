@@ -161,19 +161,23 @@ export function drawSeqLabel(
   labelPadding: number,
   sizeX: number,
   sizeY: number,
-  cnvScale: number
+  cnvScale: number,
+  xAlign: xAlignment = xAlignment.right,
+  bg: string = '#F5F5F5',
+  fg: string = '#000000',
+  fontScale: number = 1
 ): number {
-  ctx.font = `${max(sizeY - 5, 12) * cnvScale}px monospace`
+  ctx.font = `${max(sizeY - 5, 12) * cnvScale * fontScale}px monospace`
   const textOffset = calcTextOffset(
     ctx,
     label,
     sizeX * cnvScale - labelPadding,
     sizeY * cnvScale,
-    xAlignment.right
+    xAlign
   )
-  ctx.fillStyle = '#F5F5F5'
+  ctx.fillStyle = bg
   ctx.fillRect(0, 0, sizeX * cnvScale, sizeY * cnvScale)
-  ctx.fillStyle = '#000'
+  ctx.fillStyle = fg
   ctx.fillText(label, textOffset.x, textOffset.y)
   const offsetX = sizeX * cnvScale
   ctx.translate(offsetX, 0)

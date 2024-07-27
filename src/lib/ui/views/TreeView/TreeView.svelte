@@ -6,7 +6,7 @@ import { buildNode } from '$lib'
 export let uid: string
 export let expanded = true
 export let selected: string | undefined = undefined
-export let selectedGroupUid: string | undefined = undefined
+export let selectedGroupUid: string | undefined = uid
 
 export let selectedLineage: string[] | undefined = undefined
 export let selectedChildIds: string[] | undefined = undefined
@@ -31,7 +31,7 @@ export let expandedIds: Set<string> = new Set()
 
 if (expanded || expandedIds.size > 0) {
   expanded = true
-  expandedIds.add(parentId)
+  // expandedIds.add(parentId)
   expandedIds = expandedIds
 }
 

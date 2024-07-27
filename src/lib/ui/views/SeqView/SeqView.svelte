@@ -14,7 +14,7 @@ let seqCtx: CanvasRenderingContext2D | null = null
 let w: number
 let h: number
 let rowHs: number[] = [-1]
-let colWs: number[] = [200, 10]
+let colWs: number[] = [250, 10]
 let rowHsStr: string
 let colWsStr: string
 
@@ -40,18 +40,16 @@ onMount(() => {
     `${uid}-seqview-canvas`
   ) as HTMLCanvasElement
   seqCtx = seqCnv.getContext('2d') as CanvasRenderingContext2D
-
-  addEventListener('resize', resizeEvtListener, {
-    capture: false
-  })
-
   svc = new SeqViewController(seqCtx, scaleCtx)
+  addEventListener('resize', resizeEvtListener, {
+    capture: false,
+    passive: true
+  })
 })
 
 onDestroy(() => {
-  removeEventListener('resize', resizeEvtListener, {
-    capture: false
-  })
+  svc.removeEventListeners()
+  removeEventListener('resize', resizeEvtListener, { capture: false })
 })
 
 function resizeEvtListener(_: UIEvent) {

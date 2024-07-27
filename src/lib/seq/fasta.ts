@@ -1,7 +1,6 @@
-import { SeqType } from '$lib/seq/types'
-import { mkSeq } from '$lib/seq/seq'
-import { SeqRecord } from '$lib/seq/seq-record'
-import { detectSeqType } from '.'
+import { type SeqType, mkSeq, detectSeqType } from '.'
+import { SeqRecord } from './seq-record'
+import { SeqList } from './seq-list'
 
 export function detectFastaSeqType(fastaStr: string): keyof typeof SeqType {
   const lines = fastaStr.split('\n')
@@ -14,7 +13,7 @@ export function detectFastaSeqType(fastaStr: string): keyof typeof SeqType {
   return detectSeqType(str)
 }
 
-export function parse_fasta_txt(
+export function parseFastaStr(
   fastaStr: string,
   type: keyof typeof SeqType | 'auto' = 'auto',
   geneticCodeId: number = 1

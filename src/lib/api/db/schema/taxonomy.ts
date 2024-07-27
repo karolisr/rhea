@@ -1,6 +1,20 @@
 import sql from 'sql-template-tag'
 
 export const schemaTaxonomy = sql`
+  -- PRAGMA journal_mode = 'OFF'
+  -- ;
+  -- PRAGMA page_size = '32768'
+  -- ;
+  -- PRAGMA auto_vacuum = '1'
+  -- ;
+  -- VACUUM
+  -- ;
+  -- PRAGMA journal_mode = 'WAL'
+  -- ;
+  ------------------------------------------------------------------------------
+  BEGIN TRANSACTION
+  ;
+  ------------------------------------------------------------------------------
   -- @block create tx_divisions table
   -- @conn taxonomy
   CREATE TABLE IF NOT EXISTS "tx_divisions" (
@@ -215,4 +229,8 @@ export const schemaTaxonomy = sql`
   -- FROM
   --   tx_names
   -- ;
+  ------------------------------------------------------------------------------
+  COMMIT TRANSACTION
+  ;
+  ------------------------------------------------------------------------------
 `

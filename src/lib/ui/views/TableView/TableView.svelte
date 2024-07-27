@@ -29,15 +29,20 @@ onMount(async () => {
   visH = elh.clientHeight
 
   addEventListener('resize', resizeEvtListener, {
-    capture: true
+    capture: false,
+    passive: true
   })
+  addEventListener(rl.updatedEventName, rlUpdatedEventListener)
 })
 
 onDestroy(() => {
-  removeEventListener('resize', resizeEvtListener, {
-    capture: true
-  })
+  removeEventListener('resize', resizeEvtListener, { capture: false })
+  removeEventListener(rl.updatedEventName, rlUpdatedEventListener)
 })
+
+const rlUpdatedEventListener = () => {
+  rl = rl
+}
 
 const resizeEvtListener = (_: UIEvent) => {
   visH = elh.clientHeight
@@ -217,7 +222,7 @@ let allChecked: boolean = false
 // }
 
 function selectAll() {
-  rl.allKeys.forEach((k) => {
+  rl.keys.forEach((k) => {
     k = k as string
     _selectedRowKeys[k] = !allChecked
   })
@@ -267,15 +272,16 @@ function getRowHeight(): {
   _cell.textContent = '__13__ac__46__'
   _row.appendChild(_cell)
   _table.appendChild(_row)
-  const _container = document.getElementById(
-    `${uid}-table-container`
-  ) as HTMLElement
+  // console.log('getRowHeight:', `${uid}-table-container`)
+  const _container = document.getElementById(`${uid}-table-container`)
+  if (_container === null) return { rowH: -1, chrW: -1 }
   _container.appendChild(_table)
   const rowH = _row.offsetHeight
   const chrW = floor(_cell.offsetWidth / _cell.textContent.length) + 0.5
   _cell.remove()
   _row.remove()
   _table.remove()
+  // console.log({rowH, chrW})
   return {
     rowH,
     chrW
@@ -312,14 +318,10 @@ function sort(field: string | undefined, direction: boolean | undefined) {
         }
       }
       rl.sortBy(sortFields as never[], sortDirections)
-      rl = rl
     } else {
-      // sortDirections.push(dir)
       sortDirections.unshift(dir)
-      // sortFields.push(field)
       sortFields.unshift(field)
       rl.sortBy(sortFields as never[], sortDirections)
-      rl = rl
     }
   }
 }
@@ -614,7 +616,7 @@ function formatValue(
   position: relative;
   display: flex;
   flex-direction: row;
-  cursor: pointer;
+  // cursor: pointer;
   font-size: 0.75rem;
   margin-block: auto;
   margin-inline-end: 0.2em;

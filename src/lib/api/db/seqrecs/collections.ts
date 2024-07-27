@@ -1,14 +1,15 @@
-import sql, { bulk, empty } from 'sql-template-tag'
-import databases from '$lib/svelte-stores/databases'
+import sql, { bulk } from 'sql-template-tag'
 import { DB } from '$lib/api/db'
+import type { Databases } from '$lib/svelte-stores/databases'
 
-export async function addSeqRecsToCollection(accs: string[], collId: string) {
+export async function addSeqRecsToCollection(
+  accs: string[],
+  collId: string,
+  dbs: Databases,
+  dbName: 'dbSeqRecs' | 'dbSeqRecsUser'
+) {
   if (accs.length === 0) return
-  let dbs: Awaited<typeof databases> = await databases
-  let db: DB | null = null
-  const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSeqRecs
-  })
+  let db: DB | null = dbs[dbName]
   if (db !== null) {
     db = db as DB
 
@@ -25,19 +26,16 @@ export async function addSeqRecsToCollection(accs: string[], collId: string) {
     `
     await db.execute(_sql.text, _sql.values)
   }
-  unsubscribe()
 }
 
 export async function removeSeqRecsFromCollection(
   accs: string[],
-  collId: string
+  collId: string,
+  dbs: Databases,
+  dbName: 'dbSeqRecs' | 'dbSeqRecsUser'
 ) {
   if (accs.length === 0) return
-  let dbs: Awaited<typeof databases> = await databases
-  let db: DB | null = null
-  const unsubscribe = dbs.subscribe((_) => {
-    db = _.dbSeqRecs
-  })
+  let db: DB | null = dbs[dbName]
   if (db !== null) {
     db = db as DB
 
@@ -50,5 +48,4 @@ export async function removeSeqRecsFromCollection(
     `
     await db.execute(_sql.text, _sql.values)
   }
-  unsubscribe()
 }

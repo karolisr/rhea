@@ -7,51 +7,71 @@ import {
   deleteCollection,
   relabelCollection
 } from '$lib/api/db/collections'
-
-import {
-  addSeqRecsToCollection,
-  removeSeqRecsFromCollection
-} from '$lib/api/db/gbseq'
-
 import databases from '$lib/svelte-stores/databases'
-
-// ---------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 let dbs: Awaited<typeof databases>
 
-// ---------------------------------------------------------------------------
 onMount(async () => {
   dbs = await databases
 })
 
 onDestroy(async () => {})
-// ---------------------------------------------------------------------------
 
-// Collections state ---------------------------------------------------------
-export let selectedCollGroup = $state.selectedCollGroup as string | undefined
-export let selectedColl = $state.selectedColl as string | undefined
-let expndUserCollIds = $state.expndUserCollIds as Set<string> | undefined
-let expndSeqCatCollIds = $state.expndSeqCatCollIds as Set<string> | undefined
+export let selCollGrp = $state.selCollGrp as string | undefined
+export let selColl = $state.selColl as string | undefined
+
+let selMolType = $state.selMolType as string | undefined
+let selOrgnell = $state.selOrgnell as string | undefined
+let selOther = $state.selOther as string | undefined
+
+let expCollsUsr = $state.expCollsUsr as Set<string> | undefined
+let expCollsMolType = $state.expCollsMolType as Set<string> | undefined
+let expCollsOrgnell = $state.expCollsOrgnell as Set<string> | undefined
+let expCollsOther = $state.expCollsOther as Set<string> | undefined
+
+let rebuildTagCollsUsr: number
 
 $: {
-  $state.selectedCollGroup = selectedCollGroup
-  $state.selectedColl = selectedColl
-  $state.expndUserCollIds = expndUserCollIds
-  $state.expndSeqCatCollIds = expndSeqCatCollIds
+  $state.selCollGrp = selCollGrp
+  $state.selColl = selColl
+  $state.selMolType = selMolType
+  $state.selOrgnell = selOrgnell
+  $state.selOther = selOther
+  $state.expCollsUsr = expCollsUsr
+  $state.expCollsMolType = expCollsMolType
+  $state.expCollsOrgnell = expCollsOrgnell
+  $state.expCollsOther = expCollsOther
   saveState()
 }
 
-let userCollRebuildTag: number
-// Collections state END -----------------------------------------------------
-
-export let selectedSeqCategories: string[] = []
-let _ssc: string[] = []
-
+export let selMolTypes: string[] = []
+let _selMolTypes: string[] = []
 $: {
-  const prev = new Set(selectedSeqCategories)
-  const curr = new Set(_ssc)
-  if (prev.difference(curr).size !== 0 || curr.difference(prev).size !== 0) {
-    selectedSeqCategories = _ssc
+  const prev = new Set(selMolTypes)
+  const curr = new Set(_selMolTypes)
+  if (prev.symmetricDifference(curr).size !== 0) {
+    selMolTypes = _selMolTypes
+  }
+}
+
+export let selOrgnells: string[] = []
+let _selOrgnells: string[] = []
+$: {
+  const prev = new Set(selOrgnells)
+  const curr = new Set(_selOrgnells)
+  if (prev.symmetricDifference(curr).size !== 0) {
+    selOrgnells = _selOrgnells
+  }
+}
+
+export let selOthers: string[] = []
+let _selOthers: string[] = []
+$: {
+  const prev = new Set(selOthers)
+  const curr = new Set(_selOthers)
+  if (prev.symmetricDifference(curr).size !== 0) {
+    selOthers = _selOthers
   }
 }
 </script>
@@ -59,15 +79,15 @@ $: {
 {#if $dbs && $dbs.dbsOK && $dbs.dbCollections}
   <div class="grid-left-tree">
     <TreeView
-      uid="{'collections-user'}"
+      uid="{'coll-user'}"
       rootLabel="Collections"
       tableName="user"
       db="{$dbs.dbCollections}"
       expanded="{true}"
-      bind:selected="{selectedColl}"
-      bind:selectedGroupUid="{selectedCollGroup}"
-      bind:expandedIds="{expndUserCollIds}"
-      bind:rebuild="{userCollRebuildTag}"
+      bind:selected="{selColl}"
+      bind:selectedGroupUid="{selCollGrp}"
+      bind:expandedIds="{expCollsUsr}"
+      bind:rebuild="{rebuildTagCollsUsr}"
       contextMenuEnabled="{true}"
       createNodeEnabled="{true}"
       deleteNodeEnabled="{true}"
@@ -75,31 +95,64 @@ $: {
       createNode="{createCollection}"
       deleteNode="{deleteCollection}"
       relabelNode="{relabelCollection}"
-      addRecords="{addSeqRecsToCollection}"
       acceptedDropTypes="{['acc-ver-array']}" />
 
     <TreeView
-      uid="{'collections-search-results'}"
+      uid="{'coll-search-results'}"
       rootLabel="Sequence Search"
       tableName="search_results"
       db="{$dbs.dbCollections}"
       expanded="{true}"
-      bind:selected="{selectedColl}"
-      bind:selectedGroupUid="{selectedCollGroup}"
+      bind:selected="{selColl}"
+      bind:selectedGroupUid="{selCollGrp}"
       createNode="{createCollection}"
       deleteNode="{deleteCollection}"
       relabelNode="{relabelCollection}" />
 
     <TreeView
-      uid="{'collections-seq-categories'}"
+      uid="{'coll-db-all-recs'}"
       rootLabel="All Records"
-      tableName="sequence_type"
+      tableName="all_records"
       db="{$dbs.dbCollections}"
-      expanded="{true}"
-      bind:selected="{selectedColl}"
-      bind:selectedGroupUid="{selectedCollGroup}"
-      bind:expandedIds="{expndSeqCatCollIds}"
-      bind:selectedChildIds="{_ssc}"
+      expanded="{false}"
+      bind:selected="{selColl}"
+      bind:selectedGroupUid="{selCollGrp}"
+      selectedChildIdsEnabled />
+
+    <div style="background-color: #CCC; height: 1px; margin-block-start: 3px;">
+    </div>
+
+    <TreeView
+      uid="{'coll-cat-moltype'}"
+      rootLabel="All Molecule Types"
+      tableName="cat_moltype"
+      db="{$dbs.dbCollections}"
+      expanded="{false}"
+      bind:selected="{selMolType}"
+      bind:expandedIds="{expCollsMolType}"
+      bind:selectedChildIds="{_selMolTypes}"
+      selectedChildIdsEnabled />
+
+    <TreeView
+      uid="{'coll-cat-organelle'}"
+      rootLabel="All Organelles"
+      tableName="cat_organelle"
+      db="{$dbs.dbCollections}"
+      expanded="{false}"
+      bind:selected="{selOrgnell}"
+      bind:expandedIds="{expCollsOrgnell}"
+      bind:selectedChildIds="{_selOrgnells}"
+      selectedChildIdsEnabled />
+
+    <TreeView
+      uid="{'coll-cat-other'}"
+      rootLabel="All Other"
+      tableName="cat_other"
+      db="{$dbs.dbCollections}"
+      expanded="{false}"
+      bind:selected="{selOther}"
+      bind:expandedIds="{expCollsOther}"
+      bind:selectedChildIds="{_selOthers}"
       selectedChildIdsEnabled />
   </div>
 {:else}

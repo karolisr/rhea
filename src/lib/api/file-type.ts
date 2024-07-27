@@ -2,14 +2,15 @@ import { readTextFile, readFile } from '@tauri-apps/plugin-fs'
 import { homeDir } from '@tauri-apps/api/path'
 import { parse_dtd_txt } from '$lib/xml/dtd'
 import { parse_xml_txt } from '$lib/xml'
-import { parse_fasta_txt } from '$lib/seq/fasta'
+import { parseFastaStr } from '$lib/seq/fasta'
 
 import fileTypeChecker from 'file-type-checker'
 import { getPropNames } from '$lib'
 import type { FileSignature } from 'file-type-checker/dist/core'
+import { SeqRecord } from '$lib/seq/seq-record'
 
-import { insertGbSeqRecords } from './db/gbseq'
-import type { GBSet } from '$lib/ncbi/types/GBSet'
+// import { insertGbSeqRecords } from './db/seqrecs'
+// import type { GBSet } from '$lib/ncbi/types/GBSet'
 
 export async function absPath(path: string): Promise<string> {
   path = path.replace('$HOME', await homeDir())
@@ -43,6 +44,9 @@ export async function getFileType(path: string) {
           signature: undefined
         }
         switch (ext) {
+          case 'txt':
+            info.mimeType = 'text/plain'
+            break
           case 'dtd':
             info.mimeType = 'text/dtd'
             break
@@ -56,6 +60,7 @@ export async function getFileType(path: string) {
             info.mimeType = 'text/fasta'
             break
           default:
+            info.mimeType = '?'
             break
         }
       }
@@ -66,7 +71,7 @@ export async function getFileType(path: string) {
 
 const otherParser = () => {
   return async (path: string) => {
-    console.info(`Default parser. Doing nothing with: ${path}`)
+    // console.info(`Default parser. Doing nothing with: ${path}`)
   }
 }
 
@@ -79,15 +84,16 @@ const txtParser = async (f: (txt: string) => unknown) => {
 
 export async function getFileParser(path: string) {
   const info = await getFileType(path)
-
   if (info) {
     switch (info.mimeType) {
+      case 'text/plain':
+        return txtParser((txt: string) => txt)
       case 'text/dtd':
         return txtParser(parse_dtd_txt)
       case 'text/xml':
         return txtParser(parse_xml_txt)
       case 'text/fasta':
-        return txtParser(parse_fasta_txt)
+        return txtParser(parseFastaStr)
       default:
         break
     }
@@ -95,45 +101,63 @@ export async function getFileParser(path: string) {
   return otherParser()
 }
 
-function getContentsType(obj: object) {
+function getContentsType(obj: unknown) {
   let rv: string = '?'
   let propNames: string[] = []
   try {
     if (obj instanceof Array) {
       if (obj.length > 0) {
-        propNames = getPropNames(obj[0])
+        obj = obj[0]
+        propNames = getPropNames(obj)
+        if (propNames.includes('_id') && propNames.includes('_seq')) {
+          if (obj instanceof SeqRecord) {
+            return obj.seq.type
+          }
+        }
       }
     } else {
       propNames = getPropNames(obj)
     }
   } catch {
-    const _ = 'getContentsType() failed to parse object.'
-    throw new Error(_)
+    // const _ = 'getContentsType() failed to parse object.'
+    // throw new Error(_)
   }
 
-  propNames.forEach((n) => {
-    if (n === 'GBSeq_accession_version') {
-      rv = 'GBSeq'
-    } else if (n === 'TSeq_accver') {
-      rv = 'TSeq'
-    } else if (n === 'ParentTaxId') {
-      rv = 'Taxon'
-    }
-  })
+  if (propNames.includes('GBSeq_accession_version')) {
+    rv = 'GBSeq'
+  } else if (propNames.includes('TSeq_accver')) {
+    rv = 'TSeq'
+  } else if (propNames.includes('ParentTaxId')) {
+    rv = 'Taxon'
+  }
   return rv
 }
 
-export async function insertGbSeqRecordsOnFileDropTMP(paths: string[]) {
+export async function processFilePaths(paths: string[]) {
+  const rv: {
+    path: string
+    mimeType: string
+    contentsType: string
+    parsed: unknown
+  }[] = []
   for (let i = 0; i < paths.length; i++) {
-    const p = paths[i]
-    // const parser = await getFileParser(p)
-    // const parsed = await parser(p).catch((reason) => {
-    //   throw new Error(reason)
-    // })
-    // console.log(getContentsType(parsed as object), parsed)
-    // if (getContentsType(parsed as object) === 'GBSeq') {
-    const parsed = await (await txtParser(parse_xml_txt))(p)
-    console.log('insertGbSeqRecords', (parsed as GBSet).length)
-    await insertGbSeqRecords(parsed as GBSet)
+    const path = paths[i]
+    const parser = await getFileParser(path)
+    const parsed = await parser(path).catch((reason) => {
+      throw new Error(reason)
+    })
+    const fileType = await getFileType(path)
+    let contentsType: string = '?'
+    let mimeType: string = '?'
+    if (fileType) {
+      mimeType = fileType.mimeType
+      try {
+        contentsType = getContentsType(parsed)
+      } catch (error) {
+        //
+      }
+    }
+    rv.push({ path, mimeType, contentsType, parsed })
   }
+  return rv
 }

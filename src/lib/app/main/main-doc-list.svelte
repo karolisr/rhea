@@ -1,19 +1,13 @@
 <script lang="ts">
 import TableView from '$lib/ui/views/TableView'
-import type { IndexedUndefined } from '$lib/types'
-import { type Doc } from '$lib/doc'
-import { RecordList } from '$lib/utils/record-list'
-
+import { DocList } from '$lib/doc/doc-list'
 export let tvMainRowH: number | undefined = undefined
-export let mainDocList: Doc[] = []
-let mainDocListRL: RecordList<Doc>
-$: mainDocListRL = new RecordList<Doc>(mainDocList ?? [])
-$: mainDocListRLHack = mainDocListRL as unknown as RecordList<IndexedUndefined>
+export let mainDocList: DocList
 </script>
 
 <TableView
-  uid="seq-rec-table"
-  rl="{mainDocListRLHack}"
+  uid="seq-rec-list"
+  rl="{mainDocList.tableViewList}"
   bind:rowHeight="{tvMainRowH}"
   showCheckBoxes
   multiRowSelect

@@ -2,15 +2,15 @@
 import MainSearch from './main-search.svelte'
 import MainFilter from './main-filter.svelte'
 
-export let selectedCollGroup: string | undefined
+export let selCollGrp: string | undefined
 </script>
 
-{#if selectedCollGroup === 'collections-search-results'}
-  {#key selectedCollGroup}
+{#if selCollGrp === 'coll-search-results'}
+  {#key selCollGrp}
     <MainSearch></MainSearch>
   {/key}
 {:else}
-  {#key selectedCollGroup}
+  {#key selCollGrp}
     <MainFilter></MainFilter>
   {/key}
 {/if}

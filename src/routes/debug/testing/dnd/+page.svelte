@@ -6,15 +6,25 @@ import type {
   DropEvent,
   DragDropPayload
 } from '$lib/api/types'
+import { processFilePaths } from '$lib/api/file-type'
 
 let targetEl: HTMLElement | null = null
 let payload: DragDropPayload | null = null
 
 onMount(() => {
   targetEl = document.getElementById('target')
+  if (targetEl) {
+    targetEl.addEventListener('dragenter', onDragOver, true)
+    targetEl.addEventListener('drop', onDrop, true)
+  }
 })
 
-onDestroy(() => {})
+onDestroy(() => {
+  if (targetEl) {
+    targetEl.removeEventListener('dragenter', onDragOver, true)
+    targetEl.removeEventListener('drop', onDrop, true)
+  }
+})
 
 $: if (targetEl && payload) targetEl.innerText = payload.data as string
 
@@ -40,7 +50,7 @@ function onDragOver(e: Event) {
   }
 }
 
-function onDrop(e: Event) {
+async function onDrop(e: Event) {
   const ev = e as DropEvent
   if (ev.payload !== undefined) {
     if (ev.payload.type === 'some-type') {
@@ -48,6 +58,7 @@ function onDrop(e: Event) {
     }
     if (ev.payload.type === 'files') {
       const _ = ev.payload.data as string[]
+      console.log(await processFilePaths(_))
       ev.payload.data = _.join(', ')
       payload = ev.payload
     }
@@ -60,39 +71,33 @@ function onDrop(e: Event) {
     <div
       id="item1"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 1
     </div>
     <div
       id="item2"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 2
     </div>
     <div
       id="item3"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 3
     </div>
     <div
       id="item4"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 4
     </div>
   </div>
-  <div
-    id="target"
-    class="drag-target"
-    on:drop="{onDrop}"
-    on:dragenter="{onDragOver}"
-    role="region">
-  </div>
+  <div id="target" class="drag-target" role="region"></div>
 </div>
 
 <style>
@@ -105,7 +110,7 @@ function onDrop(e: Event) {
 
 .drag-target {
   margin: auto;
-  width: 500px;
+  width: 400px;
   height: 300px;
   padding: 20px;
   border-style: solid;

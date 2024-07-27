@@ -1,108 +1,51 @@
 import { SeqRecord } from '$lib/seq/seq-record'
 import { Alignment } from '$lib/seq/aln'
 
-export type Doc = SeqRecordDoc | AlignmentDoc
+export type DocField = keyof Doc
 
-abstract class _Doc {
-  protected _data: unknown
+export abstract class Doc {
+  protected __data: unknown = null
+  protected _uid: string
   protected _id: string
-  protected _type: string = '_DocType'
-  protected _name: string = '_DocName'
-  protected _description: string = '_DocDescription'
-  protected _organism: string = '_DocOrganism'
-  protected _length: number = 0
-  protected _nSeq: number = 0
+  protected _moltype: string = ''
+  protected _definition: string = ''
 
-  constructor(
-    data: unknown,
-    id: string,
-    type: string = '_DocType',
-    name: string = '_DocName',
-    description: string = '_DocDescription',
-    organism: string = '_DocOrganism'
-  ) {
-    this._data = data
+  constructor(uid: string, id: string, definition: string, moltype: string) {
+    this._uid = uid
     this._id = id
-    this._type = type
-    this._name = name
-    this._description = description
-    this._organism = organism
+    this._definition = definition
+    this._moltype = moltype
   }
 
-  public get data(): unknown {
-    return this._data
+  public get fields(): string[] {
+    const keys = Object.keys(this).map((_) => _.replace('_', ''))
+    return keys.filter((_) => !_.startsWith('_'))
+  }
+
+  public get uid(): string {
+    return this._uid
   }
 
   public get id(): string {
     return this._id
   }
 
-  public get type(): string {
-    return this._type
+  public get definition(): string {
+    return this._definition
   }
 
-  public get name(): string {
-    return this._name
-  }
-
-  public get description(): string {
-    return this._description
-  }
-
-  public get organism(): string {
-    return this._organism
-  }
-
-  public get length(): number {
-    return this._length
-  }
-
-  public get nSeq(): number {
-    return this._nSeq
+  public get moltype(): string {
+    return this._moltype
   }
 }
 
-export class SeqRecordDoc extends _Doc {
-  protected declare _data: SeqRecord
-
-  constructor(seqRecord: SeqRecord) {
-    super(seqRecord, seqRecord.id)
-    this._nSeq = 1
-  }
-
-  public get data(): SeqRecord {
-    return this._data
-  }
-
-  public get type(): string {
-    return this._data.seq.type
-  }
-
-  public get length(): number {
-    return this._data.seq.length
-  }
+export abstract class SeqRecordDoc extends Doc {
+  protected declare __data: SeqRecord | null
 }
 
-export class AlignmentDoc extends _Doc {
-  protected declare _data: Alignment
+export class SeqRecordDocGenBank extends SeqRecordDoc {}
+export class SeqRecordDocUser extends SeqRecordDoc {}
 
-  constructor(alignment: Alignment, id: string) {
-    super(alignment, id)
-  }
-
-  public get data(): Alignment {
-    return this._data
-  }
-
-  public get type(): string {
-    return this._data.type
-  }
-
-  public get length(): number {
-    return this._data.nCol
-  }
-
-  public get nSeq(): number {
-    return this._data.nRow
-  }
+export class AlignmentDoc extends Doc {
+  protected declare __data: Alignment | null
 }

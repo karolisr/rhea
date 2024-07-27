@@ -40,6 +40,7 @@
     "window:allow-center",
     "window:allow-set-cursor-grab",
     "window:allow-set-cursor-icon",
+    "window:allow-set-icon",
     "window:allow-set-cursor-position",
     "window:allow-set-cursor-visible",
     "window:allow-set-focus",

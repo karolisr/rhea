@@ -23,9 +23,7 @@ export async function initDBTaxonomy() {
   // console.log('initDBTaxonomy: BEGIN')
   await prepareDBDir()
   const db: DB = await DB.load(dbPathTaxonomy)
-  await beginTransaction(db)
   await db.execute(schemaTaxonomy.text)
-  await commitTransaction(db)
   // console.log('initDBTaxonomy: DONE')
   return db
 }
@@ -34,9 +32,7 @@ export async function initDBSeqRecs() {
   // console.log('initDBSeqRecs: BEGIN')
   await prepareDBDir()
   const db: DB = await DB.load(dbPathSeqRecs)
-  await beginTransaction(db)
   await db.execute(schemaSeqRecs.text)
-  await commitTransaction(db)
   // console.log('initDBSeqRecs: DONE')
   return db
 }
@@ -45,9 +41,7 @@ export async function initDBSeqRecsUser() {
   // console.log('initDBSeqRecs: BEGIN')
   await prepareDBDir()
   const db: DB = await DB.load(dbPathSeqRecsUser)
-  await beginTransaction(db)
   await db.execute(schemaSeqRecs.text)
-  await commitTransaction(db)
   // console.log('initDBSeqRecs: DONE')
   return db
 }
@@ -56,9 +50,7 @@ export async function initDBSequences() {
   // console.log('initDBSequences: BEGIN')
   await prepareDBDir()
   const db: DB = await DB.load(dbPathSequences)
-  await beginTransaction(db)
   await db.execute(schemaSequences.text)
-  await commitTransaction(db)
   // console.log('initDBSequences: DONE')
   return db
 }
@@ -67,9 +59,7 @@ export async function initDBSequencesUser() {
   // console.log('initDBSequences: BEGIN')
   await prepareDBDir()
   const db: DB = await DB.load(dbPathSequencesUser)
-  await beginTransaction(db)
   await db.execute(schemaSequences.text)
-  await commitTransaction(db)
   // console.log('initDBSequences: DONE')
   return db
 }
@@ -78,9 +68,7 @@ export async function initDBCollections() {
   // console.log('initDBCollections: BEGIN')
   await prepareDBDir()
   const db: DB = await DB.load(dbPathCollections)
-  await beginTransaction(db)
   await db.execute(schemaCollections.text)
-  await commitTransaction(db)
   // console.log('initDBCollections: DONE')
   return db
 }

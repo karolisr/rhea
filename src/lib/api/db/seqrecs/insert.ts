@@ -1,4 +1,4 @@
-import type { GBFeatureSet, GBSeq } from '$lib/ncbi/types/GBSet'
+import sql, { Sql, bulk, empty } from 'sql-template-tag'
 import {
   DB,
   beginTransaction,
@@ -6,22 +6,22 @@ import {
   rollbackTransaction,
   vacuum
 } from '$lib/api/db'
+import type { Databases } from '$lib/svelte-stores/databases'
+import type { GBFeatureSet, GBSeq } from '$lib/ncbi/types/GBSet'
 import { getTaxId } from '$lib/ncbi/utils'
-import sql, { Sql, bulk, empty } from 'sql-template-tag'
-import databases from '$lib/svelte-stores/databases'
 
 function nValsPerSqlInsertSet(sql: Sql) {
   return sql.strings.slice(1, -1).join('').split('),(')[0].split(',').length
 }
 
-export async function insertSeqRecs(records: GBSeq[]) {
-  let dbs: Awaited<typeof databases> = await databases
-  let dbSeqRecs: DB | null = null
-  let dbSequences: DB | null = null
-  const unsubscribe = dbs.subscribe((_) => {
-    dbSeqRecs = _.dbSeqRecs
-    dbSequences = _.dbSequences
-  })
+export async function insertSeqRecs(
+  records: GBSeq[],
+  dbs: Databases,
+  dbSeqRecsName: 'dbSeqRecs' | 'dbSeqRecsUser',
+  dbSequencesName: 'dbSequences' | 'dbSequencesUser'
+) {
+  let dbSeqRecs: DB | null = dbs[dbSeqRecsName]
+  let dbSequences: DB | null = dbs[dbSequencesName]
   if (dbSeqRecs !== null && dbSequences !== null) {
     const nBatchesRec = 1
     const batchSizeRec = Math.floor(records.length / nBatchesRec)
@@ -77,9 +77,9 @@ export async function insertSeqRecs(records: GBSeq[]) {
     }
     // console.log('insertSeqRecs: Vacuuming Begin.')
     // await vacuum(dbSeqRecs)
+    // await vacuum(dbSequences)
     // console.log('insertSeqRecs: Vacuuming Done.')
   }
-  unsubscribe()
 }
 
 function _struccommentitems(values: (string | number | undefined)[][]) {
