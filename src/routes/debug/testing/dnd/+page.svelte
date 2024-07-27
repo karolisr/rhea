@@ -13,9 +13,18 @@ let payload: DragDropPayload | null = null
 
 onMount(() => {
   targetEl = document.getElementById('target')
+  if (targetEl) {
+    targetEl.addEventListener('dragenter', onDragOver, true)
+    targetEl.addEventListener('drop', onDrop, true)
+  }
 })
 
-onDestroy(() => {})
+onDestroy(() => {
+  if (targetEl) {
+    targetEl.removeEventListener('dragenter', onDragOver, true)
+    targetEl.removeEventListener('drop', onDrop, true)
+  }
+})
 
 $: if (targetEl && payload) targetEl.innerText = payload.data as string
 
@@ -62,39 +71,33 @@ async function onDrop(e: Event) {
     <div
       id="item1"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 1
     </div>
     <div
       id="item2"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 2
     </div>
     <div
       id="item3"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 3
     </div>
     <div
       id="item4"
       class="item draggable"
-      on:dragstart="{onDragStart}"
-      role="region">
+      role="region"
+      on:dragstart="{onDragStart}">
       Item 4
     </div>
   </div>
-  <div
-    id="target"
-    class="drag-target"
-    on:drop="{onDrop}"
-    on:dragenter="{onDragOver}"
-    role="region">
-  </div>
+  <div id="target" class="drag-target" role="region"></div>
 </div>
 
 <style>

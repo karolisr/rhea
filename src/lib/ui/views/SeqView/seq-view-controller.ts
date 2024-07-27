@@ -83,6 +83,14 @@ export class SeqViewController {
     )
   }
 
+  removeEventListeners() {
+    this.ctx.canvas.removeEventListener(
+      'wheel',
+      this.#handleMouseWheel.bind(this),
+      false
+    )
+  }
+
   #handleMouseWheel(evt: WheelEvent) {
     this.#pan(evt)
   }

@@ -38,6 +38,7 @@ onMount(() => {
 
 <a
   id="chrome-nav-a-{label}"
+  data-sveltekit-replacestate
   href="{link}"
   aria-current="{curr}"
   draggable="false"

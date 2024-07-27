@@ -53,12 +53,12 @@ const _onResize = (_: UIEvent) => {
 
 onMount(() => {
   elSpacer = document.getElementById(`${uid}-tab-nav-tab-spacer`)
-  if (elSpacer) window.addEventListener('resize', _onResize)
+  if (elSpacer) window.addEventListener('resize', _onResize, { passive: true })
   collapse()
 })
 
 onDestroy(() => {
-  window.removeEventListener('resize', _onResize)
+  window.removeEventListener('resize', _onResize, false)
 })
 </script>
 

@@ -11,16 +11,12 @@ import type { ContextMenuItem } from '$lib/svelte-stores/context-menu'
 import type { DragOverEvent, DropEvent } from '$lib/api/types'
 
 onMount(async () => {
-  addEventListener('mousedown', mousedownEvtListener, {
-    capture: true
-  })
+  addEventListener('mousedown', mousedownEvtListener, true)
   if (selected === tree.id) await _scrollIntoView()
 })
 
 onDestroy(() => {
-  removeEventListener('mousedown', mousedownEvtListener, {
-    capture: true
-  })
+  removeEventListener('mousedown', mousedownEvtListener, true)
 })
 
 export let tree: Tree

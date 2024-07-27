@@ -9,15 +9,11 @@ export let hide: () => void
 export let items: ContextMenuItem[]
 
 onMount(() => {
-  addEventListener('mousedown', mousedownEvtListener, {
-    capture: true
-  })
+  addEventListener('mousedown', mousedownEvtListener, true)
 })
 
 onDestroy(() => {
-  removeEventListener('mousedown', mousedownEvtListener, {
-    capture: true
-  })
+  removeEventListener('mousedown', mousedownEvtListener, true)
 })
 
 const mousedownEvtListener = (e: MouseEvent) => {

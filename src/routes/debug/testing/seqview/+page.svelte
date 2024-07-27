@@ -23,17 +23,6 @@ onDestroy(() => {
   $status.main = ''
 })
 
-function onDragOver(e: Event) {
-  const ev = e as DragOverEvent
-  if (ev.payload !== undefined) {
-    if (ev.payload.type !== 'files') {
-      ev.payload.targetCanAccept = false
-    } else {
-      ev.payload.targetCanAccept = true
-    }
-  }
-}
-
 async function parse(paths: string[]) {
   const info = await processFilePaths(paths)
   for (let i = 0; i < info.length; i++) {
@@ -52,6 +41,17 @@ async function parse(paths: string[]) {
           console.warn(error1, error2)
         }
       }
+    }
+  }
+}
+
+function onDragOver(e: Event) {
+  const ev = e as DragOverEvent
+  if (ev.payload !== undefined) {
+    if (ev.payload.type !== 'files') {
+      ev.payload.targetCanAccept = false
+    } else {
+      ev.payload.targetCanAccept = true
     }
   }
 }

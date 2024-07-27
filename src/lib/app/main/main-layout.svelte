@@ -1,29 +1,28 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 
-import type { Unlistener } from '$lib/types'
-
 import { BROWSER, ENGINE, PIXELRATIO, setScale } from '$lib/api'
-import { DragDrop } from '$lib/api/drag-drop'
+import { DragDropFiles } from '$lib/api/drag-drop/drag-drop-files'
 import { themeChangeListener } from '$lib/api/darkmode'
 
 import settings from '$lib/svelte-stores/settings'
 import subheader from '$lib/svelte-stores/subheader'
 
-import { preventDefault } from '$lib/ui'
+import { preventDefault } from '$lib'
+import type { Unlistener } from '$lib/types'
 import Layout from '$lib/ui/chrome/layout/Layout.svelte'
 import StatusBar from '$lib/ui/chrome/status/StatusBar.svelte'
 
 import MainNav from './main-nav.svelte'
 
 let unlisteners: Unlistener[] = []
-let dragDropConductor: DragDrop | null = null
+let dragDropConductor: DragDropFiles | null = null
 
 $: setScale($settings.scale)
 
 onMount(async () => {
   console.info(BROWSER, ENGINE, `Pixel ratio: ${PIXELRATIO}`)
-  dragDropConductor = new DragDrop()
+  dragDropConductor = new DragDropFiles()
 
   unlisteners.push(await themeChangeListener())
   unlisteners.push(preventDefault('contextmenu'))

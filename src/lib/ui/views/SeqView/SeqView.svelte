@@ -40,18 +40,16 @@ onMount(() => {
     `${uid}-seqview-canvas`
   ) as HTMLCanvasElement
   seqCtx = seqCnv.getContext('2d') as CanvasRenderingContext2D
-
-  addEventListener('resize', resizeEvtListener, {
-    capture: false
-  })
-
   svc = new SeqViewController(seqCtx, scaleCtx)
+  addEventListener('resize', resizeEvtListener, {
+    capture: false,
+    passive: true
+  })
 })
 
 onDestroy(() => {
-  removeEventListener('resize', resizeEvtListener, {
-    capture: false
-  })
+  svc.removeEventListeners()
+  removeEventListener('resize', resizeEvtListener, { capture: false })
 })
 
 function resizeEvtListener(_: UIEvent) {

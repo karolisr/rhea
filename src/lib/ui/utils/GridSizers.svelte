@@ -10,28 +10,16 @@ export let nRow: number = 0
 export let nCol: number = 0
 
 onMount(() => {
-  addEventListener('mousemove', resizeCol, {
-    capture: true
-  })
-  addEventListener('mouseup', resizeGridElementEnd, {
-    capture: true
-  })
-  addEventListener('mousemove', resizeRow, {
-    capture: true
-  })
+  addEventListener('mousemove', resizeCol, false)
+  addEventListener('mousemove', resizeRow, false)
+  addEventListener('mouseup', resizeGridElementEnd, false)
   dispatchEvent(resizeEvt)
 })
 
 onDestroy(() => {
-  removeEventListener('mousemove', resizeCol, {
-    capture: true
-  })
-  removeEventListener('mouseup', resizeGridElementEnd, {
-    capture: true
-  })
-  removeEventListener('mousemove', resizeRow, {
-    capture: true
-  })
+  removeEventListener('mousemove', resizeCol, false)
+  removeEventListener('mousemove', resizeRow, false)
+  removeEventListener('mouseup', resizeGridElementEnd, false)
 })
 
 export let uid: string = uuid()
@@ -91,7 +79,7 @@ function resizeGridElementBegin(evt: MouseEvent) {
   const elParent = el.parentElement?.parentElement as HTMLElement
   const elType = (el.id.match(/\-(col|row)\-/) as string[])[1] as 'col' | 'row'
   const elIndex = Number(el.id.replace(`${uid}-${elType}-sizer-`, ''))
-  document.body.style.cursor = `${elType}-resize`
+  // document.body.style.cursor = `${elType}-resize`
 
   let n: number = 0
   let minSize: number = 0
@@ -158,32 +146,33 @@ function resizeGridElementBegin(evt: MouseEvent) {
 }
 
 function resizeCol(evt: MouseEvent) {
+  evt.stopPropagation()
   if (colResizing !== null) {
     const d = evt.x - (colPrevX as number)
     let newColW = min(
       max(minColW, (colPrevWidth as number) + d),
       colMaxW as number
     )
-    // if (newColW < sizerSize * 2) newColW = 0
     if (newColW < getFontSize() * 3) newColW = 0
     colWs[colResizing as number] = newColW
   }
 }
 
 function resizeRow(evt: MouseEvent) {
+  evt.stopPropagation()
   if (rowResizing !== null) {
     const d = evt.y - (rowPrevY as number)
     let newRowH = min(
       max(minRowH, (rowPrevHeight as number) + d),
       rowMaxH as number
     )
-    // if (newRowH < sizerSize * 2) newRowH = 0
     if (newRowH < getFontSize() * 3) newRowH = 0
     rowHs[rowResizing as number] = newRowH
   }
 }
 
 function resizeGridElementEnd(_: MouseEvent) {
+  _.stopPropagation()
   if (colResizing !== null) {
     colResizing = null
     colPrevX = null
@@ -198,7 +187,7 @@ function resizeGridElementEnd(_: MouseEvent) {
     rowMaxH = null
   }
 
-  document.body.style.cursor = 'default'
+  // document.body.style.cursor = 'default'
 }
 
 async function collapseGridElement(evt: MouseEvent) {

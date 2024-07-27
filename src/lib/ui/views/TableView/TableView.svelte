@@ -28,12 +28,15 @@ onMount(async () => {
   charW = _.chrW
   visH = elh.clientHeight
 
-  addEventListener('resize', resizeEvtListener)
+  addEventListener('resize', resizeEvtListener, {
+    capture: false,
+    passive: true
+  })
   addEventListener(rl.updatedEventName, rlUpdatedEventListener)
 })
 
 onDestroy(() => {
-  removeEventListener('resize', resizeEvtListener)
+  removeEventListener('resize', resizeEvtListener, { capture: false })
   removeEventListener(rl.updatedEventName, rlUpdatedEventListener)
 })
 
@@ -613,7 +616,7 @@ function formatValue(
   position: relative;
   display: flex;
   flex-direction: row;
-  cursor: pointer;
+  // cursor: pointer;
   font-size: 0.75rem;
   margin-block: auto;
   margin-inline-end: 0.2em;
