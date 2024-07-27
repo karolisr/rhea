@@ -67,7 +67,7 @@ if (!multiRowSelect && showCheckBoxes) {
 export let minColW: number = 50
 export let uid: string
 export let activeRowKey: string | number | undefined = undefined
-export let activeRowRecord: object | undefined = undefined
+// export let activeRowRecord: object | undefined = undefined
 export let rowHeight: number | undefined = undefined
 
 $: nH = showHeaderRow ? 1 : 0
@@ -98,7 +98,7 @@ function processSelectedRowKeys(_selectedRowKeys: {
   return ids
 }
 
-export let selectedRecordIds: string[] = []
+export let selectedRowKeys: string[] = []
 let _selectedRowKeys: {
   [key: string]: boolean | null | undefined
 } = {}
@@ -117,7 +117,7 @@ $: lastRow = max(0, min(firstRowRequested + (maxRowsVis - 1), rl.length - 1))
 $: firstRow = lastRow > 0 ? max(0, lastRow - (maxRowsVis - 1)) : 0
 $: rows = seq(firstRow, lastRow)
 
-$: selectedRecordIds = processSelectedRowKeys(_selectedRowKeys)
+$: selectedRowKeys = processSelectedRowKeys(_selectedRowKeys)
 
 let rowHs: number[] = []
 $: {
@@ -128,7 +128,7 @@ $: {
 
 $: if (activeRow !== undefined) {
   activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
-  activeRowRecord = rl.items[activeRow]
+  // activeRowRecord = rl.items[activeRow]
 }
 
 function onDragStart(e: Event) {
@@ -140,14 +140,13 @@ function onDragStart(e: Event) {
   el.style.borderStyle = 'solid'
   el.style.backgroundColor = 'yellow'
 
-  if (selectedRecordIds.includes(ark) && selectedRecordIds.length > 1) {
-    ev.payload.data = selectedRecordIds
-    el.innerText = `${selectedRecordIds.length} records`
+  if (selectedRowKeys.includes(ark) && selectedRowKeys.length > 1) {
+    ev.payload.data = selectedRowKeys
+    el.innerText = `${selectedRowKeys.length} records`
   } else {
     ev.payload.data = [ark]
     el.innerText = ark
   }
-  // console.log('onDragStart:', ev.payload)
 }
 
 const _onscroll = (_: Event) => {
@@ -210,8 +209,8 @@ const _onkeydown = (ev: KeyboardEvent) => {
 }
 
 let allChecked: boolean = false
-// $: allChecked = _allChecked(selectedRecordIds)
-// function _allChecked(selectedRecordIds: string[]) {
+// $: allChecked = _allChecked(selectedRowKeys)
+// function _allChecked(selectedRowKeys: string[]) {
 //   for (let i = 0; i < rl.allKeys.length; i++) {
 //     const k = rl.allKeys[i] as string;
 //     if (k in _selectedRowKeys && _selectedRowKeys[k] === true) {

@@ -3,8 +3,6 @@ import { SeqRecord } from './seq-record'
 import { SeqList } from './seq-list'
 import { parseFastaStr } from './fasta'
 
-export type Position = { col: number; row: number }
-
 export class Alignment extends SeqList {
   constructor(seqRecs: SeqRecord[]) {
     super(seqRecs)

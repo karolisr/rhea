@@ -1,6 +1,8 @@
 import { AA_ONLY_CHARS } from './iupac'
 import { Seq, AASeq, NTSeq, DNASeq, RNASeq } from './seq'
 
+export type Position = { col: number; row: number }
+
 export enum SeqType {
   'AA',
   'NT',

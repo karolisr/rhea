@@ -9,8 +9,10 @@ import databases from '$lib/svelte-stores/databases'
 import type { SortDir } from '$lib/types'
 import { DocList } from '$lib/doc/doc-list'
 import type { DocField } from '$lib/doc'
+import { SeqList } from '$lib/seq/seq-list'
 
 import ResizableGrid from '$lib/ui/views/ResizableGrid'
+import SeqView from '$lib/ui/views/SeqView'
 
 import {
   getSeqRecIdsByCategory,
@@ -20,9 +22,41 @@ import {
 import MainDocList from './main-doc-list.svelte'
 import MainCollections from './main-collections.svelte'
 import MainFilterSearch from './main-filter-search/main-filter-search.svelte'
-
 // ----------------------------------------------------------------------------
 
+let activeRowKey: string | undefined = undefined
+let selectedRowKeys: string[] = []
+let selectedDocIds: Set<string> = new Set()
+
+$: {
+  let _selectedDocIds = []
+  if (activeRowKey !== undefined) {
+    if (selectedRowKeys.length === 0) {
+      _selectedDocIds = [activeRowKey]
+    } else if (selectedRowKeys.includes(activeRowKey)) {
+      _selectedDocIds = [...selectedRowKeys]
+    } else {
+      // _selectedDocIds = [activeRowKey, ...selectedRowKeys]
+      _selectedDocIds = [...selectedRowKeys]
+    }
+  } else {
+    _selectedDocIds = [...selectedRowKeys]
+  }
+
+  const curr = new Set(_selectedDocIds)
+  if (selectedDocIds.symmetricDifference(curr).size !== 0) {
+    selectedDocIds = curr
+  }
+}
+
+async function _prepareSeqList(selectedDocIds: Set<string>) {
+  seqList = await mainDocList.getSeqsForIds(selectedDocIds)
+}
+
+let seqList: SeqList
+$: if (mainDocList) _prepareSeqList(selectedDocIds)
+
+// ----------------------------------------------------------------------------
 let dbs: Awaited<typeof databases>
 let mainDocList: DocList
 
@@ -199,11 +233,18 @@ $: {
       </div>
 
       <div class="grid-main-tableview">
-        <MainDocList bind:tvMainRowH bind:mainDocList />
+        <MainDocList
+          bind:tvMainRowH
+          bind:mainDocList
+          bind:activeRowKey
+          bind:selectedRowKeys />
       </div>
 
       <div class="grid-main-seqview">
-        <div class="placeholder">grid-main-seqview</div>
+        <!-- <div class="placeholder">grid-main-seqview</div> -->
+        {#if seqList}
+          <SeqView uid="main-seqview" seqs="{seqList}" />
+        {/if}
       </div>
     </ResizableGrid>
   </ResizableGrid>

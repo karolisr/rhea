@@ -147,15 +147,26 @@ export class RecordList<T> {
     return this.valueByIndex(index, field, '') as string
   }
 
-  valueByKey(key: string, field: keyof T) {
-    let idx: number | undefined = undefined
+  indexByKey(key: string) {
     for (let i = 0; i < this.length; i++) {
       const rec = this.items[i]
       if (rec[this._keyField] === key) {
-        idx = i
-        return this.valueByIndex(idx, field)
-        // break
+        return i
       }
+    }
+  }
+
+  itemByKey(key: string) {
+    let idx: number | undefined = this.indexByKey(key)
+    if (idx !== undefined) {
+      return this.items[idx]
+    }
+  }
+
+  valueByKey(key: string, field: keyof T) {
+    let idx: number | undefined = this.indexByKey(key)
+    if (idx !== undefined) {
+      return this.valueByIndex(idx, field)
     }
   }
 

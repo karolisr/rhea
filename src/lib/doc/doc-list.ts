@@ -1,13 +1,23 @@
-import { getAllSeqRecs } from '$lib/api/db/seqrecs'
+import { getAllSeqRecs, getSequences } from '$lib/api/db/seqrecs'
 import type { Databases } from '$lib/svelte-stores/databases'
 import { RecordList } from '$lib/utils/record-list'
 import type { IndexedUndefined } from '$lib/types'
-import { Doc, SeqRecordDocGenBank, SeqRecordDocUser, AlignmentDoc } from '.'
+import {
+  Doc,
+  SeqRecordDoc,
+  SeqRecordDocGenBank,
+  SeqRecordDocUser,
+  AlignmentDoc
+} from '.'
+import { type SeqType, mkSeq } from '$lib/seq'
+import { SeqRecord } from '$lib/seq/seq-record'
+import { SeqList } from '$lib/seq/seq-list'
 
 export class DocList {
   protected _dbs: Databases
   protected _uid: string
   protected _list: RecordList<Doc>
+  protected _seqsCachedIds: Set<string> = new Set()
 
   constructor(
     dbs: Databases,
@@ -24,15 +34,15 @@ export class DocList {
   }
 
   private async init() {
-    const _dbrecs = await getAllSeqRecs(this._dbs, 'dbSeqRecs')
+    const _dbRecs = await getAllSeqRecs(this._dbs, 'dbSeqRecs')
     const _items: Doc[] = []
-    for (let i = 0; i < _dbrecs.length; i++) {
-      const _dbrec = _dbrecs[i]
+    for (let i = 0; i < _dbRecs.length; i++) {
+      const _dbrec = _dbRecs[i]
       const _doc: SeqRecordDocGenBank = new SeqRecordDocGenBank(
         _dbrec.accession_version as string,
         _dbrec.accession_version as string,
         _dbrec.definition as string,
-        _dbrec.moltype as string
+        _dbrec.moltype as keyof typeof SeqType
       )
       _items.push(_doc)
     }
@@ -42,6 +52,37 @@ export class DocList {
   // private updated() {
   //   dispatchEvent(new Event(this.updatedEventName))
   // }
+
+  public async getSeqsForIds(ids: Set<string>) {
+    const _seqRecs: SeqRecord[] = []
+    const _ids = [...ids]
+    const _uncachedIds = [...ids.difference(this._seqsCachedIds)]
+    const _dbSeqs = await getSequences(_uncachedIds, this._dbs, 'dbSequences')
+    for (let i = 0; i < _dbSeqs.length; i++) {
+      const _ = _dbSeqs[i]
+      const id = _['accession_version'] as string
+      const str = _['sequence'] as string
+      const doc = this._list.itemByKey(id)
+      if (doc !== undefined && doc instanceof SeqRecordDoc) {
+        const seq = mkSeq(str, doc.moltype, 1)
+        const seqRecord = new SeqRecord(id, seq)
+        doc.data = seqRecord
+      }
+      this._seqsCachedIds.add(id)
+    }
+    for (let i = 0; i < _ids.length; i++) {
+      const id = _ids[i]
+      const doc = this._list.itemByKey(id)
+      if (
+        doc !== undefined &&
+        doc instanceof SeqRecordDoc &&
+        doc.data !== null
+      ) {
+        _seqRecs.push(doc.data)
+      }
+    }
+    return new SeqList(_seqRecs)
+  }
 
   public addItems(items: Doc[]) {
     this._list.addItems(items)

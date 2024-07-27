@@ -3,8 +3,6 @@ import { type SeqType } from '.'
 import { parseFastaStr } from './fasta'
 import { min, max } from '$lib'
 
-export type Position = { col: number; row: number }
-
 export class SeqList {
   public seqRecs: SeqRecord[]
   public type: keyof typeof SeqType = 'UNKNOWN'
