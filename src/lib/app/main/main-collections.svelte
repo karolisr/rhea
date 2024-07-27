@@ -18,12 +18,13 @@ onMount(async () => {
 
 onDestroy(async () => {})
 
-export let selCollGrp = $state.selCollGrp as string | undefined
-export let selColl = $state.selColl as string | undefined
+export let selCollGrp =
+  ($state.selCollGrp as string | undefined) || 'coll-db-all-recs'
+export let selColl = ($state.selColl as string | undefined) || 'ROOT'
 
-let selMolType = $state.selMolType as string | undefined
-let selOrgnell = $state.selOrgnell as string | undefined
-let selOther = $state.selOther as string | undefined
+let selMolType = ($state.selMolType as string | undefined) || 'ROOT'
+let selOrgnell = ($state.selOrgnell as string | undefined) || 'ROOT'
+let selOther = ($state.selOther as string | undefined) || 'ROOT'
 
 let expCollsUsr = $state.expCollsUsr as Set<string> | undefined
 let expCollsMolType = $state.expCollsMolType as Set<string> | undefined
