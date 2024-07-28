@@ -105,17 +105,17 @@ export class DragDropBasic {
         if (this.payload.targetCanAccept) {
           this.drgTargetEl.classList.add('drag-item-hovering')
           document.body.style.cursor = 'copy'
-          getCurrentWindow().setCursorIcon('copy')
+          // getCurrentWindow().setCursorIcon('copy')
         } else {
           document.body.style.cursor = 'no-drop'
-          getCurrentWindow().setCursorIcon('noDrop')
+          // getCurrentWindow().setCursorIcon('noDrop')
         }
       } else if (this.drgTargetElPrev) {
         this.drgTargetElPrev.classList.remove('drag-item-hovering')
         this.payload.targetCanAccept = false
 
         document.body.style.cursor = 'default'
-        getCurrentWindow().setCursorIcon('default')
+        // getCurrentWindow().setCursorIcon('default')
       }
     }
   }
@@ -134,7 +134,7 @@ export class DragDropBasic {
     if (this.beforeDrag >= 0) this.beforeDrag += 1
     if (this.beforeDrag > 1 && this.drgSourceEl) {
       document.body.style.cursor = 'default'
-      getCurrentWindow().setCursorIcon('default')
+      // getCurrentWindow().setCursorIcon('default')
       this.beforeDrag = -1
       this.dragging = true
       document.documentElement.setAttribute('dragging', 'true')
@@ -182,10 +182,10 @@ export class DragDropBasic {
       }, 250)
     }
 
-    document.body.style.cursor = 'default'
-    getCurrentWindow().setCursorIcon('default')
-
     if (this.dragging) {
+      document.body.style.cursor = 'default'
+      // getCurrentWindow().setCursorIcon('default')
+
       let flag = true
       if (this.drgEl1 === this.drgEl2) flag = false
       this.drgEl1 = this.drgEl2

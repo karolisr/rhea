@@ -79,7 +79,7 @@ function resizeGridElementBegin(evt: MouseEvent) {
   const elParent = el.parentElement?.parentElement as HTMLElement
   const elType = (el.id.match(/\-(col|row)\-/) as string[])[1] as 'col' | 'row'
   const elIndex = Number(el.id.replace(`${uid}-${elType}-sizer-`, ''))
-  // document.body.style.cursor = `${elType}-resize`
+  document.body.style.cursor = `${elType}-resize`
 
   let n: number = 0
   let minSize: number = 0
@@ -187,7 +187,7 @@ function resizeGridElementEnd(_: MouseEvent) {
     rowMaxH = null
   }
 
-  // document.body.style.cursor = 'default'
+  document.body.style.cursor = 'default'
 }
 
 async function collapseGridElement(evt: MouseEvent) {
