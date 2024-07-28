@@ -157,7 +157,12 @@ async function _getIdsByColl(
 
 let selCollGrp: string | undefined
 let selColl: string | undefined
+let collUpdated: boolean = false
 $: _getIdsByColl(selCollGrp, selColl, idsByCat)
+$: if (collUpdated) {
+  _getIdsByColl(selCollGrp, selColl, idsByCat)
+  collUpdated = false
+}
 
 let idsFinal: Set<string> = new Set()
 $: if (idsByColl !== undefined) {
@@ -219,7 +224,8 @@ $: {
         bind:selColl
         bind:selMolTypes
         bind:selOrgnells
-        bind:selOthers />
+        bind:selOthers
+        {mainDocList} />
     </div>
     <ResizableGrid
       bind:nRow="{gridMainNRow}"
@@ -238,7 +244,10 @@ $: {
           bind:tvMainRowH
           bind:mainDocList
           bind:activeRowKey
-          bind:selectedRowKeys />
+          bind:selectedRowKeys
+          bind:selCollGrp
+          bind:selColl
+          bind:collUpdated />
       </div>
 
       <div class="grid-main-seqview">

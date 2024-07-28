@@ -10,6 +10,7 @@ import ResizableGrid from '$lib/ui/views/ResizableGrid'
 import { getPropNames } from '$lib'
 import type { DragStartEvent } from '$lib/api/types'
 import settings from '$lib/svelte-stores/settings'
+import { clipboardWrite } from '$lib/api/clipboard'
 
 onMount(async () => {
   elh = document.getElementById(`${uid}-table-height-container`) as HTMLElement
@@ -18,7 +19,9 @@ onMount(async () => {
   elc.tabIndex = 0
   elc.onfocus = _onfocus
   elc.onkeydown = _onkeydown
+  elc.onkeyup = _onkeyup
   elc.onscroll = _onscroll
+  elc.onmousedown = _onmousedown
 
   await tick()
 
@@ -32,15 +35,23 @@ onMount(async () => {
     capture: false,
     passive: true
   })
-  addEventListener(rl.updatedEventName, rlUpdatedEventListener)
+  addEventListener(rl.updatedEventName, rlUpdatedListener)
+  addEventListener('contextmenu', rightClickListener, true)
 })
 
 onDestroy(() => {
-  removeEventListener('resize', resizeEvtListener, { capture: false })
-  removeEventListener(rl.updatedEventName, rlUpdatedEventListener)
+  removeEventListener('resize', resizeEvtListener, false)
+  removeEventListener(rl.updatedEventName, rlUpdatedListener)
+  removeEventListener('contextmenu', rightClickListener, true)
 })
 
-const rlUpdatedEventListener = async () => {
+const rightClickListener = () => {
+  if (activeRowKey !== undefined) {
+    clipboardWrite(activeRowKey)
+  }
+}
+
+const rlUpdatedListener = async () => {
   const _prevActiveRowKey = activeRowKey
   rl = rl
   await tick()
@@ -66,8 +77,8 @@ export let showFooterRow: boolean = false
 export let multiRowSelect: boolean = false
 export let showCheckBoxes: boolean = false
 
-export let onDeleteRow: (id: unknown) => unknown = (id) => {
-  console.warn('onDeleteRow placeholder function:', uid, id)
+export let onDeleteRows: (ids: string[]) => unknown = (id) => {
+  console.warn('onDeleteRows placeholder function:', uid, id)
 }
 
 if (!multiRowSelect && showCheckBoxes) {
@@ -77,7 +88,7 @@ if (!multiRowSelect && showCheckBoxes) {
 
 export let minColW: number = 50
 export let uid: string
-export let activeRowKey: string | number | undefined = undefined
+export let activeRowKey: string | undefined = undefined
 export let rowHeight: number | undefined = undefined
 
 $: nH = showHeaderRow ? 1 : 0
@@ -96,6 +107,8 @@ let scrollTop: number = 0
 let firstRowRequested: number
 let firstRow: number
 let lastRow: number
+
+let shiftSelectionRow: number | undefined = undefined
 
 function processSelectedRowKeys(_selectedRowKeys: {
   [key: string]: boolean | null | undefined
@@ -183,8 +196,15 @@ const _onkeydown = (ev: KeyboardEvent) => {
       (ev.metaKey && (ev.code === 'KeyQ' || ev.code === 'KeyW'))
     )
   ) {
-    console.log('preventDefault')
     ev.preventDefault()
+  }
+
+  if (ev.shiftKey) {
+    if (multiRowSelect && activeRowKey !== undefined) {
+      shiftSelectionRow = activeRow
+    } else {
+      shiftSelectionRow = undefined
+    }
   }
 
   switch (ev.code) {
@@ -195,7 +215,7 @@ const _onkeydown = (ev: KeyboardEvent) => {
           top: (activeRow - lastRow + firstRow) * rowH
         })
       }
-      ev.preventDefault()
+      // ev.preventDefault()
       break
     case 'ArrowUp':
       activeRow = max(activeRow - 1, 0)
@@ -204,18 +224,39 @@ const _onkeydown = (ev: KeyboardEvent) => {
           top: activeRow * rowH
         })
       }
-      ev.preventDefault()
+      // ev.preventDefault()
       break
     case 'Space':
       if (multiRowSelect && activeRowKey !== undefined) {
         _selectedRowKeys[activeRowKey] = !_selectedRowKeys[activeRowKey]
       }
-      ev.preventDefault()
+      // ev.preventDefault()
+      break
+    case 'KeyA':
+      if (multiRowSelect && activeRowKey !== undefined) {
+        for (let i = 0; i < rl.keys.length; i++) {
+          const k = rl.keys[i]
+          _selectedRowKeys[k] = true
+        }
+      }
+      // ev.preventDefault()
       break
     case 'Backspace':
       if (ev.metaKey === true) {
-        if (activeRowKey !== undefined) {
-          onDeleteRow(activeRowKey)
+        const _idsSel = new Set([...selectedRowKeys])
+        const _idsCurr = new Set([...rl.keys])
+        const _idsToRemove = [..._idsSel.intersection(_idsCurr)]
+
+        if (_idsToRemove.length > 0) {
+          onDeleteRows(_idsToRemove)
+          if (
+            activeRowKey !== undefined &&
+            _idsToRemove.includes(activeRowKey)
+          ) {
+            activeRow = max(0, activeRow - 1)
+          }
+        } else if (activeRowKey !== undefined) {
+          onDeleteRows([activeRowKey])
           activeRow = max(0, activeRow - 1)
         }
       }
@@ -224,6 +265,28 @@ const _onkeydown = (ev: KeyboardEvent) => {
       break
   }
   scrollActiveRowIntoView()
+}
+
+const _onkeyup = (ev: KeyboardEvent) => {
+  if (multiRowSelect) {
+    shiftSelectionRow = undefined
+  }
+}
+
+const _onmousedown = (ev: MouseEvent) => {
+  if (shiftSelectionRow !== undefined) {
+    console.log(shiftSelectionRow, activeRow)
+    const n = shiftSelectionRow - activeRow
+    if (multiRowSelect && activeRowKey !== undefined) {
+      for (let i = 0; i < Math.abs(n) + 1; i++) {
+        const rk = rl.stringValueByIndex(
+          shiftSelectionRow + i * Math.sign(n) * -1
+        )
+        _selectedRowKeys[rk] = !_selectedRowKeys[rk]
+      }
+      shiftSelectionRow = activeRow
+    }
+  }
 }
 
 let allChecked: boolean = false

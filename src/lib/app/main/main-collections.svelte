@@ -8,6 +8,7 @@ import {
   relabelCollection
 } from '$lib/api/db/collections'
 import databases from '$lib/svelte-stores/databases'
+import { DocList } from '$lib/doc/doc-list'
 // ----------------------------------------------------------------------------
 
 let dbs: Awaited<typeof databases>
@@ -18,6 +19,7 @@ onMount(async () => {
 
 onDestroy(async () => {})
 
+export let mainDocList: DocList
 export let selCollGrp =
   ($state.selCollGrp as string | undefined) || 'coll-db-all-recs'
 export let selColl = ($state.selColl as string | undefined) || 'ROOT'
@@ -96,7 +98,8 @@ $: {
       createNode="{createCollection}"
       deleteNode="{deleteCollection}"
       relabelNode="{relabelCollection}"
-      acceptedDropTypes="{['acc-ver-array']}" />
+      acceptedDropTypes="{['acc-ver-array']}"
+      addRecords="{mainDocList.addToColl.bind(mainDocList)}" />
 
     <TreeView
       uid="{'coll-search-results'}"

@@ -124,7 +124,7 @@ export class RecordList<T> {
 
   valueByIndex(
     index: number,
-    field: keyof T,
+    field: keyof T = this._keyField,
     stringValueForObjects: string | undefined = undefined,
     stringValueWhenEmpty: string | undefined = undefined
   ) {
@@ -143,7 +143,7 @@ export class RecordList<T> {
     }
   }
 
-  stringValueByIndex(index: number, field: keyof T) {
+  stringValueByIndex(index: number, field: keyof T = this._keyField) {
     return this.valueByIndex(index, field, '') as string
   }
 
@@ -156,6 +156,17 @@ export class RecordList<T> {
     }
   }
 
+  indexesByKeys(keys: string[]) {
+    const rv: number[] = []
+    for (let i = 0; i < this.length; i++) {
+      const rec = this.items[i]
+      if (keys.includes(rec[this._keyField] as string)) {
+        rv.push(i)
+      }
+    }
+    return rv
+  }
+
   itemByKey(key: string) {
     let idx: number | undefined = this.indexByKey(key)
     if (idx !== undefined) {
@@ -163,7 +174,7 @@ export class RecordList<T> {
     }
   }
 
-  valueByKey(key: string, field: keyof T) {
+  valueByKey(key: string, field: keyof T = this._keyField) {
     let idx: number | undefined = this.indexByKey(key)
     if (idx !== undefined) {
       return this.valueByIndex(idx, field)
@@ -176,6 +187,18 @@ export class RecordList<T> {
 
   addItems(items: T[]) {
     this._allItems.push(...items)
+    this.reSort()
+  }
+
+  removeItemsAt(idxs: number[]) {
+    for (let i = idxs.length - 1; i >= 0; i--) {
+      this._allItems.splice(idxs[i], 1)
+    }
+  }
+
+  removeItemsWithKeys(keys: string[]) {
+    const idxs = this.indexesByKeys(keys)
+    this.removeItemsAt(idxs)
     this.reSort()
   }
 

@@ -12,6 +12,12 @@ import {
 import { type SeqType, mkSeq } from '$lib/seq'
 import { SeqRecord } from '$lib/seq/seq-record'
 import { SeqList } from '$lib/seq/seq-list'
+import { deleteSeqRecs } from '$lib/api/db/seqrecs'
+
+import {
+  addSeqRecsToCollection,
+  removeSeqRecsFromCollection
+} from '$lib/api/db/seqrecs/collections'
 
 export class DocList {
   protected _dbs: Databases
@@ -78,7 +84,6 @@ export class DocList {
 
   public async getSeqsForIds(ids: Set<string>) {
     const _seqRecs: SeqRecord[] = []
-    // const _ids = [...ids]
     const _uncachedIds = [...ids.difference(this._seqsCachedIds)]
     const _dbSeqs = await getSequences(_uncachedIds, this._dbs, 'dbSequences')
 
@@ -109,6 +114,23 @@ export class DocList {
 
   public addItems(items: Doc[]) {
     this._list.addItems(items)
+  }
+
+  public async addToColl(ids: string[], collId: string) {
+    addSeqRecsToCollection(ids, collId, this._dbs, 'dbSeqRecs')
+  }
+
+  public async remFromColl(ids: string[], collId: string) {
+    await removeSeqRecsFromCollection(ids, collId, this._dbs, 'dbSeqRecs')
+  }
+
+  public async delFromDb(ids: string[]) {
+    try {
+      await deleteSeqRecs(ids, this._dbs, 'dbSeqRecs')
+      this._list.removeItemsWithKeys(ids)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   public get updatedEventName(): string {

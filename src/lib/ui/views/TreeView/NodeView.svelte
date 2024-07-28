@@ -246,7 +246,6 @@ async function onDrop(e: Event) {
   ) {
     const droppedData = ev.payload.data as string[]
     await addRecords(droppedData, tree.id)
-    // console.log(`"${tree.label}" received: ${droppedData.join(', ')}.`)
   }
 }
 </script>
