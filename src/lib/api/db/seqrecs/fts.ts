@@ -11,7 +11,6 @@ export async function filterSeqRecs(
   let db: DB | null = dbs[dbName]
   let rv: IndexedUndefined[] = []
   if (db !== null && term) {
-    db = db as DB
     const _sql = sql`
       SELECT
         accession_version

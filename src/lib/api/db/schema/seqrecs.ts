@@ -78,7 +78,7 @@ export const schemaSeqRecs = sql`
     "feature_set_id" integer NOT NULL,
     "annot_source" varchar,
     -- + features: GBFeature[]
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "feature_set_id"
@@ -104,7 +104,7 @@ export const schemaSeqRecs = sql`
     ) REFERENCES "gb_feature_sets" (
       accession_version,
       feature_set_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "feature_set_id",
@@ -132,7 +132,7 @@ export const schemaSeqRecs = sql`
       accession_version,
       feature_set_id,
       feature_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "feature_set_id",
@@ -157,7 +157,7 @@ export const schemaSeqRecs = sql`
       accession_version,
       feature_set_id,
       feature_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "feature_set_id",
@@ -183,14 +183,14 @@ export const schemaSeqRecs = sql`
       accession_version,
       feature_set_id,
       feature_id
-    ),
+    ) ON DELETE CASCADE,
     FOREIGN KEY (
       accession_version,
       reference_id
     ) REFERENCES "gb_references" (
       accession_version,
       reference_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "reference_id",
       "accession_version",
@@ -205,7 +205,7 @@ export const schemaSeqRecs = sql`
     "accession_version" varchar NOT NULL,
     "keyword" varchar NOT NULL,
     "keyword_id" integer PRIMARY KEY NOT NULL,
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
   )
   ;
   ------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ export const schemaSeqRecs = sql`
     "alt_seq_data_id" integer NOT NULL,
     "name" varchar NOT NULL,
     -- + items?: GBAltSeqItem[]
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "alt_seq_data_id"
@@ -254,7 +254,7 @@ export const schemaSeqRecs = sql`
       feature_set_id,
       feature_id,
       interval_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "alt_seq_data_id",
       "accession_version",
@@ -267,7 +267,7 @@ export const schemaSeqRecs = sql`
     "accession_version" varchar NOT NULL,
     "seqid" varchar NOT NULL,
     "seqid_id" integer PRIMARY KEY NOT NULL,
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
   )
   ;
   ------------------------------------------------------------------------------
@@ -275,7 +275,7 @@ export const schemaSeqRecs = sql`
     "accession_version" varchar NOT NULL,
     "accn" varchar NOT NULL,
     "accn_id" integer PRIMARY KEY NOT NULL,
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
   )
   ;
   ------------------------------------------------------------------------------
@@ -291,7 +291,7 @@ export const schemaSeqRecs = sql`
     "title" varchar,
     -- + authors?: GBAuthor[]
     -- + xref?: GBXref[]
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "reference_id"
@@ -310,7 +310,7 @@ export const schemaSeqRecs = sql`
     ) REFERENCES "gb_references" (
       accession_version,
       reference_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "reference_id",
@@ -324,7 +324,7 @@ export const schemaSeqRecs = sql`
     "comment_id" integer NOT NULL,
     "type" varchar,
     -- + paragraphs: GBCommentParagraph[]
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "comment_id"
@@ -343,7 +343,7 @@ export const schemaSeqRecs = sql`
     ) REFERENCES "gb_comments" (
       accession_version,
       comment_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "comment_id",
@@ -357,7 +357,7 @@ export const schemaSeqRecs = sql`
     "struc_comment_id" integer NOT NULL,
     "name" varchar,
     -- + items: GBStrucCommentItem[]
-    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+    FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "struc_comment_id"
@@ -378,7 +378,7 @@ export const schemaSeqRecs = sql`
     ) REFERENCES "gb_struc_comments" (
       accession_version,
       struc_comment_id
-    ),
+    ) ON DELETE CASCADE,
     PRIMARY KEY (
       "accession_version",
       "struc_comment_id",
@@ -393,7 +393,7 @@ export const schemaSeqRecs = sql`
     "id" varchar NOT NULL,
     "record_id" varchar NOT NULL,
     PRIMARY KEY ("id", "record_id"),
-    FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version)
+    FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
     -- FOREIGN KEY (id) REFERENCES "collections.user" (id)
   )
   ;

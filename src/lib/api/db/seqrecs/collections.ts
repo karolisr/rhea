@@ -11,8 +11,6 @@ export async function addSeqRecsToCollection(
   if (accs.length === 0) return
   let db: DB | null = dbs[dbName]
   if (db !== null) {
-    db = db as DB
-
     const values: string[][] = []
     accs.forEach((acc) => values.push([collId, acc]))
 
@@ -37,8 +35,6 @@ export async function removeSeqRecsFromCollection(
   if (accs.length === 0) return
   let db: DB | null = dbs[dbName]
   if (db !== null) {
-    db = db as DB
-
     const _sql = sql`
       DELETE FROM assoc_records_user
       WHERE

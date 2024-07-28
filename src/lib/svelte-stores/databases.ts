@@ -59,26 +59,3 @@ async function init(): Promise<Readable<Databases>> {
 
 const databases = init()
 export default databases
-
-// ----------------------------------------------------------------------------
-// Usage Template:
-
-// import databases from '$lib/svelte-stores/databases'
-// import { DB } from '$lib/api/db'
-// import type { IndexedUndefined } from '$lib/types'
-
-// export async function xyz() {
-//   let dbs: Awaited<typeof databases> = await databases
-//   let db: DB | undefined = undefined
-//   const unsubscribe = dbs.subscribe((_) => {
-//     db = _.dbSeqRecs
-//   })
-//   let rv: IndexedUndefined[] = []
-//   if (db !== undefined) {
-//     db = db as DB
-//     // Do Stuff.
-//   }
-//   unsubscribe()
-//   return rv
-// }
-// ----------------------------------------------------------------------------

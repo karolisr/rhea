@@ -44,7 +44,6 @@ export async function getLineage(taxId: number) {
   })
   let rv: number[] = []
   if (db !== null) {
-    db = db as DB
     await _getLineage(db, taxId, rv)
   }
   unsubscribe()

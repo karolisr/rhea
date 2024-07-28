@@ -10,7 +10,6 @@ export async function getAllSeqRecs(
   let db: DB | null = dbs[dbName]
   let rv: IndexedUndefined[] = []
   if (db !== null) {
-    db = db as DB
     const _sql = sql`
       SELECT
         *
@@ -62,7 +61,6 @@ export async function getSeqRecIdsByCategory(
   }
 
   if (db !== null) {
-    db = db as DB
     const _sql = sql`
       SELECT
         "accession_version"
@@ -84,7 +82,6 @@ export async function getSeqRecIdsForCollections(
   let db: DB | null = dbs[dbName]
   let _rv: IndexedUndefined[] = []
   if (db !== null) {
-    db = db as DB
     const _sql = sql`
       SELECT
         "accession_version"
@@ -113,7 +110,6 @@ export async function getSequences(
   }
   let db: DB | null = dbs[dbName]
   if (db !== null) {
-    db = db as DB
     const _sql = sql`
       SELECT
         "accession_version",

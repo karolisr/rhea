@@ -14,6 +14,7 @@ function nValsPerSqlInsertSet(sql: Sql) {
   return sql.strings.slice(1, -1).join('').split('),(')[0].split(',').length
 }
 
+// ToDo: check if a record references GBSeq_contig, and download that as well.
 export async function insertSeqRecs(
   records: GBSeq[],
   dbs: Databases,

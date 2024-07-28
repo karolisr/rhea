@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS "gb_feature_sets" (
   "feature_set_id" integer NOT NULL,
   "annot_source" varchar,
   -- + features: GBFeature[]
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "feature_set_id"
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS "gb_features" (
   ) REFERENCES "gb_feature_sets" (
     accession_version,
     feature_set_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "feature_set_id",
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS "gb_intervals" (
     accession_version,
     feature_set_id,
     feature_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "feature_set_id",
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS "gb_qualifiers" (
     accession_version,
     feature_set_id,
     feature_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "feature_set_id",
@@ -180,14 +180,14 @@ CREATE TABLE IF NOT EXISTS "gb_xrefs" (
     accession_version,
     feature_set_id,
     feature_id
-  ),
+  ) ON DELETE CASCADE,
   FOREIGN KEY (
     accession_version,
     reference_id
   ) REFERENCES "gb_references" (
     accession_version,
     reference_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "reference_id",
     "accession_version",
@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS "gb_keywords" (
   "accession_version" varchar NOT NULL,
   "keyword" varchar NOT NULL,
   "keyword_id" integer PRIMARY KEY NOT NULL,
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
 )
 ;
 ------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS "gb_alt_seq_data" (
   "alt_seq_data_id" integer NOT NULL,
   "name" varchar NOT NULL,
   -- + items?: GBAltSeqItem[]
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "alt_seq_data_id"
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS "gb_alt_seq_items" (
     feature_set_id,
     feature_id,
     interval_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "alt_seq_data_id",
     "accession_version",
@@ -264,7 +264,7 @@ CREATE TABLE IF NOT EXISTS "gb_seqids" (
   "accession_version" varchar NOT NULL,
   "seqid" varchar NOT NULL,
   "seqid_id" integer PRIMARY KEY NOT NULL,
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
 )
 ;
 ------------------------------------------------------------------------------
@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS "gb_secondary_accns" (
   "accession_version" varchar NOT NULL,
   "accn" varchar NOT NULL,
   "accn_id" integer PRIMARY KEY NOT NULL,
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version)
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
 )
 ;
 ------------------------------------------------------------------------------
@@ -288,7 +288,7 @@ CREATE TABLE IF NOT EXISTS "gb_references" (
   "title" varchar,
   -- + authors?: GBAuthor[]
   -- + xref?: GBXref[]
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "reference_id"
@@ -307,7 +307,7 @@ CREATE TABLE IF NOT EXISTS "gb_authors" (
   ) REFERENCES "gb_references" (
     accession_version,
     reference_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "reference_id",
@@ -321,7 +321,7 @@ CREATE TABLE IF NOT EXISTS "gb_comments" (
   "comment_id" integer NOT NULL,
   "type" varchar,
   -- + paragraphs: GBCommentParagraph[]
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "comment_id"
@@ -340,7 +340,7 @@ CREATE TABLE IF NOT EXISTS "gb_comment_paragraphs" (
   ) REFERENCES "gb_comments" (
     accession_version,
     comment_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "comment_id",
@@ -354,7 +354,7 @@ CREATE TABLE IF NOT EXISTS "gb_struc_comments" (
   "struc_comment_id" integer NOT NULL,
   "name" varchar,
   -- + items: GBStrucCommentItem[]
-  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version),
+  FOREIGN KEY (accession_version) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "struc_comment_id"
@@ -375,7 +375,7 @@ CREATE TABLE IF NOT EXISTS "gb_struc_comment_items" (
   ) REFERENCES "gb_struc_comments" (
     accession_version,
     struc_comment_id
-  ),
+  ) ON DELETE CASCADE,
   PRIMARY KEY (
     "accession_version",
     "struc_comment_id",
@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS "assoc_records_user" (
   "id" varchar NOT NULL,
   "record_id" varchar NOT NULL,
   PRIMARY KEY ("id", "record_id"),
-  FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version)
+  FOREIGN KEY (record_id) REFERENCES "gb_records" (accession_version) ON DELETE CASCADE
   -- FOREIGN KEY (id) REFERENCES "collections.user" (id)
 )
 ;
