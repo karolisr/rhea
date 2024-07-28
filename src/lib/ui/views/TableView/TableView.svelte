@@ -40,8 +40,19 @@ onDestroy(() => {
   removeEventListener(rl.updatedEventName, rlUpdatedEventListener)
 })
 
-const rlUpdatedEventListener = () => {
+const rlUpdatedEventListener = async () => {
+  const _prevActiveRowKey = activeRowKey
   rl = rl
+  await tick()
+  if (_prevActiveRowKey) {
+    const _activeRow = rl.indexByKey(_prevActiveRowKey as string)
+    if (_activeRow !== undefined) {
+      activeRow = _activeRow
+    } else {
+      activeRow = 0
+    }
+    scrollActiveRowIntoView()
+  }
 }
 
 const resizeEvtListener = (_: UIEvent) => {
@@ -56,7 +67,7 @@ export let multiRowSelect: boolean = false
 export let showCheckBoxes: boolean = false
 
 export let onDeleteRow: (id: unknown) => unknown = (id) => {
-  console.log('onDeleteRow placeholder function:', uid, id)
+  console.warn('onDeleteRow placeholder function:', uid, id)
 }
 
 if (!multiRowSelect && showCheckBoxes) {
@@ -67,7 +78,6 @@ if (!multiRowSelect && showCheckBoxes) {
 export let minColW: number = 50
 export let uid: string
 export let activeRowKey: string | number | undefined = undefined
-// export let activeRowRecord: object | undefined = undefined
 export let rowHeight: number | undefined = undefined
 
 $: nH = showHeaderRow ? 1 : 0
@@ -126,10 +136,8 @@ $: {
   }
 }
 
-$: if (activeRow !== undefined) {
+$: if (activeRow !== undefined)
   activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
-  // activeRowRecord = rl.items[activeRow]
-}
 
 function onDragStart(e: Event) {
   const ev = e as DragStartEvent
@@ -154,14 +162,30 @@ const _onscroll = (_: Event) => {
 }
 
 const _onfocus = (ev: FocusEvent) => {
-  if (activeRow === undefined) activeRow = firstRow
   ev.stopPropagation()
   ev.stopImmediatePropagation()
 }
 
+function scrollActiveRowIntoView() {
+  if (activeRow < firstRow - 1 || activeRow > lastRow + 1) {
+    elc.scrollTo({
+      top: max(activeRow - floor(maxRowsVis / 2), 0) * rowH,
+      behavior: 'smooth'
+    })
+  }
+}
+
 const _onkeydown = (ev: KeyboardEvent) => {
   const allowed = ['Tab']
-  if (!allowed.includes(ev.code)) ev.preventDefault()
+  if (
+    !(
+      allowed.includes(ev.code) ||
+      (ev.metaKey && (ev.code === 'KeyQ' || ev.code === 'KeyW'))
+    )
+  ) {
+    console.log('preventDefault')
+    ev.preventDefault()
+  }
 
   switch (ev.code) {
     case 'ArrowDown':
@@ -199,13 +223,7 @@ const _onkeydown = (ev: KeyboardEvent) => {
     default:
       break
   }
-
-  if (activeRow < firstRow - 1 || activeRow > lastRow + 1) {
-    elc.scrollTo({
-      top: max(activeRow - floor(maxRowsVis / 2), 0) * rowH,
-      behavior: 'smooth'
-    })
-  }
+  scrollActiveRowIntoView()
 }
 
 let allChecked: boolean = false
@@ -240,7 +258,7 @@ function calcColWidths(
     const values: number[] = []
     for (let j = 0; j < rl.length; j++) {
       const value = rl.valueByIndex(j, field, '')
-      values.push(formatValue(value).length)
+      values.push(formatValue(value, field).length)
     }
     if (values.length > 0) {
       const w =
@@ -271,7 +289,6 @@ function getRowHeight(): {
   _cell.textContent = '__13__ac__46__'
   _row.appendChild(_cell)
   _table.appendChild(_row)
-  // console.log('getRowHeight:', `${uid}-table-container`)
   const _container = document.getElementById(`${uid}-table-container`)
   if (_container === null) return { rowH: -1, chrW: -1 }
   _container.appendChild(_table)
@@ -280,7 +297,6 @@ function getRowHeight(): {
   _cell.remove()
   _row.remove()
   _table.remove()
-  // console.log({rowH, chrW})
   return {
     rowH,
     chrW
@@ -326,11 +342,17 @@ function sort(field: string | undefined, direction: boolean | undefined) {
 }
 
 function formatValue(
-  val: string | number | boolean | object | null | undefined
+  val: string | number | boolean | object | null | undefined,
+  field: string
 ) {
   let rv: string = ''
   if (typeof val === 'number') {
-    rv = val.toLocaleString($settings.locale)
+    // Dirty way to avoid formatting tax_ids as numbers
+    if (field.endsWith('id') || field.endsWith('Id')) {
+      rv = val.toString()
+    } else {
+      rv = val.toLocaleString($settings.locale)
+    }
   } else if (typeof val === 'boolean') {
     rv = val ? 'YES' : 'NO'
   } else if (typeof val === 'object') {
@@ -471,7 +493,7 @@ function formatValue(
                     class="cell{rl.typeByIndex(i, field)
                       ? ' numeric'
                       : ''}{colWs[j + 1] === 0 ? ' collapsed' : ''}">
-                    {formatValue(rl.valueByIndex(i, field, '', '-'))}
+                    {formatValue(rl.valueByIndex(i, field, '', '-'), field)}
                   </div>
                 {/each}
               </div>
@@ -615,7 +637,7 @@ function formatValue(
   position: relative;
   display: flex;
   flex-direction: row;
-  // cursor: pointer;
+  cursor: pointer;
   font-size: 0.75rem;
   margin-block: auto;
   margin-inline-end: 0.2em;

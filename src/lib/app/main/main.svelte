@@ -73,6 +73,7 @@ onDestroy(async () => {
 })
 
 const mdlUpdatedEventListener = () => {
+  _prepareSeqList(selectedDocIds)
   $state.mdlSF = mainDocList.list.sortFields
   $state.mdlSD = mainDocList.list.sortDirections
   saveState()
