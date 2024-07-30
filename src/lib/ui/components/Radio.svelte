@@ -1,17 +1,16 @@
 <script lang="ts">
+export let id: string
 export let checked: boolean = false
-export let id: string = ''
 export let name: string = ''
 export let value: string = ''
 export let label: string = ''
 export let group: string = ''
 export let tabindex: number = 0
-export let margin: boolean = true
-let style: string = ''
+export let margin: boolean = false
+let style: string = 'margin-inline-start: -1px;'
 if (margin) {
-  style += ' margin-top: calc(var(--pad) * 1);'
+  style += ' margin-block-start: calc(var(--pad) * 1);'
 }
-
 style = style.trim()
 </script>
 
@@ -30,13 +29,3 @@ style = style.trim()
     <label for="{id}">{label}</label>
   {/if}
 </radio-grid>
-
-<style lang="scss">
-// radio-grid {
-//   display: grid;
-//   grid-template-columns:
-//     calc(var(--fs) + var(--pad))
-//     auto;
-//   align-items: center;
-// }
-</style>

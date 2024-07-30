@@ -58,7 +58,7 @@ async function onDrop(e: Event) {
     }
     if (ev.payload.type === 'files') {
       const _ = ev.payload.data as string[]
-      console.log(await processFilePaths(_))
+      // console.log(await processFilePaths(_))
       ev.payload.data = _.join(', ')
       payload = ev.payload
     }

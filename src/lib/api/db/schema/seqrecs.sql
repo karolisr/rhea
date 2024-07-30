@@ -502,8 +502,8 @@ GROUP BY
 -- @block drop records_user view
 -- @conn seqrecs
 ----------------------------------------------------------------------------
-DROP VIEW IF EXISTS records_user
-;
+-- DROP VIEW IF EXISTS records_user
+-- ;
 -- @block create records_user view
 -- @conn seqrecs
 CREATE VIEW IF NOT EXISTS records_user AS

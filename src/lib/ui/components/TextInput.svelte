@@ -5,25 +5,30 @@ export let value: string = ''
 export let label: string = ''
 export let placeholder: string = ''
 export let tabindex: number = 0
+export let required: boolean = false
+export let disabled: boolean = false
 </script>
 
-<div class="text-input-container">
-  {#if label}
-    <label for="{id}">{label}</label>
-  {/if}
-  <input
-    {id}
-    {name}
-    bind:value
-    {tabindex}
-    {placeholder}
-    on:change
-    on:input
-    on:click
-    type="text"
-    spellcheck="false"
-    autocomplete="off" />
-</div>
+{#if label}
+  <label for="{id}">{label}</label>
+{/if}
+<input
+  {id}
+  {name}
+  bind:value
+  {tabindex}
+  {placeholder}
+  {required}
+  {disabled}
+  on:change
+  on:input
+  on:click
+  type="text"
+  spellcheck="false"
+  autocomplete="off" />
 
-<style lang="scss">
+<style>
+input {
+  flex-grow: 1;
+}
 </style>

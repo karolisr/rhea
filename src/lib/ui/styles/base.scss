@@ -18,21 +18,17 @@ input:focus {
 button,
 input {
   padding: var(--pad);
+  min-height: calc((var(--fs) * 2) - 1px);
 }
 
 checkbox-grid {
   display: grid;
-  grid-template-columns:
-    calc(var(--fs) + calc(var(--pad) * 2))
-    auto;
+  grid-template-columns: calc(var(--fs) * 1.25 + var(--pad)) auto;
 }
 
 radio-grid {
   display: grid;
-  grid-template-columns:
-    calc(var(--fs) + var(--pad))
-    auto;
-  align-items: center;
+  grid-template-columns: calc(var(--fs) * 1.25 + var(--pad)) auto;
 }
 
 input[type='checkbox'],
@@ -41,16 +37,16 @@ input[type='radio'] {
 }
 
 input[type='checkbox'] {
-  position: absolute;
+  // position: absolute;
   margin: 0;
-  width: calc(var(--fs) + var(--pad));
-  height: calc(var(--fs) + var(--pad));
+  width: calc(var(--fs) * 1.25);
+  height: calc(var(--fs) * 1.25);
 }
 
 input[type='radio'] {
   margin: 0;
-  width: calc(var(--fs));
-  height: calc(var(--fs));
+  width: calc(var(--fs) * 1.25);
+  height: calc(var(--fs) * 1.25);
 }
 
 button,
@@ -75,14 +71,14 @@ a:hover,
 button:hover,
 input[type='button']:hover,
 input[type='submit']:hover {
-  filter: brightness(1.075) saturate(1) hue-rotate(2.5deg);
+  filter: brightness(1.1) saturate(0.9) hue-rotate(2.5deg);
 }
 
 a:active,
 button:active,
 input[type='button']:active,
 input[type='submit']:active {
-  filter: brightness(1.05) saturate(1.1) hue-rotate(-2.5deg);
+  filter: brightness(1.2) saturate(0.9) hue-rotate(2.5deg);
 }
 
 :root :disabled,

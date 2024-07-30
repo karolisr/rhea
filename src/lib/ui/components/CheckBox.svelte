@@ -1,30 +1,28 @@
 <script lang="ts">
+export let id: string
 export let checked: boolean | null | undefined = false
-export let id: string = ''
 export let label: string = ''
 export let tabindex: number = -1
-export let margin: boolean = true
-let style: string = ''
+export let margin: boolean = false
+export let disabled: boolean = false
+let style: string = 'margin-inline-start: 0px;'
 if (margin) {
-  style += ' margin-top: calc(var(--pad) * 1);'
+  style += ' margin-block-start: calc(var(--pad) * 1);'
 }
 style = style.trim()
 </script>
 
 <checkbox-grid {style}>
-  <div>
-    <input {id} bind:checked {tabindex} on:mousedown type="checkbox" />
+  <div style="">
+    <input
+      {id}
+      bind:checked
+      {tabindex}
+      on:mousedown
+      type="checkbox"
+      {disabled} />
   </div>
   {#if label}
     <label for="{id}">{label}</label>
   {/if}
 </checkbox-grid>
-
-<style lang="scss">
-// checkbox-grid {
-//   display: grid;
-//   grid-template-columns:
-//     calc(var(--fs) + calc(var(--pad) * 2))
-//     auto;
-// }
-</style>

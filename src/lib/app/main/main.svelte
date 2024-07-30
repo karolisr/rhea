@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount, onDestroy } from 'svelte'
+import { onMount, onDestroy, tick } from 'svelte'
 
 import { BROWSER, getFontSize } from '$lib/api'
 
@@ -7,7 +7,8 @@ import state, { saveState } from '$lib/svelte-stores/state'
 import databases from '$lib/svelte-stores/databases'
 
 import type { SortDir } from '$lib/types'
-import { DocList } from '$lib/doc/doc-list'
+import { DocListMain } from '$lib/doc/doc-list-main'
+import { DocListSrch } from '$lib/doc/doc-list-srch'
 import type { DocField } from '$lib/doc'
 import { SeqList } from '$lib/seq/seq-list'
 
@@ -19,65 +20,71 @@ import {
   getSeqRecIdsForCollections
 } from '$lib/api/db/seqrecs'
 
-import MainDocList from './main-doc-list.svelte'
+import MainDocTable from './main-doc-table.svelte'
 import MainCollections from './main-collections.svelte'
-import MainFilterSearch from './main-filter-search/main-filter-search.svelte'
-// ----------------------------------------------------------------------------
-
-let activeRowKey: string | undefined = undefined
-let selectedRowKeys: string[] = []
-let selectedDocIds: Set<string> = new Set()
-
-$: {
-  let _selectedDocIds = []
-  if (activeRowKey !== undefined) {
-    if (selectedRowKeys.length === 0) {
-      _selectedDocIds = [activeRowKey]
-    } else if (selectedRowKeys.includes(activeRowKey)) {
-      _selectedDocIds = [...selectedRowKeys]
-    } else {
-      // _selectedDocIds = [activeRowKey, ...selectedRowKeys]
-      _selectedDocIds = [...selectedRowKeys]
-    }
-  } else {
-    _selectedDocIds = [...selectedRowKeys]
-  }
-
-  const curr = new Set(_selectedDocIds)
-  if (selectedDocIds.symmetricDifference(curr).size !== 0) {
-    selectedDocIds = curr
-  }
-}
-
-async function _prepareSeqList(selectedDocIds: Set<string>) {
-  seqList = await mainDocList.getSeqsForIds(selectedDocIds)
-}
-
-let seqList: SeqList
-$: if (mainDocList) _prepareSeqList(selectedDocIds)
+import FilterSearch from './main-filter-search/filter-search.svelte'
+import SearchDocTable from './main-filter-search/search-doc-table.svelte'
 
 // ----------------------------------------------------------------------------
+
 let dbs: Awaited<typeof databases>
-let mainDocList: DocList
+let docListMain: DocListMain
+let docListSrch: DocListSrch
+let collUpdatedSrch: boolean = false
+let collRebuildSrch: number
+let expCollsSrch: Set<string>
+
+$: if (collUpdatedSrch) {
+  collRebuildSrch = collRebuildSrch + 1
+  collUpdatedSrch = false
+}
 
 onMount(async () => {
   dbs = await databases
   const sf: DocField[] = $state.mdlSF ? ($state.mdlSF as DocField[]) : ['id']
   const sd: SortDir[] = $state.mdlSD ? ($state.mdlSD as SortDir[]) : [1]
-  mainDocList = new DocList($dbs, 'main-doc-list', sf, sd)
-  addEventListener(mainDocList.updatedEventName, mdlUpdatedEventListener)
+  docListMain = new DocListMain($dbs, 'main-doc-list', sf, sd)
+  addEventListener(docListMain.updatedEventName, mdlUpdatedEventListener)
+
+  docListSrch = new DocListSrch($dbs, 'search-doc-list')
+  // addEventListener(docListSrch.updatedEventName, sdlUpdatedEventListener)
+
+  addEventListener('seq-db-updated', dbUpdatedListener)
 })
 
-onDestroy(async () => {
-  removeEventListener(mainDocList.updatedEventName, mdlUpdatedEventListener)
+onDestroy(() => {
+  removeEventListener(docListMain.updatedEventName, mdlUpdatedEventListener)
+  // removeEventListener(docListSrch.updatedEventName, sdlUpdatedEventListener)
+  removeEventListener('seq-db-updated', dbUpdatedListener)
 })
 
-const mdlUpdatedEventListener = () => {
-  _prepareSeqList(selectedDocIds)
-  $state.mdlSF = mainDocList.list.sortFields
-  $state.mdlSD = mainDocList.list.sortDirections
+// const sdlUpdatedEventListener = () => {}
+
+const mdlUpdatedEventListener = async () => {
+  $state.mdlSF = docListMain.list.sortFields
+  $state.mdlSD = docListMain.list.sortDirections
   saveState()
 }
+
+const dbUpdatedListener = async () => {
+  await docListMain.init()
+  selMolTypes = selMolTypes
+  selOrgnells = selOrgnells
+  selOthers = selOthers
+  collUpdated = true
+}
+
+// ----------------------------------------------------------------------------
+
+let activeRowKey: string | undefined = undefined
+let selectedRowKeys: string[] = []
+let selDocIds: Set<string> = new Set()
+
+let activeRowKeySrch: string | undefined = undefined
+let selectedRowKeysSrch: string[] = []
+let selDocIdsSrch: Set<string> = new Set()
+
+// ----------------------------------------------------------------------------
 
 let idsByMolType: Set<string> = new Set()
 async function _getIdsByMolType(selMolTypes: string[]) {
@@ -141,7 +148,7 @@ async function _getIdsByColl(
 ) {
   if (selColl !== undefined && idsByCat.size > 0) {
     if (selCollGrp === 'coll-db-all-recs' && selColl === 'ROOT') {
-      idsByColl = new Set(mainDocList.list.allKeys)
+      idsByColl = new Set(docListMain.list.allKeys)
     } else if (selCollGrp === 'coll-user') {
       idsByColl = await getSeqRecIdsForCollections(
         'user',
@@ -149,6 +156,8 @@ async function _getIdsByColl(
         $dbs,
         'dbSeqRecs'
       )
+    } else {
+      idsByColl = new Set()
     }
   } else {
     idsByColl = new Set()
@@ -164,16 +173,64 @@ $: if (collUpdated) {
   collUpdated = false
 }
 
-let idsFinal: Set<string> = new Set()
+let idsFinalUnfiltered: Set<string> = new Set()
 $: if (idsByColl !== undefined) {
-  const prev = idsFinal
+  const prev = idsFinalUnfiltered
   const curr = idsByColl.intersection(idsByCat)
   if (prev.symmetricDifference(curr).size !== 0) {
-    idsFinal = curr
+    idsFinalUnfiltered = curr
   }
 }
 
-$: if (mainDocList) mainDocList.list.filterBy('id', undefined, [...idsFinal])
+let idsByFilterTerm: Set<string> | undefined
+let idsToShow: Set<string> = new Set()
+
+$: {
+  if (idsByFilterTerm === undefined) {
+    idsToShow = idsFinalUnfiltered
+  } else {
+    idsToShow = idsFinalUnfiltered.intersection(idsByFilterTerm)
+  }
+}
+
+$: {
+  if (docListMain) {
+    docListMain.list.filterBy('id', undefined, [...idsToShow])
+  }
+}
+
+// ----------------------------------------------------------------------------
+$: {
+  let _idsToShowSel = new Set(selectedRowKeys).intersection(idsToShow)
+  if (activeRowKey !== undefined) {
+    if (_idsToShowSel.size === 0) {
+      _idsToShowSel = new Set([activeRowKey])
+    }
+  }
+
+  if (selDocIds.symmetricDifference(_idsToShowSel).size !== 0) {
+    selDocIds = _idsToShowSel
+  }
+}
+// ----------------------------------------------------------------------------
+
+let selCollsSrch: string[] | undefined
+
+// ----------------------------------------------------------------------------
+async function _prepareSeqList(
+  selDocIds: Set<string>,
+  selCollGrp: string | undefined
+) {
+  if (selCollGrp !== 'coll-search-results' && selDocIds.size > 0) {
+    seqList = await docListMain.getSeqsForIds(selDocIds)
+  } else {
+    seqList = new SeqList([])
+  }
+}
+
+let seqList: SeqList
+$: _prepareSeqList(selDocIds, selCollGrp)
+// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 let tvMainNRowsToShow: number = 15
@@ -225,7 +282,10 @@ $: {
         bind:selMolTypes
         bind:selOrgnells
         bind:selOthers
-        {mainDocList} />
+        bind:expCollsSrch
+        bind:collRebuildSrch
+        bind:selCollsSrch
+        {docListMain} />
     </div>
     <ResizableGrid
       bind:nRow="{gridMainNRow}"
@@ -236,22 +296,34 @@ $: {
       minRowH="{0}"
       minColW="{0}">
       <div class="grid-main-filter-search">
-        <MainFilterSearch bind:selCollGrp />
+        <FilterSearch bind:selCollGrp bind:idsByFilterTerm />
       </div>
 
       <div class="grid-main-tableview">
-        <MainDocList
-          bind:tvMainRowH
-          bind:mainDocList
-          bind:activeRowKey
-          bind:selectedRowKeys
-          bind:selCollGrp
-          bind:selColl
-          bind:collUpdated />
+        {#if selCollGrp === 'coll-search-results'}
+          <SearchDocTable
+            bind:tvMainRowH
+            bind:docListSrch
+            bind:activeRowKeySrch
+            bind:selectedRowKeysSrch
+            bind:selDocIdsSrch
+            bind:selCollGrp
+            bind:selColl
+            bind:selCollsSrch
+            bind:collUpdatedSrch />
+        {:else}
+          <MainDocTable
+            bind:tvMainRowH
+            bind:docListMain
+            bind:activeRowKey
+            bind:selectedRowKeys
+            bind:selCollGrp
+            bind:selColl
+            bind:collUpdated />
+        {/if}
       </div>
 
       <div class="grid-main-seqview">
-        <!-- <div class="placeholder">grid-main-seqview</div> -->
         {#if seqList}
           <SeqView uid="main-seqview" seqs="{seqList}" />
         {/if}

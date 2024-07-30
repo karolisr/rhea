@@ -2,6 +2,7 @@ import Database from '@tauri-apps/plugin-sql'
 import { BaseDirectory, mkdir } from '@tauri-apps/plugin-fs'
 
 import { schemaTaxonomy } from './schema/taxonomy'
+import { schemaSummaries } from './schema/summaries'
 import { schemaSeqRecs } from './schema/seqrecs'
 import { schemaSequences } from './schema/sequences'
 import { schemaCollections } from './schema/collections'
@@ -9,6 +10,7 @@ import { schemaCollections } from './schema/collections'
 export class DB extends Database {}
 
 export const dbPathTaxonomy: string = 'sqlite:db/taxonomy.db'
+export const dbPathSummaries: string = 'sqlite:db/summaries.db'
 export const dbPathSeqRecs: string = 'sqlite:db/seqrecs.db'
 export const dbPathSeqRecsUser: string = 'sqlite:db/seqrecs-user.db'
 export const dbPathSequences: string = 'sqlite:db/sequences.db'
@@ -25,6 +27,15 @@ export async function initDBTaxonomy() {
   const db: DB = await DB.load(dbPathTaxonomy)
   await db.execute(schemaTaxonomy.text)
   // console.log('initDBTaxonomy: DONE')
+  return db
+}
+
+export async function initDBSummaries() {
+  // console.log('initDBSummaries: BEGIN')
+  await prepareDBDir()
+  const db: DB = await DB.load(dbPathSummaries)
+  await db.execute(schemaSummaries.text)
+  // console.log('initDBSummaries: DONE')
   return db
 }
 

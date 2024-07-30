@@ -38,8 +38,8 @@ export async function insertSeqRecs(
         // --------------------------------------------------------------------
         await beginTransaction(dbSeqRecs)
         for (let j = 1; j < _sqls.length; j++) {
-          const ev = new Event('seq-db-insert-in-progress')
-          document.dispatchEvent(ev)
+          // const ev = new Event('seq-db-insert-in-progress')
+          // dispatchEvent(ev)
           const _sql = _sqls[j]
           const sqlValsCount = _sql.values.length
           if (sqlValsCount > 0) {
@@ -69,8 +69,8 @@ export async function insertSeqRecs(
         }
         await commitTransaction(dbSeqRecs)
         console.log('insertSeqRecs: Done.')
-        const ev = new Event('seq-db-updated')
-        document.dispatchEvent(ev)
+        // const ev = new Event('seq-db-updated')
+        // dispatchEvent(ev)
       } catch (error) {
         await rollbackTransaction(dbSeqRecs)
         console.error('Error in insertSeqRecs:', error)

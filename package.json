@@ -1,5 +1,5 @@
 {
-  "name": "cdsdb-tauri-sveltekit",
+  "name": "rhea-tauri-sveltekit",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -51,6 +51,7 @@
     "@tauri-apps/plugin-sql": "^2.0.0-beta.7",
     "d3": "^7.9.0",
     "d3-scale": "^4.0.2",
+    "date-fns": "^3.6.0",
     "detector-js": "^2.0.11",
     "file-type-checker": "^1.1.1",
     "idb": "^8.0.0",

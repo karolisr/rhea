@@ -1,9 +1,17 @@
 import type { IndexedUndefined } from '$lib/types'
 
-export enum EntrezFilters {
+export enum EntrezFiltersOrganelles {
   plastid = 'plastid',
   chloroplast = 'chloroplast',
   mitochondrion = 'mitochondrion'
+}
+
+export enum EntrezPropertiesBiomol {
+  DNA = 'biomol_genomic',
+  RNA = 'biomol_rna',
+  mRNA = 'biomol_mrna',
+  rRNA = 'biomol_rrna',
+  tRNA = 'biomol_trna'
 }
 
 export enum NCBIDatabase {
@@ -107,6 +115,17 @@ export interface ESummaryNuccore extends ESummary {
   subtype: string
   subname: string
   assemblyacc: string
+  assemblygi: string
+  biosample: string
+  caption: string
+  extra: string
+  flags: number
+  gi: number
+  projectid: string
+  segsetsize: string
+  strain: string
+  tech: string
+  term: string
   statistics: {
     type: string
     count: number

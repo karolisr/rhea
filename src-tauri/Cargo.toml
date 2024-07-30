@@ -1,11 +1,11 @@
 [package]
-name = "cdsdb_app_binary"
+name = "rhea"
 version = "0.1.0"
-description = "CDSDB Description in Cargo.toml"
+description = "Rhea description in cargo.toml"
 authors = ["Karolis Ramanauskas"]
 license = "GNU General Public License v3.0"
-repository = "https://github.com/karolisr/cdsdb"
-default-run = "cdsdb_app_binary"
+repository = "https://github.com/karolisr/rhea"
+default-run = "rhea"
 edition = "2021"
 rust-version = "1.76"
 

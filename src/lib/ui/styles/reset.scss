@@ -67,11 +67,19 @@ body {
   cursor: default;
 }
 
+form {
+  display: contents;
+}
+
 input {
   background-color: white;
   border-style: solid;
   border-color: black;
-  min-height: 23px;
+  text-align: start;
+}
+
+input[type='number'] {
+  text-align: end;
 }
 
 button,
@@ -88,15 +96,15 @@ input[type='radio'] {
 
 input[type='checkbox'] {
   align-content: center;
-  min-height: 15px;
-  min-width: 15px;
+  min-height: calc(var(--fs) * 1.25);
+  min-width: calc(var(--fs) * 1.25);
 }
 
 input[type='radio'] {
   border-radius: 50%;
   position: relative;
-  min-height: 12px;
-  min-width: 12px;
+  min-height: calc(var(--fs) * 1.25);
+  min-width: calc(var(--fs) * 1.25);
 }
 
 input[type='checkbox']:checked::after {
@@ -120,8 +128,8 @@ input[type='radio']:checked::after {
   margin: auto;
   position: relative;
   border-radius: 50%;
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.75rem;
+  height: 0.75rem;
   border-style: solid;
   background-color: black;
 }

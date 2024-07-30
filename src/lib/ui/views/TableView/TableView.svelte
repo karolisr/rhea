@@ -52,18 +52,8 @@ const rightClickListener = () => {
 }
 
 const rlUpdatedListener = async () => {
-  const _prevActiveRowKey = activeRowKey
   rl = rl
-  await tick()
-  if (_prevActiveRowKey) {
-    const _activeRow = rl.indexByKey(_prevActiveRowKey as string)
-    if (_activeRow !== undefined) {
-      activeRow = _activeRow
-    } else {
-      activeRow = 0
-    }
-    scrollActiveRowIntoView()
-  }
+  _selectedRowKeys = _selectedRowKeys
 }
 
 const resizeEvtListener = (_: UIEvent) => {
@@ -76,6 +66,8 @@ export let showFooterRow: boolean = false
 
 export let multiRowSelect: boolean = false
 export let showCheckBoxes: boolean = false
+
+export let draggable: boolean = false
 
 export let onDeleteRows: (ids: string[]) => unknown = (id) => {
   console.warn('onDeleteRows placeholder function:', uid, id)
@@ -115,16 +107,23 @@ function processSelectedRowKeys(_selectedRowKeys: {
 }) {
   const _ = getPropNames(_selectedRowKeys)
   const ids: string[] = []
-  _.forEach((n) => {
-    if (_selectedRowKeys[n] === true) ids.push(n)
+  _.forEach((k) => {
+    const v = _selectedRowKeys[k]
+    if (rl.allKeys.includes(k) && v === true) ids.push(k)
   })
   return ids
 }
 
-export let selectedRowKeys: string[] = []
+export let selectedRowKeys: string[]
+
 let _selectedRowKeys: {
   [key: string]: boolean | null | undefined
 } = {}
+
+if (selectedRowKeys.length > 0) {
+  selectedRowKeys.forEach((k) => (_selectedRowKeys[k] = true))
+}
+
 let activeRow: number = 0
 
 $: nRow = maxRowsVis + nH + nF
@@ -149,8 +148,21 @@ $: {
   }
 }
 
-$: if (activeRow !== undefined)
-  activeRowKey = rl.stringValueByIndex(activeRow, rl.keyField)
+function updateActiveRow(rl: RecordList<IndexedUndefined>) {
+  const _prevActiveRowKey = activeRowKey
+  if (_prevActiveRowKey) {
+    const _activeRow = rl.indexByKey(_prevActiveRowKey as string)
+    if (_activeRow !== undefined) {
+      activeRow = _activeRow
+    } else {
+      activeRow = 0
+    }
+    scrollActiveRowIntoView()
+  }
+}
+
+$: updateActiveRow(rl)
+$: activeRowKey = rl.stringValueByIndex(activeRow)
 
 function onDragStart(e: Event) {
   const ev = e as DragStartEvent
@@ -180,6 +192,7 @@ const _onfocus = (ev: FocusEvent) => {
 }
 
 function scrollActiveRowIntoView() {
+  if (elc === undefined) return
   if (activeRow < firstRow - 1 || activeRow > lastRow + 1) {
     elc.scrollTo({
       top: max(activeRow - floor(maxRowsVis / 2), 0) * rowH,
@@ -253,18 +266,20 @@ const _onkeydown = (ev: KeyboardEvent) => {
             activeRowKey !== undefined &&
             _idsToRemove.includes(activeRowKey)
           ) {
-            activeRow = max(0, activeRow - 1)
+            activeRow = max(0, min(activeRow + 1, rl.length - 2))
           }
         } else if (activeRowKey !== undefined) {
           onDeleteRows([activeRowKey])
-          activeRow = max(0, activeRow - 1)
+          activeRow = max(0, min(activeRow + 1, rl.length - 2))
         }
       }
       break
     default:
       break
   }
-  scrollActiveRowIntoView()
+  if (!ev.shiftKey) {
+    scrollActiveRowIntoView()
+  }
 }
 
 const _onkeyup = (ev: KeyboardEvent) => {
@@ -275,7 +290,6 @@ const _onkeyup = (ev: KeyboardEvent) => {
 
 const _onmousedown = (ev: MouseEvent) => {
   if (shiftSelectionRow !== undefined) {
-    console.log(shiftSelectionRow, activeRow)
     const n = shiftSelectionRow - activeRow
     if (multiRowSelect && activeRowKey !== undefined) {
       for (let i = 0; i < Math.abs(n) + 1; i++) {
@@ -498,6 +512,7 @@ function formatValue(
                   <!-- <div class="cell-corner"></div> -->
                   <div class="cell">
                     <CheckBox
+                      id="{uid}-checkbox-h"
                       tabindex="{-1}"
                       margin="{false}"
                       on:mousedown="{(e) => {
@@ -528,7 +543,7 @@ function formatValue(
                   ? 'selected-row'
                   : ''}
                 {activeRow === i ? 'active-row' : ''}
-                draggable
+                {draggable ? 'draggable' : ''}
               "
                 role="none"
                 on:mousedown="{() => {

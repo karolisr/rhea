@@ -38,11 +38,11 @@ export class RecordList<T> {
   }
 
   get keys() {
-    return this._items.map((x) => x[this._keyField]) as string[]
+    return this._items.map((x) => x[this.keyField]) as string[]
   }
 
   get allKeys() {
-    return this._allItems.map((x) => x[this._keyField]) as string[]
+    return this._allItems.map((x) => x[this.keyField]) as string[]
   }
 
   get length() {
@@ -124,7 +124,7 @@ export class RecordList<T> {
 
   valueByIndex(
     index: number,
-    field: keyof T = this._keyField,
+    field: keyof T = this.keyField,
     stringValueForObjects: string | undefined = undefined,
     stringValueWhenEmpty: string | undefined = undefined
   ) {
@@ -143,14 +143,14 @@ export class RecordList<T> {
     }
   }
 
-  stringValueByIndex(index: number, field: keyof T = this._keyField) {
+  stringValueByIndex(index: number, field: keyof T = this.keyField) {
     return this.valueByIndex(index, field, '') as string
   }
 
   indexByKey(key: string) {
     for (let i = 0; i < this.length; i++) {
       const rec = this.items[i]
-      if (rec[this._keyField] === key) {
+      if (rec[this.keyField] === key) {
         return i
       }
     }
@@ -160,7 +160,7 @@ export class RecordList<T> {
     const rv: number[] = []
     for (let i = 0; i < this.length; i++) {
       const rec = this.items[i]
-      if (keys.includes(rec[this._keyField] as string)) {
+      if (keys.includes(rec[this.keyField] as string)) {
         rv.push(i)
       }
     }
@@ -174,7 +174,7 @@ export class RecordList<T> {
     }
   }
 
-  valueByKey(key: string, field: keyof T = this._keyField) {
+  valueByKey(key: string, field: keyof T = this.keyField) {
     let idx: number | undefined = this.indexByKey(key)
     if (idx !== undefined) {
       return this.valueByIndex(idx, field)
@@ -185,8 +185,19 @@ export class RecordList<T> {
     this.sortBy(this._sortFields as KnownKeys<T>[], this._sortDirections)
   }
 
-  addItems(items: T[]) {
-    this._allItems.push(...items)
+  addItems(items: T[], unique: boolean = true) {
+    if (!unique) {
+      this._allItems.push(...items)
+    } else {
+      const uniqueItems: T[] = []
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        if (!this.allKeys.includes(item[this.keyField] as string)) {
+          uniqueItems.push(item)
+        }
+      }
+      this._allItems.push(...uniqueItems)
+    }
     this.reSort()
   }
 

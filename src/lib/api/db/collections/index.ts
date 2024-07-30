@@ -1,7 +1,8 @@
 import { v4 as uuid } from 'uuid'
 import type { Collection } from '$lib/types'
-import sql, { empty, join } from 'sql-template-tag'
+import sql, { bulk, empty, join } from 'sql-template-tag'
 import { DB } from '$lib/api/db'
+import type { Databases } from '$lib/svelte-stores/databases'
 
 async function _getCollections(
   ids: string[],
@@ -171,5 +172,53 @@ export async function relabelCollection(
     return label
   } else {
     return null
+  }
+}
+export async function addToCollection(
+  accs: string[],
+  collId: string,
+  dbs: Databases,
+  dbName: 'dbSeqRecs' | 'dbSeqRecsUser' | 'dbSummaries',
+  tableName:
+    | 'assoc_records_user'
+    | 'assoc_esummseq_search_results' = 'assoc_records_user'
+) {
+  if (accs.length === 0) return
+  let db: DB | null = dbs[dbName]
+  if (db !== null) {
+    const values: string[][] = []
+    accs.forEach((acc) => values.push([collId, acc]))
+
+    const _sql = sql`
+      INSERT INTO
+        table_name ("id", "record_id")
+      VALUES
+        ${bulk(values)}
+      ON CONFLICT ("id", "record_id") DO NOTHING
+      ;
+    `
+    await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
+  }
+}
+export async function removeFromCollection(
+  accs: string[],
+  collId: string,
+  dbs: Databases,
+  dbName: 'dbSeqRecs' | 'dbSeqRecsUser' | 'dbSummaries',
+  tableName:
+    | 'assoc_records_user'
+    | 'assoc_esummseq_search_results' = 'assoc_records_user'
+) {
+  if (accs.length === 0) return
+  let db: DB | null = dbs[dbName]
+  if (db !== null) {
+    const _sql = sql`
+      DELETE FROM table_name
+      WHERE
+        id = ${collId}
+        AND record_id IN ${bulk([accs])}
+      ;
+    `
+    await db.execute(_sql.text.replace('table_name', tableName), _sql.values)
   }
 }

@@ -1,41 +1,46 @@
 <script lang="ts">
+import { onMount, onDestroy } from 'svelte'
 import TableView from '$lib/ui/views/TableView'
-import { DocList } from '$lib/doc/doc-list'
+import { DocListMain } from '$lib/doc/doc-list-main'
 
 export let tvMainRowH: number | undefined = undefined
-export let mainDocList: DocList
+export let docListMain: DocListMain
 export let activeRowKey: string | undefined
 export let selectedRowKeys: string[]
 export let selCollGrp: string | undefined
 export let selColl: string | undefined
 export let collUpdated: boolean
 
+onMount(() => {})
+onDestroy(() => {})
+
 async function onDeleteRows(ids: string[]) {
   if (selColl !== undefined && selCollGrp === 'coll-user') {
     try {
-      await mainDocList.remFromColl(ids, selColl)
+      await docListMain.remFromColl(ids, selColl)
+      collUpdated = true
     } catch (error) {
       console.error(error)
     }
-    collUpdated = true
   } else if (selColl !== undefined && selCollGrp === 'coll-db-all-recs') {
     try {
-      await mainDocList.delFromDb(ids)
+      await docListMain.delFromDb(ids)
+      collUpdated = true
     } catch (error) {
       console.error(error)
     }
-    collUpdated = true
   }
 }
 </script>
 
 <TableView
-  uid="seq-rec-list"
-  rl="{mainDocList.tableViewList}"
+  uid="main-doc-list-table"
+  rl="{docListMain.tableViewList}"
   bind:rowHeight="{tvMainRowH}"
   bind:activeRowKey
   bind:selectedRowKeys
   {onDeleteRows}
   showCheckBoxes
   multiRowSelect
-  showHeaderRow />
+  showHeaderRow
+  draggable />

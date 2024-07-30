@@ -3,7 +3,11 @@ import { onMount, onDestroy } from 'svelte'
 import CheckBox from '$lib/ui/components/CheckBox.svelte'
 import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getSeqRecords, getTaxIds, makeESearchTerm } from '$lib/ncbi/utils'
-import { EntrezFilters, NCBIDatabase, type ESummaryNuccore } from '$lib/ncbi'
+import {
+  EntrezFiltersOrganelles,
+  NCBIDatabase,
+  type ESummaryNuccore
+} from '$lib/ncbi'
 import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
 import databases from '$lib/svelte-stores/databases'
 import { insertGbSeqRecords } from '$lib/api/db/seqrecs'
@@ -50,8 +54,9 @@ async function search(): Promise<void> {
   if (taxids.length > 0) {
     const term = makeESearchTerm(
       taxids,
-      [...Object.values(EntrezFilters)],
-      refSeqOnly
+      [...Object.values(EntrezFiltersOrganelles)],
+      refSeqOnly,
+      ['DNA']
     )
     const esearchResult = await esearch(NCBIDatabase.nuccore, term, true)
     esummaryResult = (await esummary(esearchResult.params)) as ESummaryNuccore[]

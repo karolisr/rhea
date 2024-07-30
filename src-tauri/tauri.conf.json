@@ -39,18 +39,18 @@
     "shortDescription": "Phylogenetic conflict, locus-by-locus.",
     "linux": {}
   },
-  "productName": "CDSDB",
+  "productName": "Rhea",
   "version": "0.1.0",
-  "identifier": "is.karol.cdsdb",
+  "identifier": "is.karol.rhea",
   "app": {
     "windows": [
       {
         "label": "main",
-        "title": "CDSDB",
+        "title": "Rhea",
         "center": false,
         "dragDropEnabled": true,
-        "width": 1200,
-        "height": 800,
+        "width": 800,
+        "height": 600,
         "resizable": true,
         "minWidth": 600,
         "minHeight": 420,

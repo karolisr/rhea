@@ -9,7 +9,7 @@ export let selected: string | undefined = undefined
 export let selectedGroupUid: string | undefined = uid
 
 export let selectedLineage: string[] | undefined = undefined
-export let selectedChildIds: string[] | undefined = undefined
+export let selectedChildIds: string[] | undefined = []
 export let selectedChildIdsEnabled: boolean = false
 
 export let acceptedDropTypes: string[] = []
@@ -31,8 +31,7 @@ export let expandedIds: Set<string> = new Set()
 
 if (expanded || expandedIds.size > 0) {
   expanded = true
-  // expandedIds.add(parentId)
-  expandedIds = expandedIds
+  expandedIds.add('ROOT')
 }
 
 export let createNode: (

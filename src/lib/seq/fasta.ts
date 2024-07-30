@@ -1,6 +1,6 @@
 import { type SeqType, mkSeq, detectSeqType } from '.'
 import { SeqRecord } from './seq-record'
-import { SeqList } from './seq-list'
+// import { SeqList } from './seq-list'
 
 export function detectFastaSeqType(fastaStr: string): keyof typeof SeqType {
   const lines = fastaStr.split('\n')

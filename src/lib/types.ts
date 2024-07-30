@@ -22,6 +22,18 @@ export type ValuesOf<T> = T extends {
 
 export type KnownKeys<T> = ValuesOf<KeyToKeyNoIndex<T>>
 
+export type Concrete<Type> = {
+  [Property in keyof Type]-?: Type[Property]
+}
+
+export type Optional<Type> = {
+  [Property in keyof Type]+?: Type[Property]
+}
+
+export type Mutable<Type> = {
+  -readonly [Property in keyof Type]: Type[Property]
+}
+
 export type Unlistener = () => void
 
 export type SortDir = 1 | -1

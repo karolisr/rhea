@@ -1,4 +1,4 @@
-# CDSDB
+# Rhea
 
 ## Setup for Development
 

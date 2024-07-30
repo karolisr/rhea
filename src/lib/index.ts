@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+
 import { getPropNames as _getPropNames } from './utils'
 // import { setDiff as _setDiff } from './utils'
 import { removeCycle as _removeCycle } from './utils'
@@ -21,3 +23,7 @@ export const max = Math.max
 export const floor = Math.floor
 export const round = Math.round
 export const ceil = Math.ceil
+
+export function dateTimeStringSortable(): string {
+  return format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+}

@@ -28,7 +28,7 @@ onDestroy(() => {
 })
 </script>
 
-<div class="padded">
+<div class="settings-container padded">
   <div id="settings-row">
     <div id="settings-theme" class="padded">
       <fieldset>
@@ -121,3 +121,9 @@ onDestroy(() => {
     </fieldset>
   </div>
 </div>
+
+<style>
+.settings-container {
+  overflow-y: scroll;
+}
+</style>

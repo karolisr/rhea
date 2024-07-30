@@ -2,6 +2,7 @@ import { EutilParams } from './eutils-params'
 import { RetMode, RetTypeEFetch, NCBIDatabase } from '.'
 import { esearch, efetch } from './eutils'
 import type { GBSet, GBSeq } from './types/GBSet'
+import { EntrezFiltersOrganelles, EntrezPropertiesBiomol } from '.'
 
 export async function getTaxIds(term: string): Promise<number[]> {
   if (term.trim() !== '') {
@@ -19,29 +20,49 @@ export async function getTaxIds(term: string): Promise<number[]> {
 }
 
 export function makeESearchTerm(
-  taxids: number[],
-  filters: string[],
-  only_ref_seq: boolean = false,
-  len_min: number = 1e4,
-  len_max: number = 1e7
+  taxids: number[] = [],
+  filters: (keyof typeof EntrezFiltersOrganelles)[] = [],
+  refSeq: boolean = false,
+  props: (keyof typeof EntrezPropertiesBiomol)[] = [],
+  lenMin: number = 1e4,
+  lenMax: number = 1e7
 ): string {
-  len_min = Math.max(len_min, 0)
-  len_max = Math.min(len_max, 1e10)
+  lenMin = Math.max(lenMin, 0)
+  lenMax = Math.min(lenMax, 1e10)
+
+  const _filters = filters.map((k) => EntrezFiltersOrganelles[k])
+  const _props = props.map((k) => EntrezPropertiesBiomol[k])
 
   const taxn_term: string =
     '(txid' + taxids.join('[PORGN] OR txid') + '[PORGN])'
-  const filter_term: string = '(' + filters.join('[filter] OR ') + '[filter])'
-  const slen_term: string = `${len_min}[SLEN] : ${len_max}[SLEN]`
-  const bmol_term = 'biomol_genomic[PROP]'
+  const filt_term: string = '(' + _filters.join('[filter] OR ') + '[filter])'
+  const slen_term: string = `${lenMin}[SLEN] : ${lenMax}[SLEN]`
+  const props_term: string = '(' + _props.join('[PROP] OR ') + '[PROP])'
   const refs_term = 'refseq[filter]'
 
-  const terms: string[] = [taxn_term, filter_term, slen_term, bmol_term]
+  const terms: string[] = []
 
-  if (only_ref_seq) {
+  if (taxids.length > 0) {
+    terms.push(taxn_term)
+  }
+
+  if (filters.length > 0) {
+    terms.push(filt_term)
+  }
+
+  terms.push(slen_term)
+
+  if (props.length > 0) {
+    terms.push(props_term)
+  }
+
+  if (refSeq) {
     terms.push(refs_term)
   }
 
-  return terms.join(' AND ')
+  const term = terms.join(' AND ')
+  // console.log(term)
+  return term
 }
 
 export async function getSeqRecords(

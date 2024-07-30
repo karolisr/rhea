@@ -14,6 +14,8 @@ import {
 
 import { parse_xml_txt } from '$lib/xml'
 
+import { min } from '$lib'
+
 function findApiKey(): string | undefined {
   let ncbi_api_key: string | undefined
   const unsubscribe = settings.subscribe((stng) => {
@@ -36,7 +38,7 @@ const EutilsBaseURL = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
 const EutilsRetMax = 500
 
 async function eutil(util: Eutil, params: EutilParams): Promise<Response> {
-  params.tool = 'is.karol.cdsdb'
+  params.tool = 'is.karol.rhea'
   params.api_key = findApiKey()
   params.email = findEmail()
 
@@ -187,7 +189,9 @@ export async function esearch(
   const data = (await processResponse(response)) as {
     esearchresult: History
   }
-  p.count = Number(data.esearchresult.count)
+  // Hard limit max results for now.
+  // p.count = Number(data.esearchresult.count)
+  p.count = min(Number(data.esearchresult.count), 100)
   p.retmax = undefined
   p.retstart = undefined
   p.query_key = data.esearchresult.querykey

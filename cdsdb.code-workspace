@@ -18,22 +18,22 @@
         "previewLimit": 50,
         "driver": "SQLite",
         "name": "taxonomy",
-        "group": "cdsdb",
-        "database": "/Users/karolis/Library/Application Support/is.karol.cdsdb/db/taxonomy.db"
+        "group": "rhea",
+        "database": "/Users/karolis/Library/Application Support/is.karol.rhea/db/taxonomy.db"
       },
       {
         "previewLimit": 50,
         "driver": "SQLite",
         "name": "collections",
-        "group": "cdsdb",
-        "database": "/Users/karolis/Library/Application Support/is.karol.cdsdb/db/collections.db"
+        "group": "rhea",
+        "database": "/Users/karolis/Library/Application Support/is.karol.rhea/db/collections.db"
       },
       {
         "previewLimit": 50,
         "driver": "SQLite",
         "name": "seqrecs",
-        "group": "cdsdb",
-        "database": "/Users/karolis/Library/Application Support/is.karol.cdsdb/db/seqrecs.db"
+        "group": "rhea",
+        "database": "/Users/karolis/Library/Application Support/is.karol.rhea/db/seqrecs.db"
       }
     ]
   }

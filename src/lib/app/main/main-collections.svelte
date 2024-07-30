@@ -8,7 +8,7 @@ import {
   relabelCollection
 } from '$lib/api/db/collections'
 import databases from '$lib/svelte-stores/databases'
-import { DocList } from '$lib/doc/doc-list'
+import { DocListMain } from '$lib/doc/doc-list-main'
 // ----------------------------------------------------------------------------
 
 let dbs: Awaited<typeof databases>
@@ -19,10 +19,14 @@ onMount(async () => {
 
 onDestroy(async () => {})
 
-export let mainDocList: DocList
+export let docListMain: DocListMain
+
 export let selCollGrp =
   ($state.selCollGrp as string | undefined) || 'coll-db-all-recs'
 export let selColl = ($state.selColl as string | undefined) || 'ROOT'
+
+export let collRebuildSrch: number
+export let expCollsSrch = $state.expCollsSrch as Set<string> | undefined
 
 let selMolType = ($state.selMolType as string | undefined) || 'ROOT'
 let selOrgnell = ($state.selOrgnell as string | undefined) || 'ROOT'
@@ -33,8 +37,6 @@ let expCollsMolType = $state.expCollsMolType as Set<string> | undefined
 let expCollsOrgnell = $state.expCollsOrgnell as Set<string> | undefined
 let expCollsOther = $state.expCollsOther as Set<string> | undefined
 
-let rebuildTagCollsUsr: number
-
 $: {
   $state.selCollGrp = selCollGrp
   $state.selColl = selColl
@@ -42,6 +44,7 @@ $: {
   $state.selOrgnell = selOrgnell
   $state.selOther = selOther
   $state.expCollsUsr = expCollsUsr
+  $state.expCollsSrch = expCollsSrch
   $state.expCollsMolType = expCollsMolType
   $state.expCollsOrgnell = expCollsOrgnell
   $state.expCollsOther = expCollsOther
@@ -77,6 +80,16 @@ $: {
     selOthers = _selOthers
   }
 }
+
+export let selCollsSrch: string[] | undefined
+let _selCollsSrch: string[] = []
+$: {
+  const prev = new Set(selCollsSrch)
+  const curr = new Set(_selCollsSrch)
+  if (prev.symmetricDifference(curr).size !== 0) {
+    selCollsSrch = _selCollsSrch
+  }
+}
 </script>
 
 {#if $dbs && $dbs.dbsOK && $dbs.dbCollections}
@@ -90,7 +103,6 @@ $: {
       bind:selected="{selColl}"
       bind:selectedGroupUid="{selCollGrp}"
       bind:expandedIds="{expCollsUsr}"
-      bind:rebuild="{rebuildTagCollsUsr}"
       contextMenuEnabled="{true}"
       createNodeEnabled="{true}"
       deleteNodeEnabled="{true}"
@@ -99,19 +111,27 @@ $: {
       deleteNode="{deleteCollection}"
       relabelNode="{relabelCollection}"
       acceptedDropTypes="{['acc-ver-array']}"
-      addRecords="{mainDocList.addToColl.bind(mainDocList)}" />
+      addRecords="{docListMain.addToColl.bind(docListMain)}" />
 
     <TreeView
       uid="{'coll-search-results'}"
       rootLabel="Sequence Search"
       tableName="search_results"
       db="{$dbs.dbCollections}"
-      expanded="{true}"
+      expanded="{false}"
       bind:selected="{selColl}"
       bind:selectedGroupUid="{selCollGrp}"
+      bind:expandedIds="{expCollsSrch}"
+      bind:rebuild="{collRebuildSrch}"
+      contextMenuEnabled="{true}"
+      createNodeEnabled="{false}"
+      deleteNodeEnabled="{true}"
+      relabelNodeEnabled="{true}"
       createNode="{createCollection}"
       deleteNode="{deleteCollection}"
-      relabelNode="{relabelCollection}" />
+      relabelNode="{relabelCollection}"
+      bind:selectedChildIds="{_selCollsSrch}"
+      selectedChildIdsEnabled />
 
     <TreeView
       uid="{'coll-db-all-recs'}"

@@ -27,7 +27,7 @@ export let relabelId: string | undefined = undefined
 export let expandedIds: Set<string>
 
 export let selectedLineage: string[] | undefined = undefined
-export let selectedChildIds: string[] | undefined
+export let selectedChildIds: string[] | undefined = []
 export let selectedChildIdsEnabled: boolean = false
 
 export let acceptedDropTypes: string[]
@@ -62,20 +62,21 @@ export let removeRecords: (ids: string[], collId: string) => Promise<void>
 //   }
 // }
 
-$: if (selectedChildIdsEnabled) {
-  _getAllChildIds(selected, db, tableName, tree.id)
-}
+$: _getAllChildIds(selected, db, tableName, tree.id, selectedChildIdsEnabled)
 
 async function _getAllChildIds(
   selectedTreeId: string | undefined,
   db: DB,
   tableName: string = 'collections',
-  parentId: string = 'ROOT'
+  parentId: string = 'ROOT',
+  enabled: boolean = true
 ) {
-  if (selectedGroupUid === uid && selectedTreeId === tree.id) {
-    selectedChildIds = await getAllChildIds(db, tableName, tree.id)
-  } else if (selectedGroupUid !== uid) {
-    selectedChildIds = []
+  if (enabled) {
+    if (selectedGroupUid === uid && selectedTreeId === tree.id) {
+      selectedChildIds = await getAllChildIds(db, tableName, tree.id)
+    } else if (selectedGroupUid !== uid) {
+      selectedChildIds = []
+    }
   }
 }
 
@@ -85,6 +86,7 @@ let _deleteNode: () => void = async () => {
     selectedGroupUid = uid
   }
   await deleteNode(tree.id)
+  expandedIds.delete(tree.id)
   rebuild += 1
 }
 
@@ -95,7 +97,7 @@ let _createNode: (label: string) => void = async (label) => {
     selectedGroupUid = uid
     tree = await buildNode(db, tableName, rootLabel, tree.id, rootId)
     expandedIds.add(tree.id)
-    expandedIds = expandedIds
+    // expandedIds = expandedIds
     relabelId = selected
   }
 }
@@ -156,6 +158,7 @@ const mousedownEvtListener = (e: MouseEvent) => {
 function select(e: MouseEvent) {
   selected = tree.id
   selectedGroupUid = uid
+  _getAllChildIds(selected, db, tableName, tree.id, selectedChildIdsEnabled)
 }
 
 async function toggleExpand() {

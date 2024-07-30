@@ -3,6 +3,7 @@ import { BROWSER } from '$lib/api'
 import {
   DB,
   initDBTaxonomy,
+  initDBSummaries,
   initDBSeqRecs,
   initDBSeqRecsUser,
   initDBSequences,
@@ -13,6 +14,7 @@ import {
 export interface Databases {
   dbsOK: boolean
   dbTaxonomy: DB | null
+  dbSummaries: DB | null
   dbSeqRecs: DB | null
   dbSeqRecsUser: DB | null
   dbSequences: DB | null
@@ -23,6 +25,7 @@ export interface Databases {
 async function init(): Promise<Readable<Databases>> {
   let dbsOK = false
   let dbCollections = null
+  let dbSummaries = null
   let dbSeqRecs = null
   let dbSeqRecsUser = null
   let dbSequences = null
@@ -32,6 +35,7 @@ async function init(): Promise<Readable<Databases>> {
   if (BROWSER === 'Tauri') {
     dbsOK = true
     dbCollections = await initDBCollections()
+    dbSummaries = await initDBSummaries()
     dbSeqRecs = await initDBSeqRecs()
     dbSeqRecsUser = await initDBSeqRecsUser()
     dbSequences = await initDBSequences()
@@ -42,6 +46,7 @@ async function init(): Promise<Readable<Databases>> {
   let dbs: Databases = {
     dbsOK,
     dbTaxonomy,
+    dbSummaries,
     dbSeqRecs,
     dbSeqRecsUser,
     dbSequences,

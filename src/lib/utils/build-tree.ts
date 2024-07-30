@@ -34,7 +34,7 @@ export async function buildNode(
     children: [],
     label: p.label,
     id: String(p.id),
-    parent_id: '',
+    parent_id: lineage[lineage.length - 1],
     notes: p.notes,
     lineage: [...lineage, String(p.id)]
   }
