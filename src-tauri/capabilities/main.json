@@ -41,7 +41,6 @@
     "sql:allow-load",
     "sql:allow-select",
     "tray:default",
-    "webview:allow-internal-toggle-devtools",
     "webview:default",
     "window:allow-center",
     "window:allow-set-cursor-grab",
@@ -68,18 +67,7 @@
     },
     {
       "identifier": "shell:allow-execute",
-      "allow": [
-        {
-          "name": "mafft",
-          "cmd": "$RESOURCE/third-party/mafft/mafft.bat",
-          "args": [
-            {
-              "validator": "\\S+"
-            }
-          ],
-          "sidecar": false
-        }
-      ]
+      "allow": []
     }
   ]
 }

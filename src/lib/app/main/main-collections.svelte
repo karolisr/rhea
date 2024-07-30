@@ -22,7 +22,7 @@ onDestroy(async () => {})
 export let docListMain: DocListMain
 
 export let selCollGrp =
-  ($state.selCollGrp as string | undefined) || 'coll-db-all-recs'
+  ($state.selCollGrp as string | undefined) || 'coll-search-results'
 export let selColl = ($state.selColl as string | undefined) || 'ROOT'
 
 export let collRebuildSrch: number

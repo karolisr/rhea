@@ -208,9 +208,9 @@ $: {
     }
   }
 
-  if (selDocIds.symmetricDifference(_idsToShowSel).size !== 0) {
-    selDocIds = _idsToShowSel
-  }
+  // if (selDocIds.symmetricDifference(_idsToShowSel).size !== 0) {
+  selDocIds = _idsToShowSel
+  // }
 }
 // ----------------------------------------------------------------------------
 
@@ -253,9 +253,10 @@ $: {
 
   if (tvMainRowH && gridMainRowHs.length === 0) {
     gridMainRowHs = [
-      getFontSize() * 3,
-      34 + 1 + (tvMainRowH ? tvMainRowH : 0) * (tvMainNRowsToShow - 1),
-      -1
+      // getFontSize() * 3,
+      135,
+      // 34 + 1 + (tvMainRowH ? tvMainRowH : 0) * (tvMainNRowsToShow - 1),
+      200, -1
     ]
   }
 

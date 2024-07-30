@@ -3,13 +3,13 @@
 
 fn main() {
     let builder = tauri::Builder::default().setup(|_app| {
-        // #[cfg(debug_assertions)] // only include this code on debug builds
-        // {
-        use tauri::Manager;
-        let window = _app.get_webview_window("main").unwrap();
-        window.open_devtools();
-        // window.close_devtools();
-        // }
+        #[cfg(debug_assertions)] // only include this code on debug builds
+        {
+            use tauri::Manager;
+            let window = _app.get_webview_window("main").unwrap();
+            window.open_devtools();
+            window.close_devtools();
+        }
         Ok(())
     });
 

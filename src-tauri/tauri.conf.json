@@ -31,23 +31,19 @@
       "providerShortName": null,
       "signingIdentity": null
     },
-    "resources": {
-      "resources/third-party/mafft/mafft.bat": "third-party/mafft/",
-      "resources/third-party/mafft/mafftdir/bin/*": "third-party/mafft/mafftdir/bin/",
-      "resources/third-party/mafft/mafftdir/libexec/*": "third-party/mafft/mafftdir/libexec/"
-    },
+    "resources": {},
     "shortDescription": "Phylogenetic conflict, locus-by-locus.",
     "linux": {}
   },
   "productName": "Rhea",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "identifier": "is.karol.rhea",
   "app": {
     "windows": [
       {
         "label": "main",
         "title": "Rhea",
-        "center": false,
+        "center": true,
         "dragDropEnabled": true,
         "width": 800,
         "height": 600,
@@ -58,9 +54,7 @@
         "titleBarStyle": "Overlay",
         "acceptFirstMouse": true,
         "hiddenTitle": true,
-        "alwaysOnTop": false,
-        "x": 10,
-        "y": 10
+        "alwaysOnTop": false
       }
     ],
     "security": {
