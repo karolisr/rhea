@@ -43,7 +43,9 @@ async function eutil(util: Eutil, params: EutilParams): Promise<Response> {
   params.email = findEmail()
 
   if (!params.api_key) {
-    throw new Error('NCBI API Key is not defined.')
+    throw new Error(
+      'NCBI API Key is not defined. Go to the "Setting" tab and add your NCBI API key.'
+    )
   }
 
   const url: string = EutilsBaseURL + util

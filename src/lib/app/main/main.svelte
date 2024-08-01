@@ -207,10 +207,7 @@ $: {
       _idsToShowSel = new Set([activeRowKey])
     }
   }
-
-  if (selDocIds.symmetricDifference(_idsToShowSel).size !== 0) {
-    selDocIds = _idsToShowSel
-  }
+  selDocIds = _idsToShowSel
 }
 // ----------------------------------------------------------------------------
 

@@ -157,7 +157,7 @@ onDestroy(() => {
 })
 
 let searchMinLen: number = 1e3
-let searchMaxLen: number = 1e3
+let searchMaxLen: number = 1e7
 
 let searchMinLenValid: boolean = true
 let searchMaxLenValid: boolean = true
@@ -167,9 +167,9 @@ type OrganelleFlags = Mutable<{
 }>
 
 let organelleOptions: OrganelleFlags = {
-  plastid: false,
-  chloroplast: false,
-  mitochondrion: false
+  plastid: true,
+  chloroplast: true,
+  mitochondrion: true
 }
 
 let selOrganelles: (keyof typeof EntrezFiltersOrganelles)[]
@@ -223,6 +223,12 @@ $: {
   }
 }
 </script>
+
+{#if error}
+  <div>
+    <IconError />{errorMsg}
+  </div>
+{/if}
 
 <form on:submit|preventDefault="{search}">
   <div class="form-grid">
