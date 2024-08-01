@@ -23,7 +23,7 @@
       "digestAlgorithm": "sha256",
       "timestampUrl": ""
     },
-    "longDescription": "Phylogenetic conflict, locus-by-locus.",
+    "longDescription": "Cross-platform GUI for molecular evolution enthusiasts.",
     "macOS": {
       "entitlements": null,
       "exceptionDomain": "",
@@ -36,7 +36,7 @@
       "resources/third-party/mafft/mafftdir/bin/*": "third-party/mafft/mafftdir/bin/",
       "resources/third-party/mafft/mafftdir/libexec/*": "third-party/mafft/mafftdir/libexec/"
     },
-    "shortDescription": "Phylogenetic conflict, locus-by-locus.",
+    "shortDescription": "Cross-platform GUI for molecular evolution enthusiasts.",
     "linux": {}
   },
   "productName": "Rhea",
