@@ -1,0 +1,34 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "windows": ["rhea_window_main"],
+  "permissions": [
+    "clipboard-manager:default",
+    "core:app:default",
+    "core:event:default",
+    "core:image:default",
+    "core:menu:default",
+    "core:path:default",
+    "core:resources:default",
+    "core:tray:default",
+    "core:webview:default",
+    "core:window:allow-start-dragging",
+    "core:window:default",
+    "fs:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://*.nih.gov/*"
+        },
+        {
+          "url": "https://*.wikimedia.org/*"
+        }
+      ],
+      "deny": []
+    },
+    "os:default",
+    "shell:default",
+    "sql:default"
+  ]
+}

@@ -12,29 +12,6 @@
     "editor.insertSpaces": true,
     "editor.tabSize": 2,
     "editor.rulers": [80],
-    "sqltools.useNodeRuntime": true,
-    "sqltools.connections": [
-      {
-        "previewLimit": 50,
-        "driver": "SQLite",
-        "name": "taxonomy",
-        "group": "rhea",
-        "database": "/Users/karolis/Library/Application Support/is.karol.rhea/db/taxonomy.db"
-      },
-      {
-        "previewLimit": 50,
-        "driver": "SQLite",
-        "name": "collections",
-        "group": "rhea",
-        "database": "/Users/karolis/Library/Application Support/is.karol.rhea/db/collections.db"
-      },
-      {
-        "previewLimit": 50,
-        "driver": "SQLite",
-        "name": "seqrecs",
-        "group": "rhea",
-        "database": "/Users/karolis/Library/Application Support/is.karol.rhea/db/seqrecs.db"
-      }
-    ]
+    "sqltools.useNodeRuntime": true
   }
 }

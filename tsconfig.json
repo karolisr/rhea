@@ -12,7 +12,8 @@
     "moduleResolution": "bundler",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "allowUnusedLabels": true
+    "allowUnusedLabels": true,
+    "stripInternal": true
   }
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
   //
