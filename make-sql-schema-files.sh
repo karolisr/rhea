@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-TAXONOMY="./src/lib/api/db/schema/taxonomy"
+SCHEMA_DIR="./src/lib/backend/db/schema"
+
+TAXONOMY="${SCHEMA_DIR}/taxonomy"
 TAXONOMY_SQL="${TAXONOMY}.sql"
 TAXONOMY_TS="${TAXONOMY}.ts"
 
@@ -11,7 +13,7 @@ TAXONOMY_TS="${TAXONOMY}.ts"
     echo "\`"
 } > ${TAXONOMY_TS}
 
-SUMMARIES="./src/lib/api/db/schema/summaries"
+SUMMARIES="${SCHEMA_DIR}/summaries"
 SUMMARIES_SQL="${SUMMARIES}.sql"
 SUMMARIES_TS="${SUMMARIES}.ts"
 
@@ -22,7 +24,7 @@ SUMMARIES_TS="${SUMMARIES}.ts"
     echo "\`"
 } > ${SUMMARIES_TS}
 
-SECRECS="./src/lib/api/db/schema/seqrecs"
+SECRECS="${SCHEMA_DIR}/seqrecs"
 SECRECS_SQL="${SECRECS}.sql"
 SECRECS_TS="${SECRECS}.ts"
 
@@ -33,7 +35,7 @@ SECRECS_TS="${SECRECS}.ts"
     echo "\`"
 } > ${SECRECS_TS}
 
-SEQUENCES="./src/lib/api/db/schema/sequences"
+SEQUENCES="${SCHEMA_DIR}/sequences"
 SEQUENCES_SQL="${SEQUENCES}.sql"
 SEQUENCES_TS="${SEQUENCES}.ts"
 
@@ -44,7 +46,7 @@ SEQUENCES_TS="${SEQUENCES}.ts"
     echo "\`"
 } > ${SEQUENCES_TS}
 
-COLLECTIONS="./src/lib/api/db/schema/collections"
+COLLECTIONS="${SCHEMA_DIR}/collections"
 COLLECTIONS_SQL="${COLLECTIONS}.sql"
 COLLECTIONS_TS="${COLLECTIONS}.ts"
 

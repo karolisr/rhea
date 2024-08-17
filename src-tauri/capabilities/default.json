@@ -3,6 +3,7 @@
   "identifier": "default",
   "windows": ["rhea_window_main"],
   "permissions": [
+    "clipboard-manager:allow-write-text",
     "clipboard-manager:default",
     "core:app:default",
     "core:event:default",
@@ -29,6 +30,21 @@
     },
     "os:default",
     "shell:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "mafft",
+          "cmd": "$RESOURCE/third-party/mafft/mafft.bat",
+          "args": [
+            {
+              "validator": "\\S+"
+            }
+          ],
+          "sidecar": false
+        }
+      ]
+    },
     "sql:default"
   ]
 }

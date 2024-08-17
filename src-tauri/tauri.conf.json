@@ -16,10 +16,11 @@
         "title": "Rhea",
         "label": "rhea_window_main",
         "acceptFirstMouse": false,
+        "alwaysOnTop": true,
         "width": 600,
         "height": 400,
-        "minWidth": 600,
-        "minHeight": 400,
+        "minWidth": 200,
+        "minHeight": 200,
         "x": 0,
         "y": 0
       }
@@ -30,6 +31,7 @@
       }
     }
   },
+
   "bundle": {
     "active": true,
     "category": "Productivity",
@@ -67,7 +69,11 @@
       "digestAlgorithm": "sha256",
       "timestampUrl": ""
     },
-    "resources": {}
+    "resources": {
+      "resources/third-party/mafft/mafft.bat": "third-party/mafft/",
+      "resources/third-party/mafft/mafftdir/bin/*": "third-party/mafft/mafftdir/bin/",
+      "resources/third-party/mafft/mafftdir/libexec/*": "third-party/mafft/mafftdir/libexec/"
+    }
   },
   "$schema": "../node_modules/@tauri-apps/cli/schema.json"
 }
