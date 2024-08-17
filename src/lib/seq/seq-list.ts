@@ -1,7 +1,9 @@
 import { SeqRecord } from '$lib/seq/seq-record'
 import { type SeqType } from '.'
 import { parseFastaStr } from './fasta'
-import { min, max } from '$lib'
+
+const min = Math.min
+const max = Math.max
 
 export class SeqList {
   public seqRecs: SeqRecord[]

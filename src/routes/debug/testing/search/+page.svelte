@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import CheckBox from '$lib/ui/components/CheckBox.svelte'
+import { CheckBox } from '$lib/ui/form-elements'
 import IconError from '~icons/fa6-solid/circle-exclamation'
 import { getSeqRecords, getTaxIds, makeESearchTerm } from '$lib/ncbi/utils'
 import {
@@ -9,9 +9,9 @@ import {
   type ESummaryNuccore
 } from '$lib/ncbi'
 import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
-import databases from '$lib/svelte-stores/databases'
-import { insertGbSeqRecords } from '$lib/api/db/seqrecs'
-import { BROWSER } from '$lib/api'
+import databases from '$lib/stores/databases'
+import { insertSeqRecs } from '$lib/backend/db/seqrecs'
+import { gSysInfo } from '$lib/backend/system-info'
 let dbs: Awaited<typeof databases>
 
 let searchTerm: string = ''
@@ -25,7 +25,7 @@ let searching = false
 let gbseqRemaining: number = 0
 
 let esummaryResult: ESummaryNuccore[] = []
-import status from '$lib/svelte-stores/status'
+import { appStatus } from '$lib/stores/status'
 import type { GBSet } from '$lib/ncbi/types/GBSet'
 
 let errorMsg: string = ''
@@ -40,7 +40,7 @@ function validateSearchTerm() {
 }
 
 async function updateStatus(msg: string) {
-  $status.main = msg
+  $appStatus.main = msg
 }
 
 async function search(): Promise<void> {
@@ -73,7 +73,7 @@ async function search(): Promise<void> {
       searching = false
       // ---------------------
 
-      if (BROWSER === 'Tauri') {
+      if (gSysInfo.browser === 'Tauri') {
         searchStatusMessage = `Downloading complete sequence records.`
         const gbRecSets: GBSet[] = []
         const nBatches = Math.min(accs.length, 10)
@@ -91,12 +91,7 @@ async function search(): Promise<void> {
               searchStatusMessage = `Storing complete sequence records.`
               for (let i = 0; i < gbRecSets.length; i++) {
                 const gbRecSet = gbRecSets[i]
-                await insertGbSeqRecords(
-                  gbRecSet,
-                  $dbs,
-                  'dbSeqRecs',
-                  'dbSequences'
-                )
+                await insertSeqRecs(gbRecSet, $dbs, 'dbSeqRecs', 'dbSequences')
               }
               searchStatusMessage = `Storing complete sequence records: done.`
             }
@@ -118,7 +113,7 @@ onMount(async () => {
 })
 
 onDestroy(() => {
-  $status.main = ''
+  $appStatus.main = ''
 })
 </script>
 

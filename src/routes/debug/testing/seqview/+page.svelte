@@ -1,12 +1,12 @@
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte'
-import type { DragOverEvent, DropEvent } from '$lib/api/types'
-import status from '$lib/svelte-stores/status'
+import type { DragOverEvent, DropEvent } from '$lib/backend'
+import { appStatus } from '$lib/stores/status'
 import { Alignment } from '$lib/seq/aln'
 import { SeqList } from '$lib/seq/seq-list'
 import type { SeqRecord } from '$lib/seq/seq-record'
-import SeqView from '$lib/ui/views/SeqView'
-import { processFilePaths } from '$lib/api/file-type'
+import { SeqView } from '$lib/ui/seq-view'
+import { processFilePaths } from '$lib/backend/file-type'
 import { SeqType } from '$lib/seq'
 
 let targetEl: HTMLElement | null = null
@@ -20,7 +20,7 @@ onMount(() => {
 })
 
 onDestroy(() => {
-  $status.main = ''
+  $appStatus.main = ''
 })
 
 async function parse(paths: string[]) {
@@ -31,12 +31,12 @@ async function parse(paths: string[]) {
       try {
         seqs = new Alignment(x.parsed as SeqRecord[])
         filePath = x.path
-        $status.main = filePath
+        $appStatus.main = filePath
       } catch (error1) {
         try {
           seqs = new SeqList(x.parsed as SeqRecord[])
           filePath = x.path
-          $status.main = filePath
+          $appStatus.main = filePath
         } catch (error2) {
           console.warn(error1, error2)
         }
@@ -75,7 +75,9 @@ async function onDrop(e: Event) {
 
 <div class="seqview-container">
   {#if seqs}
-    <SeqView uid="seqview-aln" {seqs} />
+    <SeqView
+      uid="seqview-aln"
+      {seqs} />
   {/if}
 </div>
 

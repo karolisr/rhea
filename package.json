@@ -45,6 +45,8 @@
     "detector-js": "^2.0.11",
     "simple-statistics": "^7.8.3",
     "sql-template-tag": "^5.2.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "date-fns": "^3.6.0",
+    "file-type-checker": "^1.1.1"
   }
 }

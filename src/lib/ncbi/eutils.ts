@@ -1,4 +1,4 @@
-import settings from '$lib/svelte-stores/settings'
+import { appSettings } from '$lib/stores/settings'
 import { EutilParams } from './eutils-params'
 import {
   Eutil,
@@ -12,13 +12,13 @@ import {
   type History
 } from '.'
 
-import { parse_xml_txt } from '$lib/xml'
+import { parseXmlText } from '$lib/xml'
 
-import { min } from '$lib'
+const min = Math.min
 
 function findApiKey(): string | undefined {
   let ncbi_api_key: string | undefined
-  const unsubscribe = settings.subscribe((stng) => {
+  const unsubscribe = appSettings.subscribe((stng) => {
     ncbi_api_key = stng.ncbi_api_key ? stng.ncbi_api_key : undefined
   })
   unsubscribe()
@@ -27,7 +27,7 @@ function findApiKey(): string | undefined {
 
 function findEmail(): string | undefined {
   let email: string | undefined
-  const unsubscribe = settings.subscribe((stng) => {
+  const unsubscribe = appSettings.subscribe((stng) => {
     email = stng.email ? stng.email : undefined
   })
   unsubscribe()
@@ -112,7 +112,7 @@ async function processResponse(response: Response): Promise<object> {
       break
     case RetContentType.xml:
       xmlText = await response.text()
-      data = (await parse_xml_txt(xmlText)) as object
+      data = (await parseXmlText(xmlText)) as object
       break
     case RetContentType.json:
       data = await response.json()

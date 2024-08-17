@@ -1,102 +1,90 @@
 import type { Indexed } from '$lib/types'
-import { parse_dtd_txt, parse_dtd_at_url, element_value_type } from './dtd'
+import { parseDtdText, parseDtdAtUrl, eleValType } from './dtd'
+
+type Complicated = string | number | boolean | Indexed | Indexed[] | null
 
 // ToDo: create_parent_object_for_arrays type problems.
 function _parse_xml(
   ele: Document | Element,
-  dtd: {
-    [element_name: string]: _dtd_element
-  },
-  obj: {
-    [key: string]: unknown
-  },
-  parent_element_name?: string,
-  create_parent_object_for_arrays: boolean = false
+  dtd: { [eleName: string]: _dtd_element },
+  obj: { [key: string]: Complicated },
+  parentEleName?: string,
+  createParentObjForArrays: boolean = false
 ) {
-  const pen = parent_element_name?.replaceAll('-', '_').replaceAll('INSD', 'GB')
+  const pen = parentEleName?.replaceAll('-', '_').replaceAll('INSD', 'GB')
   for (let i = 0; i < ele.children.length; i++) {
-    const doc_element = ele.children[i]
-    const doc_element_name = doc_element.tagName
-    const den = doc_element_name.replaceAll('-', '_').replaceAll('INSD', 'GB')
+    const docEle = ele.children[i]
+    const docEleName = docEle.tagName
+    const den = docEleName.replaceAll('-', '_').replaceAll('INSD', 'GB')
 
-    let obj_local = {} as {
-      [key: string]: unknown
-    }
-    obj_local[den] = {}
-    obj_local = obj_local[den] as {
-      [key: string]: unknown
-    }
+    let objLocal: { [key: string]: Complicated } = {}
+    objLocal[den] = {}
+    objLocal = objLocal[den] as { [key: string]: Complicated }
 
-    if (create_parent_object_for_arrays) {
-      if (pen && obj[pen] && obj[pen][den] && obj[pen][den] instanceof Array) {
-        obj[pen][den].push(obj_local)
+    if (createParentObjForArrays) {
+      if (pen && obj[pen] && (obj[pen] as Indexed)[den]) {
+        const _ = (obj[pen] as Indexed)[den] as Array<Indexed>
+        _.push(objLocal)
       } else {
-        obj_local = obj
+        objLocal = obj
       }
     } else {
       if (pen && obj[pen] && obj[pen] instanceof Array) {
-        ;(obj[pen] as object[]).push(obj_local)
+        ;(obj[pen] as object[]).push(objLocal)
       } else {
-        obj_local = obj
+        objLocal = obj
       }
     }
 
-    if (doc_element_name in dtd) {
-      const element_spec = dtd[doc_element_name]
-      if (element_spec.children) {
-        const cks = Object.getOwnPropertyNames(element_spec.children)
+    if (docEleName in dtd) {
+      const eleSpec = dtd[docEleName]
+      if (eleSpec.children) {
+        const cks = Object.getOwnPropertyNames(eleSpec.children)
         for (let i = 0; i < cks.length; i++) {
-          const child_element_spec_name = cks[i]
-          const c = element_spec.children[child_element_spec_name]
+          const childEleSpecName = cks[i]
+          const c = eleSpec.children[childEleSpecName]
           if (c.required === 'ARRAY') {
-            if (create_parent_object_for_arrays) {
-              obj_local[den] = {}
-              obj_local[den][
-                child_element_spec_name
-                  .replaceAll('-', '_')
-                  .replaceAll('INSD', 'GB')
+            if (createParentObjForArrays) {
+              objLocal[den] = {}
+              objLocal[den][
+                childEleSpecName.replaceAll('-', '_').replaceAll('INSD', 'GB')
               ] = []
             } else {
-              obj_local[den] = []
+              objLocal[den] = []
             }
           }
         }
-        _parse_xml(
-          doc_element,
-          dtd,
-          obj_local,
-          doc_element_name,
-          create_parent_object_for_arrays
-        )
-      } else if (element_spec.value) {
-        let value: string | null | number = doc_element.textContent
-        if (element_spec.value.type in element_value_type) {
-          const type = element_value_type[element_spec.value.type]
+        _parse_xml(docEle, dtd, objLocal, docEleName, createParentObjForArrays)
+      } else if (eleSpec.value) {
+        let value: string | null | number = docEle.textContent
+        if (eleSpec.value.type in eleValType) {
+          const type = eleValType[eleSpec.value.type]
           if (type === 'number') {
             value = Number(value)
           }
         }
-        obj_local[den] = value
+        objLocal[den] = value
       }
 
-      if (element_spec.attributes) {
-        for (let i = 0; i < doc_element.attributes.length; i++) {
-          const att = doc_element.attributes[i]
-          let att_value: string | boolean = att.value
-          if (att.name in element_spec.attributes) {
-            const att_type = element_spec.attributes[att.name].type
-            if (att_type === 'boolean') {
-              att_value = att_value.toLowerCase() === 'true' ? true : false
+      if (eleSpec.attributes) {
+        for (let i = 0; i < docEle.attributes.length; i++) {
+          const attr = docEle.attributes[i]
+          let attrVal: string | boolean = attr.value
+          if (attr.name in eleSpec.attributes) {
+            const attrType = eleSpec.attributes[attr.name].type
+            if (attrType === 'boolean') {
+              attrVal = attrVal.toLowerCase() === 'true' ? true : false
             }
           }
-          if (att.name === 'value') {
-            obj_local[den] = att_value
+          if (attr.name === 'value') {
+            objLocal[den] = attrVal
           } else {
-            if (!obj_local[den]) {
-              obj_local[den] = {}
-              obj_local[den]['attributes'] = {}
+            if (!objLocal[den]) {
+              objLocal[den] = {}
+              objLocal[den]['attributes'] = {}
             }
-            obj_local[den]['attributes'][att.name] = att_value
+            ;((objLocal[den] as Indexed)['attributes'] as Indexed)[attr.name] =
+              attrVal
           }
         }
       }
@@ -106,56 +94,48 @@ function _parse_xml(
 }
 
 // These are only necessary when the XML file does not reference a DTD.
-const DTD_MAP: {
-  [element_name: string]: string
-} = {
+const DtdMap: { [element_name: string]: string } = {
   'Bioseq-set': 'NCBI_Seqset.dtd',
   'INSDSet': 'INSD_INSDSeq.dtd'
 }
 
-export async function parse_xml_txt(
+export async function parseXmlText(
   txt: string,
-  create_parent_object_for_arrays: boolean = false
+  createParentObjForArrays: boolean = false
 ) {
-  let dtd: {
-    [element_name: string]: _dtd_element
-  } | null
+  let dtd: { [eleName: string]: _dtd_element } | null
 
   const dp = new DOMParser()
   const doc: Document = dp.parseFromString(txt, 'text/xml')
 
-  const doc_element = doc.children[0]
-  const doc_element_name = doc_element.nodeName
+  const docEle = doc.children[0]
+  const docEleName = docEle.nodeName
 
-  if (doc_element_name in DTD_MAP) {
-    dtd = await parse_dtd_at_url(DTD_MAP[doc_element_name])
+  if (docEleName in DtdMap) {
+    dtd = await parseDtdAtUrl(DtdMap[docEleName])
   } else {
-    dtd = await parse_dtd_txt(txt)
+    dtd = await parseDtdText(txt)
   }
 
   if (!dtd) {
-    throw new Error(`No DTD for: ${doc_element_name}`)
+    throw new Error(`No DTD for: ${docEleName}`)
   }
 
-  let ret_val = _parse_xml(
+  let rv = _parse_xml(
     doc,
     dtd,
     {},
     undefined,
-    create_parent_object_for_arrays
+    createParentObjForArrays
   ) as Indexed
 
-  const root_element_name = doc_element_name
-    .replaceAll('-', '_')
-    .replaceAll('INSD', 'GB')
+  const rootEleName = docEleName.replaceAll('-', '_').replaceAll('INSD', 'GB')
 
-  if (!(root_element_name in ret_val)) {
-    let _ = {} as {
-      [key: string]: unknown
-    }
-    _[root_element_name] = ret_val
-    ret_val = _ as Indexed
+  if (!(rootEleName in rv)) {
+    let _ = {} as { [key: string]: unknown }
+    _[rootEleName] = rv
+    rv = _ as Indexed
   }
 
-  return ret_val[root_element_name]
+  return rv[rootEleName]
 }

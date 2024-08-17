@@ -1,14 +1,15 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import NavDebug from './nav.svelte'
-import subheader from '$lib/svelte-stores/subheader'
+import type { LayoutData } from './$types'
+export let data: LayoutData
 
-$subheader = NavDebug
-
-onMount(() => {})
+onMount(() => {
+  data.layout.subheader = NavDebug
+})
 
 onDestroy(() => {
-  $subheader = undefined
+  data.layout.subheader = undefined
 })
 </script>
 

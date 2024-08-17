@@ -5,8 +5,8 @@ import type {
   DragOverEvent,
   DropEvent,
   DragDropPayload
-} from '$lib/api/types'
-import { processFilePaths } from '$lib/api/file-type'
+} from '$lib/backend'
+import { processFilePaths } from '$lib/backend/file-type'
 
 let targetEl: HTMLElement | null = null
 let payload: DragDropPayload | null = null
@@ -58,7 +58,7 @@ async function onDrop(e: Event) {
     }
     if (ev.payload.type === 'files') {
       const _ = ev.payload.data as string[]
-      // console.log(await processFilePaths(_))
+      console.log(await processFilePaths(_))
       ev.payload.data = _.join(', ')
       payload = ev.payload
     }
@@ -66,7 +66,9 @@ async function onDrop(e: Event) {
 }
 </script>
 
-<div id="container" class="container">
+<div
+  id="container"
+  class="container">
   <div id="source">
     <div
       id="item1"
@@ -97,7 +99,11 @@ async function onDrop(e: Event) {
       Item 4
     </div>
   </div>
-  <div id="target" class="drag-target" role="region"></div>
+  <div
+    id="target"
+    class="drag-target"
+    role="region">
+  </div>
 </div>
 
 <style>

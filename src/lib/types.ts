@@ -1,26 +1,11 @@
-export interface Indexed {
-  [index: string]: string | number | object | boolean | null
-}
-
-export interface IndexedUndefined {
-  [index: string]: string | number | object | boolean | null | undefined
-}
-
-export type Prefixed<Type, Prefix extends string> = {
-  [Property in keyof Type as `${Prefix}${string & Property}`]: () => Type[Property]
-}
-
 export type KeyToKeyNoIndex<T> = {
   [K in keyof T]: string extends K ? never : number extends K ? never : K
 }
-
-export type ValuesOf<T> = T extends {
-  [K in keyof T]: infer U
-}
-  ? U
-  : never
-
+export type ValuesOf<T> = T extends { [K in keyof T]: infer U } ? U : never
 export type KnownKeys<T> = ValuesOf<KeyToKeyNoIndex<T>>
+export type Prefixed<Type, Prefix extends string> = {
+  [Property in keyof Type as `${Prefix}${string & Property}`]: () => Type[Property]
+}
 
 export type Concrete<Type> = {
   [Property in keyof Type]-?: Type[Property]
@@ -36,6 +21,14 @@ export type Mutable<Type> = {
 
 export type Unlistener = () => void
 
+export interface Indexed {
+  [index: string]: string | number | object | boolean | null
+}
+
+export interface IndexedUndefined {
+  [index: string]: string | number | object | boolean | null | undefined
+}
+
 export type SortDir = 1 | -1
 
 export interface Tree extends IndexedUndefined {
@@ -49,8 +42,3 @@ export interface Tree extends IndexedUndefined {
 }
 
 export interface Collection extends Tree {}
-
-export interface CollectionRecordMap extends IndexedUndefined {
-  collection_id: Collection['id']
-  record_id: string
-}

@@ -1,9 +1,6 @@
-import { getPropNames } from '$lib'
-import {
-  cache_get_dtd_txt,
-  dnld_dtd_txt,
-  type _DTD_TXT
-} from '$lib/svelte-stores/cache-dtd'
+import { getPropNames } from '$lib/utils'
+import { getDtd, downloadDtd } from '$lib/stores/dtd-cache'
+import type { DtdText } from '$lib/stores'
 
 // --------------------------------------------------------------------------
 
@@ -194,8 +191,8 @@ async function _parse_dtd_txt(
     elements_merged.push(parse_dtd_element_txt(e))
   })
 
-  const dtd_txts_prom: Promise<_DTD_TXT | null>[] = []
-  const dtd_txts: _DTD_TXT[] = []
+  const dtd_txts_prom: Promise<DtdText | null>[] = []
+  const dtd_txts: DtdText[] = []
 
   const dcts_ents = [...dcts, ...ents]
 
@@ -206,11 +203,11 @@ async function _parse_dtd_txt(
     const url = item['entity_url']
     if (!value && name && url && !urls_done.has(url)) {
       urls_done.add(url)
-      const dtd_txt: _DTD_TXT | null = cache_get_dtd_txt(url, ref_url)
+      const dtd_txt: DtdText | null = getDtd(url, ref_url)
       if (dtd_txt) {
         dtd_txts.push(dtd_txt)
       } else {
-        const dtd_txt_prom = dnld_dtd_txt(url, ref_url)
+        const dtd_txt_prom = downloadDtd(url, ref_url)
         dtd_txts_prom.push(dtd_txt_prom)
         const _ = await dtd_txt_prom
         if (_) dtd_txts.push(_)
@@ -244,20 +241,20 @@ async function _parse_dtd_txt(
   }
 }
 
-export async function parse_dtd_at_url(url: string) {
-  let dtd_txt: _DTD_TXT | null = cache_get_dtd_txt(url)
+export async function parseDtdAtUrl(url: string) {
+  let dtd_txt: DtdText | null = getDtd(url)
   if (!dtd_txt) {
-    dtd_txt = await dnld_dtd_txt(url)
+    dtd_txt = await downloadDtd(url)
   }
 
   if (dtd_txt) {
-    return await parse_dtd_txt(dtd_txt.data, dtd_txt.url)
+    return await parseDtdText(dtd_txt.data, dtd_txt.url)
   } else {
     return null
   }
 }
 
-export async function parse_dtd_txt(txt: string, ref_url?: string) {
+export async function parseDtdText(txt: string, ref_url?: string) {
   const raw_dtd = await _parse_dtd_txt(txt, ref_url)
 
   const doctypes: {
@@ -317,7 +314,7 @@ interface ElementValueType {
   [key: string]: string
 }
 
-export const element_value_type: ElementValueType = {
+export const eleValType: ElementValueType = {
   '%INTEGER;': 'number',
   '%REAL;': 'number',
   '%OCTETS;': 'string',
@@ -394,7 +391,7 @@ function parse_dtd_element_raw(
           type: 'element',
           required: content_part_required
         }
-      } else if (content_part in element_value_type) {
+      } else if (content_part in eleValType) {
         let _type = content_part
         if (e.element_name.toLocaleLowerCase().includes('taxid')) {
           _type = '%INTEGER;'

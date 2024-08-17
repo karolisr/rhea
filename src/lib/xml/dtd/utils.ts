@@ -1,6 +1,6 @@
 import type { Indexed } from '$lib/types'
-import { getPropNames, removeCycle } from '$lib'
-import { element_value_type } from '.'
+import { getPropNames, removeCycle } from '$lib/utils'
+import { eleValType } from '.'
 
 export function elements_to_json(
   elements: {
@@ -159,7 +159,7 @@ function _elements_to_json(
       } else {
         if (el.value)
           rv = {
-            type: element_value_type[el.value.type]
+            type: eleValType[el.value.type]
           }
       }
     }

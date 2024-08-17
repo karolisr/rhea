@@ -15,6 +15,7 @@
     "core:webview:default",
     "core:window:allow-start-dragging",
     "core:window:default",
+    "fs:allow-home-read-recursive",
     "fs:default",
     {
       "identifier": "http:default",
@@ -45,6 +46,7 @@
         }
       ]
     },
+    "sql:allow-execute",
     "sql:default"
   ]
 }

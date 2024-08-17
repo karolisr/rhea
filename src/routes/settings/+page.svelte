@@ -1,19 +1,29 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import Radio from '$lib/ui/components/Radio.svelte'
-import settings from '$lib/svelte-stores/settings'
-import { saveSettings } from '$lib/svelte-stores/settings'
-import { getCurentTheme, themeChangeListener } from '$lib/api/darkmode'
-import { BROWSER } from '$lib/api'
+import { Radio } from '$lib/ui/form-elements'
+import {
+  appSettings,
+  applyAppSettings,
+  saveAppSettings
+} from '$lib/stores/settings'
+import { getOsTheme, themeChangeListener } from '$lib/backend/dark-mode'
+import { gSysInfo } from '$lib/backend/system-info'
 import type { Unlistener } from '$lib/types'
+
+applyAppSettings()
 
 let unlisteners: Unlistener[] = []
 let currentOsThemeSetting: string
 
 async function getCurrentOsThemeSetting() {
-  currentOsThemeSetting = await getCurentTheme()
+  currentOsThemeSetting = await getOsTheme()
   currentOsThemeSetting =
     currentOsThemeSetting[0].toUpperCase() + currentOsThemeSetting.slice(1)
+}
+
+function saveSettings() {
+  applyAppSettings()
+  saveAppSettings()
 }
 
 onMount(async () => {
@@ -30,16 +40,18 @@ onDestroy(() => {
 
 <div class="settings-container padded">
   <div id="settings-row">
-    <div id="settings-theme" class="padded">
+    <div
+      id="settings-theme"
+      class="padded">
       <fieldset>
         <legend>Theme</legend>
-        {#if BROWSER === 'Tauri'}
+        {#if gSysInfo.browser === 'Tauri'}
           <Radio
             label="Follow OS Setting ({currentOsThemeSetting})"
             id="os"
             name="theme"
             value="os"
-            bind:group="{$settings.theme}"
+            bind:group="{$appSettings.theme}"
             on:change="{saveSettings}" />
         {/if}
         <Radio
@@ -47,7 +59,7 @@ onDestroy(() => {
           id="light"
           name="theme"
           value="light"
-          bind:group="{$settings.theme}"
+          bind:group="{$appSettings.theme}"
           on:change="{saveSettings}" />
 
         <Radio
@@ -55,12 +67,14 @@ onDestroy(() => {
           id="dark"
           name="theme"
           value="dark"
-          bind:group="{$settings.theme}"
+          bind:group="{$appSettings.theme}"
           on:change="{saveSettings}" />
       </fieldset>
     </div>
 
-    <div id="settings-scale" class="padded">
+    <div
+      id="settings-scale"
+      class="padded">
       <fieldset>
         <legend>Scale</legend>
         <Radio
@@ -68,7 +82,7 @@ onDestroy(() => {
           id="small"
           name="scale"
           value="small"
-          bind:group="{$settings.scale}"
+          bind:group="{$appSettings.scale}"
           on:change="{saveSettings}" />
 
         <Radio
@@ -76,7 +90,7 @@ onDestroy(() => {
           id="medium"
           name="scale"
           value="medium"
-          bind:group="{$settings.scale}"
+          bind:group="{$appSettings.scale}"
           on:change="{saveSettings}" />
 
         <Radio
@@ -84,13 +98,15 @@ onDestroy(() => {
           id="large"
           name="scale"
           value="large"
-          bind:group="{$settings.scale}"
+          bind:group="{$appSettings.scale}"
           on:change="{saveSettings}" />
       </fieldset>
     </div>
   </div>
 
-  <div id="settings-ncbi-api" class="padded">
+  <div
+    id="settings-ncbi-api"
+    class="padded">
     <fieldset>
       <legend>NCBI&nbsp;API</legend>
       <div>
@@ -102,7 +118,7 @@ onDestroy(() => {
           spellcheck="false"
           autocomplete="off"
           required
-          bind:value="{$settings.email}"
+          bind:value="{$appSettings.email}"
           on:change="{saveSettings}" />
       </div>
 
@@ -115,7 +131,7 @@ onDestroy(() => {
           spellcheck="false"
           autocomplete="off"
           required
-          bind:value="{$settings.ncbi_api_key}"
+          bind:value="{$appSettings.ncbi_api_key}"
           on:change="{saveSettings}" />
       </div>
     </fieldset>

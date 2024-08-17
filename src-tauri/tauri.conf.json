@@ -70,7 +70,7 @@
       "timestampUrl": ""
     },
     "resources": {
-      "resources/third-party/mafft/mafft.bat": "third-party/mafft/",
+      "resources/third-party/mafft/mafft.bat": "third-party/mafft/mafft.bat",
       "resources/third-party/mafft/mafftdir/bin/*": "third-party/mafft/mafftdir/bin/",
       "resources/third-party/mafft/mafftdir/libexec/*": "third-party/mafft/mafftdir/libexec/"
     }

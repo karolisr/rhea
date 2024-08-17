@@ -1,5 +1,5 @@
 <script lang="ts">
-import Main from '$lib/app/main/main.svelte'
+import Main from '$rhea/main.svelte'
 </script>
 
 <Main></Main>
