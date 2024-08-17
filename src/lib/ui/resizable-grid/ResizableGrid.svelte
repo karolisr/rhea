@@ -347,7 +347,6 @@ grid-container {
   flex-shrink: 1;
   display: grid;
   overflow: hidden;
-  margin-inline-end: -10px;
 }
 
 grid-items {

@@ -1,5 +1,10 @@
 @import 'colors.scss';
 
+:root {
+  --fs: 12px;
+  --pad: 3px;
+}
+
 :root[app-theme='light'] {
   --bg1: #{$Y050};
 }

@@ -1,15 +1,12 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
-import type { ComponentType } from 'svelte'
 
 import { gSysInfo } from '$lib/backend/system-info'
-// import { setAppScale } from '$lib/utils'
+import { setAppScale } from '$lib/utils'
 import { DragDropFiles } from '$lib/backend/drag-drop'
 import { themeChangeListener } from '$lib/backend/dark-mode'
 
-// import { appSettings } from '$lib/stores/settings'
-import { applyAppSettings } from '$lib/stores/settings'
-applyAppSettings()
+import { appSettings } from '$lib/stores/settings'
 
 import { preventDefault } from '$lib/utils'
 import type { Unlistener } from '$lib/types'
@@ -17,7 +14,7 @@ import type { Unlistener } from '$lib/types'
 let unlisteners: Unlistener[] = []
 let dragDropConductor: DragDropFiles | null = null
 
-// $: setAppScale($appSettings.scale)
+$: setAppScale($appSettings.scale)
 
 onMount(async () => {
   console.info(

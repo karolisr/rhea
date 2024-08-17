@@ -240,9 +240,9 @@ let gridLeftColW: number =
     ? ($appState.gridLeftColW as number)
     : 200
 let gridLRColWs: number[] = [gridLeftColW, -1]
-let gridMainNRow: number = 3
-let gridMainNCol: number = 1
-let gridMainRowBorders: boolean[] = [true, true]
+// let gridMainNRow: number = 3
+// let gridMainNCol: number = 1
+// let gridMainRowBorders: boolean[] = [true, true]
 let gridMainColWs: number[] = [-1]
 let gridMainRowHs: number[] = []
 
@@ -354,7 +354,6 @@ $: {
 
 .grid-main-filter-search {
   display: flex;
-  flex-direction: row;
   overflow-x: hidden;
   overflow-y: hidden;
   background-color: transparent;
@@ -362,7 +361,6 @@ $: {
 
 .grid-main-tableview {
   display: flex;
-  flex-direction: row;
   overflow-x: hidden;
   overflow-y: hidden;
   background-color: transparent;
@@ -370,7 +368,6 @@ $: {
 
 .grid-main-seqview {
   display: flex;
-  flex-direction: row;
   overflow-x: hidden;
   overflow-y: hidden;
   background-color: transparent;
