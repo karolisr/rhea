@@ -91,13 +91,8 @@ async function onDrop(e: Event) {
 
 .seqview-container {
   display: flex;
-  /* align-content: unset; */
-  /* text-align: unset; */
-  /* overflow-x: hidden; */
   overflow-y: hidden;
   flex-grow: 1;
-  /* flex-shrink: 1; */
-  /* background-color: transparent; */
   z-index: 1;
 }
 </style>

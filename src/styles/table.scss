@@ -31,7 +31,11 @@
   pointer-events: all;
 }
 
-.cell.checkbox > input {
+.cell.checkbox > div {
+  display: contents;
+}
+
+.cell.checkbox > div > input {
   margin-inline-start: 0;
   margin-block-start: calc(var(--fs) / 16);
 }

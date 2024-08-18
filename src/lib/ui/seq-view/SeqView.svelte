@@ -23,11 +23,11 @@ let seqCtx: CanvasRenderingContext2D
 export let uid: string
 export let seqs: SeqList | Alignment
 export let siteSize = max(getFontSize() + 2, 16)
-export let siteGapX = 1
-export let siteGapY = 1
+export let siteGapX = 0
+export let siteGapY = 0
 export let cnvScale: number = gSysInfo.pixelRatio
-export let labelW = 200
-export let scaleH = siteSize * 2
+export let labelW = 250
+export let scaleH = siteSize * 1.75
 
 let rowHs: number[] = [scaleH, -1]
 let colWs: number[] = [labelW, -1]
@@ -78,7 +78,7 @@ $: if (w !== undefined && h !== undefined && svc !== undefined) {
   minColW="{svc ? svc.minCnvW : 1}"
   bind:rowHsCalc
   bind:colWsCalc>
-  <div class="placeholder">1</div>
+  <div></div>
   <canvas
     bind:this="{scaleCnv}"
     id="{uid}-seqview-scale-canvas"
@@ -92,9 +92,3 @@ $: if (w !== undefined && h !== undefined && svc !== undefined) {
     id="{uid}-seqview-canvas"
     class="seqview-canvas"></canvas>
 </ResizableGrid>
-
-<!--
-<style lang="scss">
-
-</style>
--->

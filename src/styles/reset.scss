@@ -95,6 +95,7 @@ input[type='radio'] {
 }
 
 input[type='checkbox'] {
+  border-radius:10%;
   align-content: center;
   min-height: calc(var(--fs) * 1.25);
   min-width: calc(var(--fs) * 1.25);

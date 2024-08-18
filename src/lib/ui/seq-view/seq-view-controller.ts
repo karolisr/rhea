@@ -1,4 +1,3 @@
-// import { appSettings } from '$lib/stores/settings'
 import { SeqList } from '$lib/seq/seq-list'
 import { Alignment } from '$lib/seq/aln'
 import {
@@ -114,11 +113,7 @@ export class SeqViewController {
   }
 
   #nColVisible(): number {
-    return max(
-      0,
-      // this.#calcNumVis(this.cnvW, this.deltaX, this.labelW + this.siteGapX)
-      this.#calcNumVis(this.cnvW, this.deltaX, this.siteGapX)
-    )
+    return max(0, this.#calcNumVis(this.cnvW, this.deltaX, this.siteGapX))
   }
 
   #nRowVisible(): number {
@@ -152,7 +147,6 @@ export class SeqViewController {
       this._offScrScaleCtx.font = this._scaleCtx.font
 
       this._lineW = 1
-      // this._offScrScaleCtx.translate(this.labelW * this.cnvScale, 0)
       this._offScrScaleCtx.strokeStyle = '#000000'
       drawScale(
         this._offScrScaleCtx,
@@ -163,10 +157,9 @@ export class SeqViewController {
         this.deltaX,
         this._lineW,
         this.cnvScale,
-        // this.scaleH - this._lineW * 3,
         this.scaleH,
-        10,
-        50
+        5,
+        25
       )
     } else {
       this._scaleCtx.reset()

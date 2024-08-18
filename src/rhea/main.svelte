@@ -274,7 +274,7 @@ $: {
   <ResizableGrid
     uid="{'grid-lr'}"
     rowHs="{[-1]}"
-    colWs="{gridLRColWs}"
+    bind:colWs="{gridLRColWs}"
     minColW="{0}">
     <div class="grid-left-tree">
       <MainCollections
@@ -290,8 +290,8 @@ $: {
     </div>
     <ResizableGrid
       uid="{'grid-search-filter-doclist-seqview'}"
-      rowHs="{gridMainRowHs}"
-      colWs="{gridMainColWs}"
+      bind:rowHs="{gridMainRowHs}"
+      bind:colWs="{gridMainColWs}"
       minRowH="{0}"
       minColW="{0}">
       <div class="grid-main-filter-search">

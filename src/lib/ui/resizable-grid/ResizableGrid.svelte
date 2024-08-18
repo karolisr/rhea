@@ -43,22 +43,30 @@ $: {
     let ok: boolean = false
     if (rowHsCalc !== undefined || colWsCalc !== undefined) {
       if (rowHsCalc !== undefined) {
-        for (let i = 0; i < _rowHsCalc.length; i++) {
-          const prev = rowHsCalc[i]
-          const curr = _rowHsCalc[i]
-          if (prev !== curr) {
-            ok = true
-            break
+        if (_rowHsCalc.length !== rowHsCalc.length) {
+          ok = true
+        } else {
+          for (let i = 0; i < _rowHsCalc.length; i++) {
+            const prev = rowHsCalc[i]
+            const curr = _rowHsCalc[i]
+            if (prev !== curr) {
+              ok = true
+              break
+            }
           }
         }
       }
       if (colWsCalc !== undefined) {
-        for (let i = 0; i < _colWsCalc.length; i++) {
-          const prev = colWsCalc[i]
-          const curr = _colWsCalc[i]
-          if (prev !== curr) {
-            ok = true
-            break
+        if (_colWsCalc.length !== colWsCalc.length) {
+          ok = true
+        } else {
+          for (let i = 0; i < _colWsCalc.length; i++) {
+            const prev = colWsCalc[i]
+            const curr = _colWsCalc[i]
+            if (prev !== curr) {
+              ok = true
+              break
+            }
           }
         }
       }
@@ -106,8 +114,7 @@ onDestroy(() => {
   removeEventListener('mouseup', resizeGridElementEnd)
 })
 
-async function updateElementSize() {
-  await tick()
+function updateElementSize() {
   if (element) {
     const rects = element.getClientRects()
     const _w = floor(rects[0].width)
@@ -121,7 +128,8 @@ async function updateElementSize() {
   }
 }
 
-function resizeListener(e: CustomEvent | Event) {
+async function resizeListener(e: CustomEvent | Event) {
+  await tick()
   if (
     (e instanceof CustomEvent && e.detail !== uid) ||
     !(e instanceof CustomEvent)

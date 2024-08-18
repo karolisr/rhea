@@ -4,11 +4,10 @@ import TabSpacer from '$lib/ui/tab-nav/TabSpacer.svelte'
 import Tab from '$lib/ui/tab-nav/Tab.svelte'
 
 import iconHome from '~icons/fa6-solid/house-chimney'
-import iconSearch from '~icons/fa6-solid/magnifying-glass'
-import iconDnD from '~icons/fa6-solid/chess'
-
+import iconTableView from '~icons/fa6-solid/table'
 import iconSeqView from '~icons/fa6-solid/dna'
-// import iconSeqView from '~icons/bx/dna'
+import iconDnD from '~icons/fa6-solid/chess'
+import iconSearch from '~icons/fa6-solid/magnifying-glass'
 </script>
 
 <TabNav
@@ -22,6 +21,10 @@ import iconSeqView from '~icons/fa6-solid/dna'
   <Tab
     link="/debug/"
     icon="{iconHome}" />
+  <Tab
+    link="/debug/testing/tableview/"
+    icon="{iconTableView}"
+    label="TableView" />
   <Tab
     link="/debug/testing/seqview/"
     icon="{iconSeqView}"

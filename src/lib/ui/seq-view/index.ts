@@ -229,13 +229,14 @@ export function drawScale(
   ctx.font = `normal ${(height * cnvScale) / 2.5}px sans-serif`
   const nSites = to - from
   for (let i = 0; i < nSites; i++) {
-    const x = i * deltaX * cnvScale + ((deltaX - siteSize) * cnvScale) / 2
+    const x = i * deltaX * cnvScale + ((deltaX - siteSize) * cnvScale) / 2 - lineW / 2
+    if (from + i === 0) continue
     if ((from + i) % majorTicksEvery === 0) {
       const labOffset = calcTextOffset(
         ctx,
         String(from + i),
         deltaX * 2 * cnvScale,
-        (height * cnvScale) / 3
+        (height * cnvScale) / 2.5
       )
       ctx.fillText(
         String(from + i),

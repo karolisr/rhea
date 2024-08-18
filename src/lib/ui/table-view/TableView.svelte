@@ -327,7 +327,7 @@ function calcColWidths(
 ) {
   const colWs: number[] = []
   if (showCheckBoxes) {
-    colWs.push(charW * 2.25)
+    colWs.push(charW * 2.35)
   }
   for (let i = 0; i < rl.fieldsToShow.length; i++) {
     const field = rl.fieldsToShow[i]
