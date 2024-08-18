@@ -9,7 +9,7 @@ export function makeGridTemplate(
   let sumOfPixels = 0
 
   let gridTemplate = ''
-  let calculatedSizes: number[] = []
+  let calculatedSizes: number[] | null = []
 
   for (let i = 0; i < sizes.length; i++) {
     let size = sizes[i]
@@ -39,7 +39,7 @@ export function makeGridTemplate(
       }
     }
   } else {
-    calculatedSizes = []
+    calculatedSizes = null
   }
   return { gridTemplate, calculatedSizes }
 }

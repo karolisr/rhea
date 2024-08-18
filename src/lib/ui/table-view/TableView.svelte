@@ -468,7 +468,7 @@ function formatValue(
           id="{uid}-table"
           class="table">
           <ResizableGrid
-            {uid}
+            uid="grid-{uid}"
             {rowHs}
             {colWs}
             {minColW}

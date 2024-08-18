@@ -192,8 +192,10 @@ mark {
 // }
 
 .placeholder {
-  margin: auto;
-  background-color: transparent;
-  align-content: center;
+  margin: 0;
+  overflow: hidden;
   text-align: center;
+  align-content: center;
+  background-color: aqua;
+  z-index: 0;
 }

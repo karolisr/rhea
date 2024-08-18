@@ -54,15 +54,21 @@ export class SeqViewController {
   private _offScrScaleCnv: HTMLCanvasElement
   private _offScrScaleCtx: CanvasRenderingContext2D
 
+  private _seqLabCtx: CanvasRenderingContext2D
+  private _offScrSeqLabCnv: HTMLCanvasElement
+  private _offScrSeqLabCtx: CanvasRenderingContext2D
+
   private _locale: string = 'en-US'
 
   constructor(
-    seqCtx: CanvasRenderingContext2D,
-    scaleCtx: CanvasRenderingContext2D
+    scaleCtx: CanvasRenderingContext2D,
+    seqLabCtx: CanvasRenderingContext2D,
+    seqCtx: CanvasRenderingContext2D
   ) {
     this._data = new SeqList([])
     this._ctx = seqCtx
     this._scaleCtx = scaleCtx
+    this._seqLabCtx = seqLabCtx
 
     this._offScrCnv = document.createElement('canvas')
     this._offScrCtx = this._offScrCnv.getContext(
@@ -71,6 +77,11 @@ export class SeqViewController {
 
     this._offScrScaleCnv = document.createElement('canvas')
     this._offScrScaleCtx = this._offScrScaleCnv.getContext(
+      '2d'
+    ) as CanvasRenderingContext2D
+
+    this._offScrSeqLabCnv = document.createElement('canvas')
+    this._offScrSeqLabCtx = this._offScrSeqLabCnv.getContext(
       '2d'
     ) as CanvasRenderingContext2D
 
@@ -105,7 +116,8 @@ export class SeqViewController {
   #nColVisible(): number {
     return max(
       0,
-      this.#calcNumVis(this.cnvW, this.deltaX, this.labelW + this.siteGapX)
+      // this.#calcNumVis(this.cnvW, this.deltaX, this.labelW + this.siteGapX)
+      this.#calcNumVis(this.cnvW, this.deltaX, this.siteGapX)
     )
   }
 
@@ -134,26 +146,86 @@ export class SeqViewController {
       this.cnvScale
     )
 
-    this._offScrScaleCnv.width = this.ctx.canvas.width + this._deltaX
-    this._offScrScaleCnv.height = this._scaleCtx.canvas.height
-    this._offScrScaleCtx.font = this._scaleCtx.font
+    if (this._scaleH >= this.minCnvH) {
+      this._offScrScaleCnv.width = this.ctx.canvas.width + this._deltaX
+      this._offScrScaleCnv.height = this._scaleCtx.canvas.height
+      this._offScrScaleCtx.font = this._scaleCtx.font
 
-    this._lineW = 1
-    this._offScrScaleCtx.translate(this.labelW * this.cnvScale, 0)
-    this._offScrScaleCtx.strokeStyle = '#000000'
-    drawScale(
-      this._offScrScaleCtx,
-      max(this._colOffset, 0),
-      this._colOffset +
-        min(this.#nColVisible() + 1, this.data.nCol - this._colOffset),
-      this.siteSize,
-      this.deltaX,
-      this._lineW,
-      this.cnvScale,
-      this.scaleH - this._lineW * 3,
-      10,
-      50
+      this._lineW = 1
+      // this._offScrScaleCtx.translate(this.labelW * this.cnvScale, 0)
+      this._offScrScaleCtx.strokeStyle = '#000000'
+      drawScale(
+        this._offScrScaleCtx,
+        max(this._colOffset, 0),
+        this._colOffset +
+          min(this.#nColVisible() + 1, this.data.nCol - this._colOffset),
+        this.siteSize,
+        this.deltaX,
+        this._lineW,
+        this.cnvScale,
+        // this.scaleH - this._lineW * 3,
+        this.scaleH,
+        10,
+        50
+      )
+    } else {
+      this._scaleCtx.reset()
+    }
+    this._scaleCtx.drawImage(this._offScrScaleCnv, 0, 0)
+  }
+
+  #drawSeqLabels() {
+    setCnvSize(
+      this._seqLabCtx,
+      this.labelW,
+      max(this.cnvH, this._slice.length * this.deltaY),
+      this.minCnvW,
+      this.minCnvH,
+      this.cnvScale
     )
+
+    this._offScrSeqLabCnv.width = this._seqLabCtx.canvas.width
+    this._offScrSeqLabCnv.height = this._seqLabCtx.canvas.height
+    this._offScrSeqLabCtx.font = this._seqLabCtx.font
+
+    const labelPadding = this.siteSize * this.cnvScale * 0.25
+
+    for (let i = 0; i < this._slice.length; i++) {
+      const row = this._slice[i]
+      const seqNumW = min(20 + this.siteSize * 2, this.labelW)
+      let offsetX = 0
+      offsetX += drawSeqLabel(
+        this._offScrSeqLabCtx,
+        row[0],
+        labelPadding,
+        this.labelW,
+        this.siteSize,
+        this.cnvScale
+      )
+
+      const offsetXOld = offsetX
+      this._offScrSeqLabCtx.translate(-offsetX, 0)
+
+      offsetX += drawSeqLabel(
+        this._offScrSeqLabCtx,
+        (i + this._rowOffset + 1).toLocaleString(this._locale),
+        labelPadding,
+        seqNumW,
+        this.siteSize,
+        this.cnvScale,
+        xAlignment.right,
+        '#EDEDED',
+        '#000',
+        0.9
+      )
+
+      this._offScrSeqLabCtx.translate(
+        offsetXOld - offsetX,
+        this.deltaY * this.cnvScale
+      )
+    }
+
+    this._seqLabCtx.drawImage(this._offScrSeqLabCnv, 0, 0)
   }
 
   #drawSlice() {
@@ -166,47 +238,12 @@ export class SeqViewController {
     this._offScrCnv.height = this.ctx.canvas.height
     this._offScrCtx.font = this.ctx.font
 
-    const labelPadding = this.siteSize * this.cnvScale * 0.25
-
     for (let i = 0; i < this._slice.length; i++) {
       const row = this._slice[i]
       const renderedSites =
         row[1] === 'AA' ? this.renderedSitesAA : this.renderedSitesNT
 
-      const seqNumW = min(20 + this.siteSize * 2, this.labelW)
-
       let offsetX = 0
-
-      offsetX += drawSeqLabel(
-        this._offScrCtx,
-        row[0],
-        labelPadding,
-        this.labelW,
-        this.siteSize,
-        this.cnvScale
-      )
-
-      const offsetXOld = offsetX
-      this._offScrCtx.translate(-offsetX, 0)
-
-      offsetX += drawSeqLabel(
-        this._offScrCtx,
-        (i + this._rowOffset + 1).toLocaleString(this._locale),
-        labelPadding,
-        seqNumW,
-        this.siteSize,
-        this.cnvScale,
-        xAlignment.right,
-        '#EDEDED',
-        '#000',
-        0.9
-      )
-
-      this._offScrCtx.translate(offsetXOld - seqNumW * this.cnvScale, 0)
-      offsetX -= seqNumW * this.cnvScale
-
-      this._offScrCtx.translate(this.siteGapX * this.cnvScale, 0)
-      offsetX += this.siteGapX * this.cnvScale
 
       offsetX += drawSites(
         this._offScrCtx,
@@ -217,6 +254,8 @@ export class SeqViewController {
       )
       this._offScrCtx.translate(-offsetX, this.deltaY * this.cnvScale)
     }
+
+    this.ctx.drawImage(this._offScrCnv, 0, 0)
   }
 
   draw() {
@@ -228,10 +267,8 @@ export class SeqViewController {
     )
 
     this.#drawSlice()
-    this.ctx.drawImage(this._offScrCnv, 0, 0)
-
     this.#drawScale()
-    this._scaleCtx.drawImage(this._offScrScaleCnv, 0, 0)
+    this.#drawSeqLabels()
   }
 
   #pan(evt: WheelEvent) {
@@ -370,8 +407,8 @@ export class SeqViewController {
 
   public set siteSize(siteSize: number) {
     this._siteSize = siteSize
-    this._minCnvW = siteSize * 2
-    this._minCnvH = siteSize * 2
+    this._minCnvW = max(siteSize, 1)
+    this._minCnvH = max(siteSize, 1)
     this.#calcDeltaX()
     this.#calcDeltaY()
     this.#prepareSiteImages()

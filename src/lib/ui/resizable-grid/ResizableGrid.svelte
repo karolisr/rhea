@@ -2,6 +2,8 @@
 import { onMount, onDestroy, tick } from 'svelte'
 import { makeGridTemplate } from '.'
 
+const floor = Math.floor
+
 export let uid: string
 export let rowHs: number[]
 export let colWs: number[]
@@ -17,8 +19,8 @@ let collapsedRows: boolean[] = rowHs.map(() => false)
 let collapsedCols: boolean[] = colWs.map(() => false)
 
 // bind these to get calculated sizes for grid elements
-export let rowHsCalc: number[] = []
-export let colWsCalc: number[] = []
+export let rowHsCalc: number[] | undefined = undefined
+export let colWsCalc: number[] | undefined = undefined
 
 export let gridTemplateRows: string = ''
 export let gridTemplateCols: string = ''
@@ -30,36 +32,71 @@ let h: number
 let rowBorders: boolean[] = []
 let colBorders: boolean[] = []
 
-$: if (element) {
-  const _1 = makeGridTemplate(colWs, w)
-  gridTemplateCols = _1.gridTemplate
-  colWsCalc = _1.calculatedSizes
+$: {
+  const _1 = makeGridTemplate(rowHs, h)
+  const _2 = makeGridTemplate(colWs, w)
 
-  const _2 = makeGridTemplate(rowHs, h)
-  gridTemplateRows = _2.gridTemplate
-  rowHsCalc = _2.calculatedSizes
+  const _rowHsCalc = _1.calculatedSizes
+  const _colWsCalc = _2.calculatedSizes
 
-  const _rowBorders = rowHsCalc.map((h) => h > 0)
-  if (rowHs[rowHs.length - 1] < 0) {
-    rowBorders = _rowBorders.slice(0, -1)
-  } else {
-    rowBorders = _rowBorders
-  }
+  if (_rowHsCalc !== null && _colWsCalc !== null) {
+    let ok: boolean = false
+    if (rowHsCalc !== undefined || colWsCalc !== undefined) {
+      if (rowHsCalc !== undefined) {
+        for (let i = 0; i < _rowHsCalc.length; i++) {
+          const prev = rowHsCalc[i]
+          const curr = _rowHsCalc[i]
+          if (prev !== curr) {
+            ok = true
+            break
+          }
+        }
+      }
+      if (colWsCalc !== undefined) {
+        for (let i = 0; i < _colWsCalc.length; i++) {
+          const prev = colWsCalc[i]
+          const curr = _colWsCalc[i]
+          if (prev !== curr) {
+            ok = true
+            break
+          }
+        }
+      }
+    } else {
+      ok = true
+    }
 
-  const _colBorders = colWsCalc.map((w) => w > 0)
-  if (colWs[colWs.length - 1] < 0) {
-    colBorders = _colBorders.slice(0, -1)
-  } else {
-    colBorders = _colBorders
+    if (ok) {
+      rowHsCalc = _rowHsCalc
+      colWsCalc = _colWsCalc
+
+      gridTemplateRows = _1.gridTemplate
+      gridTemplateCols = _2.gridTemplate
+
+      const _colBorders = colWsCalc.map((w) => w > 0)
+      if (colWs[colWs.length - 1] < 0) {
+        colBorders = _colBorders.slice(0, -1)
+      } else {
+        colBorders = _colBorders
+      }
+
+      const _rowBorders = rowHsCalc.map((h) => h > 0)
+      if (rowHs[rowHs.length - 1] < 0) {
+        rowBorders = _rowBorders.slice(0, -1)
+      } else {
+        rowBorders = _rowBorders
+      }
+    }
   }
 }
 
-onMount(async () => {
+onMount(() => {
   addEventListener('resize', resizeListener)
   addEventListener('mousemove', resizeCol)
   addEventListener('mousemove', resizeRow)
   addEventListener('mouseup', resizeGridElementEnd)
-  await updateElementSize()
+  dispatchResizeEvent()
+  updateElementSize()
 })
 
 onDestroy(() => {
@@ -71,26 +108,30 @@ onDestroy(() => {
 
 async function updateElementSize() {
   await tick()
-  if (element !== null) {
-    // console.log(element)
+  if (element) {
     const rects = element.getClientRects()
-    const rect = rects[0]
-    w = rect.width
-    h = rect.height
+    const _w = floor(rects[0].width)
+    if (_w !== w) {
+      w = _w
+    }
+    const _h = floor(rects[0].height)
+    if (_h !== h) {
+      h = _h
+    }
   }
 }
 
-async function resizeListener(_: Event) {
-  await updateElementSize()
+function resizeListener(e: CustomEvent | Event) {
+  if (
+    (e instanceof CustomEvent && e.detail !== uid) ||
+    !(e instanceof CustomEvent)
+  ) {
+    updateElementSize()
+  }
 }
 
-const resizeEvt = new Event('resize')
-
-$: onChangeResize(gridTemplateRows)
-$: onChangeResize(gridTemplateCols)
-
-async function onChangeResize(_: unknown) {
-  await tick()
+const resizeEvt = new CustomEvent('resize', { detail: uid })
+function dispatchResizeEvent() {
   dispatchEvent(resizeEvt)
 }
 
@@ -104,8 +145,8 @@ let rowPrevY: number | null = null
 let rowPrevHeight: number | null = null
 let rowMaxH: number | null = null
 
-function resizeGridElementBegin(evt: MouseEvent) {
-  const el = evt.target as HTMLElement
+function resizeGridElementBegin(e: MouseEvent) {
+  const el = e.target as HTMLElement
   const elType = (el.id.match(/\-(col|row)\-/) as string[])[1] as 'col' | 'row'
   const elIndex = Number(el.id.replace(`${uid}-${elType}-sizer-`, ''))
   document.body.style.cursor = `${elType}-resize`
@@ -117,7 +158,7 @@ function resizeGridElementBegin(evt: MouseEvent) {
   switch (elType) {
     case 'row':
       rowResizing = elIndex
-      rowPrevY = evt.y
+      rowPrevY = e.y
       rowPrevHeight = rowHs[elIndex]
       n = rowHs.length
       minSize = minRowH
@@ -126,7 +167,7 @@ function resizeGridElementBegin(evt: MouseEvent) {
 
     case 'col':
       colResizing = elIndex
-      colPrevX = evt.x
+      colPrevX = e.x
       colPrevWidth = colWs[elIndex]
       n = colWs.length
       minSize = minColW
@@ -155,11 +196,11 @@ function resizeGridElementBegin(evt: MouseEvent) {
 
   switch (elType) {
     case 'row':
-      rowMaxH = h - maxSize + maxSizeOffset
+      if (h !== undefined) rowMaxH = h - maxSize + maxSizeOffset
       break
 
     case 'col':
-      colMaxW = w - maxSize + maxSizeOffset
+      if (w !== undefined) colMaxW = w - maxSize + maxSizeOffset
       break
 
     default:
@@ -167,10 +208,10 @@ function resizeGridElementBegin(evt: MouseEvent) {
   }
 }
 
-function resizeRow(evt: MouseEvent) {
-  evt.stopPropagation()
+function resizeRow(e: MouseEvent) {
+  e.stopPropagation()
   if (rowResizing !== null) {
-    const d = evt.y - (rowPrevY as number)
+    const d = e.y - (rowPrevY as number)
     let newRowH = Math.min(
       Math.max(minRowH, (rowPrevHeight as number) + d),
       rowMaxH as number
@@ -181,14 +222,15 @@ function resizeRow(evt: MouseEvent) {
     } else {
       collapsedRows[rowResizing] = false
     }
-    rowHs[rowResizing as number] = newRowH
+    rowHs[rowResizing] = newRowH
+    dispatchResizeEvent()
   }
 }
 
-function resizeCol(evt: MouseEvent) {
-  evt.stopPropagation()
+function resizeCol(e: MouseEvent) {
+  e.stopPropagation()
   if (colResizing !== null) {
-    const d = evt.x - (colPrevX as number)
+    const d = e.x - (colPrevX as number)
     let newColW = Math.min(
       Math.max(minColW, (colPrevWidth as number) + d),
       colMaxW as number
@@ -199,12 +241,13 @@ function resizeCol(evt: MouseEvent) {
     } else {
       collapsedCols[colResizing] = false
     }
-    colWs[colResizing as number] = newColW
+    colWs[colResizing] = newColW
+    dispatchResizeEvent()
   }
 }
 
-function resizeGridElementEnd(_: MouseEvent) {
-  _.stopPropagation()
+function resizeGridElementEnd(e: MouseEvent) {
+  e.stopPropagation()
   if (colResizing !== null) {
     colResizing = null
     colPrevX = null
@@ -218,19 +261,20 @@ function resizeGridElementEnd(_: MouseEvent) {
     rowMaxH = null
   }
   document.body.style.cursor = 'default'
+  dispatchResizeEvent()
 }
 
 let rowHsPrev: number[] = []
 let colWsPrev: number[] = []
 
-function collapseGridElement(evt: MouseEvent) {
+function collapseGridElement(e: MouseEvent) {
   let elementIndex: number | null = null
   let sizes: number[] | null = null
   let prevSizes: number[] | null = null
   let minSize: number | null = null
   let collapsed: boolean[] | null = null
 
-  resizeGridElementBegin(evt)
+  resizeGridElementBegin(e)
 
   if (colResizing !== null) {
     elementIndex = colResizing as number
@@ -279,7 +323,7 @@ function collapseGridElement(evt: MouseEvent) {
     collapsedRows = collapsed as boolean[]
   }
 
-  resizeGridElementEnd(evt)
+  resizeGridElementEnd(e)
 }
 </script>
 
@@ -295,49 +339,51 @@ function collapseGridElement(evt: MouseEvent) {
   <grid-sizers
     style:grid-row="1/{rowHs.length + 1}"
     style:grid-column="1/{colWs.length + 1}">
-    {#each rowHs as rowH, row}
-      <grid-row-sizer-container
-        style:grid-row="{row + 1}/{row + 2}"
-        style:grid-column="1/{colWs.length + 1}"
-        class="
+    {#if rowHsCalc !== undefined && colWsCalc !== undefined}
+      {#each rowHs as rowH, row}
+        <grid-row-sizer-container
+          style:grid-row="{row + 1}/{row + 2}"
+          style:grid-column="1/{colWs.length + 1}"
+          class="
         {rowsResizable ? 'resizable' : ''}
         {rowBorders[row] && rowHsCalc[row] > 0 ? ' border' : ''}
         {collapsedRows[row] ? ' collapsed' : ''}">
-        {#if rowH >= 0 && !fixedHRows.includes(row)}
-          <grid-row-sizer
-            id="{uid}-row-sizer-{row}"
-            on:mousedown="{resizeGridElementBegin}"
-            on:dblclick="{collapseGridElement}"
-            role="none"
-            style:height="{sizerSize}px"
-            style:margin-block-end="
-            {collapsedRows[row] ? -sizerSize : -sizerSize / 2 - 0.5}px">
-          </grid-row-sizer>
-        {/if}
-      </grid-row-sizer-container>
-    {/each}
+          {#if rowH >= 0 && !fixedHRows.includes(row)}
+            <grid-row-sizer
+              id="{uid}-row-sizer-{row}"
+              on:mousedown="{resizeGridElementBegin}"
+              on:dblclick="{collapseGridElement}"
+              role="none"
+              style:height="{sizerSize}px"
+              style:margin-block-end="
+              {collapsedRows[row] ? -sizerSize : -sizerSize / 2 - 0.5}px">
+            </grid-row-sizer>
+          {/if}
+        </grid-row-sizer-container>
+      {/each}
 
-    {#each colWs as colW, col}
-      <grid-col-sizer-container
-        style:grid-row="1/{rowHs.length + 1}"
-        style:grid-column="{col + 1}/{col + 2}"
-        class="
+      {#each colWs as colW, col}
+        <grid-col-sizer-container
+          style:grid-row="1/{rowHs.length + 1}"
+          style:grid-column="{col + 1}/{col + 2}"
+          class="
         {colsResizable ? 'resizable' : ''}
         {colBorders[col] && colWsCalc[col] > 0 ? ' border' : ''}
         {collapsedCols[col] ? ' collapsed' : ''}">
-        {#if colW >= 0 && !fixedWCols.includes(col)}
-          <grid-col-sizer
-            id="{uid}-col-sizer-{col}"
-            on:mousedown="{resizeGridElementBegin}"
-            on:dblclick="{collapseGridElement}"
-            role="none"
-            style:width="{sizerSize}px"
-            style:margin-inline-end="
-            {collapsedCols[col] ? -sizerSize : -sizerSize / 2 - 0.5}px">
-          </grid-col-sizer>
-        {/if}
-      </grid-col-sizer-container>
-    {/each}
+          {#if colW >= 0 && !fixedWCols.includes(col)}
+            <grid-col-sizer
+              id="{uid}-col-sizer-{col}"
+              on:mousedown="{resizeGridElementBegin}"
+              on:dblclick="{collapseGridElement}"
+              role="none"
+              style:width="{sizerSize}px"
+              style:margin-inline-end="
+              {collapsedCols[col] ? -sizerSize : -sizerSize / 2 - 0.5}px">
+            </grid-col-sizer>
+          {/if}
+        </grid-col-sizer-container>
+      {/each}
+    {/if}
   </grid-sizers>
 </grid-container>
 
