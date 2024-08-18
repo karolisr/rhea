@@ -18,6 +18,5 @@ let rl = new RecordList('rl-test', lst, 'id')
   showHeaderRow
   showFooterRow
   showCheckBoxes
-  multiRowSelect
-  >
+  multiRowSelect>
 </TableView>
