@@ -47,6 +47,10 @@ async function initMainMenu() {
     item: 'Paste'
   })
 
+  const miSelectAll = await PredefinedMenuItem.new({
+    item: 'SelectAll'
+  })
+
   const miImportFasta = await MenuItem.new({ text: 'FASTA', enabled: false })
   const miExportFasta = await MenuItem.new({ text: 'FASTA', enabled: false })
 
@@ -55,7 +59,7 @@ async function initMainMenu() {
   smFile.append([smImport, smExport])
   smImport.append([miImportFasta])
   smExport.append([miExportFasta])
-  smEdit.append([miCopy, miCut, miPaste])
+  smEdit.append([miCopy, miCut, miPaste, miSelectAll])
 
   // --- Prepare the Main Menu ---
   let mMain = await Menu.new()
