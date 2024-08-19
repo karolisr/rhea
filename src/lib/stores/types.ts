@@ -3,7 +3,7 @@ import { AppScale } from '$lib/utils'
 export interface AppSettings {
   email: string
   ncbi_api_key: string
-  // locale: string
+  locale: string
   theme: string
   scale: keyof typeof AppScale
 }

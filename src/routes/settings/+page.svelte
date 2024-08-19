@@ -1,16 +1,10 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { Radio } from '$lib/ui/form-elements'
-import {
-  appSettings,
-  applyAppSettings,
-  saveAppSettings
-} from '$lib/stores/settings'
+import { appSettings, saveAppSettings } from '$lib/stores/settings'
 import { getOsTheme, themeChangeListener } from '$lib/backend/dark-mode'
 import { gSysInfo } from '$lib/backend/system-info'
 import type { Unlistener } from '$lib/types'
-
-applyAppSettings()
 
 let unlisteners: Unlistener[] = []
 let currentOsThemeSetting: string
@@ -21,14 +15,10 @@ async function getCurrentOsThemeSetting() {
     currentOsThemeSetting[0].toUpperCase() + currentOsThemeSetting.slice(1)
 }
 
-function saveSettings() {
-  applyAppSettings()
-  saveAppSettings()
-}
-
 onMount(async () => {
   await getCurrentOsThemeSetting()
   unlisteners.push(await themeChangeListener(getCurrentOsThemeSetting))
+  saveAppSettings()
 })
 
 onDestroy(() => {
@@ -52,7 +42,7 @@ onDestroy(() => {
             name="theme"
             value="os"
             bind:group="{$appSettings.theme}"
-            on:change="{saveSettings}" />
+            on:change="{saveAppSettings}" />
         {/if}
         <Radio
           label="Light"
@@ -60,7 +50,7 @@ onDestroy(() => {
           name="theme"
           value="light"
           bind:group="{$appSettings.theme}"
-          on:change="{saveSettings}" />
+          on:change="{saveAppSettings}" />
 
         <Radio
           label="Dark"
@@ -68,7 +58,7 @@ onDestroy(() => {
           name="theme"
           value="dark"
           bind:group="{$appSettings.theme}"
-          on:change="{saveSettings}" />
+          on:change="{saveAppSettings}" />
       </fieldset>
     </div>
 
@@ -83,7 +73,7 @@ onDestroy(() => {
           name="scale"
           value="small"
           bind:group="{$appSettings.scale}"
-          on:change="{saveSettings}" />
+          on:change="{saveAppSettings}" />
 
         <Radio
           label="Medium"
@@ -91,7 +81,7 @@ onDestroy(() => {
           name="scale"
           value="medium"
           bind:group="{$appSettings.scale}"
-          on:change="{saveSettings}" />
+          on:change="{saveAppSettings}" />
 
         <Radio
           label="Large"
@@ -99,7 +89,7 @@ onDestroy(() => {
           name="scale"
           value="large"
           bind:group="{$appSettings.scale}"
-          on:change="{saveSettings}" />
+          on:change="{saveAppSettings}" />
       </fieldset>
     </div>
   </div>
@@ -119,7 +109,7 @@ onDestroy(() => {
           autocomplete="off"
           required
           bind:value="{$appSettings.email}"
-          on:change="{saveSettings}" />
+          on:change="{saveAppSettings}" />
       </div>
 
       <div>
@@ -132,7 +122,7 @@ onDestroy(() => {
           autocomplete="off"
           required
           bind:value="{$appSettings.ncbi_api_key}"
-          on:change="{saveSettings}" />
+          on:change="{saveAppSettings}" />
       </div>
     </fieldset>
   </div>

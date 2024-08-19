@@ -2,6 +2,7 @@ import { listen, TauriEvent } from '@tauri-apps/api/event'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import type { Unlistener } from '$lib/types'
 import { gSysInfo } from '$lib/backend/system-info'
+import { appSettings } from '$lib/stores/settings'
 
 export enum ThemeDarkLight {
   light = 'light',
@@ -23,11 +24,9 @@ export async function getOsTheme(): Promise<ThemeDarkLight> {
 export async function setAppTheme(): Promise<void> {
   const _tdl = await getOsTheme()
   let userSetting: string = 'os'
-  await import('$lib/stores/settings').then((_) => {
-    _.appSettings.subscribe((stng) => {
-      userSetting = stng.theme
-    })()
-  })
+  appSettings.subscribe((stng) => {
+    userSetting = stng.theme
+  })()
   if (userSetting === 'os') {
     document.documentElement.setAttribute('app-theme', _tdl)
   } else {
