@@ -48,20 +48,14 @@ onMount(async () => {
   const sd: SortDir[] = $appState.mdlSD ? ($appState.mdlSD as SortDir[]) : [1]
   docListMain = new DocListMain($dbs, 'main-doc-list', sf, sd)
   addEventListener(docListMain.updatedEventName, mdlUpdatedEventListener)
-
   docListSrch = new DocListSrch($dbs, 'search-doc-list')
-  // addEventListener(docListSrch.updatedEventName, sdlUpdatedEventListener)
-
   addEventListener('seq-db-updated', dbUpdatedListener)
 })
 
 onDestroy(() => {
   removeEventListener(docListMain.updatedEventName, mdlUpdatedEventListener)
-  // removeEventListener(docListSrch.updatedEventName, sdlUpdatedEventListener)
   removeEventListener('seq-db-updated', dbUpdatedListener)
 })
-
-// const sdlUpdatedEventListener = () => {}
 
 const mdlUpdatedEventListener = async () => {
   $appState.mdlSF = docListMain.list.sortFields

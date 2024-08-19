@@ -2,7 +2,7 @@
 import { onMount, onDestroy } from 'svelte'
 import { TableView } from '$lib/ui/table-view'
 import { DocListSrch } from '$lib/models/doc/doc-list-srch'
-import { type ESummaryNuccore } from '$lib/ncbi'
+import type { ESummaryNuccore } from '$lib/ncbi'
 import searchStore from '$lib/stores/search-store'
 import { getSeqSummariesForCollections } from '$lib/backend/db/summaries'
 import databases from '$lib/stores/databases'
@@ -96,7 +96,6 @@ async function onDeleteRows(ids: string[]) {
   if (selCollGrp === 'coll-search-results' && selColl === 'ROOT') {
     try {
       await docListSrch.delFromDb(ids)
-      // collUpdatedSrch = true
       _getIdsByColl(selCollsSrch)
     } catch (error) {
       console.error(error)
@@ -104,7 +103,6 @@ async function onDeleteRows(ids: string[]) {
   } else if (selCollGrp === 'coll-search-results' && selColl !== undefined) {
     try {
       await docListSrch.remFromColl(ids, selColl)
-      // collUpdatedSrch = true
       _getIdsByColl(selCollsSrch)
     } catch (error) {
       console.error(error)

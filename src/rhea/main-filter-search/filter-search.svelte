@@ -7,11 +7,7 @@ export let idsByFilterTerm: Set<string> | undefined
 </script>
 
 {#if selCollGrp === 'coll-search-results'}
-  <!-- {#key selCollGrp} -->
   <Search />
-  <!-- {/key} -->
 {:else}
-  <!-- {#key selCollGrp} -->
   <Filter bind:idsByFilterTerm />
-  <!-- {/key} -->
 {/if}

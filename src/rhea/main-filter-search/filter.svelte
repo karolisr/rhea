@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount, onDestroy } from 'svelte'
 import { filterSeqRecs } from '$lib/backend/db/seqrecs'
-import { type IndexedUndefined } from '$lib/types'
+import type { IndexedUndefined } from '$lib/types'
 import { TextInput } from '$lib/ui/form-elements'
 import databases from '$lib/stores/databases'
 
@@ -91,10 +91,8 @@ function processTerm(x: string) {
 
 <style>
 .form-grid {
-  /* background-color: coral; */
   flex-grow: 1;
   margin-block-start: calc(var(--pad) * 2);
-  /* margin-block-end: calc(var(--pad) * 2 + 1px); */
   margin-inline: calc(var(--pad) * 2);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -103,10 +101,7 @@ function processTerm(x: string) {
 }
 
 .form-grid-item {
-  /* background-color: blanchedalmond; */
   display: flex;
-  /* border-style: solid; */
-  /* border-radius: 5px; */
 }
 
 .form-grid-item-1 {
@@ -114,14 +109,12 @@ function processTerm(x: string) {
   grid-column-end: 4;
   grid-row-start: 1;
   grid-row-end: 2;
-  /* border-style: none; */
 }
 
 .form-grid-item-1 > div {
   flex-grow: 1;
   display: flex;
   gap: calc(var(--pad) * 2);
-  /* margin-inline: 10%; */
 }
 
 .form-grid-item-2 {

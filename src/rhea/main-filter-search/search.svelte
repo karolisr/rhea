@@ -9,7 +9,7 @@ import {
   NCBIDatabase,
   type ESummaryNuccore
 } from '$lib/ncbi'
-import { esearch, esummary, efetch } from '$lib/ncbi/eutils'
+import { esearch, esummary } from '$lib/ncbi/eutils'
 import databases from '$lib/stores/databases'
 import { appStatus } from '$lib/stores/status'
 import searchStore from '$lib/stores/search-store'
@@ -20,9 +20,7 @@ import { insertSeqSummaries } from '$lib/backend/db/summaries'
 import { insertSeqRecs } from '$lib/backend/db/seqrecs'
 import { gSysInfo } from '$lib/backend/system-info'
 import type { GBSet } from '$lib/ncbi/types/GBSet'
-import { getFontSize } from '$lib/utils'
-import { Radio } from '$lib/ui/form-elements'
-import { type Optional, type Mutable } from '$lib/types'
+import type { Mutable } from '$lib/types'
 import { getPropNames } from '$lib/utils'
 
 let gbseqRemaining: number = 0
@@ -83,7 +81,6 @@ async function search(): Promise<void> {
       searchStatusMessage = `No results for ${searchTerm}. TaxIDs: ${taxids.join(', ')}`
     } else {
       // ---------------------
-      // console.log($searchStore.results)
       const accs: string[] = []
       $searchStore.results.forEach((x) => {
         accs.push(x.accessionversion)
@@ -95,17 +92,12 @@ async function search(): Promise<void> {
       // ---------------------
       searching = false
       // ---------------------
-
-      // ---------------------
       searchStatusMessage = `Storing summaries.`
       await insertSeqSummaries($searchStore.results, $dbs)
       searchStatusMessage = `Storing summaries: done.`
       // ---------------------
-
-      // ---------------------
       $searchStore.fresh = true
       // ---------------------
-
       if (gSysInfo.browser === 'Tauri') {
         searchStatusMessage = `Downloading complete sequence records.`
         const gbRecSets: GBSet[] = []
@@ -323,10 +315,8 @@ $: {
 
 <style>
 .form-grid {
-  /* background-color: coral; */
   flex-grow: 1;
   margin-block-start: calc(var(--pad) * 2);
-  /* margin-block-end: calc(var(--pad) * 2 + 1px); */
   margin-inline: calc(var(--pad) * 2);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -335,10 +325,7 @@ $: {
 }
 
 .form-grid-item {
-  /* background-color: blanchedalmond; */
   display: flex;
-  /* border-style: solid; */
-  /* border-radius: 5px; */
 }
 
 .form-grid-item-1 {
@@ -346,14 +333,12 @@ $: {
   grid-column-end: 4;
   grid-row-start: 1;
   grid-row-end: 2;
-  /* border-style: none; */
 }
 
 .form-grid-item-1 > div {
   flex-grow: 1;
   display: flex;
   gap: calc(var(--pad) * 2);
-  /* margin-inline: 10%; */
 }
 
 .form-grid-item-2 {
