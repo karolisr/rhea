@@ -60,7 +60,7 @@ onDestroy(() => {
 const mdlUpdatedEventListener = async () => {
   $appState.mdlSF = docListMain.list.sortFields
   $appState.mdlSD = docListMain.list.sortDirections
-  saveAppState()
+  // saveAppState()
 }
 
 const dbUpdatedListener = async () => {
@@ -232,11 +232,8 @@ let tvMainRowH: number | undefined = undefined
 let gridLeftColW: number =
   $appState.gridLeftColW !== undefined
     ? ($appState.gridLeftColW as number)
-    : 200
+    : 143
 let gridLRColWs: number[] = [gridLeftColW, -1]
-// let gridMainNRow: number = 3
-// let gridMainNCol: number = 1
-// let gridMainRowBorders: boolean[] = [true, true]
 let gridMainColWs: number[] = [-1]
 let gridMainRowHs: number[] = []
 
@@ -250,7 +247,7 @@ $: {
   if (tvMainRowH && gridMainRowHs.length === 0) {
     gridMainRowHs = [
       getFontSize() * 3,
-      34 + 1 + (tvMainRowH ? tvMainRowH : 0) * (tvMainNRowsToShow - 1),
+      (tvMainRowH ? tvMainRowH : 19) * tvMainNRowsToShow,
       -1
     ]
   }

@@ -26,7 +26,7 @@ export let siteSize = max(getFontSize() + 2, 16)
 export let siteGapX = 0
 export let siteGapY = 0
 export let cnvScale: number = gSysInfo.pixelRatio
-export let labelW = 250
+export let labelW = 145
 export let scaleH = siteSize * 1.75
 
 let rowHs: number[] = [scaleH, -1]

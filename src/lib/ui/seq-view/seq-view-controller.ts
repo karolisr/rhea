@@ -185,7 +185,7 @@ export class SeqViewController {
 
     for (let i = 0; i < this._slice.length; i++) {
       const row = this._slice[i]
-      const seqNumW = min(20 + this.siteSize * 2, this.labelW)
+      const seqNumW = min(this.siteSize * 2, this.labelW)
       let offsetX = 0
       offsetX += drawSeqLabel(
         this._offScrSeqLabCtx,
