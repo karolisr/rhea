@@ -42,8 +42,9 @@ features = ["devtools"]
 [dependencies.tauri-build]
 version = "2.0.0-rc.3"
 
-[build_dependencies.tauri-build]
+[build-dependencies.tauri-build]
 version = "2.0.0-rc.3"
+features = []
 
 [dependencies.tauri-plugin-clipboard-manager]
 version = "2.1.0-beta.7"
