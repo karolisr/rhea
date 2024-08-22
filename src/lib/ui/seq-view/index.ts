@@ -165,7 +165,7 @@ export function drawSeqLabel(
   sizeY: number,
   cnvScale: number,
   xAlign: xAlignment = xAlignment.right,
-  bg: string = '#F5F5F5',
+  bg: string = '#FFFFFF',
   fg: string = '#000000',
   fontScale: number = 1
 ): number {
@@ -229,8 +229,7 @@ export function drawScale(
   ctx.font = `normal ${(height * cnvScale) / 2.5}px sans-serif`
   const nSites = to - from
   for (let i = 0; i < nSites; i++) {
-    const x =
-      i * deltaX * cnvScale + ((deltaX - siteSize) * cnvScale) / 2 - lineW / 2
+    let x = i * deltaX * cnvScale - ((deltaX - siteSize) * cnvScale) / 2
     if (from + i === 0) continue
     if ((from + i) % majorTicksEvery === 0) {
       const labOffset = calcTextOffset(

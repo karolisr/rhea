@@ -19,7 +19,7 @@ const min = Math.min
 
 export class SeqViewController {
   private _data: SeqList | Alignment
-  private _ctx: CanvasRenderingContext2D
+  private _seqCtx: CanvasRenderingContext2D
   private _siteSize: number = 0
   private _cnvScale: number = 0
   private _renderedSitesNT: Map<string, HTMLCanvasElement> = new Map()
@@ -34,8 +34,8 @@ export class SeqViewController {
   private _cnvW: number = 0
   private _cnvH: number = 0
 
-  private _offScrCnv: HTMLCanvasElement
-  private _offScrCtx: CanvasRenderingContext2D
+  private _offScrSeqCnv: HTMLCanvasElement
+  private _offScrSeqCtx: CanvasRenderingContext2D
 
   private _offsetX: number = 0
   private _offsetY: number = 0
@@ -65,12 +65,12 @@ export class SeqViewController {
     seqCtx: CanvasRenderingContext2D
   ) {
     this._data = new SeqList([])
-    this._ctx = seqCtx
+    this._seqCtx = seqCtx
     this._scaleCtx = scaleCtx
     this._seqLabCtx = seqLabCtx
 
-    this._offScrCnv = document.createElement('canvas')
-    this._offScrCtx = this._offScrCnv.getContext(
+    this._offScrSeqCnv = document.createElement('canvas')
+    this._offScrSeqCtx = this._offScrSeqCnv.getContext(
       '2d'
     ) as CanvasRenderingContext2D
 
@@ -89,7 +89,17 @@ export class SeqViewController {
   }
 
   #addEventListeners() {
-    this.ctx.canvas.addEventListener(
+    this._scaleCtx.canvas.addEventListener(
+      'wheel',
+      this.#handleMouseWheel.bind(this),
+      { passive: true }
+    )
+    this._seqLabCtx.canvas.addEventListener(
+      'wheel',
+      this.#handleMouseWheel.bind(this),
+      { passive: true }
+    )
+    this._seqCtx.canvas.addEventListener(
       'wheel',
       this.#handleMouseWheel.bind(this),
       { passive: true }
@@ -97,7 +107,17 @@ export class SeqViewController {
   }
 
   removeEventListeners() {
-    this.ctx.canvas.removeEventListener(
+    this._scaleCtx.canvas.removeEventListener(
+      'wheel',
+      this.#handleMouseWheel.bind(this),
+      false
+    )
+    this._seqLabCtx.canvas.removeEventListener(
+      'wheel',
+      this.#handleMouseWheel.bind(this),
+      false
+    )
+    this._seqCtx.canvas.removeEventListener(
       'wheel',
       this.#handleMouseWheel.bind(this),
       false
@@ -122,7 +142,7 @@ export class SeqViewController {
 
   #setCnvSize() {
     setCnvSize(
-      this.ctx,
+      this._seqCtx,
       this.cnvW,
       max(this.cnvH, this._slice.length * this.deltaY),
       this.minCnvW,
@@ -142,7 +162,7 @@ export class SeqViewController {
     )
 
     if (this._scaleH >= this.minCnvH) {
-      this._offScrScaleCnv.width = this.ctx.canvas.width + this._deltaX
+      this._offScrScaleCnv.width = this._seqCtx.canvas.width + this._deltaX
       this._offScrScaleCnv.height = this._scaleCtx.canvas.height
       this._offScrScaleCtx.font = this._scaleCtx.font
 
@@ -186,7 +206,10 @@ export class SeqViewController {
     for (let i = 0; i < this._slice.length; i++) {
       const row = this._slice[i]
       const seqNumW = min(this.siteSize * 2, this.labelW)
+
       let offsetX = 0
+
+      // draw sequence label
       offsetX += drawSeqLabel(
         this._offScrSeqLabCtx,
         row[0],
@@ -199,6 +222,7 @@ export class SeqViewController {
       const offsetXOld = offsetX
       this._offScrSeqLabCtx.translate(-offsetX, 0)
 
+      // draw sequence order number
       offsetX += drawSeqLabel(
         this._offScrSeqLabCtx,
         (i + this._rowOffset + 1).toLocaleString(this._locale),
@@ -208,7 +232,7 @@ export class SeqViewController {
         this.cnvScale,
         xAlignment.right,
         '#EDEDED',
-        '#000',
+        '#000000',
         0.9
       )
 
@@ -227,9 +251,9 @@ export class SeqViewController {
       this._cnvSizeSet = true
     }
 
-    this._offScrCnv.width = this.ctx.canvas.width + this._deltaX
-    this._offScrCnv.height = this.ctx.canvas.height
-    this._offScrCtx.font = this.ctx.font
+    this._offScrSeqCnv.width = this._seqCtx.canvas.width + this._deltaX
+    this._offScrSeqCnv.height = this._seqCtx.canvas.height
+    this._offScrSeqCtx.font = this._seqCtx.font
 
     for (let i = 0; i < this._slice.length; i++) {
       const row = this._slice[i]
@@ -239,16 +263,16 @@ export class SeqViewController {
       let offsetX = 0
 
       offsetX += drawSites(
-        this._offScrCtx,
+        this._offScrSeqCtx,
         row[2],
         this.deltaX,
         this.cnvScale,
         renderedSites
       )
-      this._offScrCtx.translate(-offsetX, this.deltaY * this.cnvScale)
+      this._offScrSeqCtx.translate(-offsetX, this.deltaY * this.cnvScale)
     }
 
-    this.ctx.drawImage(this._offScrCnv, 0, 0)
+    this._seqCtx.drawImage(this._offScrSeqCnv, 0, 0)
   }
 
   draw() {
@@ -265,64 +289,71 @@ export class SeqViewController {
   }
 
   #pan(evt: WheelEvent) {
+    const target: HTMLCanvasElement = evt.target as HTMLCanvasElement
     const deltaX = floor(evt.deltaX)
     const deltaY = floor(evt.deltaY)
 
     if (deltaX !== 0) {
-      this._cnvSizeSet = false
-      this._offsetX += deltaX
-      // left edge
-      if (this._colOffset <= 0 && this._offsetX <= 0) {
-        this._offsetX = 0
-        this._colOffset = 0
-      }
-      // right edge
-      else if (
-        this._offsetX >= 0 &&
-        this.data.nCol - this._colOffset <= this.#nColVisible()
-      ) {
-        this._offsetX = 0
-      }
-      // forward
-      else if (Math.sign(deltaX) == 1 && this._offsetX > this._deltaX) {
-        this._offsetX = 0
-        this._colOffset += 1
-        this.draw()
-      }
-      // back
-      else if (Math.sign(deltaX) == -1 && this._offsetX < -this._deltaX) {
-        this._offsetX = 0
-        this._colOffset -= 1
-        this.draw()
+      if (target.id !== this._seqLabCtx.canvas.id) {
+        this._cnvSizeSet = false
+        this._offsetX += deltaX
+
+        // left edge
+        if (this._colOffset <= 0 && this._offsetX <= 0) {
+          this._offsetX = 0
+          this._colOffset = 0
+        }
+        // right edge
+        else if (
+          this._offsetX >= 0 &&
+          this.data.nCol - this._colOffset <= this.#nColVisible()
+        ) {
+          this._offsetX = 0
+        }
+        // forward
+        else if (Math.sign(deltaX) == 1 && this._offsetX > this._deltaX) {
+          this._offsetX = 0
+          this._colOffset += 1
+          this.draw()
+        }
+        // back
+        else if (Math.sign(deltaX) == -1 && this._offsetX < -this._deltaX) {
+          this._offsetX = 0
+          this._colOffset -= 1
+          this.draw()
+        }
       }
     }
 
     if (deltaY !== 0) {
-      this._cnvSizeSet = false
-      this._offsetY += deltaY
-      // top
-      if (this._rowOffset <= 0 && this._offsetY <= 0) {
-        this._offsetY = 0
-        this._rowOffset = 0
-      }
-      // bottom
-      else if (
-        this._offsetY >= 0 &&
-        this.data.nRow - this._rowOffset <= this.#nRowVisible()
-      ) {
-        this._offsetY = 0
-      }
-      // down
-      else if (Math.sign(deltaY) == 1 && this._offsetY > this._deltaY) {
-        this._offsetY = 0
-        this._rowOffset += 1
-        this.draw()
-      }
-      // up
-      else if (Math.sign(deltaY) == -1 && this._offsetY < -this._deltaY) {
-        this._offsetY = 0
-        this._rowOffset -= 1
-        this.draw()
+      if (target.id !== this._scaleCtx.canvas.id) {
+        this._cnvSizeSet = false
+        this._offsetY += deltaY
+
+        // top
+        if (this._rowOffset <= 0 && this._offsetY <= 0) {
+          this._offsetY = 0
+          this._rowOffset = 0
+        }
+        // bottom
+        else if (
+          this._offsetY >= 0 &&
+          this.data.nRow - this._rowOffset <= this.#nRowVisible()
+        ) {
+          this._offsetY = 0
+        }
+        // down
+        else if (Math.sign(deltaY) == 1 && this._offsetY > this._deltaY) {
+          this._offsetY = 0
+          this._rowOffset += 1
+          this.draw()
+        }
+        // up
+        else if (Math.sign(deltaY) == -1 && this._offsetY < -this._deltaY) {
+          this._offsetY = 0
+          this._rowOffset -= 1
+          this.draw()
+        }
       }
     }
   }
@@ -356,9 +387,9 @@ export class SeqViewController {
     return this._renderedSitesAA
   }
 
-  public get ctx(): CanvasRenderingContext2D {
-    return this._ctx
-  }
+  // public get seqCtx(): CanvasRenderingContext2D {
+  //   return this._seqCtx
+  // }
 
   public get minCnvW(): number {
     return this._minCnvW
