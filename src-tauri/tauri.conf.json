@@ -17,6 +17,7 @@
         "label": "rhea_window_main",
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
+        "dragDropEnabled": true,
         "acceptFirstMouse": false,
         "alwaysOnTop": false,
         "width": 810,
