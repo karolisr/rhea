@@ -1,6 +1,7 @@
 import { writable, type Writable } from 'svelte/store'
 import { getLocale } from '$lib/backend/system-info'
 import { setAppTheme } from '$lib/backend/dark-mode'
+import { setAppScale } from '$lib/backend/scale'
 import type { AppSettings } from '.'
 
 const key = 'settings'
@@ -27,9 +28,7 @@ export const appSettings = init()
 
 export function applyAppSettings(): void {
   setAppTheme()
-  import('$lib/utils').then((_) => {
-    _.setAppScale()
-  })
+  setAppScale()
 }
 
 export function saveAppSettings(): void {

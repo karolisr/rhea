@@ -2,7 +2,7 @@
 import { onMount, onDestroy, tick } from 'svelte'
 
 import { gSysInfo } from '$lib/backend/system-info'
-import { getFontSize } from '$lib/utils'
+import { getFontSize } from '$lib/backend/scale'
 
 import { appState, saveAppState } from '$lib/stores/state'
 import databases from '$lib/stores/databases'

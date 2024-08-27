@@ -1,4 +1,4 @@
-import { AppScale, AppFontSize } from '.'
+import { AppScale, AppFontSize } from '$lib/utils'
 import { appSettings } from '$lib/stores/settings'
 
 export function getAppScale(): keyof typeof AppScale {

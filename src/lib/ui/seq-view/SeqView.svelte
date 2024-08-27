@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount, onDestroy, tick } from 'svelte'
-import { getFontSize } from '$lib/utils'
+import { getFontSize } from '$lib/backend/scale'
 import { ResizableGrid } from '$lib/ui/resizable-grid'
 import { SeqViewController } from './seq-view-controller'
 import { SeqList } from '$lib/seq/seq-list'

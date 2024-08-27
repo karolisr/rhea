@@ -2,7 +2,7 @@
 import { onMount, onDestroy } from 'svelte'
 
 import { gSysInfo } from '$lib/backend/system-info'
-import { setAppScale } from '$lib/utils'
+import { setAppScale } from '$lib/backend/scale'
 import { DragDropFiles } from '$lib/backend/drag-drop'
 import { themeChangeListener } from '$lib/backend/dark-mode'
 
