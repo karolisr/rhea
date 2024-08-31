@@ -7,6 +7,7 @@ import { cleanContent } from './utils'
 
 interface DtdEntity {
   name: string
+  varName: string | undefined
   value: string
   external: string | undefined
 }
@@ -51,12 +52,13 @@ function parseDtdEntityTag(txt: string): DtdEntity | undefined {
     }
 
     let n = _.n
+    let vn = undefined
     if (n.startsWith('%')) {
       n = n.replace('%', '').trim()
-      n = `%${n};`
+      vn = `%${n};`
     }
 
-    return { name: n, value: c[c.length - 1], external: _.e }
+    return { name: n, varName: vn, value: c[c.length - 1], external: _.e }
   } else {
     return undefined
   }

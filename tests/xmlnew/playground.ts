@@ -2,6 +2,7 @@
 // console.log('argv:', process.argv.slice(2))
 
 import { readFileSync } from 'fs'
+import { carriageReturnToNewLine } from '$lib/xmlnew/dtd/utils'
 import { parseDtdTxt } from '$lib/xmlnew/dtd'
 
 let dtdTxtESummNC: string = readFileSync('data/esummary_nuccore.dtd', 'utf8')
@@ -52,17 +53,18 @@ let dtdTxtNCBIGBSMod: string = readFileSync('data/NCBI_GBSeq.mod.dtd', 'utf8')
 // `
 
 let concatTxt =
+  xmlTxtESummNC +
+  xmlTxtNCBIGBS +
   // attLstTxt +
   dtdTxtESummNC +
   dtdTxtNCBIGBS +
   dtdTxtNCBIEntMod +
-  dtdTxtNCBIGBSMod +
-  xmlTxtESummNC +
-  xmlTxtNCBIGBS
+  dtdTxtNCBIGBSMod
 
-const result = parseDtdTxt(concatTxt)
+const txt = carriageReturnToNewLine(concatTxt)
+const result = parseDtdTxt(txt)
 
-console.table(result.doctypes)
-console.table(result.attributes)
-console.log(result.entities)
-console.log(result.elements)
+// console.table(result.doctypes)
+// console.log(result.entities)
+// console.table(result.attributes)
+// console.log(result.elements)

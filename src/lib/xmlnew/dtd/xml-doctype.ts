@@ -1,10 +1,13 @@
 export { getXmlDoctypes }
 
-import type { DtdEntity } from './dtd-entity'
 import { parseDtdEntityTag } from './dtd-entity'
 import { getDtdTags } from './dtd-common'
 
-interface XmlDoctype extends DtdEntity {}
+interface XmlDoctype {
+  name: string
+  value: string
+  external: string | undefined
+}
 
 function getXmlDoctypeTags(txt: string): string[] {
   return getDtdTags(txt, 'doctype')
