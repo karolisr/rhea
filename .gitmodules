@@ -1,0 +1,3 @@
+[submodule "src-submodules/bioseq"]
+	path = src-submodules/bioseq
+	url = https://github.com/karolisr/bioseq
