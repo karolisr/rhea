@@ -2,6 +2,15 @@
   "folders": [
     {
       "path": "."
+    },
+    {
+      "path": "src-submodules/bioseq"
+    },
+    {
+      "path": "src-tauri"
+    },
+    {
+      "path": "src"
     }
   ],
   "settings": {
@@ -11,7 +20,7 @@
     },
     "editor.insertSpaces": true,
     "editor.tabSize": 2,
-    "editor.rulers": [80],
+    "editor.rulers": [100],
     "sqltools.useNodeRuntime": true,
     "rust-analyzer.completion.hideDeprecated": true,
     "emeraldwalk.runonsave": {
@@ -19,7 +28,7 @@
       "commands": [
         {
           "match": ".*src-submodules/bioseq.*\\.rs$",
-          "cmd": "echo && cd src-submodules/bioseq && cargo run --quiet --example ${fileBasenameNoExt} && echo"
+          "cmd": "echo && cd src-submodules/bioseq &>/dev/null || cd . && cargo run --quiet --example ${fileBasenameNoExt} && echo"
         }
       ]
     }
