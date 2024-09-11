@@ -12,6 +12,16 @@
     "editor.insertSpaces": true,
     "editor.tabSize": 2,
     "editor.rulers": [80],
-    "sqltools.useNodeRuntime": true
+    "sqltools.useNodeRuntime": true,
+    "rust-analyzer.completion.hideDeprecated": true,
+    "emeraldwalk.runonsave": {
+      "autoClearConsole": true,
+      "commands": [
+        {
+          "match": ".*src-submodules/bioseq.*\\.rs$",
+          "cmd": "echo && cd src-submodules/bioseq && cargo run --quiet --example ${fileBasenameNoExt} && echo"
+        }
+      ]
+    }
   }
 }

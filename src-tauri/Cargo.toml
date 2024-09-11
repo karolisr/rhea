@@ -10,8 +10,8 @@ edition = "2021"
 rust-version = "1.76"
 
 [lib]
-name = "rhea_lib"
-crate-type = ["staticlib", "cdylib", "lib"]
+name = "rhea"
+crate-type = ["lib"]
 
 # See more keys and their definitions at:
 #   https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -35,12 +35,15 @@ opt-level = 3      # "s" prioritizes small binary size. Use 3 for faster compile
 panic = "abort"    # Higher performance by disabling panic handlers.
 strip = true       # Ensures debug symbols are removed.
 
+[dependencies.bioseq]
+path = "../src-submodules/bioseq"
+
 [dependencies.tauri]
-version = "2.0.0-rc.10"
+version = "2.0.0-rc.11"
 features = ["devtools"]
 
 [build-dependencies.tauri-build]
-version = "2.0.0-rc.9"
+version = "2.0.0-rc.10"
 features = []
 
 [dependencies.tauri-plugin-clipboard-manager]
@@ -59,7 +62,7 @@ version = "2.0.0-rc.1"
 version = "2.0.0-rc.3"
 
 [dependencies.tauri-plugin-sql]
-version = "2.0.0-rc.1"
+version = "2.0.0-rc.2"
 features = ["sqlite"]
 
 [dependencies.serde]

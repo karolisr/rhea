@@ -4,6 +4,7 @@ package-lock.json
 yarn.lock
 /src-tauri/resources
 /src-tauri/target
+/src-submodules/bioseq/target
 /build
 /.svelte-kit
 /package

@@ -11,7 +11,7 @@
     "tauri": "tauri"
   },
   "devDependencies": {
-    "@iconify/json": "^2.2.245",
+    "@iconify/json": "^2.2.247",
     "@sveltejs/adapter-static": "^3.0.4",
     "@sveltejs/kit": "^2.5.26",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
@@ -19,8 +19,8 @@
     "@types/eslint": "^9.6.1",
     "@types/node": "^22.5.4",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.4.0",
-    "@typescript-eslint/parser": "^8.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.43.0",
     "node": "^22.8.0",
@@ -33,9 +33,9 @@
     "svelte-check": "^4.0.1",
     "tslib": "^2.7.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.2",
     "unplugin-icons": "^0.19.3",
-    "vite": "^5.4.3"
+    "vite": "^5.4.4"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0-beta",
