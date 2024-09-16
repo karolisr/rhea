@@ -39,21 +39,21 @@ strip = true       # Ensures debug symbols are removed.
 path = "../src-submodules/bioseq"
 
 [dependencies.tauri]
-version = "2.0.0-rc.11"
+version = "2.0.0-rc.14"
 features = ["devtools"]
 
 [build-dependencies.tauri-build]
-version = "2.0.0-rc.10"
+version = "2.0.0-rc.11"
 features = []
 
 [dependencies.tauri-plugin-clipboard-manager]
 version = "2.1.0-beta.7"
 
 [dependencies.tauri-plugin-http]
-version = "2.0.0-rc.3"
+version = "2.0.0-rc.5"
 
 [dependencies.tauri-plugin-fs]
-version = "2.0.0-rc.3"
+version = "2.0.0-rc.5"
 
 [dependencies.tauri-plugin-os]
 version = "2.0.0-rc.1"
