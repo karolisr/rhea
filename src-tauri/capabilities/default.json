@@ -17,6 +17,9 @@
     "core:window:allow-start-dragging",
     "core:window:default",
     "fs:allow-home-read-recursive",
+    "fs:allow-appconfig-meta-recursive",
+    "fs:allow-appconfig-read-recursive",
+    "fs:allow-appconfig-write-recursive",
     "fs:default",
     {
       "identifier": "http:default",
