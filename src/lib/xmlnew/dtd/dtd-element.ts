@@ -1,11 +1,16 @@
 export { getDtdElements }
 
+import type { DtdAtt } from './dtd-attlist'
 import { getDtdTags } from './dtd-common'
 import { cleanContent } from './utils'
 
-interface DtdElement {
+export interface DtdElement {
   name: string
   content: string
+  attributes: Array<DtdAtt>
+  items: Array<DtdElement>
+  type: string
+  value: string | number | boolean
 }
 
 // <!ELEMENT element-name content-model>
@@ -32,7 +37,14 @@ function parseDtdElementTag(txt: string): DtdElement | undefined {
   const _ = [...txt.matchAll(re)].map((_) => _.groups)[0]
   if (_ !== undefined) {
     const c = cleanContent(_.c, ['|', ',', '(', ')'])
-    return { name: _.n, content: c }
+    return {
+      name: _.n,
+      content: c,
+      attributes: [],
+      items: [],
+      type: 'UNSET',
+      value: 'UNSET'
+    }
   } else {
     return undefined
   }

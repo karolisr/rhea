@@ -3,11 +3,19 @@ export { getDtdAttributes }
 import { getDtdTags } from './dtd-common'
 import { cleanContent } from './utils'
 
-interface DtdAtt {
+export interface DtdAtt {
   en: string
   an: string
   at: string
   av: string
+}
+
+interface DtdAttType {
+  [key: string]: string
+}
+
+const attValType: DtdAttType = {
+  '(true|false)': 'BooleanT'
 }
 
 // <!ATTLIST element-name attr-name attr-type attr-default>
@@ -44,7 +52,10 @@ function parseDtdAttListTag(txt: string): Array<DtdAtt> {
   let attrs: DtdAtt[] = []
   mgs.forEach((mg) => {
     if (mg) {
-      const t = cleanContent(mg.t, ['|', ',', '(', ')'])
+      let t = cleanContent(mg.t, ['|', ',', '(', ')'])
+      if (t in attValType) {
+        t = attValType[t]
+      }
       const attr = { en: en, an: mg.n, at: t, av: mg.v }
       attrs.push(attr)
     }

@@ -54,9 +54,9 @@ let dtdTxtNCBIGBSMod: string = readFileSync('data/NCBI_GBSeq.mod.dtd', 'utf8')
 
 let concatTxt =
   xmlTxtESummNC +
-  xmlTxtNCBIGBS +
+  // xmlTxtNCBIGBS +
   // attLstTxt +
-  dtdTxtESummNC +
+  // dtdTxtESummNC
   dtdTxtNCBIGBS +
   dtdTxtNCBIEntMod +
   dtdTxtNCBIGBSMod
