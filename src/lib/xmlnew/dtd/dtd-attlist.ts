@@ -4,10 +4,10 @@ import { getDtdTags } from './dtd-common'
 import { cleanContent } from './utils'
 
 export interface DtdAtt {
-  en: string
-  an: string
-  at: string
-  av: string
+  eleName: string
+  name: string
+  type: string
+  value: string
 }
 
 interface DtdAttType {
@@ -56,7 +56,7 @@ function parseDtdAttListTag(txt: string): Array<DtdAtt> {
       if (t in attValType) {
         t = attValType[t]
       }
-      const attr = { en: en, an: mg.n, at: t, av: mg.v }
+      const attr: DtdAtt = { eleName: en, name: mg.n, type: t, value: mg.v }
       attrs.push(attr)
     }
   })

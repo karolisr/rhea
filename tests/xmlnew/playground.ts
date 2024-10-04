@@ -11,6 +11,8 @@ let dtdTxtNCBIGBS: string = readFileSync('data/NCBI_GBSeq.dtd', 'utf8')
 let xmlTxtNCBIGBS: string = readFileSync('data/NCBI_GBSeq.xml', 'utf8')
 let dtdTxtNCBIEntMod: string = readFileSync('data/NCBI_Entity.mod.dtd', 'utf8')
 let dtdTxtNCBIGBSMod: string = readFileSync('data/NCBI_GBSeq.mod.dtd', 'utf8')
+let dtdTxtTaxon: string = readFileSync('data/taxon.dtd', 'utf8')
+let dtdTxtEPost: string = readFileSync('data/ePost_020511.dtd', 'utf8')
 
 // let attLstTxt = `
 // <!ATTLIST element-name
@@ -53,13 +55,15 @@ let dtdTxtNCBIGBSMod: string = readFileSync('data/NCBI_GBSeq.mod.dtd', 'utf8')
 // `
 
 let concatTxt =
-  xmlTxtESummNC +
-  // xmlTxtNCBIGBS +
-  // attLstTxt +
-  // dtdTxtESummNC
-  dtdTxtNCBIGBS +
-  dtdTxtNCBIEntMod +
-  dtdTxtNCBIGBSMod
+  // xmlTxtESummNC
+  // xmlTxtNCBIGBS
+  // attLstTxt
+  dtdTxtESummNC
+  // dtdTxtNCBIGBS
+  // dtdTxtNCBIEntMod +
+  // dtdTxtNCBIGBSMod
+  // dtdTxtTaxon
+  // dtdTxtEPost
 
 const txt = carriageReturnToNewLine(concatTxt)
 const result = parseDtdTxt(txt)

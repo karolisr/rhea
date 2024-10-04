@@ -7,10 +7,10 @@ import { cleanContent } from './utils'
 export interface DtdElement {
   name: string
   content: string
-  attributes: Array<DtdAtt>
-  items: Array<DtdElement>
-  type: string
-  value: string | number | boolean
+  // attributes: Array<DtdAtt>
+  // items: Array<DtdElement>
+  // type: string
+  // value: string | number | boolean
 }
 
 // <!ELEMENT element-name content-model>
@@ -40,10 +40,10 @@ function parseDtdElementTag(txt: string): DtdElement | undefined {
     return {
       name: _.n,
       content: c,
-      attributes: [],
-      items: [],
-      type: 'UNSET',
-      value: 'UNSET'
+      // attributes: [],
+      // items: [],
+      // type: 'UNSET',
+      // value: 'UNSET'
     }
   } else {
     return undefined
