@@ -4,7 +4,7 @@ import { getDtdTags } from './dtd-common'
 import { cleanContent } from './utils'
 
 export interface DtdAtt {
-  eleName: string
+  eleName?: string
   name: string
   type: string
   value: string

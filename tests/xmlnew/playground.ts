@@ -14,56 +14,57 @@ let dtdTxtNCBIGBSMod: string = readFileSync('data/NCBI_GBSeq.mod.dtd', 'utf8')
 let dtdTxtTaxon: string = readFileSync('data/taxon.dtd', 'utf8')
 let dtdTxtEPost: string = readFileSync('data/ePost_020511.dtd', 'utf8')
 
-// let attLstTxt = `
-// <!ATTLIST element-name
-//     attr-name attr-type "value"
-//     attr-name attr-type #FIXED "value"
-//     attr-name attr-type #REQUIRED
-//     attr-name attr-type #IMPLIED>
+let attLstTxt = `
+<!ATTLIST element-name
+    attr-name attr-type "value"
+    attr-name attr-type #FIXED "value"
+    attr-name attr-type #REQUIRED
+    attr-name attr-type #IMPLIED>
 
-// <!ATTLIST square width CDATA "0">
-// <!ATTLIST payment type (check|cash) "cash">
-// <!ATTLIST element-name attribute-name (en1|en2|en3) "default-value">
+<!ATTLIST square width CDATA "0">
+<!ATTLIST payment type (check|cash) "cash">
+<!ATTLIST element-name attribute-name (en1|en2|en3) "default-value">
 
-// <!ATTLIST PRODUCT
-//     NAME CDATA #IMPLIED
-//     CATEGORY (HandTool|Table|Shop-Professional) "HandTool"
-//     PARTNUM CDATA #IMPLIED
-//     PLANT (Pittsburgh|Milwaukee|Chicago) "Chicago"
-//     INVENTORY (InStock| Backordered| Discontinued ) "InStock">
+<!ATTLIST PRODUCT
+    NAME CDATA #IMPLIED
+    CATEGORY (HandTool|Table|Shop-Professional) "HandTool"
+    PARTNUM CDATA #IMPLIED
+    PLANT (Pittsburgh|Milwaukee|Chicago) "Chicago"
+    INVENTORY (InStock| Backordered| Discontinued ) "InStock">
 
-// <!ATTLIST SPECIFICATIONS
-//     WEIGHT CDATA #IMPLIED
-//     POWER CDATA #IMPLIED>
+<!ATTLIST SPECIFICATIONS
+    WEIGHT CDATA #IMPLIED
+    POWER CDATA #IMPLIED>
 
-// <!ATTLIST PRICE
-//     MSRP CDATA #IMPLIED
-//     WHOLESALE CDATA #IMPLIED
-//     STREET CDATA #IMPLIED
-//     SHIPPING CDATA #IMPLIED>
+<!ATTLIST PRICE
+    MSRP CDATA #IMPLIED
+    WHOLESALE CDATA #IMPLIED
+    STREET CDATA #IMPLIED
+    SHIPPING CDATA #IMPLIED>
 
-// <!ATTLIST OPTIONS
-//     FINISH (Metal|Polished|Matte) "Matte"
-//     ADAPTER (Included|Optional|NotApplicable) "Included"
-//     CASE (HardShell|Soft|NotApplicable) "HardShell">
+<!ATTLIST OPTIONS
+    FINISH (Metal|Polished|Matte) "Matte"
+    ADAPTER (Included|Optional|NotApplicable) "Included"
+    CASE (HardShell|Soft|NotApplicable) "HardShell">
 
-// <!ATTLIST person
-//     id ID #REQUIRED
-//     mother IDREF #IMPLIED
-//     father IDREF #IMPLIED
-//     children IDREFS #IMPLIED>
-// `
+<!ATTLIST person
+    id ID #REQUIRED
+    mother IDREF #IMPLIED
+    father IDREF #IMPLIED
+    children IDREFS #IMPLIED>
+`
 
 let concatTxt =
-  // xmlTxtESummNC
-  // xmlTxtNCBIGBS
-  // attLstTxt
-  dtdTxtESummNC
-  // dtdTxtNCBIGBS
+  // xmlTxtESummNC +
+  // xmlTxtNCBIGBS +
+  // attLstTxt +
+  // dtdTxtESummNC +
+  // dtdTxtNCBIGBS +
   // dtdTxtNCBIEntMod +
-  // dtdTxtNCBIGBSMod
-  // dtdTxtTaxon
-  // dtdTxtEPost
+  // dtdTxtNCBIGBSMod +
+  // dtdTxtTaxon +
+  dtdTxtEPost +
+  ''
 
 const txt = carriageReturnToNewLine(concatTxt)
 const result = parseDtdTxt(txt)
