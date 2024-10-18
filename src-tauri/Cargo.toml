@@ -39,7 +39,7 @@ strip = true       # Ensures debug symbols are removed.
 path = "../src-submodules/bioseq"
 
 [dependencies.tauri]
-version = "2.0.2"
+version = "2.0.4"
 features = ["devtools"]
 
 [build-dependencies.tauri-build]
@@ -70,4 +70,4 @@ version = "1.0.210"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.128"
+version = "1.0.129"
