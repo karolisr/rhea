@@ -7,18 +7,25 @@ const key = 'dtd-cache'
 
 // ----------------------------------------------------------------------------
 export const dtds = init()
-export const dtdUrls = derived(dtds, ($dtds) =>
-  $dtds ? Object.getOwnPropertyNames($dtds).sort() : []
-)
+export const dtdUrls =
+  dtds !== null
+    ? derived(dtds, ($dtds) =>
+        $dtds ? Object.getOwnPropertyNames($dtds).sort() : []
+      )
+    : null
 
 // ----------------------------------------------------------------------------
-function init(): Writable<DtdCache> {
-  const _ = localStorage.getItem(key)
-  let _dtds: DtdCache = {}
-  if (_) {
-    _dtds = JSON.parse(_)
+function init(): Writable<DtdCache> | null {
+  try {
+    const _ = localStorage.getItem(key)
+    let _dtds: DtdCache = {}
+    if (_) {
+      _dtds = JSON.parse(_)
+    }
+    return writable(_dtds)
+  } catch (error) {
+    return null
   }
-  return writable(_dtds)
 }
 
 // ----------------------------------------------------------------------------
@@ -46,6 +53,7 @@ function getDtdUrls(url: string, refUrl?: string): URL[] {
 }
 
 function addDtdToCache(url: string, txt: string): void {
+  if (dtds === null) return
   dtds.update((_dtds) => {
     _dtds[url] = txt
     localStorage.setItem(key, JSON.stringify(_dtds))
@@ -54,6 +62,7 @@ function addDtdToCache(url: string, txt: string): void {
 }
 
 export function getDtd(url: string, refUrl?: string): DtdText | null {
+  if (dtds === null) return null
   const urls = getDtdUrls(url, refUrl)
   let dtdTxt: DtdText | null = null
 
@@ -80,7 +89,8 @@ export function getDtd(url: string, refUrl?: string): DtdText | null {
 
 export async function downloadDtd(
   url: string,
-  refUrl?: string
+  refUrl?: string,
+  server: boolean = true
 ): Promise<DtdText | null> {
   const urls = getDtdUrls(url, refUrl)
   let dtdTxt: {
@@ -93,8 +103,12 @@ export async function downloadDtd(
 
   for (const _url of urls) {
     const url = _url.toString()
-    dtdTxt = await downloadText(url)
+    dtdTxt = await downloadText(url, server)
     if (dtdTxt) {
+      if (dtds === null) {
+        console.info(`DTD cache is not available: ${dtdTxt.url}`)
+        break
+      }
       addDtdToCache(dtdTxt.url, dtdTxt.data)
       console.info(`DTD added to cache: ${dtdTxt.url}`)
       break

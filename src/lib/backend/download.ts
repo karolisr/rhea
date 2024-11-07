@@ -38,11 +38,14 @@ async function download(
   })
 }
 
-async function downloadText(url: string): Promise<{
+async function downloadText(
+  url: string,
+  server: boolean = true
+): Promise<{
   url: string
   data: string
 } | null> {
-  const _ = await download(url, 'text', true).catch((_) => {
+  const _ = await download(url, 'text', server).catch((_) => {
     return null
   })
   if (_) {
