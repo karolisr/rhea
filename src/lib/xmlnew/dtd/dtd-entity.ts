@@ -10,6 +10,7 @@ interface DtdEntity {
   varName: string | undefined
   value: string
   external: string | undefined
+  extra: string[]
 }
 
 // <!ENTITY   entity-name                       "entity-value">
@@ -58,7 +59,13 @@ function parseDtdEntityTag(txt: string): DtdEntity | undefined {
       vn = `%${n};`
     }
 
-    return { name: n, varName: vn, value: c[c.length - 1], external: _.e }
+    return {
+      name: n,
+      varName: vn,
+      value: c[c.length - 1],
+      external: _.e,
+      extra: c.slice(0, c.length - 1)
+    }
   } else {
     return undefined
   }

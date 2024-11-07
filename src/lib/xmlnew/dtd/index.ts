@@ -1,6 +1,7 @@
 export { parseDtdTxt }
 
 import type { DtdElement } from './dtd-element'
+import type { DtdElementContentParsed } from './dtd-element'
 
 import { getXmlDoctypes } from './xml-doctype'
 import { getDtdEntities } from './dtd-entity'
@@ -53,10 +54,34 @@ function _parseDtdTxt(txt: string) {
     _elementsByName[e.name] = e
   })
 
-  for (let i = 0; i < elements.length; i++) {
-    const ele = elements[i]
-    console.info(ele)
-  }
+  // for (let i = 0; i < elements.length; i++) {
+  //   const ele = elements[i]
+  //   printDtdElement(ele)
+  // }
 
   return { doctypes, elements }
+}
+
+function printDtdElementContentParsed(
+  content: DtdElementContentParsed,
+  level: number = 1
+) {
+  if (content.items !== undefined) {
+    for (let i = 0; i < content.items.length; i++) {
+      const itmContent: DtdElementContentParsed = content.items[i]
+      let itmName: string = itmContent.type ? itmContent.type : ''
+      itmName = itmName + (itmContent.nReq ? `(${itmContent.nReq})` : '')
+      itmName = itmName + (itmContent.oneOfItems ? ' ONE OF:' : '')
+      console.info(''.padStart(2 * level) + `${itmName}`)
+      if (itmContent.items !== undefined) {
+        printDtdElementContentParsed(itmContent, level + 1)
+      }
+    }
+  }
+}
+
+function printDtdElement(ele: DtdElement) {
+  console.info(`${ele.name}:`)
+  printDtdElementContentParsed(ele.content)
+  console.info(''.padEnd(60, '-'))
 }

@@ -4,6 +4,7 @@
 import { readFileSync } from 'fs'
 import { carriageReturnToNewLine } from '$lib/xmlnew/dtd/utils'
 import { parseDtdTxt } from '$lib/xmlnew/dtd'
+import { parseXmlTxt } from '$lib/xmlnew'
 
 let dtdTxtESummNC: string = readFileSync('data/esummary_nuccore.dtd', 'utf8')
 let xmlTxtESummNC: string = readFileSync('data/esummary_nuccore.xml', 'utf8')
@@ -13,6 +14,8 @@ let dtdTxtNCBIEntMod: string = readFileSync('data/NCBI_Entity.mod.dtd', 'utf8')
 let dtdTxtNCBIGBSMod: string = readFileSync('data/NCBI_GBSeq.mod.dtd', 'utf8')
 let dtdTxtTaxon: string = readFileSync('data/taxon.dtd', 'utf8')
 let dtdTxtEPost: string = readFileSync('data/ePost_020511.dtd', 'utf8')
+
+let dtdAny: string = readFileSync('data/eSpell.dtd', 'utf8')
 
 let attLstTxt = `
 <!ATTLIST element-name
@@ -63,11 +66,13 @@ let concatTxt =
   // dtdTxtNCBIEntMod +
   // dtdTxtNCBIGBSMod +
   // dtdTxtTaxon +
-  dtdTxtEPost +
+  // dtdTxtEPost +
+  // dtdAny +
   ''
 
-const txt = carriageReturnToNewLine(concatTxt)
-const result = parseDtdTxt(txt)
+// const txt = carriageReturnToNewLine(concatTxt)
+// const result = parseDtdTxt(txt)
+const result = parseXmlTxt(xmlTxtESummNC, dtdTxtESummNC)
 
 // console.table(result.doctypes)
 // console.log(result.entities)

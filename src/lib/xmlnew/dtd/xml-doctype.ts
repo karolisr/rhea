@@ -1,3 +1,4 @@
+export type { XmlDoctype }
 export { getXmlDoctypes }
 
 import { parseDtdEntityTag } from './dtd-entity'

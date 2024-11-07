@@ -13,7 +13,7 @@ export interface DtdElement {
 
 const unxpctdCondMsg: string = 'Unexpected condition!'
 
-interface DtdElementContentParsed {
+export interface DtdElementContentParsed {
   type?: string
   nReq?: string
   oneOfItems?: boolean
