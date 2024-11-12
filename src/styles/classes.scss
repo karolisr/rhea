@@ -1,3 +1,5 @@
+@use 'colors.scss' as Colors;
+
 .danger {
-  background-color: $C600;
+  background-color: Colors.$C600;
 }

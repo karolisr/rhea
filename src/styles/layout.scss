@@ -1,3 +1,5 @@
+@use 'colors.scss' as Colors;
+
 .layout {
   flex-grow: 1;
   flex-shrink: 1;
@@ -12,11 +14,11 @@
 }
 
 .head {
-  background-color: $Y100;
+  background-color: Colors.$Y100;
 }
 
 .foot {
-  background-color: $Y100;
+  background-color: Colors.$Y100;
 }
 
 .main {

@@ -1,3 +1,5 @@
+@use 'colors.scss' as Colors;
+
 .status-bar {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;

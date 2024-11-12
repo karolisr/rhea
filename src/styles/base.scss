@@ -1,3 +1,5 @@
+@use 'colors.scss' as Colors;
+
 :root {
   height: 100%;
   display: flex;
@@ -17,7 +19,7 @@ body {
 
 input:focus {
   outline-style: solid;
-  outline-color: $A400;
+  outline-color: Colors.$A400;
   outline-width: 2px;
 }
 
@@ -57,19 +59,19 @@ input[type='radio'] {
 button,
 input[type='button'],
 input[type='submit'] {
-  background-color: $A600;
+  background-color: Colors.$A600;
   color: white;
   padding-block: calc(var(--pad) * 1);
   padding-inline: calc(var(--pad) * 2);
 }
 
 input[type='checkbox']:checked::after {
-  color: $A600;
+  color: Colors.$A600;
 }
 
 input[type='radio']:checked::after {
-  background-color: $A600;
-  border-color: $A600;
+  background-color: Colors.$A600;
+  border-color: Colors.$A600;
 }
 
 a:hover,
@@ -99,7 +101,7 @@ input[type='submit']:active {
 }
 
 ::selection {
-  background-color: rgba($color: $B300, $alpha: 0.4);
+  background-color: rgba($color: Colors.$B300, $alpha: 0.4);
 }
 
 ul,
@@ -115,7 +117,7 @@ li::marker {
 
 grid-row-sizer,
 grid-col-sizer {
-  border-color: $Y300;
+  border-color: Colors.$Y300;
   border-width: 1px;
   z-index: 21;
 }
@@ -138,7 +140,7 @@ grid-col-sizer.border {
 
 .table grid-row-sizer,
 .table grid-col-sizer {
-  border-color: $Y800;
+  border-color: Colors.$Y800;
   border-width: 1px;
   z-index: 21;
 }
@@ -165,7 +167,7 @@ grid-row-sizer:hover,
 grid-row-sizer:active,
 grid-col-sizer:hover,
 grid-col-sizer:active {
-  background-color: rgba($color: $A400, $alpha: 0.35);
+  background-color: rgba($color: Colors.$A400, $alpha: 0.35);
 }
 
 .collapsed grid-row-sizer {
@@ -180,7 +182,7 @@ grid-col-sizer:active {
 .collapsed grid-row-sizer:active,
 .collapsed grid-col-sizer:hover,
 .collapsed grid-col-sizer:active {
-  background-color: rgba($color: $B400, $alpha: 0.35);
+  background-color: rgba($color: Colors.$B400, $alpha: 0.35);
 }
 
 mark {
@@ -188,7 +190,7 @@ mark {
 }
 
 // .drag-target.drag-item-hovering {
-//   background-color: rgba($color: $B400, $alpha: 0.35);
+//   background-color: rgba($color: Colors.$B400, $alpha: 0.35);
 // }
 
 .placeholder {

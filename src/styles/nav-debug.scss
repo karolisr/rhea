@@ -1,7 +1,9 @@
+@use 'colors.scss' as Colors;
+
 .nav-debug.tab-nav {
   display: flex;
   flex-direction: row;
-  background-color: $Y100;
+  background-color: Colors.$Y100;
   // background-color: white;
   // gap: var(--pad);
   // padding: 2px;
@@ -18,7 +20,7 @@
 // }
 
 .nav-debug.tab-nav > a > div {
-  background-color: $X200;
+  background-color: Colors.$X200;
   display: flex;
   align-items: center;
   border-right-style: solid;
@@ -26,7 +28,7 @@
   height: 100%;
   padding: var(--pad);
   padding-inline: calc(var(--pad) * 2);
-  border-color: $X600;
+  border-color: Colors.$X600;
 }
 
 .nav-debug.tab-nav > a:first-of-type > div {
@@ -52,27 +54,27 @@
 }
 
 .nav-debug.tab-nav > a:hover > div {
-  background-color: $X200;
+  background-color: Colors.$X200;
 }
 
 .nav-debug.tab-nav > a:hover > div > svg {
-  color: $B600;
+  color: Colors.$B600;
 }
 
 .nav-debug.tab-nav > a:hover > div > span {
-  color: $A600;
+  color: Colors.$A600;
 }
 
 .nav-debug.tab-nav > a[aria-current='true'] > div {
-  background-color: $Y050;
+  background-color: Colors.$Y050;
 }
 
 .nav-debug.tab-nav > a[aria-current='true'] > div > svg {
-  color: $B700;
+  color: Colors.$B700;
 }
 
 .nav-debug.tab-nav > a[aria-current='true'] > div > span {
-  color: $A700;
+  color: Colors.$A700;
 }
 
 :root[nav-debug-spacer-r-nav-collapsed='true'] {

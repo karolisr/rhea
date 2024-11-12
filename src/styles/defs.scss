@@ -1,4 +1,4 @@
-@import 'colors.scss';
+@use 'colors.scss' as Colors;
 
 :root {
   --fs: 12px;
@@ -6,11 +6,11 @@
 }
 
 :root[app-theme='light'] {
-  --bg1: #{$Y050};
+  --bg1: #{Colors.$Y050};
 }
 
 :root[app-theme='dark'] {
-  --bg1: #{$Y500};
+  --bg1: #{Colors.$Y500};
 }
 
 :root[scale='small'] {

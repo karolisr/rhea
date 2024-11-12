@@ -1,3 +1,5 @@
+@use 'colors.scss' as Colors;
+
 .tree {
   overflow-x: hidden;
   overflow-y: scroll;
@@ -5,8 +7,8 @@
   flex-shrink: 0;
 }
 .tree > button.tree-node {
-  background-color: $X100;
-  color: $X900;
+  background-color: Colors.$X100;
+  color: Colors.$X900;
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -19,7 +21,7 @@
 }
 
 .tree > button.tree-node:hover {
-  background-color: $X200;
+  background-color: Colors.$X200;
   filter: none;
 }
 
@@ -28,12 +30,12 @@
 }
 
 .tree > button.tree-node.selected {
-  background-color: $A600;
-  color: $A050;
+  background-color: Colors.$A600;
+  color: Colors.$A050;
 }
 
 .tree > button.tree-node.drag-item-hovering {
-  background-color: $B300;
+  background-color: Colors.$B300;
 }
 
 .tree > .children {

@@ -1,17 +1,17 @@
-@import 'defs.scss';
+@use 'defs.scss';
 
-@import 'reset.scss';
-@import 'base.scss';
+@use 'reset.scss';
+@use 'base.scss';
 
-@import 'layout.scss';
-@import 'nav-main.scss';
-@import 'nav-debug.scss';
-@import 'status-bar.scss';
+@use 'layout.scss';
+@use 'nav-main.scss';
+@use 'nav-debug.scss';
+@use 'status-bar.scss';
 
-@import 'scrollbars.scss';
-@import 'toolbar.scss';
-@import 'table.scss';
-@import 'treeview.scss';
-@import 'fieldset.scss';
+@use 'scrollbars.scss';
+@use 'toolbar.scss';
+@use 'table.scss';
+@use 'treeview.scss';
+@use 'fieldset.scss';
 
-@import 'classes.scss';
+@use 'classes.scss';

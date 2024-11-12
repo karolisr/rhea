@@ -1,3 +1,5 @@
+@use 'colors.scss' as Colors;
+
 .nav-main.tab-nav {
   display: flex;
   flex-direction: row;
@@ -11,7 +13,7 @@
 // }
 
 .nav-main.tab-nav > a > div {
-  background-color: $Y200;
+  background-color: Colors.$Y200;
   display: flex;
   align-items: center;
   border-left-style: solid;
@@ -48,7 +50,7 @@
 }
 
 .nav-main.tab-nav > a[aria-current='true'] > div > svg {
-  color: $A600;
+  color: Colors.$A600;
 }
 
 // .nav-main.tab-nav > a[aria-current='true'] > div > span {

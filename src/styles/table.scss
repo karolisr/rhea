@@ -1,3 +1,5 @@
+@use 'colors.scss' as Colors;
+
 .table-height-container {
 }
 
@@ -61,8 +63,8 @@
 
 .row-h,
 .row-f {
-  background-color: $Z400;
-  color: $Y100;
+  background-color: Colors.$Z400;
+  color: Colors.$Y100;
   font-weight: 500;
   z-index: 20;
 }
@@ -79,7 +81,7 @@
 
 .table-container:focus .row-h,
 .table-container:focus .row-f {
-  background-color: $A600;
+  background-color: Colors.$A600;
   color: white;
 }
 
@@ -105,22 +107,22 @@
 }
 
 .row-b:hover {
-  background-color: rgba($color: $X300, $alpha: 0.25);
+  background-color: rgba($color: Colors.$X300, $alpha: 0.25);
 }
 
 .selected-row,
 .selected-row:hover {
-  background-color: rgba($color: $B300, $alpha: 0.2);
+  background-color: rgba($color: Colors.$B300, $alpha: 0.2);
 }
 
 .active-row {
-  background-color: rgba($color: $X300, $alpha: 0.25);
-  border-block-color: rgba($color: $X400, $alpha: 0.8);
+  background-color: rgba($color: Colors.$X300, $alpha: 0.25);
+  border-block-color: rgba($color: Colors.$X400, $alpha: 0.8);
 }
 
 .table-container:focus .active-row {
-  background-color: rgba($color: $A300, $alpha: 0.25);
-  border-block-color: rgba($color: $A400, $alpha: 0.8);
+  background-color: rgba($color: Colors.$A300, $alpha: 0.25);
+  border-block-color: rgba($color: Colors.$A400, $alpha: 0.8);
 }
 
 .col-tools {
@@ -129,12 +131,12 @@
 }
 
 .col-tools.sorting {
-  background-color: $B500;
+  background-color: Colors.$B500;
 }
 
 .col-tools:hover {
-  background-color: rgba($color: $B500, $alpha: 0.75);
-  color: $B900;
+  background-color: rgba($color: Colors.$B500, $alpha: 0.75);
+  color: Colors.$B900;
 }
 
 .col-tools:hover::before {
@@ -152,12 +154,12 @@
 }
 
 .col-tools.sorting:hover {
-  background-color: $B500;
+  background-color: Colors.$B500;
 }
 
 .sorting {
-  background-color: $B500;
-  color: $B900;
+  background-color: Colors.$B500;
+  color: Colors.$B900;
 }
 
 .col-sorter-order {
@@ -172,5 +174,5 @@
 
 .col-sorter-direction:hover,
 .col-sorter-order:hover {
-  color: $B700;
+  color: Colors.$B700;
 }
