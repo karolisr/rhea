@@ -62,7 +62,7 @@ let concatTxt =
   // xmlTxtNCBIGBS +
   // attLstTxt +
   // dtdTxtESummNC +
-  // dtdTxtNCBIGBS +
+  dtdTxtNCBIGBS +
   // dtdTxtNCBIEntMod +
   // dtdTxtNCBIGBSMod +
   // dtdTxtTaxon +
@@ -70,9 +70,10 @@ let concatTxt =
   // dtdAny +
   ''
 
-// const txt = carriageReturnToNewLine(concatTxt)
-// const result = parseDtdTxt(txt)
-const result = parseXmlTxt(xmlTxtESummNC, dtdTxtESummNC)
+const txt = carriageReturnToNewLine(concatTxt)
+const result = parseDtdTxt(txt)
+// const result = parseXmlTxt(xmlTxtESummNC, dtdTxtESummNC)
+// const result = parseXmlTxt(xmlTxtNCBIGBS, dtdTxtNCBIGBS)
 
 // console.table(result.doctypes)
 // console.log(result.entities)

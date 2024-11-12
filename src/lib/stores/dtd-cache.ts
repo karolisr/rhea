@@ -62,7 +62,10 @@ function addDtdToCache(url: string, txt: string): void {
 }
 
 export function getDtd(url: string, refUrl?: string): DtdText | null {
-  if (dtds === null) return null
+  if (dtds === null) {
+    console.info(`DTD cache is not available: ${url}`)
+    return null
+  }
   const urls = getDtdUrls(url, refUrl)
   let dtdTxt: DtdText | null = null
 
@@ -70,13 +73,13 @@ export function getDtd(url: string, refUrl?: string): DtdText | null {
     const url = _url.toString()
     const unsubscribe = dtds.subscribe((_dtds) => {
       if (url in _dtds) {
-        // console.info(`DTD cache hit: ${url}`)
+        console.info(`DTD cache hit: ${url}`)
         dtdTxt = {
           url: url,
           data: _dtds[url]
         }
       } else {
-        // console.info(`DTD cache miss: ${url}`)
+        console.info(`DTD cache miss: ${url}`)
         dtdTxt = null
       }
     })
@@ -105,10 +108,7 @@ export async function downloadDtd(
     const url = _url.toString()
     dtdTxt = await downloadText(url, server)
     if (dtdTxt) {
-      if (dtds === null) {
-        console.info(`DTD cache is not available: ${dtdTxt.url}`)
-        break
-      }
+      if (dtds === null) break
       addDtdToCache(dtdTxt.url, dtdTxt.data)
       console.info(`DTD added to cache: ${dtdTxt.url}`)
       break

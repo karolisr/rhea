@@ -4,6 +4,8 @@ export { getDtdEntities }
 
 import { getDtdTags } from './dtd-common'
 import { cleanContent } from './utils'
+import { getDtd } from '$lib/stores/dtd-cache'
+import { downloadDtd } from '$lib/stores/dtd-cache'
 
 interface DtdEntity {
   name: string
@@ -32,15 +34,41 @@ function getDtdEntityTags(txt: string): string[] {
   return getDtdTags(txt, 'entity')
 }
 
-function getDtdEntities(txt: string): Array<DtdEntity> {
+async function getDtdEntities(
+  txt: string,
+  refUrl?: string
+): Promise<Array<DtdEntity>> {
   const entityTags = getDtdEntityTags(txt)
-  const entities = entityTags
-    .map((_) => parseDtdEntityTag(_))
-    .filter((_) => _ !== undefined)
+  // const entities = entityTags
+  // .map((_) => parseDtdEntityTag(_, 'DTD', refUrl))
+  // .filter((_) => _ !== undefined)
+  const entityPromises = entityTags.map((_) =>
+    parseDtdEntityTag(_, 'DTD', refUrl)
+  )
+  let entities: Array<DtdEntity> = []
+  for await (const en of entityPromises) {
+    if (en !== undefined) {
+      if (en.external !== undefined) {
+        const dtdTxt =
+          getDtd(en.value) || (await downloadDtd(en.value, refUrl, false))
+        if (dtdTxt !== null) {
+          const externalEntities = await getDtdEntities(dtdTxt.data, refUrl)
+          entities = [...externalEntities, ...entities]
+          en.value = dtdTxt.data
+        }
+      }
+
+      entities.push(en)
+    }
+  }
   return entities
 }
 
-function parseDtdEntityTag(txt: string): DtdEntity | undefined {
+async function parseDtdEntityTag(
+  txt: string,
+  src: 'DTD' | 'XML' = 'DTD',
+  refUrl?: string
+): Promise<DtdEntity | undefined> {
   const _ = [...txt.matchAll(rxEnt)].map((_) => _.groups)[0]
   if (_ !== undefined) {
     const cntnt = _.c.matchAll(rxSubCont)
@@ -59,13 +87,15 @@ function parseDtdEntityTag(txt: string): DtdEntity | undefined {
       vn = `%${n};`
     }
 
-    return {
+    const rv: DtdEntity = {
       name: n,
       varName: vn,
       value: c[c.length - 1],
       external: _.e,
       extra: c.slice(0, c.length - 1)
     }
+
+    return rv
   } else {
     return undefined
   }
