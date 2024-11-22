@@ -17,14 +17,11 @@ function getXmlDoctypeTags(txt: string): string[] {
 async function parseXmlDoctypeTag(
   txt: string
 ): Promise<XmlDoctype | undefined> {
-  return await parseDtdEntityTag(txt, 'XML')
+  return await parseDtdEntityTag(txt)
 }
 
 async function getXmlDoctypes(txt: string): Promise<Array<XmlDoctype>> {
   const entityTags = getXmlDoctypeTags(txt)
-  // const entities = entityTags
-  //   .map((_) => parseXmlDoctypeTag(_))
-  //   .filter((_) => _ !== undefined)
   const entityPromises = entityTags.map((_) => parseXmlDoctypeTag(_))
   const entities: Array<XmlDoctype> = []
   for await (const en of entityPromises) {

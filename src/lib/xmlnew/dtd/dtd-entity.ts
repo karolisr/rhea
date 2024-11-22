@@ -39,11 +39,8 @@ async function getDtdEntities(
   refUrl?: string
 ): Promise<Array<DtdEntity>> {
   const entityTags = getDtdEntityTags(txt)
-  // const entities = entityTags
-  // .map((_) => parseDtdEntityTag(_, 'DTD', refUrl))
-  // .filter((_) => _ !== undefined)
   const entityPromises = entityTags.map((_) =>
-    parseDtdEntityTag(_, 'DTD', refUrl)
+    parseDtdEntityTag(_)
   )
   let entities: Array<DtdEntity> = []
   for await (const en of entityPromises) {
@@ -65,9 +62,7 @@ async function getDtdEntities(
 }
 
 async function parseDtdEntityTag(
-  txt: string,
-  src: 'DTD' | 'XML' = 'DTD',
-  refUrl?: string
+  txt: string
 ): Promise<DtdEntity | undefined> {
   const _ = [...txt.matchAll(rxEnt)].map((_) => _.groups)[0]
   if (_ !== undefined) {

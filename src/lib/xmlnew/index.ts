@@ -9,15 +9,15 @@ import { getDtd } from '$lib/stores/dtd-cache'
 import type { DtdText } from '$lib/stores'
 import { parseDtdTxt } from './dtd'
 import type { XmlDoctype } from './xml/xml-doctype'
-import type { DtdElement } from './dtd/dtd-element'
+import type { DtdEle } from './dtd/dtd-element'
 
 async function parseXmlEle(
   ele: Element,
-  dtdEles: { [eleName: string]: DtdElement },
+  dtdEles: { [eleName: string]: DtdEle },
   level: number = 0
 ) {
   const eleName = ele.nodeName
-  let dtdEle: DtdElement | null = null
+  let dtdEle: DtdEle | null = null
 
   if (eleName in dtdEles) {
     dtdEle = dtdEles[eleName]
@@ -59,7 +59,7 @@ async function parseXmlTxt(txt: string, txtDtd?: string) {
   }
 
   let dtdTxt: DtdText | null = null
-  let dtdEles: { [eleName: string]: DtdElement } = {}
+  let dtdEles: { [eleName: string]: DtdEle } = {}
 
   if (txtDtd !== undefined) {
     dtdTxt = { data: txtDtd, url: dtdUrl }

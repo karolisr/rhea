@@ -3,19 +3,29 @@ export { getDtdAttributes }
 import { getDtdTags } from './dtd-common'
 import { cleanContent } from './utils'
 
-export interface DtdAtt {
+export interface DtdEleAtt {
   eleName?: string
   name: string
   type: string
   value: string
 }
 
-interface DtdAttType {
+interface DtdEleAttType {
   [key: string]: string
 }
 
-const attValType: DtdAttType = {
-  '(true|false)': 'BooleanT'
+interface DtdEleAttReq {
+  [key: string]: string
+}
+
+const attValType: DtdEleAttType = {
+  '(true|false)': 'boolean',
+  'CDATA': 'string'
+}
+
+const attValReq: DtdEleAttReq = {
+  '#IMPLIED': '?',
+  '#REQUIRED': ''
 }
 
 // <!ATTLIST element-name attr-name attr-type attr-default>
@@ -36,7 +46,7 @@ function getDtdAttListTags(txt: string): string[] {
   return getDtdTags(txt, 'attlist')
 }
 
-function parseDtdAttListTag(txt: string): Array<DtdAtt> {
+function parseDtdAttListTag(txt: string): Array<DtdEleAtt> {
   const rsElName = /\S+/.source
   const _ = txt.match(rsElName)
   const en = _?.length === 1 ? _[0] : null
@@ -49,21 +59,24 @@ function parseDtdAttListTag(txt: string): Array<DtdAtt> {
   const re = RegExp(`(?:${en}\\s)?(?:${an + at + av})`, 'gsm')
 
   const mgs = [...txt.matchAll(re)].map((_) => _.groups)
-  let attrs: DtdAtt[] = []
+  let attrs: DtdEleAtt[] = []
   mgs.forEach((mg) => {
     if (mg) {
       let t = cleanContent(mg.t, ['|', ',', '(', ')'])
       if (t in attValType) {
         t = attValType[t]
       }
-      const attr: DtdAtt = { eleName: en, name: mg.n, type: t, value: mg.v }
+      if (mg.v in attValReq) {
+        mg.v = attValReq[mg.v]
+      }
+      const attr: DtdEleAtt = { eleName: en, name: mg.n, type: t, value: mg.v }
       attrs.push(attr)
     }
   })
   return attrs
 }
 
-function getDtdAttributes(txt: string): Array<DtdAtt> {
+function getDtdAttributes(txt: string): Array<DtdEleAtt> {
   const attListTags = getDtdAttListTags(txt)
   const attList = attListTags
     .flatMap((_) => parseDtdAttListTag(_))

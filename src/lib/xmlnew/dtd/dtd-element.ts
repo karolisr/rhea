@@ -1,24 +1,24 @@
 export { getDtdElements }
 
-import type { DtdAtt } from './dtd-attlist'
+import type { DtdEleAtt } from './dtd-attlist'
 import { getDtdTags } from './dtd-common'
 import { cleanContent } from './utils'
 import { getPropNames } from '$lib/utils'
 
-export interface DtdElement {
+export interface DtdEle {
   name: string
-  content: DtdElementContentParsed
-  attributes: Array<DtdAtt>
+  content: DtdEleContent
+  attributes: Array<DtdEleAtt>
 }
 
 const unxpctdCondMsg: string = 'Unexpected condition!'
 
-export interface DtdElementContentParsed {
+export interface DtdEleContent {
   type?: string
   nReq?: string
   oneOfItems?: boolean
-  items?: DtdElementContentParsed[]
-  description?: string
+  items?: DtdEleContent[]
+  // description?: string
 }
 
 // <!ELEMENT element-name content-model>
@@ -43,7 +43,7 @@ function parseDtdElementNodeStr(nodeStr: string) {
   const oneOfItems = (nodeStr.match(/[|]/g) || []).length === 0 ? false : true
 
   let nodeItems: string[] = []
-  let nodeItemsParsed: DtdElementContentParsed[] = []
+  let nodeItemsParsed: DtdEleContent[] = []
 
   if (list && oneOfItems) {
     console.warn(unxpctdCondMsg)
@@ -58,7 +58,7 @@ function parseDtdElementNodeStr(nodeStr: string) {
   for (let j = 0; j < nodeItems.length; j++) {
     const itm = nodeItems[j]
     let itmTmp = itm.slice(0, itm.length - 1)
-    const parsed: DtdElementContentParsed = {
+    const parsed: DtdEleContent = {
       type: itm
       // nReq: '1'
     }
@@ -90,7 +90,7 @@ function parseDtdElementContentStrToNodes(
   str: string,
   grpId: number = 1,
   nodes: {
-    [n: string]: { items: DtdElementContentParsed[]; oneOfItems: boolean }
+    [n: string]: { items: DtdEleContent[]; oneOfItems: boolean }
   } = {}
 ) {
   const nodeName: string = 'N' + grpId.toString().padStart(1, '0')
@@ -104,14 +104,13 @@ function parseDtdElementContentStrToNodes(
     nodes[nodeName] = parseDtdElementNodeStr(strCurrNode)
     parseDtdElementContentStrToNodes(strNew, grpId + 1, nodes)
   } else {
-    // console.log(parseDtdElementNodeStr(str))
     nodes[nodeName] = parseDtdElementNodeStr(str)
   }
   return nodes
 }
 
 function parseDtdElementContentNodes(nodes: {
-  [n: string]: { items: DtdElementContentParsed[]; oneOfItems: boolean }
+  [n: string]: { items: DtdEleContent[]; oneOfItems: boolean }
 }) {
   const nodeNames = getPropNames(nodes)
   for (let i = 0; i < nodeNames.length; i++) {
@@ -149,8 +148,8 @@ function parseDtdElementContent(eleContent: string) {
 
 function parseDtdElementTag(
   txt: string,
-  attrs: Array<DtdAtt> = []
-): DtdElement | undefined {
+  attrs: Array<DtdEleAtt> = []
+): DtdEle | undefined {
   const en: string = /(?:(?<n>\S+)\s+)/.source
   const ec: string = /(?<c>.+)/.source
   const re: RegExp = RegExp(`${en}${ec}`, 'gs')
@@ -159,7 +158,7 @@ function parseDtdElementTag(
   if (_ !== undefined) {
     const c = parseDtdElementContent(cleanContent(_.c, ['|', ',', '(', ')']))
     const n = _.n
-    const a: Array<DtdAtt> = []
+    const a: Array<DtdEleAtt> = []
 
     // Populates the "attributes" list for each element.
     for (let i = 0; i < attrs.length; i++) {
@@ -178,8 +177,8 @@ function parseDtdElementTag(
 
 function getDtdElements(
   txt: string,
-  attrs: Array<DtdAtt> = []
-): Array<DtdElement> {
+  attrs: Array<DtdEleAtt> = []
+): Array<DtdEle> {
   const elementTags = getDtdElementTags(txt)
   const elements = elementTags
     .map((_) => parseDtdElementTag(_, attrs))
